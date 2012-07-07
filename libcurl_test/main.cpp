@@ -20,7 +20,7 @@ int main()
 	simp->RegisterCompletion(test);
 	multi->AddRequest(simp);
 	CurlSimpleDownload* dl = new CurlSimpleDownload("http://sohowww.nascom.nasa.gov/gallery/images/large/suncombo1_prev.jpg",
-		"nasa.jpg");
+		"nasa1.jpg");
 	multi->AddRequest(dl);
 	CurlSimpleDownload* dl1 = new CurlSimpleDownload("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
 		"hubble.jpg");

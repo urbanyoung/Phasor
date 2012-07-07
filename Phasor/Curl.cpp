@@ -222,7 +222,7 @@ namespace Server
 
 		size_t CurlSimpleDownload::OnDataWrite(BYTE* data, size_t size, size_t nmemb)
 		{
-			printf("Writing %i bytes to file.\n", size*nmemb);
+			printf("Writing %i bytes to file. %08x\n", size*nmemb, this);
 			return fwrite(data, size, nmemb, pFile);
 		}
 
