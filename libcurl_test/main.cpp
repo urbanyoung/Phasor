@@ -8,6 +8,7 @@ void test(BYTE* data, size_t len, void* userdata)
 	str[len] = 0;
 
 	printf("Data: %s\n", str);
+	delete[] str;
 }
 
 int main()

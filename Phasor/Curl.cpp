@@ -44,7 +44,7 @@ namespace Server
 			CURLMcode c = curl_multi_perform(multi_curl, &new_running);
 
 			CURLMsg* msg = 0;
-			int msgs_left = 0;
+			int msgs_left = 1;
 			while (msgs_left && (msg = curl_multi_info_read(multi_curl, &msgs_left))) {
 				if (msg->msg == CURLMSG_DONE) {			
 					CurlSimple* simp = FindConnection(msg->easy_handle);
@@ -111,7 +111,7 @@ namespace Server
 
 		CurlSimple::~CurlSimple()
 		{
-			printf("Cleanup\n");
+			printf("~CurlSimple()\n");
 			curl_easy_cleanup(curl);
 			delete[] buffer;
 		}
@@ -130,6 +130,7 @@ namespace Server
 
 			if (recvCount + nbytes > bufferSize) {
 				if (!ResizeBuffer(bufferSize + nbytes))	{
+					printf("Error\n");
 					SetError("OnDataWrite: Cannot allocate enough memory for received data.");
 					return 0; // curl will abort
 				}
@@ -178,7 +179,7 @@ namespace Server
 
 		void CurlSimple::SetError(std::string error) 
 		{ 
-			printf("%s\n", error.c_str());
+			printf("Error: %s\n", error.c_str());
 			this->errorMsg = error; 
 			this->hasError = true;
 		}
