@@ -5,7 +5,7 @@
 using namespace std;
 using namespace Scripting::Lua;
 
-const char* script = "";
+const char* script = "var = 2";
 
 void main()
 {
