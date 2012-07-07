@@ -11,6 +11,9 @@
     <ClCompile Include="Common.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="Scripting.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -38,6 +41,9 @@
     </ClInclude>
     <ClInclude Include="Common.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripting.h">
+      <Filter>Scripting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

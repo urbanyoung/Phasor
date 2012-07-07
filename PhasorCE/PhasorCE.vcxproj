@@ -90,11 +90,13 @@
     <ClCompile Include="..\Phasor\Curl.cpp" />
     <ClCompile Include="..\Phasor\Lua.cpp" />
     <ClCompile Include="..\Phasor\main.cpp" />
+    <ClCompile Include="..\Phasor\Scripting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Common.h" />
     <ClInclude Include="..\Phasor\Curl.h" />
     <ClInclude Include="..\Phasor\Lua.h" />
+    <ClInclude Include="..\Phasor\Scripting.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

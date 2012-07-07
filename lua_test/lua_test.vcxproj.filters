@@ -13,10 +13,16 @@
     <ClCompile Include="..\Phasor\Lua.cpp">
       <Filter>Scripting\Lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\Scripting.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Lua.h">
       <Filter>Scripting\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Scripting.h">
+      <Filter>Scripting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -11,6 +11,9 @@
     <ClCompile Include="..\Phasor\Curl.cpp">
       <Filter>Server\Curl</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\Scripting.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -38,6 +41,9 @@
     </ClInclude>
     <ClInclude Include="..\Phasor\Curl.h">
       <Filter>Server\Curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Scripting.h">
+      <Filter>Scripting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
