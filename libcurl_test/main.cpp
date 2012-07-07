@@ -21,9 +21,12 @@ int main()
 	multi->AddRequest(simp);
 	CurlSimpleDownload* dl = new CurlSimpleDownload("http://sohowww.nascom.nasa.gov/gallery/images/large/suncombo1_prev.jpg",
 		"nasa.jpg");
+	multi->AddRequest(dl);
+	CurlSimpleDownload* dl1 = new CurlSimpleDownload("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
+		"hubble.jpg");
 	//CurlSimpleDownload* dl = new CurlSimpleDownload("http://localhost/test.txt",
 	//	"test.txt");
-	multi->AddRequest(dl);
+	//multi->AddRequest(dl1);
 
 	while (multi->Process())
 		Sleep(50);
