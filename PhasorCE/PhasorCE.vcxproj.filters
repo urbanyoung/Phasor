@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\Phasor\main.cpp" />
+    <ClCompile Include="..\Phasor\Lua.cpp">
+      <Filter>Scripting\Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Curl.cpp">
+      <Filter>Server\Curl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{8c890f8f-5291-45f5-a254-879fd17caf92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting\Lua">
+      <UniqueIdentifier>{c7ca44b5-e24b-481d-8e5c-cbcc9555cb3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{22841049-4113-47ca-8e2e-6db732d82d6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{0c6d2ac6-ff0b-45ec-b876-b962e798a109}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\Curl">
+      <UniqueIdentifier>{749b8b84-73d7-42cf-9ce8-16f77a094f75}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Phasor\Lua.h">
+      <Filter>Scripting\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Curl.h">
+      <Filter>Server\Curl</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

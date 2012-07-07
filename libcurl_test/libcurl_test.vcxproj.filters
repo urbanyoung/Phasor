@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\Phasor\Curl.cpp">
+      <Filter>Server\Curl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Server">
+      <UniqueIdentifier>{f7374fd4-579a-42ad-9c66-0aba891f5d89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\Curl">
+      <UniqueIdentifier>{a975fa73-654b-442c-81fa-af7a5fab76b7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Phasor\Curl.h">
+      <Filter>Server\Curl</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
