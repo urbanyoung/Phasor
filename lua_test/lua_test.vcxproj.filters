@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{18dd4674-7067-417a-94e6-7c6aa064f43d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting\Lua">
+      <UniqueIdentifier>{e69fda23-7215-433e-974b-de2b9dad068f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\Phasor\Lua.cpp">
+      <Filter>Scripting\Lua</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Phasor\Lua.h">
+      <Filter>Scripting\Lua</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
