@@ -26,7 +26,7 @@ int main()
 		"hubble.jpg");
 	//CurlSimpleDownload* dl = new CurlSimpleDownload("http://localhost/test.txt",
 	//	"test.txt");
-	//multi->AddRequest(dl1);
+	multi->AddRequest(dl1);
 
 	while (multi->Process())
 		Sleep(50);

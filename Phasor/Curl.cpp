@@ -52,6 +52,7 @@ namespace Server
 					simp->ConnectionDone(msg);
 					Remove(simp);
 				}
+				printf("%i\n", msg->msg);
 			}
 
 			running = new_running;
@@ -63,6 +64,7 @@ namespace Server
 			std::list<CurlSimple*>::iterator itr = simples.begin();
 			while (itr != simples.end()) {
 				if ((*itr)->GetCurl() == con) return *itr;
+				else itr++;
 			}
 			return NULL;
 		}
@@ -77,6 +79,7 @@ namespace Server
 					itr = simples.erase(itr);
 					break;
 				}
+				else itr++;
 			}
 		}
 
