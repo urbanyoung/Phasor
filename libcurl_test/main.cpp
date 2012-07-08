@@ -16,7 +16,7 @@ int main()
 	using namespace Server::Curl;
 	CurlMulti* multi = new CurlMulti;
 
-	CurlSimpleHttp* simp = new CurlSimpleHttp("http://www.phasor.proboards.com/", METHOD_GET);
+	CurlSimpleHttp* simp = new CurlSimpleHttp("http://www.phasor.proboards.com/");
 	simp->RegisterCompletion(test);
 	multi->AddRequest(simp);
 	CurlSimpleDownload* dl = new CurlSimpleDownload("http://sohowww.nascom.nasa.gov/gallery/images/large/suncombo1_prev.jpg",

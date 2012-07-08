@@ -1,7 +1,7 @@
-#include <windows.h>
-#include <string>
+#pragma once
 #include <list>
 #include "../libcurl/curl/curl.h"
+#include "../Phasor/Common.h"
 
 namespace Server
 {
@@ -63,12 +63,13 @@ namespace Server
 			std::string errorMsg; // stores the latest error
 			bool hasError; // indicates whether or not there's been an error
 
-			/* Returns the pointer to this curl instance */
-			CURL* GetCurl() { return curl; };
-
 			/*	Called by the curl object when there is data to be processed. This
 				function is simply used to call OnDataWrite in a C++ context. */
 			static size_t Curl_OnDataWrite(BYTE* data, size_t size, size_t nmemb, void* userdata);
+
+			/* Called by CurlMulti when this instance is added to the multistack 
+			 * Return values specifies whether or not it should be added. */
+			virtual bool OnAdd() { return true; }
 
 		protected:
 			std::string url; // url the connection is to be made on
@@ -77,6 +78,9 @@ namespace Server
 			size_t bufferSize; // size of the allocated buffer
 			void (*completionRoutine)(BYTE*, size_t, void* userdata); // ptr to function called on completion
 			void* userdata; // set by user for passing to completion routine
+
+			/* Returns the pointer to this curl instance */
+			CURL* GetCurl() { return curl; };
 
 			/*  Processes data received from the curl interface.
 
@@ -130,17 +134,33 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimpleHttp
 		// Purpose: Connects to and downloads a web page and (optionally) sends get or post data
-		enum CSIMPLE_HTTP {
-			METHOD_GET = 1,
-			METHOD_POST = 2
-		};
+		class common::StreamBuilder;
 		class CurlSimpleHttp : public CurlSimple
 		{
+		private:
+			bool pair_added; // should & be prepended
+			common::StreamBuilder* urlBuilder;
+
+			/* Helper function for escaping strings */
+			std::string wstring_to_utf8_hex(const std::wstring &input);
+
+			/* Escapes the input string for url encoding */
+			std::string Escape(std::wstring input);
+			std::string Escape(std::string input);
+
+			/* Called by CurlMulti when this instance is added to the multistack 
+			 * Return values specifies whether or not it should be added. */
+			virtual bool OnAdd();
+
 		public:
-			CurlSimpleHttp(std::string url, CSIMPLE_HTTP mode=METHOD_GET);
+			CurlSimpleHttp(std::string url);
 			~CurlSimpleHttp();
 
-		
+			/* Adds data to the http request, any unicode strings are escaped. */
+			void AddPostData(std::string key, std::wstring data);
+			void AddPostData(std::string key, std::string data, bool b=false);
+			void AddGetData(std::string key, std::wstring data);
+			void AddGetData(std::string key, std::string data, bool b=false);
 		};
 
 		//-----------------------------------------------------------------------------------------

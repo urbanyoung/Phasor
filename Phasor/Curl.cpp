@@ -1,5 +1,5 @@
 #include "Curl.h"
-#include "Common.h"
+#include "../Phasor/Common.h"
 #include <assert.h>
 
 namespace Server
@@ -33,7 +33,10 @@ namespace Server
 				SetError("Failed to add CurlSimple connection, error code " + c);
 				return false;
 			}
-
+			if (!simple_curl->OnAdd()) {
+				SetError("CurlSimple object is not ready to be processed.");
+				return false;
+			}
 			simples.push_back(simple_curl);
 			return true;
 		}
@@ -190,14 +193,104 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimpleHttp
 		//
-		CurlSimpleHttp::CurlSimpleHttp(std::string url, CSIMPLE_HTTP mode) : CurlSimple(url)
+		CurlSimpleHttp::CurlSimpleHttp(std::string url) : CurlSimple(url)
 		{
-
+			pair_added = false;
+			urlBuilder = new common::StreamBuilder();
+			urlBuilder->AppendString(url.c_str());
+			if (url[url.size()-1] != '?')
+				urlBuilder->AppendString("?");
 		}
 
 		CurlSimpleHttp::~CurlSimpleHttp()
 		{
+			delete urlBuilder;
+		}
 
+		bool CurlSimpleHttp::OnAdd()
+		{
+			BYTE* stream = urlBuilder->getStream();
+			stream[urlBuilder->getStreamSize()] = 0;
+			url = (char*)stream;
+			curl_easy_setopt(GetCurl(), CURLOPT_URL, url.c_str());
+			return true;
+		}
+
+		void CurlSimpleHttp::AddPostData(std::string key, std::string data, bool b)
+		{
+
+		}
+
+		void CurlSimpleHttp::AddPostData(std::string key, std::wstring data)
+		{
+			std::string escaped = Escape(data);
+			AddPostData(key, escaped, true);
+		}
+
+		void CurlSimpleHttp::AddGetData(std::string key, std::string data, bool b)
+		{
+			if (!b) // not escaped
+				data = Escape(data);
+			key = Escape(key);
+			if (pair_added)	
+				urlBuilder->AppendString("&");
+			urlBuilder->AppendString(key.c_str());
+			urlBuilder->AppendString("=");
+			urlBuilder->AppendString(data.c_str());
+			pair_added = true;
+		}
+
+		void CurlSimpleHttp::AddGetData(std::string key, std::wstring data)
+		{
+			std::string escaped = Escape(data);
+			AddGetData(key, escaped, true);
+		}
+
+		std::string CurlSimpleHttp::Escape(std::wstring input)
+		{
+			std::string escaped;
+			for (size_t x = 0; x < input.size(); x++) {
+				wchar_t c = input[x];
+				if (!(c >= L'A' && c <= L'Z') && !(c >= L'a' && c <= L'z')
+					&& !(c >= L'0' && c <= L'9') && c != L'.' && c != L'_'
+					&& c != L'-' && c != '~')
+					escaped += wstring_to_utf8_hex(std::wstring(&c));			
+				else
+					escaped += (char)c;
+			}
+
+			return escaped;
+		}
+
+		std::string CurlSimpleHttp::Escape(std::string input)
+		{
+			std::string escaped;
+			char* ptr = curl_easy_escape(GetCurl(), input.c_str(), input.size());
+			escaped = ptr;
+			curl_free(ptr);
+			return escaped;
+		}
+
+		std::string CurlSimpleHttp::wstring_to_utf8_hex(const std::wstring &input)
+		{
+			// http://stackoverflow.com/questions/3300025/how-do-i-html-url-encode-a-stdwstring-containing-unicode-characters
+			std::string output;
+			int cbNeeded = WideCharToMultiByte(CP_UTF8, 0, input.c_str(), 
+				-1, NULL, 0, NULL, NULL);
+			if (cbNeeded > 0) {
+				char *utf8 = new char[cbNeeded];
+				if (WideCharToMultiByte(CP_UTF8, 0, input.c_str(), -1,
+					utf8, cbNeeded, NULL, NULL) != 0) {
+					for (char *p = utf8; *p; *p++) {
+						char onehex[5];
+						sprintf_s(onehex, sizeof(onehex), "%%%02.2X", (unsigned char)*p);
+						output.append(onehex);
+					}
+				}
+				delete[] utf8;
+			}
+
+			return output;
 		}
 
 		//-----------------------------------------------------------------------------------------
