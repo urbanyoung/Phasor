@@ -920,7 +920,7 @@ void luaV_execute_t (lua_State *L, int timeout) {
 	end_time = clock();
 	run_time = end_time - start_time;
 
-	if (run_time >= timeout)
+	if (run_time >= timeout && timeout > 0)
 		luaG_runerror(L, "function timed out");
 
 	//

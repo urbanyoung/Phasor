@@ -20,7 +20,7 @@ void main()
 	try
 	{
 		state->DoString(script);
-		state->CallTimeout("func", vector<Object*>(), 5000);
+		state->Call("func", vector<Object*>(), 5000);
 	}
 	catch (std::exception e)
 	{

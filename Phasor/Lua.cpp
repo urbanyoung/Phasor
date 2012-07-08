@@ -159,20 +159,10 @@ namespace Scripting
 		}
 
 		// Calls a function
-		std::vector<Object*> State::Call(const char* name, std::vector<Object*> args)
+		std::vector<Object*> State::Call(const char* name, std::vector<Object*> args, int timeout)
 		{
 			Function* function = (Function*)this->GetGlobal(name);
-			std::vector<Object*> results = function->Call(args);
-			function->Delete();
-
-			return results;
-		}
-
-		// Calls a function with a timeout
-		std::vector<Object*> State::CallTimeout(const char* name, std::vector<Object*> args, int timeout)
-		{
-			Function* function = (Function*)this->GetGlobal(name);
-			std::vector<Object*> results = function->CallTimeout(args, timeout);
+			std::vector<Object*> results = function->Call(args, timeout);
 			function->Delete();
 
 			return results;
@@ -625,48 +615,7 @@ namespace Scripting
 		}
 
 		// Calls the Lua function from C
-		std::vector<Object*> Function::Call(std::vector<Object*> args)
-		{
-			// Push the function on the stack
-			this->Push();
-
-			// Push the arguments on the stack
-			for (std::vector<Object*>::iterator itr = args.begin(); itr != args.end(); ++itr)
-				(*itr)->Push();
-
-			// Call the Lua function
-			// Check if error occured
-			if (lua_pcall(this->state->L, args.size(), LUA_MULTRET, 0))
-			{
-				std::string error = lua_tostring(this->state->L, -1);
-				lua_pop(this->state->L, -1);
-
-				throw std::exception(error.c_str());
-			}
-
-			std::vector<Object*> results;
-
-			// Pop the results off the stack
-			while (lua_gettop(this->state->L))
-			{
-				Object* object = this->state->NewObject();
-				object->Pop();
-
-				// Add result to front
-				if (results.size())
-				{
-					std::vector<Object*>::iterator itr = results.begin();
-					results.insert(itr, object);
-				}
-				else
-					results.push_back(object);
-			}
-
-			return results;
-		}
-
-		// Calls the Lua function from C with a timeout
-		std::vector<Object*> Function::CallTimeout(std::vector<Object*> args, int timeout)
+		std::vector<Object*> Function::Call(std::vector<Object*> args, int timeout)
 		{
 			// Push the function on the stack
 			this->Push();
