@@ -139,7 +139,9 @@ namespace Server
 		{
 		private:
 			bool pair_added; // should & be prepended
-			common::StreamBuilder* urlBuilder;
+			common::StreamBuilder* urlBuilder; // used for building get urls
+			curl_httppost* form; // used for posts
+			curl_httppost* last;
 
 			/* Helper function for escaping strings */
 			std::string wstring_to_utf8_hex(const std::wstring &input);

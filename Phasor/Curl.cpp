@@ -196,7 +196,10 @@ namespace Server
 		CurlSimpleHttp::CurlSimpleHttp(std::string url) : CurlSimple(url)
 		{
 			pair_added = false;
-			urlBuilder = new common::StreamBuilder();
+			form = NULL;
+			last = NULL;
+
+			urlBuilder = new common::StreamBuilder(5);
 			urlBuilder->AppendString(url.c_str());
 			if (url[url.size()-1] != '?')
 				urlBuilder->AppendString("?");
@@ -205,6 +208,7 @@ namespace Server
 		CurlSimpleHttp::~CurlSimpleHttp()
 		{
 			delete urlBuilder;
+			if (form) curl_formfree(form);
 		}
 
 		bool CurlSimpleHttp::OnAdd()
@@ -213,12 +217,16 @@ namespace Server
 			stream[urlBuilder->getStreamSize()] = 0;
 			url = (char*)stream;
 			curl_easy_setopt(GetCurl(), CURLOPT_URL, url.c_str());
+			printf("Connecting to: %s\n", url.c_str());
 			return true;
 		}
 
 		void CurlSimpleHttp::AddPostData(std::string key, std::string data, bool b)
 		{
-
+			if (!b) // not escaped
+				data = Escape(data);
+			curl_formadd(&form, &last, CURLFORM_COPYNAME, key.c_str(),
+				CURLFORM_COPYCONTENTS, data.c_str(), CURLFORM_END);
 		}
 
 		void CurlSimpleHttp::AddPostData(std::string key, std::wstring data)

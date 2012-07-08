@@ -22,9 +22,19 @@ namespace common
 	public:
 		StreamBuilder()
 		{
-			stream = new BYTE[DEFAULT_BUFFER_SIZE];
+			init(DEFAULT_BUFFER_SIZE);	
+		}
+
+		StreamBuilder(int size)
+		{
+			init(size);
+		}
+
+		void init(int size)
+		{
+			stream = new BYTE[size];
 			index = 0;
-			bufferSize = DEFAULT_BUFFER_SIZE;
+			bufferSize = size;
 		}
 
 		~StreamBuilder()
