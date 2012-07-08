@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <Windows.h>
+
 namespace Core
 {
 	// will put codecave installer in here. something like...
@@ -17,5 +20,14 @@ namespace Core
 	// member tracking them. Makes it more OO 
 	// 
 	// More thinking and mind changing.. Can't (neatly) do tracking with
-	// member for each codecave because 
+	// member for each codecave because
+
+	// Finds all locations of a signature
+	std::vector<DWORD> FindSignature(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0);
+
+	// Finds the location of a signature
+	DWORD FindAddress(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0, DWORD dwIndex = 0, DWORD dwOffset = 0);
+
+	// Creates a code cave to a function at a specific address
+	BOOL CreateCodeCave(DWORD dwAddress, BYTE cbSize, VOID (*pFunction)());
 }

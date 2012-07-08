@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Core.cpp" />
     <ClCompile Include="Curl.cpp" />
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="main.cpp" />

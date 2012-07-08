@@ -14,6 +14,9 @@
     <ClCompile Include="Scripting.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="Core.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
