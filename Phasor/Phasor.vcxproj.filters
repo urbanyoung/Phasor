@@ -31,6 +31,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{b9f647b2-6887-4430-b7a0-455103332c44}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{9bd87356-e0e4-4d53-a439-725a53ed2ae6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lua.h">
@@ -44,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="Scripting.h">
       <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Core.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

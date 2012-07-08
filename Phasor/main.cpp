@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <stdio.h>
 
 // Entry point
 BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
@@ -14,4 +15,10 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 	}
 
 	return TRUE;
+}
+
+// Called when the dll is loaded
+extern "C" __declspec(dllexport) void OnLoad()
+{
+	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
 }
