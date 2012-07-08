@@ -199,23 +199,19 @@ namespace Server
 			form = NULL;
 			last = NULL;
 
-			urlBuilder = new common::StreamBuilder(5);
-			urlBuilder->AppendString(url.c_str());
+			ssurl << url;
 			if (url[url.size()-1] != '?')
-				urlBuilder->AppendString("?");
+				ssurl << "?";
 		}
 
 		CurlSimpleHttp::~CurlSimpleHttp()
 		{
-			delete urlBuilder;
 			if (form) curl_formfree(form);
 		}
 
 		bool CurlSimpleHttp::OnAdd()
 		{
-			BYTE* stream = urlBuilder->getStream();
-			stream[urlBuilder->getStreamSize()] = 0;
-			url = (char*)stream;
+			url = ssurl.str();
 			curl_easy_setopt(GetCurl(), CURLOPT_URL, url.c_str());
 			printf("Connecting to: %s\n", url.c_str());
 			return true;
@@ -241,10 +237,8 @@ namespace Server
 				data = Escape(data);
 			key = Escape(key);
 			if (pair_added)	
-				urlBuilder->AppendString("&");
-			urlBuilder->AppendString(key.c_str());
-			urlBuilder->AppendString("=");
-			urlBuilder->AppendString(data.c_str());
+				ssurl << "&";
+			ssurl << key << "=" << data;
 			pair_added = true;
 		}
 

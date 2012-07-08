@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 #include "../libcurl/curl/curl.h"
-#include "../Phasor/Common.h"
+#include <sstream>
 
 namespace Server
 {
@@ -134,12 +134,11 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimpleHttp
 		// Purpose: Connects to and downloads a web page and (optionally) sends get or post data
-		class common::StreamBuilder;
 		class CurlSimpleHttp : public CurlSimple
 		{
 		private:
 			bool pair_added; // should & be prepended
-			common::StreamBuilder* urlBuilder; // used for building get urls
+			std::stringstream ssurl; // used for building get urls
 			curl_httppost* form; // used for posts
 			curl_httppost* last;
 
