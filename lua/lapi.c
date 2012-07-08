@@ -914,10 +914,21 @@ struct CallS {  /* data to `f_call' */
   int nresults;
 };
 
+struct CallS_t {
+	StkId func;
+	int nresults;
+	int timeout;
+};
+
 
 static void f_call (lua_State *L, void *ud) {
   struct CallS *c = cast(struct CallS *, ud);
   luaD_call(L, c->func, c->nresults, 0);
+}
+
+static void f_call_t (lua_State *L, void *ud) {
+  struct CallS_t *c = cast(struct CallS_t *, ud);
+  luaD_call_t(L, c->func, c->nresults, 0, c->timeout);
 }
 
 
@@ -965,6 +976,56 @@ LUA_API int lua_pcallk (lua_State *L, int nargs, int nresults, int errfunc,
   lua_unlock(L);
   return status;
 }
+
+/***********************************************/
+//
+
+LUA_API int lua_pcallk_t (lua_State *L, int nargs, int nresults, int errfunc, int ctx, lua_CFunction k, int timeout) {
+  struct CallS_t c;
+  int status;
+  ptrdiff_t func;
+  lua_lock(L);
+  api_check(L, k == NULL || !isLua(L->ci),
+    "cannot use continuations inside hooks");
+  api_checknelems(L, nargs+1);
+  api_check(L, L->status == LUA_OK, "cannot do calls on non-normal thread");
+  checkresults(L, nargs, nresults);
+  if (errfunc == 0)
+    func = 0;
+  else {
+    StkId o = index2addr(L, errfunc);
+    api_checkvalidindex(L, o);
+    func = savestack(L, o);
+  }
+  c.func = L->top - (nargs+1);  /* function to be called */
+  c.timeout = timeout;
+  if (k == NULL || L->nny > 0) {  /* no continuation or no yieldable? */
+    c.nresults = nresults;  /* do a 'conventional' protected call */
+    status = luaD_pcall(L, f_call_t, &c, savestack(L, c.func), func);
+  }
+  else {  /* prepare continuation (call is already protected by 'resume') */
+    CallInfo *ci = L->ci;
+    ci->u.c.k = k;  /* save continuation */
+    ci->u.c.ctx = ctx;  /* save context */
+    /* save information for error recovery */
+    ci->extra = savestack(L, c.func);
+    ci->u.c.old_allowhook = L->allowhook;
+    ci->u.c.old_errfunc = L->errfunc;
+    L->errfunc = func;
+    /* mark that function may do error recovery */
+    ci->callstatus |= CIST_YPCALL;
+    luaD_call_t(L, c.func, nresults, 1, timeout);  /* do the call */
+    ci->callstatus &= ~CIST_YPCALL;
+    L->errfunc = ci->u.c.old_errfunc;
+    status = LUA_OK;  /* if it is here, there were no errors */
+  }
+  adjustresults(L, nresults);
+  lua_unlock(L);
+  return status;
+}
+
+//
+/***********************************************/
 
 
 LUA_API int lua_load (lua_State *L, lua_Reader reader, void *data,

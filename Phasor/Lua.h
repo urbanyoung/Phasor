@@ -91,6 +91,9 @@ namespace Scripting
 			// Calls a function
 			std::vector<Object*> Call(const char* name, std::vector<Object*> args);
 
+			// Calls a function with a timeout
+			std::vector<Object*> CallTimeout(const char* name, std::vector<Object*> args, int timeout);
+
 			// Raises an error
 			void Error(const char* _Format, ...);
 
@@ -279,6 +282,9 @@ namespace Scripting
 		public:
 			// Calls the Lua function from C
 			std::vector<Object*> Call(std::vector<Object*> args);
+
+			// Calls the Lua function from C with a timeout
+			std::vector<Object*> CallTimeout(std::vector<Object*> args, int timeout);
 
 		public:
 			friend class State;
