@@ -396,6 +396,27 @@ void luaD_call (lua_State *L, StkId func, int nResults, int allowyield) {
   luaC_checkGC(L);
 }
 
+/***********************************************/
+//
+
+void luaD_call_t (lua_State *L, StkId func, int nResults, int allowyield, int timeout) {
+  if (++L->nCcalls >= LUAI_MAXCCALLS) {
+    if (L->nCcalls == LUAI_MAXCCALLS)
+      luaG_runerror(L, "C stack overflow");
+    else if (L->nCcalls >= (LUAI_MAXCCALLS + (LUAI_MAXCCALLS>>3)))
+      luaD_throw(L, LUA_ERRERR);  /* error while handing stack error */
+  }
+  if (!allowyield) L->nny++;
+  if (!luaD_precall(L, func, nResults))  /* is a Lua function? */
+    luaV_execute_t(L, timeout);  /* call it */
+  if (!allowyield) L->nny--;
+  L->nCcalls--;
+  luaC_checkGC(L);
+}
+
+//
+/***********************************************/
+
 
 static void finishCcall (lua_State *L) {
   CallInfo *ci = L->ci;
