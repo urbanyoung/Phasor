@@ -19,16 +19,17 @@ int main()
 	CurlSimpleHttp* simp = new CurlSimpleHttp("http://127.0.0.1/test.php");
 	simp->AddGetData("test", "data");
 	simp->AddGetData("test1", "data1");
+	simp->AddPostData("post1", "postdata1");
+	simp->AddPostData("post2", L"postdata2");
+	simp->AddPostFile("testfile", "libcurl_test.exe");
 	simp->RegisterCompletion(test);
 	multi->AddRequest(simp);
-	/*CurlSimpleDownload* dl = new CurlSimpleDownload("http://sohowww.nascom.nasa.gov/gallery/images/large/suncombo1_prev.jpg",
+	CurlSimpleDownload* dl = new CurlSimpleDownload("http://sohowww.nascom.nasa.gov/gallery/images/large/suncombo1_prev.jpg",
 		"nasa1.jpg");
 	multi->AddRequest(dl);
 	CurlSimpleDownload* dl1 = new CurlSimpleDownload("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
 		"hubble.jpg");
-	//CurlSimpleDownload* dl = new CurlSimpleDownload("http://localhost/test.txt",
-	//	"test.txt");
-	multi->AddRequest(dl1);*/
+	multi->AddRequest(dl1);
 
 	while (multi->Process())
 		Sleep(50);

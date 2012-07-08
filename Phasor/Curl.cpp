@@ -150,7 +150,9 @@ namespace Server
 		void CurlSimple::ConnectionDone(CURLMsg* msg)
 		{
 			if (msg->data.result != CURLM_OK) {
-				SetError("Connection failed with error " + msg->data.result);
+				char err[128] = {0};
+				sprintf_s(err, sizeof(err), "Connection failed with error: %i", msg->data.result);
+				SetError(err);
 				recvCount = 0;
 				return;
 			}
@@ -213,6 +215,7 @@ namespace Server
 		{
 			url = ssurl.str();
 			curl_easy_setopt(GetCurl(), CURLOPT_URL, url.c_str());
+			curl_easy_setopt(GetCurl(), CURLOPT_HTTPPOST, form);
 			printf("Connecting to: %s\n", url.c_str());
 			return true;
 		}
@@ -221,6 +224,7 @@ namespace Server
 		{
 			if (!b) // not escaped
 				data = Escape(data);
+		
 			curl_formadd(&form, &last, CURLFORM_COPYNAME, key.c_str(),
 				CURLFORM_COPYCONTENTS, data.c_str(), CURLFORM_END);
 		}
@@ -229,6 +233,11 @@ namespace Server
 		{
 			std::string escaped = Escape(data);
 			AddPostData(key, escaped, true);
+		}
+
+		void CurlSimpleHttp::AddPostFile(std::string key, std::string path_to_file)
+		{
+			curl_formadd(&form, &last, CURLFORM_COPYNAME, key.c_str(), CURLFORM_FILE, path_to_file.c_str(), CURLFORM_END);			
 		}
 
 		void CurlSimpleHttp::AddGetData(std::string key, std::string data, bool b)

@@ -160,8 +160,9 @@ namespace Server
 			/* Adds data to the http request, any unicode strings are escaped. */
 			void AddPostData(std::string key, std::wstring data);
 			void AddPostData(std::string key, std::string data, bool b=false);
+			void AddPostFile(std::string key, std::string path_to_file);
 			void AddGetData(std::string key, std::wstring data);
-			void AddGetData(std::string key, std::string data, bool b=false);
+			void AddGetData(std::string key, std::string data, bool b=false);			
 		};
 
 		//-----------------------------------------------------------------------------------------
