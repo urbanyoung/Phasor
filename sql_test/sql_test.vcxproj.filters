@@ -25,4 +25,9 @@
       <Filter>SQLite</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sqlitepp.h">
+      <Filter>SQLite</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

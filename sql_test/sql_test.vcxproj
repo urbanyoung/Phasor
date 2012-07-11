@@ -63,6 +63,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sqlitepp.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sqlitepp.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
