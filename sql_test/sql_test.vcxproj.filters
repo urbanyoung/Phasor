@@ -24,10 +24,16 @@
     <ClCompile Include="sqlitepp.cpp">
       <Filter>SQLite</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\Common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sqlitepp.h">
       <Filter>SQLite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

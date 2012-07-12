@@ -41,7 +41,7 @@ namespace sqlite
 		TYPE_WSTRING,
 		TYPE_INT,
 		TYPE_DOUBLE,
-		TYPE_BLOB
+		TYPE_BLOB,
 	};
 
 	//-----------------------------------------------------------------------------------------
@@ -67,6 +67,7 @@ namespace sqlite
 	{
 	private:
 		std::set<SQLiteObject*> allocated_objects;
+		bool alive; /* used when we're cleaning up to stop iterator corruption */
 		sqlite3* sqlhandle;
 
 		/* Removes the object from tracking list */
@@ -135,9 +136,9 @@ namespace sqlite
 		/* Resets the statement to use the given query */
 		void Reset(const char* query) throw(SQLiteError);
 		/* Binds values to the required parameters */
-		void BindValue(const char* name, SQLiteValue value) throw(SQLiteError);
-		void BindValue(int index, SQLiteValue value) throw(SQLiteError);
-
+		void BindValue(const char* name, const SQLiteValue& value) throw(SQLiteError);
+		void BindValue(int index, const SQLiteValue& value) throw(SQLiteError);
+	
 		friend class SQLite;
 	};
 
@@ -164,12 +165,13 @@ namespace sqlite
 		size_t data_size;
 
 		// Ensures the type of data stored is what's expected
-		inline void VerifyType(int expected) throw(SQLiteError) {
+		inline void VerifyType(int expected) const throw(SQLiteError) {
 			if (expected != type) throw SQLiteError(SQL_ERRCODE_TYPE);
 		}
 
-		//void init(void* pdata, size_t length);
-
+		// Stop copying
+		SQLiteValue& operator= (const SQLiteValue &v);
+		SQLiteValue(const SQLiteValue &v);
 	public:
 		
 		SQLiteValue(const char* val);
@@ -177,7 +179,6 @@ namespace sqlite
 		SQLiteValue(int val);
 		SQLiteValue(double val);
 		SQLiteValue(BYTE* val, size_t length);
-
 		virtual ~SQLiteValue();
 
 		/*	Get the row data in various data types, if the requested type
@@ -185,12 +186,17 @@ namespace sqlite
 		 *	modifications made to pointed types is reflected in the internal
 		 *	state. Do not free memory.
 		 */
-		const std::string GetStr() throw(SQLiteError);
-		const std::wstring GetWStr() throw(SQLiteError);
-		const int GetInt() throw(SQLiteError);
-		const double GetDouble() throw(SQLiteError);
+		std::string GetStr() const throw(SQLiteError);
+		std::wstring GetWStr() const throw(SQLiteError);
+		int GetInt() const throw(SQLiteError);
+		double GetDouble() const throw(SQLiteError);
+		BYTE* GetBlob() const throw(SQLiteError);
 
-		int GetType() { return type; }
+		/* Returns a string representation of the data held, non-string
+		 * data is converted if necessary. */
+		std::string ToString();
+
+		int GetType() const { return type; }
 
 		friend class SQLiteRow;
 	};

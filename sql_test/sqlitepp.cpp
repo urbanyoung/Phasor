@@ -1,5 +1,5 @@
 #include "sqlitepp.h"
-
+#include "../Phasor/Common.h"
 namespace sqlite
 {
 	//-----------------------------------------------------------------------------------------
@@ -49,21 +49,25 @@ namespace sqlite
 			sqlite3_close(sqlhandle);
 			throw SQLiteError(SQL_ERRCODE_UNK, desc.c_str());
 		}
+		alive = true;
 	}
 
 	SQLite::~SQLite()
 	{
+		alive = false; // used to stop untrack_object from changing allocated_objects
+
 		std::set<SQLiteObject*>::iterator itr = allocated_objects.begin();
 		while (itr != allocated_objects.end()) {
 			delete *itr;
 			itr = allocated_objects.erase(itr);
 		}
-
+		allocated_objects.clear();
 		sqlite3_close(sqlhandle);
 	}
 	
 	void SQLite::untrack_object(SQLiteObject* obj)
 	{
+		if (!alive) return;
 		std::set<SQLiteObject*>::iterator itr = allocated_objects.find(obj);
 		if (itr != allocated_objects.end())
 			allocated_objects.erase(itr);
@@ -171,10 +175,12 @@ namespace sqlite
 							new SQLiteValue(sqlite3_column_double(stmt, x)));
 						break;
 					case SQLITE_TEXT:
-						printf("Normal: %i, 16: %i\n", 
-							sqlite3_column_bytes(stmt, x), sqlite3_column_bytes16(stmt, x));
+						//printf("Normal: %i, 16: %i\n", 
+						//	sqlite3_column_bytes(stmt, x), sqlite3_column_bytes16(stmt, x));
 						// need to convert char* to widechar and assume
 						// all received text is wide
+						row->AddColumn(
+							new SQLiteValue((const wchar_t*)sqlite3_column_text16(stmt, x)));
 					}
 				}
 				tmp_result->AddRow(row);
@@ -207,14 +213,14 @@ namespace sqlite
 		prepare_statement();
 	}
 
-	void SQLiteQuery::BindValue(const char* name, SQLiteValue value) 
+	void SQLiteQuery::BindValue(const char* name, const SQLiteValue& value) 
 		throw(SQLiteError)
 	{
 		if (!stmt) throw SQLiteError(SQL_ERRCODE_NO_INIT);
-		BindValue(sqlite3_bind_parameter_index(stmt, name), value);		
+		BindValue(sqlite3_bind_parameter_index(stmt, name), value);	
 	}
 
-	void SQLiteQuery::BindValue(int index, SQLiteValue value)
+	void SQLiteQuery::BindValue(int index, const SQLiteValue& value)
 		throw(SQLiteError)
 	{
 		if (!stmt) throw SQLiteError(SQL_ERRCODE_NO_INIT);
@@ -229,7 +235,7 @@ namespace sqlite
 			break;
 		case TYPE_WSTRING:
 			result = sqlite3_bind_text16(stmt, index, value.GetWStr().c_str(),
-					-1, SQLITE_TRANSIENT);
+				-1, SQLITE_TRANSIENT);
 			break;
 		case TYPE_INT:
 			result = sqlite3_bind_int(stmt, index, value.GetInt());
@@ -271,8 +277,8 @@ namespace sqlite
 
 	SQLiteValue::SQLiteValue(int val) : SQLiteObject()
 	{
-		int* i = new int;
-		*i = val;
+		pdata.i = new int;
+		*pdata.i = val;
 		type = TYPE_INT;
 		//init((void*)i, 0);
 	}
@@ -295,6 +301,9 @@ namespace sqlite
 
 	SQLiteValue::~SQLiteValue()
 	{
+		printf("Destroy type %i\n", type);
+		//printf("Destroy: pdata: %08X\n", pdata);
+		//printf("Destroying %08X Type: %i\n", this, type);
 		switch (type)
 		{
 		case TYPE_INT:
@@ -315,28 +324,56 @@ namespace sqlite
 		} 
 	}
 	
-	const std::string SQLiteValue::GetStr() throw(SQLiteError)
+	std::string SQLiteValue::GetStr() const throw(SQLiteError)
 	{
+		// let strings convert themselves
+		if (type == TYPE_WSTRING) return Common::NarrowString(*pdata.ws);
 		VerifyType(TYPE_STRING);
 		return *pdata.s;
 	}
 
-	const std::wstring SQLiteValue::GetWStr() throw(SQLiteError)
+	std::wstring SQLiteValue::GetWStr() const throw(SQLiteError)
 	{
+		if (type == TYPE_STRING) return Common::WidenString(*pdata.s);
 		VerifyType(TYPE_WSTRING);
 		return *pdata.ws;
 	}
 
-	const int SQLiteValue::GetInt() throw(SQLiteError)
+	int SQLiteValue::GetInt() const throw(SQLiteError)
 	{
 		VerifyType(TYPE_INT);
 		return *pdata.i;
 	}
 
-	const double SQLiteValue::GetDouble() throw(SQLiteError)
+	double SQLiteValue::GetDouble() const throw(SQLiteError)
 	{
 		VerifyType(TYPE_DOUBLE);
 		return *pdata.d;
+	}
+
+	std::string SQLiteValue::ToString()
+	{
+		std::stringstream s;
+		switch (type)
+		{
+		case TYPE_STRING:
+			s << *pdata.s;
+			break;
+		case TYPE_WSTRING:
+			s << Common::NarrowString(*pdata.ws);
+			break;
+		case TYPE_INT:
+			s << *pdata.i;
+			break;
+		case TYPE_DOUBLE:
+			s << *pdata.d;
+			break;
+		case TYPE_BLOB:
+			s << *pdata.i << " byte BLOB@" << *pdata.b;
+			break;
+		}
+		std::string str = s.str();
+		return str;
 	}
 
 	//-----------------------------------------------------------------------------------------
