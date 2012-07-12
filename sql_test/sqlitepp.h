@@ -1,8 +1,10 @@
 #pragma once
+#pragma warning( disable : 4290 )
 
 #include <string>
 #include <vector>
 #include <set>
+#include <sstream>
 #include "../sqlite/sqlite3.h"
 
 /* Simple SQLite wrapper supporting prepared parameter binding for select
@@ -13,11 +15,25 @@ namespace sqlite
 	class SQLiteRow;
 	class SQLiteResult;
 	class SQLiteValue;
+	class SQLiteQuery;
 
 	/* Error codes */
 	enum SQLPP_ERRCODE
 	{
-		SQL_ERRCODE_TYPE = 1
+		SQL_ERRCODE_TYPE = 1, // Attempting to access data with unexpected type
+		SQL_ERRCODE_NO_INIT, // Attempting to use data that hasn't been initialized
+		SQL_ERRCODE_NO_PARAM, // Attempting to bind to a non existent parameter
+		SQL_ERRCODE_MISUSE, // The API was used incorrectly
+		SQL_ERRCODE_UNK // unknown error
+	};
+
+	/* Types of data that can be stored in SQLiteValue */
+	enum VALUE_TYPES 
+	{
+		TYPE_STRING = 0,
+		TYPE_WSTRING,
+		TYPE_INT,
+		TYPE_DOUBLE
 	};
 
 	//-----------------------------------------------------------------------------------------
@@ -27,12 +43,12 @@ namespace sqlite
 	{
 	private:
 		SQLPP_ERRCODE err;
-		std::string desc;
+		std::stringstream* msg;
 
 	public:
-		SQLiteError(SQLPP_ERRCODE error);
-		virtual const char* what() const throw()
-		{ return desc.c_str(); }
+		SQLiteError(SQLPP_ERRCODE error, const char* sql_desc=NULL);
+		~SQLiteError();
+		virtual const char* what() const throw();
 		const int type() { return err; }
 	};
 
@@ -45,34 +61,22 @@ namespace sqlite
 		std::set<SQLiteObject*> allocated_objects;
 		sqlite3* sqlhandle;
 
-		sqlite3* GetSQLite() { return sqlhandle; }
+		/* Removes the object from tracking list */
+		void untrack_object(SQLiteObject* obj);
 
 	public:
 		SQLite(std::string path_to_db);
 		~SQLite();
 
+		/* Creates a new query */
+		SQLiteQuery* NewQuery(const char* query);
+
 		/* Frees an object returned by the public interface */
 		void free_object(SQLiteObject* obj);
 
-		friend class SQLiteQuery;
-	};
+		sqlite3* GetSQLite() { return sqlhandle; }
 
-	class SQLiteQuery
-	{
-	private:
-		sqlite3_stmt* stmt;
-		SQLite* sqlcon;
-
-	public:
-		SQLiteQuery(SQLite* sqlcon);
-		~SQLiteQuery();
-
-		bool Execute(const char* query, SQLiteResult* result=NULL) 
-			throw(SQLiteError);
-
-		void Prepare(const char* query, const char* name, SQLiteValue value);
-		void Prepare(const char* query, int index, SQLiteValue value);
-		
+		friend class SQLiteObject;
 	};
 
 	//-----------------------------------------------------------------------------------------
@@ -80,11 +84,47 @@ namespace sqlite
 	// Purpose: Base class for objects returned to the user
 	class SQLiteObject
 	{
-	private:
-		SQLiteObject();
+	protected:
+		SQLite* parent;
+
+		/* Associates the object with a "parent" so it can be untracked 
+		 * when deleted */
+		void SetParent(SQLite* parent) {this->parent = parent; }
+
+	public:
+		SQLiteObject() { parent = NULL; }
 		virtual ~SQLiteObject();
 
 		friend class SQLite;
+	};
+
+	//-----------------------------------------------------------------------------------------
+	// Class: SQLiteQuery
+	// Purpose: Provide an interface for executing prepared queries
+	class SQLiteQuery : public SQLiteObject
+	{
+	private:
+		sqlite3_stmt* stmt;
+		char* query;
+
+		/* Allocates memory for and copies over the query. If there is an
+		 * existing query it is freed before copying the new one. */
+		void copy_query(const char* query);
+
+		/* Prepares the statement */
+		void prepare_statement() throw(SQLiteError);
+
+		SQLiteQuery(SQLite* parent, const char* query) throw(SQLiteError);
+		virtual ~SQLiteQuery();
+	public:	
+
+		/* Executes the statement */
+		void Execute(SQLiteResult* result=NULL) throw(SQLiteError);
+		/* Resets the statement to use the given query */
+		void Reset(const char* query) throw(SQLiteError);
+		/* Binds values to the required parameters */
+		void BindValue(const char* name, SQLiteValue value) throw(SQLiteError);
+		void BindValue(int index, SQLiteValue value) throw(SQLiteError);
 	};
 
 	//-----------------------------------------------------------------------------------------
@@ -93,20 +133,10 @@ namespace sqlite
 	class SQLiteValue : public SQLiteObject
 	{
 	private:
-		enum VALUE_TYPES 
-		{
-			TYPE_STRING = 0,
-			TYPE_WSTRING,
-			TYPE_INT,
-			TYPE_DOUBLE,
-			TYPE_FLOAT,
-			TYPE_BOOL
-		};
+		VALUE_TYPES type;
+				
 		// stores a pointer to the data contained (could be of varying types)
 		void* data_ptr;
-
-		// Data type being stored
-		VALUE_TYPES type;
 
 		// Ensures the type of data stored is what's expected
 		inline void CheckType(VALUE_TYPES expected) throw(SQLiteError) {
@@ -119,7 +149,6 @@ namespace sqlite
 		SQLiteValue(std::wstring val);
 		SQLiteValue(int val);
 		SQLiteValue(double val);
-		SQLiteValue(float val);
 		SQLiteValue(bool val);
 		virtual ~SQLiteValue();
 
@@ -127,11 +156,11 @@ namespace sqlite
 		 *	is not stored in this row a SQLiteTypeError exception is thrown
 		 */
 		const std::string GetStr();
-		const std::wstring WGetStr();
+		const std::wstring GetWStr();
 		const int GetInt();
 		const double GetDouble();
-		const float GetFloat();
-		const bool GetBool();
+
+		int GetType() { return type; }
 	};
 
 	//-----------------------------------------------------------------------------------------
