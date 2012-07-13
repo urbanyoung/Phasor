@@ -24,11 +24,11 @@ int main()
 			"username varchar(16),"
 			"password char(32))");
 		query->Execute();
-		/*query->Reset("INSERT INTO admins (id, username, password) VALUES(:id, :username, :password)");
-		query->BindValue(":id", 154);
+		query->Reset("INSERT INTO admins (id, username, password) VALUES(:id, :username, :password)");
+		query->BindValue(":id", 1);
 		query->BindValue(":username", "user");
 		query->BindValue(":password", "pass2");
-		query->Execute();*/
+		query->Execute();
 
 		SQLiteResultPtr result = 0;
 		query->Reset("SELECT * FROM admins");
@@ -43,7 +43,6 @@ int main()
 				printf("%s\n", value->ToString().c_str());
 			}
 		}
-		printf("Cleanup\n");
 	}
 	catch (SQLiteError & e)
 	{

@@ -106,7 +106,7 @@ namespace sqlite
 
 		/* Associates the object with a "parent" so it can perform sqlite
 		 * operations*/
-		void SetParent(SQLitePtr parent);
+		void SetParent(SQLitePtr& parent);
 
 	public:
 		SQLiteObject();
@@ -133,7 +133,7 @@ namespace sqlite
 		
 	public:	
 
-		SQLiteQuery(SQLitePtr parent, const char* query) throw(SQLiteError);
+		SQLiteQuery(SQLitePtr& parent, const char* query) throw(SQLiteError);
 		virtual ~SQLiteQuery();
 
 		/* Executes the statement */
@@ -270,7 +270,7 @@ namespace sqlite
 		
 	public:
 
-		SQLiteResult(SQLitePtr parent);
+		SQLiteResult(SQLitePtr& parent);
 		virtual ~SQLiteResult();
 
 		/* Returns the row at position i.

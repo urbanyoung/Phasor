@@ -108,7 +108,7 @@ namespace sqlite
 
 	}
 
-	void SQLiteObject::SetParent(SQLitePtr parent)
+	void SQLiteObject::SetParent(SQLitePtr& parent)
 	{
 		//printf("Setting parent: %08X\n", parent);
 		this->parent = parent;
@@ -123,7 +123,7 @@ namespace sqlite
 	// Class: SQLiteQuery
 	// Purpose: Provide an interface for executing prepared queries
 	// 
-	SQLiteQuery::SQLiteQuery(SQLitePtr parent, const char* query)
+	SQLiteQuery::SQLiteQuery(SQLitePtr& parent, const char* query)
 		throw(SQLiteError) 
 		: SQLiteObject()		
 	{
@@ -451,16 +451,10 @@ namespace sqlite
 	//
 	SQLiteRow::SQLiteRow() : SQLiteObject()
 	{
-
 	}
 
 	SQLiteRow::~SQLiteRow()
 	{
-		/*std::vector<SQLiteValue>::iterator itr = columns.begin();
-		while (itr != columns.end()){
-			delete *itr; // cleanup value
-			itr = columns.erase(itr);
-		}*/
 		columns.clear();
 	}
 
@@ -489,18 +483,13 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteResult
 	//
-	SQLiteResult::SQLiteResult(SQLitePtr parent) : SQLiteObject()
+	SQLiteResult::SQLiteResult(SQLitePtr& parent) : SQLiteObject()
 	{
 		SetParent(parent);
 	}
 
 	SQLiteResult::~SQLiteResult()
 	{
-		/*std::vector<SQLiteRowPtr>::iterator itr = rows.begin();
-		while (itr != rows.end()){
-			delete *itr; // cleanup row
-			itr = rows.erase(itr);
-		}*/
 		rows.clear(); // smart pointers do cleanup
 	}
 
