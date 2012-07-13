@@ -1,5 +1,6 @@
 #include "sqlitepp.h"
 #include "../Phasor/Common.h"
+
 namespace sqlite
 {
 	//-----------------------------------------------------------------------------------------
@@ -11,10 +12,21 @@ namespace sqlite
 		this->err = err;
 		switch (err)
 		{
-		case SQL_ERRCODE_TYPE:
-			s <<  "SQLiteTypeError - Attempted to access unexpected data type.";
+		case SQL_ERRCODE_FAILED_OPEN:
+			s << "SQLiteError - Unable the open the database file.";
 			break;
-
+		case SQL_ERRCODE_TYPE:
+			s <<  "SQLiteError - Attempted to access unexpected data type.";
+			break;
+		case SQL_ERRCODE_NO_INIT:
+			s << "SQLiteError - Attempted to use uninitialized data.";
+			break;
+		case SQL_ERRCODE_NO_PARAM:
+			s << "SQLiteError - Attempted to bind to an unknown parameter";
+			break;
+		case SQL_ERRCODE_BAD_INDEX:
+			s << "SQLiteError - Out of bounds access attempt on SQLiteResult or SQLiteRow";
+			break;
 		case SQL_ERRCODE_NDE:
 			s << "SQLiteError - Executed query where no data was expected but received data.";
 			break;
@@ -145,7 +157,9 @@ namespace sqlite
 	void SQLiteQuery::Execute(SQLiteResult** out_result) 
 		throw(SQLiteError)
 	{		
+		if (!stmt) throw SQLiteError(SQL_ERRCODE_NO_INIT);
 		SQLiteResult* tmp_result = new SQLiteResult(parent);
+		char* err_info = query;
 
 		int error = SQL_ERR_NONE;
 		while (1)
@@ -156,8 +170,7 @@ namespace sqlite
 			if (result == SQLITE_ROW) { // data!
 				if (!out_result) { // no data was expected
 					error = SQL_ERRCODE_NDE;
-					continue;
-					// break; continue with the query and throw at end
+					break;
 				}
 				SQLiteRow* row = new SQLiteRow();
 
@@ -175,27 +188,31 @@ namespace sqlite
 							new SQLiteValue(sqlite3_column_double(stmt, x)));
 						break;
 					case SQLITE_TEXT:
-						//printf("Normal: %i, 16: %i\n", 
-						//	sqlite3_column_bytes(stmt, x), sqlite3_column_bytes16(stmt, x));
-						// need to convert char* to widechar and assume
-						// all received text is wide
+						// all text is treated as wide and converted if necessary
 						row->AddColumn(
 							new SQLiteValue((const wchar_t*)sqlite3_column_text16(stmt, x)));
+						break;
+					case SQLITE_BLOB:
+						row->AddColumn(new SQLiteValue((BYTE*)sqlite3_column_blob(stmt, x),
+							sqlite3_column_bytes(stmt, x)));
+						break;
 					}
 				}
 				tmp_result->AddRow(row);
 			}
 			else { // error
-				delete tmp_result;
-				throw SQLiteError(SQL_ERRCODE_UNK, 
-				sqlite3_errmsg(parent->GetSQLite()));
+				err_info = (char*)sqlite3_errmsg(parent->GetSQLite());
+				error = SQL_ERRCODE_UNK;
+				break;
 			}
 		}
 
+		sqlite3_finalize(stmt);
+		stmt = NULL;
 		// If there's been an error throw it
 		if (error != SQL_ERR_NONE) {
 			delete tmp_result;
-			throw SQLiteError(error ,query);
+			throw SQLiteError(error,err_info);
 		}
 
 		if (out_result) {
@@ -209,7 +226,10 @@ namespace sqlite
 		throw(SQLiteError)
 	{
 		copy_query(query);
-		sqlite3_finalize(stmt);
+		if (stmt) {
+			sqlite3_finalize(stmt);
+			stmt = NULL;
+		}
 		prepare_statement();
 	}
 
@@ -243,16 +263,25 @@ namespace sqlite
 		case TYPE_DOUBLE:
 			result = sqlite3_bind_double(stmt, index, value.GetDouble());
 			break;
+		case TYPE_BLOB:
+			result = sqlite3_bind_blob(stmt, index, value.GetBlob(), 
+				value.size(), SQLITE_TRANSIENT);
+			break;
 		}
 
 		// Handle any errors
 		switch (result)
 		{
 		case SQLITE_RANGE:
-			throw SQLiteError(SQL_ERRCODE_NO_PARAM);
+			throw SQLiteError(SQL_ERRCODE_NO_PARAM, sqlite3_errmsg(parent->GetSQLite()));
 			break;
 		case SQLITE_MISUSE:
-			throw SQLiteError(SQL_ERRCODE_MISUSE);
+			throw SQLiteError(SQL_ERRCODE_MISUSE, sqlite3_errmsg(parent->GetSQLite()));
+			break;
+		case SQLITE_OK:
+			break;
+		default:
+			throw SQLiteError(SQL_ERRCODE_UNK, sqlite3_errmsg(parent->GetSQLite()));
 			break;
 		}	
 	}
@@ -260,50 +289,42 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteValue
 	// 
-	SQLiteValue::SQLiteValue(const char* val) : SQLiteObject()
-	{
+	int created = 0;
+	SQLiteValue::c_data::c_data(const char* val) : size(4) {
+		created++;
 		pdata.s = new std::string;
 		pdata.s->assign(val);
 		type = TYPE_STRING;
-		//init((void*)str, 0); // 0 for now
 	}
-
-	SQLiteValue::SQLiteValue(const wchar_t* val) : SQLiteObject()
-	{
+	SQLiteValue::c_data::c_data(const wchar_t* val) : size(4) {
+		created++;
 		pdata.ws = new std::wstring;
 		pdata.ws->assign(val);
 		type = TYPE_WSTRING;
 	}
-
-	SQLiteValue::SQLiteValue(int val) : SQLiteObject()
-	{
+	SQLiteValue::c_data::c_data(int val) : size(4) {
+		created++;
 		pdata.i = new int;
 		*pdata.i = val;
 		type = TYPE_INT;
-		//init((void*)i, 0);
 	}
-
-	SQLiteValue::SQLiteValue(double val) : SQLiteObject()
-	{
+	SQLiteValue::c_data::c_data(double val) : size(4) {
+		created++;
 		pdata.d = new double;
 		*pdata.d = val;
-		type = TYPE_DOUBLE;
-		//init((void*)d, 0);
+		type = TYPE_DOUBLE;			
 	}
-
-	SQLiteValue::SQLiteValue(BYTE* val, size_t length) : SQLiteObject()
-	{
+	SQLiteValue::c_data::c_data(BYTE* val, size_t length) : size(length) { 
+		created++;
 		pdata.b = new BYTE[length];
 		memcpy(pdata.b, val, length);
 		type = TYPE_BLOB;
-		//init((void*)p, length);
 	}
 
-	SQLiteValue::~SQLiteValue()
+	SQLiteValue::c_data::~c_data()
 	{
-		printf("Destroy type %i\n", type);
-		//printf("Destroy: pdata: %08X\n", pdata);
-		//printf("Destroying %08X Type: %i\n", this, type);
+		created--;
+		printf("%i open objects\n", created);
 		switch (type)
 		{
 		case TYPE_INT:
@@ -323,53 +344,95 @@ namespace sqlite
 			break;
 		} 
 	}
+
+	SQLiteValue::SQLiteValue(const char* val) : data(new c_data(val))
+	{		
+	}
+
+	SQLiteValue::SQLiteValue(const wchar_t* val) : data(new c_data(val))
+	{		
+	}
+
+	SQLiteValue::SQLiteValue(int val) : data(new c_data(val))
+	{		
+	}
+
+	SQLiteValue::SQLiteValue(double val) : data(new c_data(val))
+	{		
+	}
+
+	SQLiteValue::SQLiteValue(BYTE* val, size_t length) : data(new c_data(val, length))
+	{		
+	}
+
+	SQLiteValue::SQLiteValue(const SQLiteValue &v) : data(v.data)
+	{		
+	}
+
+	SQLiteValue& SQLiteValue::operator= (const SQLiteValue &v)
+	{
+		//printf("%08X %08X\n", v, this);
+		data = v.data;
+		return *this;
+	}
+
+	SQLiteValue::~SQLiteValue()
+	{
+		//printf("Destruct type %i\n", data->type);
+	}
 	
 	std::string SQLiteValue::GetStr() const throw(SQLiteError)
 	{
 		// let strings convert themselves
-		if (type == TYPE_WSTRING) return Common::NarrowString(*pdata.ws);
+		if (data->type == TYPE_WSTRING) return Common::NarrowString(*data->pdata.ws);
 		VerifyType(TYPE_STRING);
-		return *pdata.s;
+		return *(data->pdata.s);
 	}
 
 	std::wstring SQLiteValue::GetWStr() const throw(SQLiteError)
 	{
-		if (type == TYPE_STRING) return Common::WidenString(*pdata.s);
+		if (data->type == TYPE_STRING) return Common::WidenString(*data->pdata.s);
 		VerifyType(TYPE_WSTRING);
-		return *pdata.ws;
+		return *(data->pdata.ws);
 	}
 
 	int SQLiteValue::GetInt() const throw(SQLiteError)
 	{
 		VerifyType(TYPE_INT);
-		return *pdata.i;
+		return *(data->pdata.i);
 	}
 
 	double SQLiteValue::GetDouble() const throw(SQLiteError)
 	{
 		VerifyType(TYPE_DOUBLE);
-		return *pdata.d;
+		return *(data->pdata.d);
+	}
+
+	BYTE* SQLiteValue::GetBlob() const throw(SQLiteError)
+	{
+		VerifyType(TYPE_BLOB);
+		return data->pdata.b;
 	}
 
 	std::string SQLiteValue::ToString()
 	{
 		std::stringstream s;
-		switch (type)
+		switch (data->type)
 		{
 		case TYPE_STRING:
-			s << *pdata.s;
+			s << *data->pdata.s;
 			break;
 		case TYPE_WSTRING:
-			s << Common::NarrowString(*pdata.ws);
+			s << Common::NarrowString(*data->pdata.ws);
 			break;
 		case TYPE_INT:
-			s << *pdata.i;
+			s << *data->pdata.i;
 			break;
 		case TYPE_DOUBLE:
-			s << *pdata.d;
+			s << *data->pdata.d;
 			break;
 		case TYPE_BLOB:
-			s << *pdata.i << " byte BLOB@" << *pdata.b;
+			s << data->size << " byte BLOB@" << (DWORD)data->pdata.b;
 			break;
 		}
 		std::string str = s.str();

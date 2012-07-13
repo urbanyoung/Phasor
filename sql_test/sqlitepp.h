@@ -10,8 +10,6 @@
 
 #pragma comment(lib, "../release/sqlite.lib")
 
-/* Simple SQLite wrapper supporting prepared parameter binding for select
- * and insert operations. */
 namespace sqlite 
 {
 	class SQLiteObject;
@@ -149,31 +147,39 @@ namespace sqlite
 	// is no need to track the parent.
 	class SQLiteValue : public SQLiteObject
 	{
-	private:
-		VALUE_TYPES type;
-				
-		// stores a pointer to the data contained (could be of varying types)
-		union 
+	private:	
+		/*
+		 * This structure is used to hold the data for this value. It is
+		 * managed by a shared pointer and as such making copies of the
+		 * SQLiteValue object is safe. */
+		struct c_data
 		{
-			int* i;
-			double* d;
-			std::string* s;
-			std::wstring* ws;
-			BYTE* b;
-		} pdata;
-		//void* pdata;
-		size_t data_size;
+			/* Store the data in a union for easy type casting */
+			union {
+				int* i;
+				double* d;
+				std::string* s;
+				std::wstring* ws;
+				BYTE* b;
+			} pdata;
+			size_t size;
+			int type;
+
+			c_data(const char* val);
+			c_data(const wchar_t* val);
+			c_data(int val);
+			c_data(double val);
+			c_data(BYTE* val, size_t length);
+			~c_data();
+		};
+		std::shared_ptr<c_data> data;
 
 		// Ensures the type of data stored is what's expected
 		inline void VerifyType(int expected) const throw(SQLiteError) {
-			if (expected != type) throw SQLiteError(SQL_ERRCODE_TYPE);
+			if (expected != data->type) throw SQLiteError(SQL_ERRCODE_TYPE);
 		}
-
-		// Stop copying
-		SQLiteValue& operator= (const SQLiteValue &v);
-		SQLiteValue(const SQLiteValue &v);
-	public:
 		
+	public:
 		SQLiteValue(const char* val);
 		SQLiteValue(const wchar_t* val);
 		SQLiteValue(int val);
@@ -181,11 +187,13 @@ namespace sqlite
 		SQLiteValue(BYTE* val, size_t length);
 		virtual ~SQLiteValue();
 
+		SQLiteValue& operator= (const SQLiteValue &v);
+		SQLiteValue(const SQLiteValue &v);
+
 		/*	Get the row data in various data types, if the requested type
 		 *	is not stored in this row a SQLiteError exception is thrown. Any
 		 *	modifications made to pointed types is reflected in the internal
-		 *	state. Do not free memory.
-		 */
+		 *	state. Do not free memory. */
 		std::string GetStr() const throw(SQLiteError);
 		std::wstring GetWStr() const throw(SQLiteError);
 		int GetInt() const throw(SQLiteError);
@@ -196,7 +204,18 @@ namespace sqlite
 		 * data is converted if necessary. */
 		std::string ToString();
 
-		int GetType() const { return type; }
+		/* Returns the type of the stored data */
+		int GetType() const { return data->type; }
+
+		/* Returns the size of the stored data in bytes. 
+		 * Note: The size returned indicates two different things depending
+		 * on the object type.
+		 * 1) If the object is a blob the returned value indicates the
+		 * size of the blob.
+		 * 2) Otherwise the returned value indicates the size of the pointer
+		 * to the stored data (ie 4 bytes). 
+		 */
+		int size() const { return data->size; }
 
 		friend class SQLiteRow;
 	};
@@ -209,6 +228,7 @@ namespace sqlite
 	class SQLiteRow : public SQLiteObject
 	{
 	private:
+		/* data stored in the column */
 		std::vector<SQLiteValue*> columns;
 
 		/* Adds data to the row */
@@ -221,6 +241,7 @@ namespace sqlite
 		SQLiteValue* operator [] (size_t i) throw(SQLiteError);
 		SQLiteValue* get(size_t i) throw(SQLiteError);
 
+		/* Returns the number of items in the row*/
 		size_t size();
 
 		friend class SQLiteQuery;
@@ -233,13 +254,14 @@ namespace sqlite
 	class SQLiteResult : public SQLiteObject
 	{
 	private: 
+		/* used to store the retrieved rows */
 		std::vector<SQLiteRow*> rows;
 		
+		/* Adds a new row to the result */
 		void AddRow(SQLiteRow* row);
 
 		SQLiteResult(SQLite* parent);
 		virtual ~SQLiteResult();
-
 	public:
 
 		/* Returns the row at position i.

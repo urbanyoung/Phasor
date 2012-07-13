@@ -7,24 +7,38 @@ int main()
 	using namespace sqlite;
 	try
 	{
+		
+		/*SQLiteValue a = "hello123";
+		SQLiteValue b = 123;
+		b = a;
+		SQLiteValue c = b;
+		b = 123.45;
+		printf("%s\n", b.ToString().c_str());*/
 		SQLite* sql = new SQLite("test.sqlite");
 		SQLiteQuery* query = sql->NewQuery("CREATE TABLE IF NOT EXISTS admins("
 			//"id INTEGER PRIMARY KEY,"
 			"id int,"
 			"username varchar(16),"
-			"password char(32))");
+			"password char(32),"
+			"b BLOB)");
 		query->Execute();
-		query->Reset("INSERT INTO admins (id, username, password) VALUES(:id, :username, :password)");
+		query->Reset("INSERT INTO admins (id, username, password, b) VALUES(:id, :username, :password, :b)");
 		query->BindValue(":id", 154);
 		query->BindValue(":username", "uSer");
 		query->BindValue(":password", "pass2");
-		
+		size_t l = 256*256*256*10;
+		printf("Allocating %i MB\n", l/1024/1024);
+		BYTE* test = new BYTE[l];
+		for (int i = 0; i < l; i++) test[i] = i%256;
+		query->BindValue(":b", SQLiteValue(test, l));
 		query->Execute();
+		delete[] test;
 
 		SQLiteResult* result = 0;
 		query->Reset("SELECT * FROM admins");
 		query->Execute(&result);
 
+		printf("Received %i rows of data\n", result->size());
 		for (size_t x = 0; x < result->size(); x++) {
 			SQLiteRow* row = result->get(x);
 			for (size_t c = 0; c < row->size(); c++)
@@ -39,34 +53,87 @@ int main()
 	{
 		printf("%s\n", e.what());
 	}
-
 	return 0;
-}/*
+}
+
+/*class B
+{
+	int i;
+public:
+	B(int i)
+	{
+		this->i = i;
+		printf("%s on %i\n", __FUNCTION__, i);
+	}
+	~B()
+	{
+		printf("%s on %i\n", __FUNCTION__, i);
+	}
+};
 
 class A
 {
 private:
-	//A& operator= (const A &v);
-	A(const A &v);
-public:
-	A(int i)
+	union dtunion
 	{
-		printf("Construct\n");
-	}
-	A(const char * c)
-	{
+		int* i;
+		double* d;
+		std::string* s;
+		std::wstring* ws;
+		BYTE* b;
+	} pdata;
 
+	struct data
+	{
+		union dtunion
+		{
+			int* i;
+			double* d;
+			std::string* s;
+			std::wstring* ws;
+			BYTE* b;
+		} pdata;
+		int type;
+
+		data::~data()
+		{
+			printf("deleting\n");
+		}
+	};
+
+
+	std::shared_ptr<data> ptr;
+	//A(const A &v);
+public:
+	A()
+	{
+		ptr.reset(new data);
 	}
+
+	A& operator= (const A &v)
+	{
+		printf("Assignment\n");
+		ptr = v.ptr;
+		return *this;
+	}
+
+	A(const A &v)
+	{
+		printf("Copy constructor\n");
+		ptr = v.ptr;
+	}
+
 	~A()
 	{
+		//ptr->
 		printf("Destructor\n");
-	}
-
+		//ptr.reset();
+	} 
 };
 
 void test1(const A& a)
 {
-	printf("%08X\n", a);
+	//printf("%08X\n", a);
 
 }
 void test(const A& a)
@@ -74,11 +141,15 @@ void test(const A& a)
 	test1(a);
 }
 
-int main()
+void test2(A a)
 {
 
-	test(1);
-	test("A");
-//	A b = a;
+}
+
+int main()
+{
+	A a;
+	A b = a;
+	//a = b;
 	return 0;
 }*/
