@@ -14,40 +14,36 @@ int main()
 		SQLiteValue c = b;
 		b = 123.45;
 		printf("%s\n", b.ToString().c_str());*/
-		SQLite* sql = new SQLite("test.sqlite");
-		SQLiteQuery* query = sql->NewQuery("CREATE TABLE IF NOT EXISTS admins("
+		SQLitePtr sql = 0;
+		SQLite::Connect(&sql, "test.sqlite");
+
+		SQLiteQueryPtr query = NULL;
+		sql->NewQuery(&query, "CREATE TABLE IF NOT EXISTS admins("
 			//"id INTEGER PRIMARY KEY,"
 			"id int,"
 			"username varchar(16),"
-			"password char(32),"
-			"b BLOB)");
+			"password char(32))");
 		query->Execute();
-		query->Reset("INSERT INTO admins (id, username, password, b) VALUES(:id, :username, :password, :b)");
+		/*query->Reset("INSERT INTO admins (id, username, password) VALUES(:id, :username, :password)");
 		query->BindValue(":id", 154);
-		query->BindValue(":username", "uSer");
+		query->BindValue(":username", "user");
 		query->BindValue(":password", "pass2");
-		size_t l = 256*256*256*10;
-		printf("Allocating %i MB\n", l/1024/1024);
-		BYTE* test = new BYTE[l];
-		for (int i = 0; i < l; i++) test[i] = i%256;
-		query->BindValue(":b", SQLiteValue(test, l));
-		query->Execute();
-		delete[] test;
+		query->Execute();*/
 
-		SQLiteResult* result = 0;
+		SQLiteResultPtr result = 0;
 		query->Reset("SELECT * FROM admins");
+		printf("Executing SELECT\n");
 		query->Execute(&result);
 
 		printf("Received %i rows of data\n", result->size());
 		for (size_t x = 0; x < result->size(); x++) {
-			SQLiteRow* row = result->get(x);
-			for (size_t c = 0; c < row->size(); c++)
-				printf("%s\n", row->get(c)->ToString().c_str());
+			SQLiteRowPtr row = result->get(x);
+			for (size_t c = 0; c < row->size(); c++) {
+				SQLiteValuePtr value = row->get(c);
+				printf("%s\n", value->ToString().c_str());
+			}
 		}
-
-		sql->free_object(result);
-		sql->free_object(query);
-		delete sql;
+		printf("Cleanup\n");
 	}
 	catch (SQLiteError & e)
 	{

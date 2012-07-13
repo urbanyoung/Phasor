@@ -61,62 +61,69 @@ namespace sqlite
 			sqlite3_close(sqlhandle);
 			throw SQLiteError(SQL_ERRCODE_UNK, desc.c_str());
 		}
-		alive = true;
 	}
 
 	SQLite::~SQLite()
 	{
-		alive = false; // used to stop untrack_object from changing allocated_objects
+		printf("%s\n", __FUNCTION__);
+		Close();
+	}
 
-		std::set<SQLiteObject*>::iterator itr = allocated_objects.begin();
-		while (itr != allocated_objects.end()) {
-			delete *itr;
-			itr = allocated_objects.erase(itr);
-		}
-		allocated_objects.clear();
-		sqlite3_close(sqlhandle);
+	void SQLite::Connect(SQLitePtr* ptr, std::string path_to_db) throw(SQLiteError)
+	{
+		*ptr = SQLitePtr(new SQLite(path_to_db));
+	}
+
+	std::shared_ptr<SQLite> SQLite::get_shared()
+	{
+		return shared_from_this();
 	}
 	
-	void SQLite::untrack_object(SQLiteObject* obj)
+	void SQLite::Close()
 	{
-		if (!alive) return;
-		std::set<SQLiteObject*>::iterator itr = allocated_objects.find(obj);
-		if (itr != allocated_objects.end())
-			allocated_objects.erase(itr);
+		if (sqlhandle) {
+			sqlite3_close(sqlhandle);
+			sqlhandle = NULL;
+		}
 	}
 
-	void SQLite::track_object(SQLiteObject* obj)
+	sqlite3* SQLite::GetSQLite() throw (SQLiteError)
 	{
-		allocated_objects.insert(obj);
+		if (!sqlhandle) throw SQLiteError(SQL_ERRCODE_CLOSED);
+		return sqlhandle;
 	}
 
-	void SQLite::free_object(SQLiteObject* obj)
+	void SQLite::NewQuery(SQLiteQueryPtr* ptr, const char* query)
 	{
-		//untrack_object(obj);
-		delete obj; // SQLiteObject calls untrack_object
-	}
-
-	SQLiteQuery* SQLite::NewQuery(const char* query)
-	{
-		SQLiteQuery* q = new SQLiteQuery(this, query);
-		track_object(q);
-		return q;
+		SQLiteQuery* q = new SQLiteQuery(get_shared(), query);
+		ptr->reset(q);
 	}
 
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteObject
 	// Purpose: Base class for objects returned to the user
 	// 
+	SQLiteObject::SQLiteObject() : parent(NULL)
+	{
+
+	}
+
+	void SQLiteObject::SetParent(SQLitePtr parent)
+	{
+		//printf("Setting parent: %08X\n", parent);
+		this->parent = parent;
+	}
+
 	SQLiteObject::~SQLiteObject()
 	{
-		if (parent)	parent->untrack_object(this);
+		//printf("Destroyed\n");
 	}
 
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteQuery
 	// Purpose: Provide an interface for executing prepared queries
 	// 
-	SQLiteQuery::SQLiteQuery(SQLite* parent, const char* query)
+	SQLiteQuery::SQLiteQuery(SQLitePtr parent, const char* query)
 		throw(SQLiteError) 
 		: SQLiteObject()		
 	{
@@ -154,7 +161,7 @@ namespace sqlite
 		}
 	}
 
-	void SQLiteQuery::Execute(SQLiteResult** out_result) 
+	void SQLiteQuery::Execute(SQLiteResultPtr* out_result) 
 		throw(SQLiteError)
 	{		
 		if (!stmt) throw SQLiteError(SQL_ERRCODE_NO_INIT);
@@ -216,8 +223,8 @@ namespace sqlite
 		}
 
 		if (out_result) {
-			parent->track_object(tmp_result);
-			*out_result = tmp_result;
+			//parent->track_object(tmp_result);
+			out_result->reset(tmp_result);
 		} else 
 			delete tmp_result;
 	}
@@ -449,24 +456,25 @@ namespace sqlite
 
 	SQLiteRow::~SQLiteRow()
 	{
-		std::vector<SQLiteValue*>::iterator itr = columns.begin();
+		/*std::vector<SQLiteValue>::iterator itr = columns.begin();
 		while (itr != columns.end()){
 			delete *itr; // cleanup value
 			itr = columns.erase(itr);
-		}
+		}*/
+		columns.clear();
 	}
 
 	void SQLiteRow::AddColumn(SQLiteValue* value)
 	{
-		columns.push_back(value);
+		columns.push_back(SQLiteValuePtr(value));
 	}
 
-	SQLiteValue* SQLiteRow::operator[] (size_t i) throw(SQLiteError)
+	SQLiteValuePtr SQLiteRow::operator[] (size_t i) throw(SQLiteError)
 	{
 		return get(i);
 	}
 
-	SQLiteValue* SQLiteRow::get(size_t i) throw(SQLiteError)
+	SQLiteValuePtr SQLiteRow::get(size_t i) throw(SQLiteError)
 	{
 		if (i < 0 || i >= columns.size())
 			throw SQLiteError(SQL_ERRCODE_BAD_INDEX);
@@ -481,31 +489,32 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteResult
 	//
-	SQLiteResult::SQLiteResult(SQLite* parent) : SQLiteObject()
+	SQLiteResult::SQLiteResult(SQLitePtr parent) : SQLiteObject()
 	{
 		SetParent(parent);
 	}
 
 	SQLiteResult::~SQLiteResult()
 	{
-		std::vector<SQLiteRow*>::iterator itr = rows.begin();
+		/*std::vector<SQLiteRowPtr>::iterator itr = rows.begin();
 		while (itr != rows.end()){
 			delete *itr; // cleanup row
 			itr = rows.erase(itr);
-		}
+		}*/
+		rows.clear(); // smart pointers do cleanup
 	}
 
 	void SQLiteResult::AddRow(SQLiteRow* row)
 	{
-		rows.push_back(row);
+		rows.push_back(SQLiteRowPtr(row));
 	}
 
-	SQLiteRow* SQLiteResult::operator[] (size_t i) throw(SQLiteError)
+	SQLiteRowPtr SQLiteResult::operator[] (size_t i) throw(SQLiteError)
 	{
 		return get(i);
 	}
 
-	SQLiteRow* SQLiteResult::get(size_t i) throw(SQLiteError)
+	SQLiteRowPtr SQLiteResult::get(size_t i) throw(SQLiteError)
 	{
 		if (i < 0 || i >= rows.size())
 			throw SQLiteError(SQL_ERRCODE_BAD_INDEX);
