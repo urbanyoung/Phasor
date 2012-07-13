@@ -40,7 +40,7 @@ namespace Common
 		return bResult;
 	}
 
-	std::string NarrowString(std::wstring str)
+	std::string NarrowString(std::wstring& str)
 	{
 		std::stringstream ss;
 		for (size_t x = 0; x < str.length(); x++)
@@ -48,7 +48,7 @@ namespace Common
 		return ss.str();
 	}
 
-	std::wstring WidenString(std::string str)
+	std::wstring WidenString(std::string& str)
 	{
 		std::wstringstream ss;
 		for (size_t x = 0; x < str.length(); x++)

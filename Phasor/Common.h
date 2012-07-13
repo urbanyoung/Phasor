@@ -11,6 +11,6 @@ namespace Common
 	// Reads from process memory
 	BOOL ReadBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount);
 
-	std::string NarrowString(std::wstring);
-	std::wstring WidenString(std::string);
+	std::string NarrowString(std::wstring&);
+	std::wstring WidenString(std::string&);
 }
