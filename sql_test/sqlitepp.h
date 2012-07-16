@@ -74,12 +74,12 @@ namespace sqlite
 	{
 	private:
 		sqlite3* sqlhandle;
-		SQLite(std::string path_to_db) throw(SQLiteError);
+		SQLite(const std::string& path_to_db) throw(SQLiteError);
 
 		std::shared_ptr<SQLite> get_shared();
 
 	public:
-		static void Connect(SQLitePtr* ptr, std::string path_to_db) throw(SQLiteError);
+		static void Connect(SQLitePtr* ptr, const std::string& path_to_db) throw(SQLiteError);
 		~SQLite();
 
 		/* Closes the database connection */

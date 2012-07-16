@@ -51,7 +51,7 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLite
 	//
-	SQLite::SQLite(std::string path_to_db) throw(SQLiteError)
+	SQLite::SQLite(const std::string& path_to_db) throw(SQLiteError)
 	{
 		int result = sqlite3_open(path_to_db.c_str(), &sqlhandle);
 
@@ -69,7 +69,7 @@ namespace sqlite
 		Close();
 	}
 
-	void SQLite::Connect(SQLitePtr* ptr, std::string path_to_db) throw(SQLiteError)
+	void SQLite::Connect(SQLitePtr* ptr, const std::string& path_to_db) throw(SQLiteError)
 	{
 		*ptr = SQLitePtr(new SQLite(path_to_db));
 	}
