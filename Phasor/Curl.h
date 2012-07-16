@@ -25,7 +25,7 @@ namespace Server
 			std::string errorMsg;
 
 			/* Sets the error */
-			void SetError(std::string error);
+			void SetError(const std::string& error);
 
 		protected:
 			/* Returns the CurlSimple associated with the CURL connection */
@@ -96,15 +96,15 @@ namespace Server
 			virtual void ConnectionDone(CURLMsg* msg);
 
 			/* Sets a message describing the last (fatal) error */
-			void SetError(std::string error);
+			void SetError(const std::string& error);
 
 		public:
 
-			CurlSimple(std::string url);
+			CurlSimple(const std::string& url);
 			~CurlSimple();
 
 			/* Initializes the class */
-			void init(std::string url);
+			void init(const std::string& url);
 
 			/*	Sets the user defined function to call upon request completion.
 
@@ -146,23 +146,23 @@ namespace Server
 			std::string wstring_to_utf8_hex(const std::wstring &input);
 
 			/* Escapes the input string for url encoding */
-			std::string Escape(std::wstring input);
-			std::string Escape(std::string input);
+			std::string Escape(const std::wstring& input);
+			std::string Escape(const std::string& input);
 
 			/* Called by CurlMulti when this instance is added to the multistack 
 			 * Return values specifies whether or not it should be added. */
 			virtual bool OnAdd();
 
 		public:
-			CurlSimpleHttp(std::string url);
+			CurlSimpleHttp(const std::string& url);
 			~CurlSimpleHttp();
 
 			/* Adds data to the http request, any unicode strings are escaped. */
-			void AddPostData(std::string key, std::wstring data);
-			void AddPostData(std::string key, std::string data, bool b=false);
-			void AddPostFile(std::string key, std::string path_to_file);
-			void AddGetData(std::string key, std::wstring data);
-			void AddGetData(std::string key, std::string data, bool b=false);			
+			void AddPostData(const std::string& key, const std::wstring& data);
+			void AddPostData(const std::string& key, const std::string& data, bool b=false);
+			void AddPostFile(const std::string& key, const std::string& path_to_file);
+			void AddGetData(const std::string& key, const std::wstring& data);
+			void AddGetData(const std::string& key, const std::string& data, bool b=false);			
 		};
 
 		//-----------------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ namespace Server
 			virtual size_t OnDataWrite(BYTE* data, size_t size, size_t nmemb);
 
 		public:
-			CurlSimpleDownload(std::string url, std::string path_to_file);
+			CurlSimpleDownload(const std::string& url, const std::string& path_to_file);
 			~CurlSimpleDownload();
 		};
 

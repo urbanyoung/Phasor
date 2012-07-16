@@ -86,7 +86,7 @@ namespace Server
 			}
 		}
 
-		void CurlMulti::SetError(std::string error) 
+		void CurlMulti::SetError(const std::string& error) 
 		{ 
 			this->errorMsg = error; 
 			this->hasError = true;
@@ -95,19 +95,19 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimple
 		//
-		CurlSimple::CurlSimple(std::string url)
+		CurlSimple::CurlSimple(const std::string& url)
 		{
 			init(url);
 		}
 
-		void CurlSimple::init(std::string url)
+		void CurlSimple::init(const std::string& url)
 		{
 			curl = curl_easy_init();
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Curl_OnDataWrite);
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
 
-			url = url;
+			this->url = url;
 			buffer = new BYTE[DEFAULT_BUFFER_SIZE];
 			completionRoutine = NULL;
 			bufferSize = DEFAULT_BUFFER_SIZE;
@@ -185,7 +185,7 @@ namespace Server
 			return success;
 		}
 
-		void CurlSimple::SetError(std::string error) 
+		void CurlSimple::SetError(const std::string& error) 
 		{ 
 			printf("Error: %s\n", error.c_str());
 			this->errorMsg = error; 
@@ -195,7 +195,7 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimpleHttp
 		//
-		CurlSimpleHttp::CurlSimpleHttp(std::string url) : CurlSimple(url)
+		CurlSimpleHttp::CurlSimpleHttp(const std::string& url) : CurlSimple(url)
 		{
 			pair_added = false;
 			form = NULL;
@@ -220,44 +220,46 @@ namespace Server
 			return true;
 		}
 
-		void CurlSimpleHttp::AddPostData(std::string key, std::string data, bool b)
+		void CurlSimpleHttp::AddPostData(const std::string& key, const std::string& data, bool b)
 		{
+			std::string post_data = data;
 			if (!b) // not escaped
-				data = Escape(data);
+				post_data = Escape(data);
 		
 			curl_formadd(&form, &last, CURLFORM_COPYNAME, key.c_str(),
-				CURLFORM_COPYCONTENTS, data.c_str(), CURLFORM_END);
+				CURLFORM_COPYCONTENTS, post_data.c_str(), CURLFORM_END);
 		}
 
-		void CurlSimpleHttp::AddPostData(std::string key, std::wstring data)
+		void CurlSimpleHttp::AddPostData(const std::string& key, const std::wstring& data)
 		{
 			std::string escaped = Escape(data);
 			AddPostData(key, escaped, true);
 		}
 
-		void CurlSimpleHttp::AddPostFile(std::string key, std::string path_to_file)
+		void CurlSimpleHttp::AddPostFile(const std::string& key, const std::string& path_to_file)
 		{
 			curl_formadd(&form, &last, CURLFORM_COPYNAME, key.c_str(), CURLFORM_FILE, path_to_file.c_str(), CURLFORM_END);			
 		}
 
-		void CurlSimpleHttp::AddGetData(std::string key, std::string data, bool b)
+		void CurlSimpleHttp::AddGetData(const std::string& key, const std::string& data, bool b)
 		{
+			std::string get_data = data;
 			if (!b) // not escaped
-				data = Escape(data);
-			key = Escape(key);
+				get_data = Escape(data);
+			std::string get_key = Escape(key);
 			if (pair_added)	
 				ssurl << "&";
-			ssurl << key << "=" << data;
+			ssurl << get_key << "=" << get_data;
 			pair_added = true;
 		}
 
-		void CurlSimpleHttp::AddGetData(std::string key, std::wstring data)
+		void CurlSimpleHttp::AddGetData(const std::string& key, const std::wstring& data)
 		{
 			std::string escaped = Escape(data);
 			AddGetData(key, escaped, true);
 		}
 
-		std::string CurlSimpleHttp::Escape(std::wstring input)
+		std::string CurlSimpleHttp::Escape(const std::wstring& input)
 		{
 			std::string escaped;
 			for (size_t x = 0; x < input.size(); x++) {
@@ -273,7 +275,7 @@ namespace Server
 			return escaped;
 		}
 
-		std::string CurlSimpleHttp::Escape(std::string input)
+		std::string CurlSimpleHttp::Escape(const std::string& input)
 		{
 			std::string escaped;
 			char* ptr = curl_easy_escape(GetCurl(), input.c_str(), input.size());
@@ -307,8 +309,8 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimplDownload
 		//
-		CurlSimpleDownload::CurlSimpleDownload(std::string url, 
-			std::string path_to_file) : CurlSimple(url) 
+		CurlSimpleDownload::CurlSimpleDownload(const std::string& url, 
+			const std::string& path_to_file) : CurlSimple(url) 
 		{
 			file = path_to_file;
 			pFile = fopen(file.c_str(), "wb");

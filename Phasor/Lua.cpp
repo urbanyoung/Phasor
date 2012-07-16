@@ -150,7 +150,7 @@ namespace Scripting
 		}
 
 		// Creates a new function
-		Function* State::NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>))
+		Function* State::NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>&))
 		{
 			Function* object = new Function(this, func);
 			this->objects.push_back(object);
@@ -159,7 +159,7 @@ namespace Scripting
 		}
 
 		// Calls a function
-		std::vector<Object*> State::Call(const char* name, std::vector<Object*> args, int timeout)
+		std::vector<Object*> State::Call(const char* name, std::vector<Object*>& args, int timeout)
 		{
 			Function* function = (Function*)this->GetGlobal(name);
 			std::vector<Object*> results = function->Call(args, timeout);
@@ -551,7 +551,7 @@ namespace Scripting
 		// Lua function wrapper
 		//
 
-		Function::Function(State* state, std::vector<Object*> (*func)(State*, std::vector<Object*>)) : Object(state)
+		Function::Function(State* state, std::vector<Object*> (*func)(State*, std::vector<Object*>&)) : Object(state)
 		{
 			this->func = func;
 
@@ -615,7 +615,7 @@ namespace Scripting
 		}
 
 		// Calls the Lua function from C
-		std::vector<Object*> Function::Call(std::vector<Object*> args, int timeout)
+		std::vector<Object*> Function::Call(std::vector<Object*>& args, int timeout)
 		{
 			// Push the function on the stack
 			this->Push();

@@ -86,10 +86,10 @@ namespace Scripting
 			Table* NewTable();
 
 			// Creates a new function
-			Function* NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>));
+			Function* NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>&));
 
 			// Calls a function with an optional timeout
-			std::vector<Object*> Call(const char* name, std::vector<Object*> args, int timeout = 0);
+			std::vector<Object*> Call(const char* name, std::vector<Object*>& args, int timeout = 0);
 
 			// Raises an error
 			void Error(const char* _Format, ...);
@@ -268,17 +268,17 @@ namespace Scripting
 		class Function : public Object
 		{
 		private:
-			std::vector<Object*> (*func)(State*, std::vector<Object*>);
+			std::vector<Object*> (*func)(State*, std::vector<Object*>&);
 
 			// Creates a new C function
-			Function(State* state, std::vector<Object*> (*func)(State*, std::vector<Object*>));
+			Function(State* state, std::vector<Object*> (*func)(State*, std::vector<Object*>&));
 
 			// Calls the C function from Lua
 			static int LuaCall(lua_State* L);
 
 		public:
 			// Calls the Lua function from C with an optional timeout
-			std::vector<Object*> Call(std::vector<Object*> args, int timeout = 0);
+			std::vector<Object*> Call(std::vector<Object*>& args, int timeout = 0);
 
 		public:
 			friend class State;
