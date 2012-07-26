@@ -7,13 +7,6 @@ int main()
 	using namespace sqlite;
 	try
 	{
-		
-		/*SQLiteValue a = "hello123";
-		SQLiteValue b = 123;
-		b = a;
-		SQLiteValue c = b;
-		b = 123.45;
-		printf("%s\n", b.ToString().c_str());*/
 		SQLitePtr sql = 0;
 		SQLite::Connect(&sql, "test.sqlite");
 
@@ -42,6 +35,7 @@ int main()
 				SQLiteValuePtr value = row->get(c);
 				printf("%s\n", value->ToString().c_str());
 			}
+			printf("username: %s\n", (*row)["username"]);//row->get("username")->ToString().c_str());
 		}
 	}
 	catch (SQLiteError & e)

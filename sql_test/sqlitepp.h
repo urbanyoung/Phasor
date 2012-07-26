@@ -5,6 +5,7 @@
 #include <vector>
 #include <set>
 #include <sstream>
+#include <map>
 #include <windows.h>
 #include "../sqlite/sqlite3.h"
 
@@ -25,7 +26,7 @@ namespace sqlite
 	typedef std::shared_ptr<SQLiteRow> SQLiteRowPtr;
 	typedef std::shared_ptr<SQLiteValue> SQLiteValuePtr;
 	typedef std::shared_ptr<SQLiteValue> SQLiteObjectPtr;
-
+	
 	/* Error codes */
 	enum SQLPP_ERRCODE
 	{
@@ -69,14 +70,15 @@ namespace sqlite
 
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLite
-	// Purpose: Provide a wrapper around the sqlite3 C interface. 
+	// Purpose: Provide a basic wrapper around the sqlite3 C interface. 
 	class SQLite : public std::enable_shared_from_this<SQLite>
 	{
 	private:
 		sqlite3* sqlhandle;
-		SQLite(const std::string& path_to_db) throw(SQLiteError);
+		SQLite(SQLitePtr* ptr, const std::string& path_to_db) throw(SQLiteError);
 
-		std::shared_ptr<SQLite> get_shared();
+		/* Returns a shared pointer to this object */
+		SQLitePtr get_shared();
 
 	public:
 		static void Connect(SQLitePtr* ptr, const std::string& path_to_db) throw(SQLiteError);
@@ -214,14 +216,7 @@ namespace sqlite
 		/* Returns the type of the stored data */
 		int GetType() const { return data->type; }
 
-		/* Returns the size of the stored data in bytes. 
-		 * Note: The size returned indicates two different things depending
-		 * on the object type.
-		 * 1) If the object is a blob the returned value indicates the
-		 * size of the blob.
-		 * 2) Otherwise the returned value indicates the size of the pointer
-		 * to the stored data (ie 4 bytes). 
-		 */
+		/* Returns the size of the stored data in bytes (for blobs only).*/
 		int size() const { return data->size; }
 
 		friend class SQLiteRow;
@@ -230,16 +225,17 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteRow
 	// Purpose: Represent a row of data returned
-	// Note: Rows never get managed directly by SQLite and as such there
-	// is no need to track the parent.
+	// The columns are stored in an associative map, as such access via
+	// direct indexing is O(n) and access via names is O(logn)
 	class SQLiteRow : public SQLiteObject
 	{
 	private:
+		typedef std::map<std::string, SQLiteValuePtr> MapType;
 		/* data stored in the column */
-		std::vector<SQLiteValuePtr> columns;
+		MapType columns;
 
 		/* Adds data to the row */
-		void AddColumn(SQLiteValue* value);
+		void AddColumn(SQLiteValue* value, const std::string& name);
 		
 	public:
 		
@@ -248,6 +244,8 @@ namespace sqlite
 
 		SQLiteValuePtr operator [] (size_t i) throw(SQLiteError);
 		SQLiteValuePtr get(size_t i) throw(SQLiteError);
+		SQLiteValuePtr operator[] (const std::string& key) throw(SQLiteError);
+		SQLiteValuePtr get(const std::string& key) throw(SQLiteError);
 
 		/* Returns the number of items in the row*/
 		size_t size();

@@ -51,7 +51,7 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLite
 	//
-	SQLite::SQLite(const std::string& path_to_db) throw(SQLiteError)
+	SQLite::SQLite(SQLitePtr* ptr, const std::string& path_to_db) throw(SQLiteError)
 	{
 		int result = sqlite3_open(path_to_db.c_str(), &sqlhandle);
 
@@ -61,6 +61,7 @@ namespace sqlite
 			sqlite3_close(sqlhandle);
 			throw SQLiteError(SQL_ERRCODE_UNK, desc.c_str());
 		}
+		*ptr = SQLitePtr(this);
 	}
 
 	SQLite::~SQLite()
@@ -71,10 +72,10 @@ namespace sqlite
 
 	void SQLite::Connect(SQLitePtr* ptr, const std::string& path_to_db) throw(SQLiteError)
 	{
-		*ptr = SQLitePtr(new SQLite(path_to_db));
+		new SQLite(ptr, path_to_db);	
 	}
 
-	std::shared_ptr<SQLite> SQLite::get_shared()
+	SQLitePtr SQLite::get_shared()
 	{
 		return shared_from_this();
 	}
@@ -184,24 +185,25 @@ namespace sqlite
 				int columns = sqlite3_column_count(stmt);
 				for (int x = 0; x < columns; x++) {
 					int type = sqlite3_column_type(stmt, x);
+					const char* name = sqlite3_column_name(stmt, x);
 					switch (type)
 					{
 					case SQLITE_INTEGER:
 						row->AddColumn(
-							new SQLiteValue(sqlite3_column_int(stmt, x)));
+							new SQLiteValue(sqlite3_column_int(stmt, x)), name);
 						break;
 					case SQLITE_FLOAT:
 						row->AddColumn(
-							new SQLiteValue(sqlite3_column_double(stmt, x)));
+							new SQLiteValue(sqlite3_column_double(stmt, x)), name);
 						break;
 					case SQLITE_TEXT:
 						// all text is treated as wide and converted if necessary
 						row->AddColumn(
-							new SQLiteValue((const wchar_t*)sqlite3_column_text16(stmt, x)));
+							new SQLiteValue((const wchar_t*)sqlite3_column_text16(stmt, x)), name);
 						break;
 					case SQLITE_BLOB:
 						row->AddColumn(new SQLiteValue((BYTE*)sqlite3_column_blob(stmt, x),
-							sqlite3_column_bytes(stmt, x)));
+							sqlite3_column_bytes(stmt, x)), name);
 						break;
 					}
 				}
@@ -458,9 +460,11 @@ namespace sqlite
 		columns.clear();
 	}
 
-	void SQLiteRow::AddColumn(SQLiteValue* value)
+	void SQLiteRow::AddColumn(SQLiteValue* value, const std::string& name)
 	{
-		columns.push_back(SQLiteValuePtr(value));
+		//columns.push_back(SQLiteValuePtr(value));
+		columns.insert(std::pair<std::string,SQLiteValuePtr>(name,
+			SQLiteValuePtr(value)));
 	}
 
 	SQLiteValuePtr SQLiteRow::operator[] (size_t i) throw(SQLiteError)
@@ -472,7 +476,21 @@ namespace sqlite
 	{
 		if (i < 0 || i >= columns.size())
 			throw SQLiteError(SQL_ERRCODE_BAD_INDEX);
-		return columns[i];
+		MapType::iterator itr = columns.begin();
+		for (size_t x = i; x > 0; x--) itr++;
+		return itr->second;
+	}
+
+	SQLiteValuePtr SQLiteRow::operator[] (const std::string& key) throw(SQLiteError)
+	{
+		return get(key);
+	}
+
+	SQLiteValuePtr SQLiteRow::get(const std::string& key) throw(SQLiteError)
+	{
+		MapType::iterator itr = columns.find(key);
+		if (itr == columns.end()) throw SQLiteError(SQL_ERRCODE_BAD_INDEX);
+		return itr->second;
 	}
 
 	size_t SQLiteRow::size() 
