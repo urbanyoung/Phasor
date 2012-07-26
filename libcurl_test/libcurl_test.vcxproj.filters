@@ -5,6 +5,9 @@
     <ClCompile Include="..\Phasor\Curl.cpp">
       <Filter>Server\Curl</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\PhasorError.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Server">
@@ -13,10 +16,16 @@
     <Filter Include="Server\Curl">
       <UniqueIdentifier>{a975fa73-654b-442c-81fa-af7a5fab76b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Phasor">
+      <UniqueIdentifier>{53831773-fca6-4c2a-8508-468817169962}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Curl.h">
       <Filter>Server\Curl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\PhasorError.h">
+      <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

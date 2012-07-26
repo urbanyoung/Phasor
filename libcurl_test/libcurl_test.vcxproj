@@ -73,10 +73,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Phasor\Curl.cpp" />
+    <ClCompile Include="..\Phasor\PhasorError.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Curl.h" />
+    <ClInclude Include="..\Phasor\PhasorError.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

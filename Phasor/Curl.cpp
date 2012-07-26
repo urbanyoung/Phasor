@@ -9,6 +9,11 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlMulti
 		//
+		CurlMultiPtr CurlMulti::Create()
+		{
+			return CurlMultiPtr(new CurlMulti());
+		}
+
 		CurlMulti::CurlMulti()
 		{
 			multi_curl = curl_multi_init();
@@ -18,15 +23,11 @@ namespace Server
 
 		CurlMulti::~CurlMulti()
 		{
-			std::list<CurlSimple*>::iterator itr = simples.begin();
-			while (itr != simples.end()) {
-				delete *itr;
-				itr = simples.erase(itr);
-			}
+			simples.clear();
 			curl_multi_cleanup(multi_curl);
 		}
 
-		bool CurlMulti::AddRequest(CurlSimple* simple_curl)
+		bool CurlMulti::AddRequest(CurlPtr simple_curl)
 		{	
 			CURLMcode c = curl_multi_add_handle(multi_curl, simple_curl->GetCurl());
 			if (c != CURLM_OK) { // error
@@ -34,6 +35,7 @@ namespace Server
 				return false;
 			}
 			if (!simple_curl->OnAdd()) {
+				curl_multi_remove_handle(multi_curl, simple_curl->GetCurl());
 				SetError("CurlSimple object is not ready to be processed.");
 				return false;
 			}
@@ -50,7 +52,7 @@ namespace Server
 			int msgs_left = 1;
 			while (msgs_left && (msg = curl_multi_info_read(multi_curl, &msgs_left))) {
 				if (msg->msg == CURLMSG_DONE) {			
-					CurlSimple* simp = FindConnection(msg->easy_handle);
+					CurlPtr simp = FindConnection(msg->easy_handle);
 					assert(simp != 0); // never happen
 					simp->ConnectionDone(msg);
 					Remove(simp);
@@ -62,9 +64,9 @@ namespace Server
 			return running != 0;
 		}
 
-		CurlSimple* CurlMulti::FindConnection(CURL* con)
+		CurlPtr CurlMulti::FindConnection(CURL* con)
 		{
-			std::list<CurlSimple*>::iterator itr = simples.begin();
+			std::list<CurlPtr>::iterator itr = simples.begin();
 			while (itr != simples.end()) {
 				if ((*itr)->GetCurl() == con) return *itr;
 				else itr++;
@@ -72,13 +74,12 @@ namespace Server
 			return NULL;
 		}
 
-		void CurlMulti::Remove(CurlSimple* simple_curl)
+		void CurlMulti::Remove(CurlPtr simple_curl)
 		{
-			std::list<CurlSimple*>::iterator itr = simples.begin();
+			std::list<CurlPtr>::iterator itr = simples.begin();
 			while (itr != simples.end()) {
 				if (*itr == simple_curl) {
 					curl_multi_remove_handle(multi_curl, simple_curl->GetCurl());
-					delete *itr;
 					itr = simples.erase(itr);
 					break;
 				}
@@ -86,18 +87,29 @@ namespace Server
 			}
 		}
 
-		void CurlMulti::SetError(const std::string& error) 
-		{ 
-			this->errorMsg = error; 
-			this->hasError = true;
-		}
-
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimple
 		//
+		CurlPtr CurlSimple::Create(const std::string& url)
+		{
+			return CurlPtr(new CurlSimple(url));
+		}
+
 		CurlSimple::CurlSimple(const std::string& url)
 		{
 			init(url);
+		}
+
+		CurlSimple::~CurlSimple()
+		{
+			printf("%s\n", __FUNCTION__);
+			curl_easy_cleanup(curl);
+			delete[] buffer;
+		}
+
+		CurlPtr CurlSimple::get_shared()
+		{
+			return shared_from_this();
 		}
 
 		void CurlSimple::init(const std::string& url)
@@ -112,14 +124,11 @@ namespace Server
 			completionRoutine = NULL;
 			bufferSize = DEFAULT_BUFFER_SIZE;
 			recvCount = 0;
-			hasError = false;
 		}
 
-		CurlSimple::~CurlSimple()
+		void CurlSimple::Associate(CurlMultiPtr multi)
 		{
-			printf("~CurlSimple()\n");
-			curl_easy_cleanup(curl);
-			delete[] buffer;
+			multi->AddRequest(get_shared());
 		}
 
 		size_t CurlSimple::Curl_OnDataWrite(BYTE* data, size_t size, size_t nmemb, void* userdata)
@@ -185,17 +194,10 @@ namespace Server
 			return success;
 		}
 
-		void CurlSimple::SetError(const std::string& error) 
-		{ 
-			printf("Error: %s\n", error.c_str());
-			this->errorMsg = error; 
-			this->hasError = true;
-		}
-
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimpleHttp
 		//
-		CurlSimpleHttp::CurlSimpleHttp(const std::string& url) : CurlSimple(url)
+		CurlHttp::CurlHttp(const std::string& url) : CurlSimple(url)
 		{
 			pair_added = false;
 			form = NULL;
@@ -206,12 +208,18 @@ namespace Server
 				ssurl << "?";
 		}
 
-		CurlSimpleHttp::~CurlSimpleHttp()
+		CurlHttp::~CurlHttp()
 		{
+			printf("%s\n", __FUNCTION__);
 			if (form) curl_formfree(form);
 		}
 
-		bool CurlSimpleHttp::OnAdd()
+		CurlHttpPtr CurlHttp::Create(const std::string& url)
+		{
+			return CurlHttpPtr(new CurlHttp(url));
+		}
+
+		bool CurlHttp::OnAdd()
 		{
 			url = ssurl.str();
 			curl_easy_setopt(GetCurl(), CURLOPT_URL, url.c_str());
@@ -220,7 +228,7 @@ namespace Server
 			return true;
 		}
 
-		void CurlSimpleHttp::AddPostData(const std::string& key, const std::string& data, bool b)
+		void CurlHttp::AddPostData(const std::string& key, const std::string& data, bool b)
 		{
 			std::string post_data = data;
 			if (!b) // not escaped
@@ -230,18 +238,18 @@ namespace Server
 				CURLFORM_COPYCONTENTS, post_data.c_str(), CURLFORM_END);
 		}
 
-		void CurlSimpleHttp::AddPostData(const std::string& key, const std::wstring& data)
+		void CurlHttp::AddPostData(const std::string& key, const std::wstring& data)
 		{
 			std::string escaped = Escape(data);
 			AddPostData(key, escaped, true);
 		}
 
-		void CurlSimpleHttp::AddPostFile(const std::string& key, const std::string& path_to_file)
+		void CurlHttp::AddPostFile(const std::string& key, const std::string& path_to_file)
 		{
 			curl_formadd(&form, &last, CURLFORM_COPYNAME, key.c_str(), CURLFORM_FILE, path_to_file.c_str(), CURLFORM_END);			
 		}
 
-		void CurlSimpleHttp::AddGetData(const std::string& key, const std::string& data, bool b)
+		void CurlHttp::AddGetData(const std::string& key, const std::string& data, bool b)
 		{
 			std::string get_data = data;
 			if (!b) // not escaped
@@ -253,13 +261,13 @@ namespace Server
 			pair_added = true;
 		}
 
-		void CurlSimpleHttp::AddGetData(const std::string& key, const std::wstring& data)
+		void CurlHttp::AddGetData(const std::string& key, const std::wstring& data)
 		{
 			std::string escaped = Escape(data);
 			AddGetData(key, escaped, true);
 		}
 
-		std::string CurlSimpleHttp::Escape(const std::wstring& input)
+		std::string CurlHttp::Escape(const std::wstring& input)
 		{
 			std::string escaped;
 			for (size_t x = 0; x < input.size(); x++) {
@@ -275,7 +283,7 @@ namespace Server
 			return escaped;
 		}
 
-		std::string CurlSimpleHttp::Escape(const std::string& input)
+		std::string CurlHttp::Escape(const std::string& input)
 		{
 			std::string escaped;
 			char* ptr = curl_easy_escape(GetCurl(), input.c_str(), input.size());
@@ -284,7 +292,7 @@ namespace Server
 			return escaped;
 		}
 
-		std::string CurlSimpleHttp::wstring_to_utf8_hex(const std::wstring &input)
+		std::string CurlHttp::wstring_to_utf8_hex(const std::wstring &input)
 		{
 			// http://stackoverflow.com/questions/3300025/how-do-i-html-url-encode-a-stdwstring-containing-unicode-characters
 			std::string output;
@@ -309,7 +317,7 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimplDownload
 		//
-		CurlSimpleDownload::CurlSimpleDownload(const std::string& url, 
+		CurlDownload::CurlDownload(const std::string& url, 
 			const std::string& path_to_file) : CurlSimple(url) 
 		{
 			file = path_to_file;
@@ -320,19 +328,26 @@ namespace Server
 			}
 		}
 
-		CurlSimpleDownload::~CurlSimpleDownload()
+		CurlDownload::~CurlDownload()
 		{
+			printf("%s\n", __FUNCTION__);
 			if (pFile)
 				fclose(pFile);
 		}
 
-		size_t CurlSimpleDownload::OnDataWrite(BYTE* data, size_t size, size_t nmemb)
+		CurlDownloadPtr CurlDownload::Create(const std::string& url, 
+			const std::string& path_to_file)
+		{
+			return CurlDownloadPtr(new CurlDownload(url, path_to_file));
+		}
+
+		size_t CurlDownload::OnDataWrite(BYTE* data, size_t size, size_t nmemb)
 		{
 			printf("Writing %i bytes to file. %08x\n", size*nmemb, this);
 			return fwrite(data, size, nmemb, pFile);
 		}
 
-		void CurlSimpleDownload::ConnectionDone(CURLMsg* msg)
+		void CurlDownload::ConnectionDone(CURLMsg* msg)
 		{
 			fclose(pFile);
 			pFile = NULL;
