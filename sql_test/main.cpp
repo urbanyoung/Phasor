@@ -15,13 +15,15 @@ int main()
 			//"id INTEGER PRIMARY KEY,"
 			"id int,"
 			"username varchar(16),"
-			"password char(32))");
+			"password char(32), b BLOB)");
 		query->Execute();
-		query->Reset("INSERT INTO admins (id, username, password) VALUES(:id, :username, :password)");
+		query->Reset("INSERT INTO admins (id, username, password, b) VALUES(:id, :username, :password, :b)");
 		query->BindValue(":id", 1);
 		query->BindValue(":username", "user");
 		query->BindValue(":password", "pass2");
-		//query->Execute();
+		BYTE ptr[4096] = {0};
+		query->BindValue(":b", SQLiteValue(ptr, sizeof(ptr)));
+		query->Execute();
 
 		SQLiteResultPtr result = 0;
 		query->Reset("SELECT * FROM admins");
@@ -30,9 +32,9 @@ int main()
 
 		printf("Received %i rows of data\n", result->size());
 		for (size_t x = 0; x < result->size(); x++) {
-			SQLiteRowPtr row = result->get(-1);
+			SQLiteRowPtr row = result->get(x);
 			for (size_t c = 0; c < row->size(); c++) {
-				SQLiteValuePtr value = row->get("hehe");
+				SQLiteValuePtr value = row->get(c);
 				printf("%s\n", value->ToString().c_str());
 			}
 			printf("username: %s\n", (*row)["username"]->ToString().c_str());//row->get("username")->ToString().c_str());

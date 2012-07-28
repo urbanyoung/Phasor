@@ -9,10 +9,8 @@
 namespace Common
 {
 	class ObjectWrap;
-	class ObjectRow;
 
 	typedef std::shared_ptr<ObjectWrap> ObjectWrapPtr;
-	typedef std::shared_ptr<ObjectRow> ObjectRowPtr;
 
 	/* Types of data that can be stored in ObjectWrap */
 	enum VALUE_TYPES 
@@ -58,40 +56,25 @@ namespace Common
 	class ObjectWrap
 	{
 	private:	
-		/*
-		 * This structure is used to hold the data for this value. It is
-		 * managed by a shared pointer and as such making copies of the
-		 * object is safe. */
-		struct c_data
-		{
-			/* Store the data in a union for easy type casting */
-			union {
-				int* i;
-				double* d;
-				std::string* s;
-				std::wstring* ws;
-				BYTE* b;
-				BYTE** ptr;
-			} pdata;
-			size_t size;
-			int type;
-
-			c_data(const char* val);
-			c_data(const wchar_t* val);
-			c_data(int val);
-			c_data(double val);
-			c_data(BYTE* val, size_t length);
-			c_data(void* val);
-			c_data();
-			~c_data();
-		};
-		std::shared_ptr<c_data> data;
+		/* Store the data in a union for easy type casting */
+		union {
+			int* i;
+			double* d;
+			std::string* s;
+			std::wstring* ws;
+			BYTE* b;
+			BYTE** ptr;
+		} pdata;
+		size_t length;
+		int type;
 
 		// Ensures the type of data stored is what's expected
 		inline void VerifyType(int expected) const throw(ObjectError) {
-			if (expected != data->type) throw ObjectError(OBJECT_TYPE);
+			if (expected != type) throw ObjectError(OBJECT_TYPE);
 		}
 		
+		void Copy(const ObjectWrap& v);
+
 	public:
 		ObjectWrap(const char* val);
 		ObjectWrap(const wchar_t* val);
@@ -106,7 +89,7 @@ namespace Common
 		ObjectWrap(const ObjectWrap &v);
 
 		/*	Get the row data in various data types, if the requested type
-		 *	is not stored in this row a SQLiteError exception is thrown. Any
+		 *	is not stored in this row a ObjectError exception is thrown. Any
 		 *	modifications made to pointed types is reflected in the internal
 		 *	state. Do not free memory. */
 		std::string GetStr() const throw(ObjectError);
@@ -120,10 +103,10 @@ namespace Common
 		std::string ToString();
 
 		/* Returns the type of the stored data */
-		int GetType() const { return data->type; }
+		int GetType() const { return type; }
 
 		/* Returns the size of the stored data in bytes (for blobs only).*/
-		int size() const { return data->size; }
+		int size() const { return length; }
 	};	
 
 	// --------------------------------------------------------------------

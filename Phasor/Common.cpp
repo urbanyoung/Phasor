@@ -37,52 +37,100 @@ namespace Common
 	//-----------------------------------------------------------------------------------------
 	// Class: ObjectWrap
 	//
-	int created = 0;
-	ObjectWrap::c_data::c_data() : size(0) {
-		created++;
+	ObjectWrap::ObjectWrap() : length(0)
+	{
 		type = TYPE_NONE;
 	}
-	ObjectWrap::c_data::c_data(const char* val) : size(4) {
-		created++;
+
+	ObjectWrap::ObjectWrap(const char* val) : length(4)
+	{		
 		pdata.s = new std::string;
 		pdata.s->assign(val);
 		type = TYPE_STRING;
 	}
-	ObjectWrap::c_data::c_data(const wchar_t* val) : size(4) {
-		created++;
+
+	ObjectWrap::ObjectWrap(const wchar_t* val) : length(4)
+	{		
 		pdata.ws = new std::wstring;
 		pdata.ws->assign(val);
 		type = TYPE_WSTRING;
 	}
-	ObjectWrap::c_data::c_data(int val) : size(4) {
-		created++;
+
+	ObjectWrap::ObjectWrap(int val) : length(4)
+	{		
 		pdata.i = new int;
 		*pdata.i = val;
 		type = TYPE_INT;
 	}
-	ObjectWrap::c_data::c_data(double val) : size(4) {
-		created++;
+
+	ObjectWrap::ObjectWrap(double val) : length(4)
+	{
 		pdata.d = new double;
 		*pdata.d = val;
-		type = TYPE_DOUBLE;			
+		type = TYPE_DOUBLE;	
 	}
-	ObjectWrap::c_data::c_data(BYTE* val, size_t length) : size(length) { 
-		created++;
+
+	ObjectWrap::ObjectWrap(BYTE* val, size_t length)
+	{
 		pdata.b = new BYTE[length];
 		memcpy(pdata.b, val, length);
 		type = TYPE_BLOB;
+		this->length = length;
 	}
-	ObjectWrap::c_data::c_data(void* val) : size(4) {
-		created++;
+
+	ObjectWrap::ObjectWrap(void* ptr) : length(4)
+	{
 		pdata.ptr = new BYTE*;
-		*pdata.ptr = (BYTE*)val;
+		*pdata.ptr = (BYTE*)ptr;
 		type = TYPE_PTR;
 	}
 
-	ObjectWrap::c_data::~c_data()
+	ObjectWrap::ObjectWrap(const ObjectWrap &v) // copy constructor
 	{
-		created--;
-		printf("%i open objects\n", created);
+		Copy(v);
+	}
+
+	void ObjectWrap::Copy(const ObjectWrap& v)
+	{
+		type = v.type;
+		switch (v.type)
+		{
+		case TYPE_STRING:
+			pdata.s = new std::string;
+			pdata.s->assign(*v.pdata.s);
+			break;
+		case TYPE_WSTRING:
+			pdata.ws = new std::wstring;
+			pdata.ws->assign(*v.pdata.ws);
+			break;
+		case TYPE_INT:
+			pdata.i = new int;
+			*pdata.i = *v.pdata.i;
+			break;
+		case TYPE_DOUBLE:
+			pdata.d = new double;
+			*pdata.d = *v.pdata.d;
+			break;
+		case TYPE_BLOB:
+			pdata.b = new BYTE[v.length];
+			memcpy(pdata.b, v.pdata.b, v.length);
+			length = v.length;
+			break;
+		case TYPE_PTR:
+			pdata.ptr = new BYTE*;
+			*pdata.ptr = *v.pdata.ptr;
+			break;
+		}		
+	}
+
+	ObjectWrap& ObjectWrap::operator= (const ObjectWrap &v)
+	{
+		this->Copy(v);
+		return *this;
+	}
+
+	ObjectWrap::~ObjectWrap()
+	{
 		switch (type)
 		{
 		case TYPE_INT:
@@ -106,104 +154,58 @@ namespace Common
 		} 
 	}
 
-	ObjectWrap::ObjectWrap() : data() 
-	{
-
-	}
-
-	ObjectWrap::ObjectWrap(const char* val) : data(new c_data(val))
-	{		
-	}
-
-	ObjectWrap::ObjectWrap(const wchar_t* val) : data(new c_data(val))
-	{		
-	}
-
-	ObjectWrap::ObjectWrap(int val) : data(new c_data(val))
-	{		
-	}
-
-	ObjectWrap::ObjectWrap(double val) : data(new c_data(val))
-	{		
-	}
-
-	ObjectWrap::ObjectWrap(BYTE* val, size_t length) : data(new c_data(val, length))
-	{		
-	}
-
-	ObjectWrap::ObjectWrap(const ObjectWrap &v) : data(v.data)
-	{		
-	}
-
-	ObjectWrap::ObjectWrap(void* ptr) : data(new c_data(ptr))
-	{
-	}
-
-	ObjectWrap& ObjectWrap::operator= (const ObjectWrap &v)
-	{
-		//printf("%08X %08X\n", v, this);
-		data = v.data;
-		return *this;
-	}
-
-	ObjectWrap::~ObjectWrap()
-	{
-		printf("Destroy wrapper\n");
-		//printf("Destruct type %i\n", data->type);
-	}
-
 	std::string ObjectWrap::GetStr() const throw(ObjectError)
 	{
 		// let strings convert themselves
-		if (data->type == TYPE_WSTRING) return Common::NarrowString(*data->pdata.ws);
+		if (type == TYPE_WSTRING) return Common::NarrowString(*pdata.ws);
 		VerifyType(TYPE_STRING);
-		return *(data->pdata.s);
+		return *(pdata.s);
 	}
 
 	std::wstring ObjectWrap::GetWStr() const throw(ObjectError)
 	{
-		if (data->type == TYPE_STRING) return Common::WidenString(*data->pdata.s);
+		if (type == TYPE_STRING) return Common::WidenString(*pdata.s);
 		VerifyType(TYPE_WSTRING);
-		return *(data->pdata.ws);
+		return *(pdata.ws);
 	}
 
 	int ObjectWrap::GetInt() const throw(ObjectError)
 	{
 		VerifyType(TYPE_INT);
-		return *(data->pdata.i);
+		return *(pdata.i);
 	}
 
 	double ObjectWrap::GetDouble() const throw(ObjectError)
 	{
 		VerifyType(TYPE_DOUBLE);
-		return *(data->pdata.d);
+		return *(pdata.d);
 	}
 
 	BYTE* ObjectWrap::GetBlob() const throw(ObjectError)
 	{
 		VerifyType(TYPE_BLOB);
-		return data->pdata.b;
+		return pdata.b;
 	}
 
 	std::string ObjectWrap::ToString()
 	{
 		std::stringstream s;
-		switch (data->type)
+		switch (type)
 		{
 		case TYPE_STRING:
-			s << *data->pdata.s;
+			s << *pdata.s;
 			break;
 		case TYPE_WSTRING:
-			s << Common::NarrowString(*data->pdata.ws);
+			s << Common::NarrowString(*pdata.ws);
 			break;
 		case TYPE_INT:
-			s << *data->pdata.i;
+			s << *pdata.i;
 			break;
 		case TYPE_DOUBLE:
-			s << *data->pdata.d;
+			s << *pdata.d;
 			break;
 		case TYPE_BLOB:
-			s << data->size << " byte BLOB@" << (DWORD)data->pdata.b;
+			s << length << " byte BLOB@" << (DWORD)pdata.b;
 			break;
 		}
 		std::string str = s.str();
