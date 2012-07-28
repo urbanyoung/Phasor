@@ -10,6 +10,9 @@ namespace Common
 	// Memory commands
 	BOOL WriteBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount);
 	BOOL ReadBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount);
+	std::vector<DWORD> FindSignature(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0);
+	DWORD FindAddress(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0, DWORD dwIndex = 0, DWORD dwOffset = 0);
+	BOOL CreateCodeCave(DWORD dwAddress, BYTE cbSize, VOID (*pFunction)());
 
 	// --------------------------------------------------------------------
 	// String commands
@@ -22,6 +25,9 @@ namespace Common
 	std::string m_sprintf_s(const char* _Format, ...);
 	std::wstring m_swprintf_s(const wchar_t* _Format, ...);
 	
+	// Tokenization functions
+	std::vector<std::string> TokenizeCommand(const std::string& str);
+
 	template <class T>
 	std::vector<T> TokenizeString(const T& str, const T& delim)
 	{
@@ -31,16 +37,14 @@ namespace Common
 		while (p0 != T::npos) {
 			p1 = str.find_first_of(delim, p0);
 			if(p1 != p0) {
-				wstring token = str.substr(p0, p1 - p0);
+				T token = str.substr(p0, p1 - p0);
 				tokens.push_back(token);
 			}
 			p0 = str.find_first_not_of(delim, p1);
 		}
 		return tokens;
 	}
-
-	std::vector<std::string> TokenizeCommand(const std::string& str);
-
+	
 	// --------------------------------------------------------------------
 	//
 	// Windows error stuff
