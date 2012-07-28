@@ -2,7 +2,7 @@
 #include <list>
 #include "../libcurl/curl/curl.h"
 #include <sstream>
-#include "PhasorError.h"
+#include "Phasor.h"
 
 namespace Server
 {
@@ -21,7 +21,7 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlMulti
 		// Purpose: Manages a non-blocking (ish) multi curl interface. 
-		class CurlMulti : public Phasor::PhasorError
+		class CurlMulti : public Phasor::Error
 		{
 		private:
 			CURLM* multi_curl; // the multi stack used
@@ -58,7 +58,7 @@ namespace Server
 		// Class: CurlSimple
 		// Purpose: Manage simple curl connections for use in CurlMulti.
 		class CurlSimple : public std::enable_shared_from_this<CurlSimple>, 
-			public Phasor::PhasorError
+			public Phasor::Error
 		{
 		private:
 			CURL* curl; // the easy curl interface used

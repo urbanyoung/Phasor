@@ -9,13 +9,16 @@
       <Filter>Server\Curl</Filter>
     </ClCompile>
     <ClCompile Include="Common.cpp">
-      <Filter>Common</Filter>
+      <Filter>Phasor\Common</Filter>
     </ClCompile>
     <ClCompile Include="Scripting.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Core.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor.cpp">
+      <Filter>Phasor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,11 +34,14 @@
     <Filter Include="Server\Curl">
       <UniqueIdentifier>{bda8da5b-c6fc-4c0c-8db4-b8f13e524c81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{b9f647b2-6887-4430-b7a0-455103332c44}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{9bd87356-e0e4-4d53-a439-725a53ed2ae6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor">
+      <UniqueIdentifier>{33aed109-e7cf-4e2f-b91b-0a5057af84b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Common">
+      <UniqueIdentifier>{b9f647b2-6887-4430-b7a0-455103332c44}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -46,13 +52,16 @@
       <Filter>Server\Curl</Filter>
     </ClInclude>
     <ClInclude Include="Common.h">
-      <Filter>Common</Filter>
+      <Filter>Phasor\Common</Filter>
     </ClInclude>
     <ClInclude Include="Scripting.h">
       <Filter>Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Core.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor.h">
+      <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

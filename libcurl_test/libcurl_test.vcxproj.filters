@@ -5,7 +5,7 @@
     <ClCompile Include="..\Phasor\Curl.cpp">
       <Filter>Server\Curl</Filter>
     </ClCompile>
-    <ClCompile Include="..\Phasor\PhasorError.cpp">
+    <ClCompile Include="..\Phasor\Phasor.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -24,7 +24,7 @@
     <ClInclude Include="..\Phasor\Curl.h">
       <Filter>Server\Curl</Filter>
     </ClInclude>
-    <ClInclude Include="..\Phasor\PhasorError.h">
+    <ClInclude Include="..\Phasor\Phasor.h">
       <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua_test", "lua_test\lua_te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sql_test", "sql_test\sql_test.vcxproj", "{28396E85-70FE-4928-9349-95F4235A1F46}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phasor_test", "phasor_test\phasor_test.vcxproj", "{F1B5508F-52B4-4107-BFAB-8E82021B12E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -61,6 +63,10 @@ Global
 		{28396E85-70FE-4928-9349-95F4235A1F46}.Debug|Win32.Build.0 = Debug|Win32
 		{28396E85-70FE-4928-9349-95F4235A1F46}.Release|Win32.ActiveCfg = Release|Win32
 		{28396E85-70FE-4928-9349-95F4235A1F46}.Release|Win32.Build.0 = Release|Win32
+		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Debug|Win32.Build.0 = Debug|Win32
+		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Release|Win32.ActiveCfg = Release|Win32
+		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
