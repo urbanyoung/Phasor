@@ -4,6 +4,212 @@
 
 namespace Common
 {
+	//-----------------------------------------------------------------------------------------
+	// Class: ObjectError
+	//
+	ObjectError::ObjectError(int err, const char* desc) : std::exception() 
+	{
+		this->err = err;
+		processed = true; // assume we're processing it
+		switch (err)
+		{
+		case OBJECT_TYPE:
+			msg.assign("ObjectError - Attempted to access unexpected data type.");
+			break;
+
+		default:
+			processed = false; // not processed
+		}		
+
+		if (processed && desc) 
+			msg += "\ndescription: " + std::string(desc);
+	}
+
+	ObjectError::~ObjectError()
+	{
+	}
+
+	const char* ObjectError::what() const throw()
+	{ 
+		return msg.c_str();
+	}
+
+	//-----------------------------------------------------------------------------------------
+	// Class: ObjectWrap
+	//
+	int created = 0;
+	ObjectWrap::c_data::c_data() : size(0) {
+		created++;
+		type = TYPE_NONE;
+	}
+	ObjectWrap::c_data::c_data(const char* val) : size(4) {
+		created++;
+		pdata.s = new std::string;
+		pdata.s->assign(val);
+		type = TYPE_STRING;
+	}
+	ObjectWrap::c_data::c_data(const wchar_t* val) : size(4) {
+		created++;
+		pdata.ws = new std::wstring;
+		pdata.ws->assign(val);
+		type = TYPE_WSTRING;
+	}
+	ObjectWrap::c_data::c_data(int val) : size(4) {
+		created++;
+		pdata.i = new int;
+		*pdata.i = val;
+		type = TYPE_INT;
+	}
+	ObjectWrap::c_data::c_data(double val) : size(4) {
+		created++;
+		pdata.d = new double;
+		*pdata.d = val;
+		type = TYPE_DOUBLE;			
+	}
+	ObjectWrap::c_data::c_data(BYTE* val, size_t length) : size(length) { 
+		created++;
+		pdata.b = new BYTE[length];
+		memcpy(pdata.b, val, length);
+		type = TYPE_BLOB;
+	}
+	ObjectWrap::c_data::c_data(void* val) : size(4) {
+		created++;
+		pdata.ptr = new BYTE*;
+		*pdata.ptr = (BYTE*)val;
+		type = TYPE_PTR;
+	}
+
+	ObjectWrap::c_data::~c_data()
+	{
+		created--;
+		printf("%i open objects\n", created);
+		switch (type)
+		{
+		case TYPE_INT:
+			delete pdata.i;
+			break;		
+		case TYPE_STRING:
+			delete pdata.s;
+			break;
+		case TYPE_WSTRING:
+			delete pdata.ws;
+			break;
+		case TYPE_DOUBLE:
+			delete pdata.d;
+			break;
+		case TYPE_BLOB:
+			delete[] pdata.b;
+			break;
+		case TYPE_PTR:
+			delete pdata.ptr;
+			break;
+		} 
+	}
+
+	ObjectWrap::ObjectWrap() : data() 
+	{
+
+	}
+
+	ObjectWrap::ObjectWrap(const char* val) : data(new c_data(val))
+	{		
+	}
+
+	ObjectWrap::ObjectWrap(const wchar_t* val) : data(new c_data(val))
+	{		
+	}
+
+	ObjectWrap::ObjectWrap(int val) : data(new c_data(val))
+	{		
+	}
+
+	ObjectWrap::ObjectWrap(double val) : data(new c_data(val))
+	{		
+	}
+
+	ObjectWrap::ObjectWrap(BYTE* val, size_t length) : data(new c_data(val, length))
+	{		
+	}
+
+	ObjectWrap::ObjectWrap(const ObjectWrap &v) : data(v.data)
+	{		
+	}
+
+	ObjectWrap::ObjectWrap(void* ptr) : data(new c_data(ptr))
+	{
+	}
+
+	ObjectWrap& ObjectWrap::operator= (const ObjectWrap &v)
+	{
+		//printf("%08X %08X\n", v, this);
+		data = v.data;
+		return *this;
+	}
+
+	ObjectWrap::~ObjectWrap()
+	{
+		printf("Destroy wrapper\n");
+		//printf("Destruct type %i\n", data->type);
+	}
+
+	std::string ObjectWrap::GetStr() const throw(ObjectError)
+	{
+		// let strings convert themselves
+		if (data->type == TYPE_WSTRING) return Common::NarrowString(*data->pdata.ws);
+		VerifyType(TYPE_STRING);
+		return *(data->pdata.s);
+	}
+
+	std::wstring ObjectWrap::GetWStr() const throw(ObjectError)
+	{
+		if (data->type == TYPE_STRING) return Common::WidenString(*data->pdata.s);
+		VerifyType(TYPE_WSTRING);
+		return *(data->pdata.ws);
+	}
+
+	int ObjectWrap::GetInt() const throw(ObjectError)
+	{
+		VerifyType(TYPE_INT);
+		return *(data->pdata.i);
+	}
+
+	double ObjectWrap::GetDouble() const throw(ObjectError)
+	{
+		VerifyType(TYPE_DOUBLE);
+		return *(data->pdata.d);
+	}
+
+	BYTE* ObjectWrap::GetBlob() const throw(ObjectError)
+	{
+		VerifyType(TYPE_BLOB);
+		return data->pdata.b;
+	}
+
+	std::string ObjectWrap::ToString()
+	{
+		std::stringstream s;
+		switch (data->type)
+		{
+		case TYPE_STRING:
+			s << *data->pdata.s;
+			break;
+		case TYPE_WSTRING:
+			s << Common::NarrowString(*data->pdata.ws);
+			break;
+		case TYPE_INT:
+			s << *data->pdata.i;
+			break;
+		case TYPE_DOUBLE:
+			s << *data->pdata.d;
+			break;
+		case TYPE_BLOB:
+			s << data->size << " byte BLOB@" << (DWORD)data->pdata.b;
+			break;
+		}
+		std::string str = s.str();
+		return str;
+	}
+
 	// --------------------------------------------------------------------
 	// Memory commands
 	BOOL WriteBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount)

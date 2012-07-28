@@ -6,46 +6,41 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteError
 	//
-	SQLiteError::SQLiteError(int err, const char* sql_desc) : std::exception() 
+	SQLiteError::SQLiteError(int err, const char* desc) : ObjectError(err, desc)
 	{
-		std::stringstream s;
-		this->err = err;
-		switch (err)
+		if (!IsProcessed())
 		{
-		case SQL_ERRCODE_FAILED_OPEN:
-			s << "SQLiteError - Unable the open the database file.";
-			break;
-		case SQL_ERRCODE_TYPE:
-			s <<  "SQLiteError - Attempted to access unexpected data type.";
-			break;
-		case SQL_ERRCODE_NO_INIT:
-			s << "SQLiteError - Attempted to use uninitialized data.";
-			break;
-		case SQL_ERRCODE_NO_PARAM:
-			s << "SQLiteError - Attempted to bind to an unknown parameter";
-			break;
-		case SQL_ERRCODE_BAD_INDEX:
-			s << "SQLiteError - Out of bounds access attempt on SQLiteResult or SQLiteRow";
-			break;
-		case SQL_ERRCODE_NDE:
-			s << "SQLiteError - Executed query where no data was expected but received data.";
-			break;
-		default:
-			s << "SQLiteError - Unknown code: " << err;
-		}		
+			std::stringstream s;
 
-		if (sql_desc)
-			s << "\ndescription: " << std::string(sql_desc);
-		msg.assign(s.str());
+			switch (err)
+			{
+			case SQL_ERRCODE_FAILED_OPEN:
+				s << "SQLiteError - Unable the open the database file.";
+				break;
+			case SQL_ERRCODE_NO_INIT:
+				s << "SQLiteError - Attempted to use uninitialized data.";
+				break;
+			case SQL_ERRCODE_BAD_INDEX:
+				s << "SQLiteError - Out of bounds access attempt on SQLiteResult or SQLiteRow";
+				break;
+			case SQL_ERRCODE_NO_PARAM:
+				s << "SQLiteError - Attempted to bind to an unknown parameter";
+				break;
+			case SQL_ERRCODE_NDE:
+				s << "SQLiteError - Executed query where no data was expected but received data.";
+				break;
+			default:
+				s << "SQLiteError - Unknown code: " << err;
+			}		
+
+			if (desc) s << "\ndescription: " << std::string(desc);
+			msg.assign(s.str());
+		}
 	}
 
 	SQLiteError::~SQLiteError()
 	{
-	}
 
-	const char* SQLiteError::what() const throw()
-	{ 
-		return msg.c_str();
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -298,91 +293,24 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteValue
 	// 
-	int created = 0;
-	SQLiteValue::c_data::c_data(const char* val) : size(4) {
-		created++;
-		pdata.s = new std::string;
-		pdata.s->assign(val);
-		type = TYPE_STRING;
-	}
-	SQLiteValue::c_data::c_data(const wchar_t* val) : size(4) {
-		created++;
-		pdata.ws = new std::wstring;
-		pdata.ws->assign(val);
-		type = TYPE_WSTRING;
-	}
-	SQLiteValue::c_data::c_data(int val) : size(4) {
-		created++;
-		pdata.i = new int;
-		*pdata.i = val;
-		type = TYPE_INT;
-	}
-	SQLiteValue::c_data::c_data(double val) : size(4) {
-		created++;
-		pdata.d = new double;
-		*pdata.d = val;
-		type = TYPE_DOUBLE;			
-	}
-	SQLiteValue::c_data::c_data(BYTE* val, size_t length) : size(length) { 
-		created++;
-		pdata.b = new BYTE[length];
-		memcpy(pdata.b, val, length);
-		type = TYPE_BLOB;
-	}
-
-	SQLiteValue::c_data::~c_data()
-	{
-		created--;
-		printf("%i open objects\n", created);
-		switch (type)
-		{
-		case TYPE_INT:
-			delete pdata.i;
-			break;		
-		case TYPE_STRING:
-			delete pdata.s;
-			break;
-		case TYPE_WSTRING:
-			delete pdata.ws;
-			break;
-		case TYPE_DOUBLE:
-			delete pdata.d;
-			break;
-		case TYPE_BLOB:
-			delete[] pdata.b;
-			break;
-		} 
-	}
-
-	SQLiteValue::SQLiteValue(const char* val) : data(new c_data(val))
+	SQLiteValue::SQLiteValue(const char* val) : ObjectWrap(val)
 	{		
 	}
 
-	SQLiteValue::SQLiteValue(const wchar_t* val) : data(new c_data(val))
+	SQLiteValue::SQLiteValue(const wchar_t* val) : ObjectWrap(val)
 	{		
 	}
 
-	SQLiteValue::SQLiteValue(int val) : data(new c_data(val))
+	SQLiteValue::SQLiteValue(int val) : ObjectWrap(val)
 	{		
 	}
 
-	SQLiteValue::SQLiteValue(double val) : data(new c_data(val))
+	SQLiteValue::SQLiteValue(double val) : ObjectWrap(val)
 	{		
 	}
 
-	SQLiteValue::SQLiteValue(BYTE* val, size_t length) : data(new c_data(val, length))
+	SQLiteValue::SQLiteValue(BYTE* val, size_t length) : ObjectWrap(val, length)
 	{		
-	}
-
-	SQLiteValue::SQLiteValue(const SQLiteValue &v) : data(v.data)
-	{		
-	}
-
-	SQLiteValue& SQLiteValue::operator= (const SQLiteValue &v)
-	{
-		//printf("%08X %08X\n", v, this);
-		data = v.data;
-		return *this;
 	}
 
 	SQLiteValue::~SQLiteValue()
@@ -390,64 +318,6 @@ namespace sqlite
 		//printf("Destruct type %i\n", data->type);
 	}
 	
-	std::string SQLiteValue::GetStr() const throw(SQLiteError)
-	{
-		// let strings convert themselves
-		if (data->type == TYPE_WSTRING) return Common::NarrowString(*data->pdata.ws);
-		VerifyType(TYPE_STRING);
-		return *(data->pdata.s);
-	}
-
-	std::wstring SQLiteValue::GetWStr() const throw(SQLiteError)
-	{
-		if (data->type == TYPE_STRING) return Common::WidenString(*data->pdata.s);
-		VerifyType(TYPE_WSTRING);
-		return *(data->pdata.ws);
-	}
-
-	int SQLiteValue::GetInt() const throw(SQLiteError)
-	{
-		VerifyType(TYPE_INT);
-		return *(data->pdata.i);
-	}
-
-	double SQLiteValue::GetDouble() const throw(SQLiteError)
-	{
-		VerifyType(TYPE_DOUBLE);
-		return *(data->pdata.d);
-	}
-
-	BYTE* SQLiteValue::GetBlob() const throw(SQLiteError)
-	{
-		VerifyType(TYPE_BLOB);
-		return data->pdata.b;
-	}
-
-	std::string SQLiteValue::ToString()
-	{
-		std::stringstream s;
-		switch (data->type)
-		{
-		case TYPE_STRING:
-			s << *data->pdata.s;
-			break;
-		case TYPE_WSTRING:
-			s << Common::NarrowString(*data->pdata.ws);
-			break;
-		case TYPE_INT:
-			s << *data->pdata.i;
-			break;
-		case TYPE_DOUBLE:
-			s << *data->pdata.d;
-			break;
-		case TYPE_BLOB:
-			s << data->size << " byte BLOB@" << (DWORD)data->pdata.b;
-			break;
-		}
-		std::string str = s.str();
-		return str;
-	}
-
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteRow
 	//

@@ -21,7 +21,7 @@ int main()
 		query->BindValue(":id", 1);
 		query->BindValue(":username", "user");
 		query->BindValue(":password", "pass2");
-		query->Execute();
+		//query->Execute();
 
 		SQLiteResultPtr result = 0;
 		query->Reset("SELECT * FROM admins");
@@ -30,18 +30,23 @@ int main()
 
 		printf("Received %i rows of data\n", result->size());
 		for (size_t x = 0; x < result->size(); x++) {
-			SQLiteRowPtr row = result->get(x);
+			SQLiteRowPtr row = result->get(-1);
 			for (size_t c = 0; c < row->size(); c++) {
-				SQLiteValuePtr value = row->get(c);
+				SQLiteValuePtr value = row->get("hehe");
 				printf("%s\n", value->ToString().c_str());
 			}
-			printf("username: %s\n", (*row)["username"]);//row->get("username")->ToString().c_str());
+			printf("username: %s\n", (*row)["username"]->ToString().c_str());//row->get("username")->ToString().c_str());
 		}
 	}
 	catch (SQLiteError & e)
 	{
 		printf("%s\n", e.what());
 	}
+	catch (ObjectError & e)
+	{
+		printf("%s\n", e.what());
+	}
+	
 	return 0;
 }
 

@@ -8,11 +8,14 @@
 #include <map>
 #include <windows.h>
 #include "../sqlite/sqlite3.h"
+#include "../Phasor/Common.h"
 
 #pragma comment(lib, "../release/sqlite.lib")
 
 namespace sqlite 
 {
+	using namespace Common;
+
 	class SQLiteObject;
 	class SQLiteRow;
 	class SQLiteResult;
@@ -24,18 +27,16 @@ namespace sqlite
 	typedef std::shared_ptr<SQLiteQuery> SQLiteQueryPtr; 
 	typedef std::shared_ptr<SQLiteResult> SQLiteResultPtr;
 	typedef std::shared_ptr<SQLiteRow> SQLiteRowPtr;
-	typedef std::shared_ptr<SQLiteValue> SQLiteValuePtr;
-	typedef std::shared_ptr<SQLiteValue> SQLiteObjectPtr;
+	typedef ObjectWrapPtr SQLiteValuePtr;
 	
 	/* Error codes */
 	enum SQLPP_ERRCODE
 	{
-		SQL_ERR_NONE = 0,
+		SQL_ERR_NONE = 100,
 		SQL_ERRCODE_FAILED_OPEN, // sqlite3_open failed for some reason
-		SQL_ERRCODE_TYPE, // Attempting to access data with unexpected type
 		SQL_ERRCODE_NO_INIT, // Attempting to use data that hasn't been initialized
+		SQL_ERRCODE_BAD_INDEX, // Attempted to access out of bounds data
 		SQL_ERRCODE_NO_PARAM, // Attempting to bind to a non existent parameter
-		SQL_ERRCODE_BAD_INDEX, // Attempted to access data that doesn't exist (SQLiteResult/Row)
 		SQL_ERRCODE_MISUSE, // The API was used incorrectly
 		SQL_ERRCODE_NDE, // sqlite3 returned data but none was expected
 		SQL_ERRCODE_CLOSED, // The database has been closed
@@ -55,17 +56,11 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteError
 	// Purpose: Exception class used by this namespace
-	class SQLiteError : public std::exception
+	class SQLiteError : public ObjectError
 	{
-	private:
-		int err;
-		std::string msg;
-
 	public:
-		SQLiteError(int error, const char* sql_desc=NULL);
-		~SQLiteError();
-		virtual const char* what() const throw();
-		const int type() { return err; }
+		SQLiteError(int error, const char* desc=NULL);
+		virtual ~SQLiteError();
 	};
 
 	//-----------------------------------------------------------------------------------------
@@ -154,40 +149,8 @@ namespace sqlite
 	// Purpose: Represents data for exchange between program and database.
 	// Note: Values never get managed directly by SQLite and as such there
 	// is no need to track the parent.
-	class SQLiteValue : public SQLiteObject
-	{
-	private:	
-		/*
-		 * This structure is used to hold the data for this value. It is
-		 * managed by a shared pointer and as such making copies of the
-		 * SQLiteValue object is safe. */
-		struct c_data
-		{
-			/* Store the data in a union for easy type casting */
-			union {
-				int* i;
-				double* d;
-				std::string* s;
-				std::wstring* ws;
-				BYTE* b;
-			} pdata;
-			size_t size;
-			int type;
-
-			c_data(const char* val);
-			c_data(const wchar_t* val);
-			c_data(int val);
-			c_data(double val);
-			c_data(BYTE* val, size_t length);
-			~c_data();
-		};
-		std::shared_ptr<c_data> data;
-
-		// Ensures the type of data stored is what's expected
-		inline void VerifyType(int expected) const throw(SQLiteError) {
-			if (expected != data->type) throw SQLiteError(SQL_ERRCODE_TYPE);
-		}
-		
+	class SQLiteValue : public ObjectWrap, public SQLiteObject
+	{		
 	public:
 		SQLiteValue(const char* val);
 		SQLiteValue(const wchar_t* val);
@@ -195,29 +158,6 @@ namespace sqlite
 		SQLiteValue(double val);
 		SQLiteValue(BYTE* val, size_t length);
 		virtual ~SQLiteValue();
-
-		SQLiteValue& operator= (const SQLiteValue &v);
-		SQLiteValue(const SQLiteValue &v);
-
-		/*	Get the row data in various data types, if the requested type
-		 *	is not stored in this row a SQLiteError exception is thrown. Any
-		 *	modifications made to pointed types is reflected in the internal
-		 *	state. Do not free memory. */
-		std::string GetStr() const throw(SQLiteError);
-		std::wstring GetWStr() const throw(SQLiteError);
-		int GetInt() const throw(SQLiteError);
-		double GetDouble() const throw(SQLiteError);
-		BYTE* GetBlob() const throw(SQLiteError);
-
-		/* Returns a string representation of the data held, non-string
-		 * data is converted if necessary. */
-		std::string ToString();
-
-		/* Returns the type of the stored data */
-		int GetType() const { return data->type; }
-
-		/* Returns the size of the stored data in bytes (for blobs only).*/
-		int size() const { return data->size; }
 
 		friend class SQLiteRow;
 	};
@@ -236,9 +176,9 @@ namespace sqlite
 
 		/* Adds data to the row */
 		void AddColumn(SQLiteValue* value, const std::string& name);
-		
+
 	public:
-		
+
 		SQLiteRow();
 		virtual ~SQLiteRow();
 

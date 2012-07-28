@@ -1,11 +1,131 @@
 #pragma once
+#pragma warning( disable : 4290 )
 
 #include <windows.h>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace Common
 {
+	class ObjectWrap;
+	class ObjectRow;
+
+	typedef std::shared_ptr<ObjectWrap> ObjectWrapPtr;
+	typedef std::shared_ptr<ObjectRow> ObjectRowPtr;
+
+	/* Types of data that can be stored in ObjectWrap */
+	enum VALUE_TYPES 
+	{
+		TYPE_NONE = -1,
+		TYPE_STRING,
+		TYPE_WSTRING,
+		TYPE_INT,
+		TYPE_DOUBLE,
+		TYPE_BLOB,
+		TYPE_PTR,
+	};
+
+	/* Error codes */
+	enum OBJECT_ERRCODE
+	{
+		OBJECT_TYPE = 0 // access unexpected type
+	};
+
+	// --------------------------------------------------------------------
+	// Classes
+	// These classes are used for wrapping objects for transferring between
+	// contexts
+	class ObjectError : public std::exception
+	{
+	protected:
+		int err;
+		std::string msg;
+		bool processed;
+
+		bool IsProcessed() const { return processed; }
+
+	public:
+		ObjectError(int error, const char* desc=NULL);
+		virtual ~ObjectError();
+		virtual const char* what() const throw();
+		const int type() { return err; }
+	};
+		
+	//---------------------------------------------------------------------
+	// Class: ObjectWrap
+	// Purpose: Represent an object
+	class ObjectWrap
+	{
+	private:	
+		/*
+		 * This structure is used to hold the data for this value. It is
+		 * managed by a shared pointer and as such making copies of the
+		 * object is safe. */
+		struct c_data
+		{
+			/* Store the data in a union for easy type casting */
+			union {
+				int* i;
+				double* d;
+				std::string* s;
+				std::wstring* ws;
+				BYTE* b;
+				BYTE** ptr;
+			} pdata;
+			size_t size;
+			int type;
+
+			c_data(const char* val);
+			c_data(const wchar_t* val);
+			c_data(int val);
+			c_data(double val);
+			c_data(BYTE* val, size_t length);
+			c_data(void* val);
+			c_data();
+			~c_data();
+		};
+		std::shared_ptr<c_data> data;
+
+		// Ensures the type of data stored is what's expected
+		inline void VerifyType(int expected) const throw(ObjectError) {
+			if (expected != data->type) throw ObjectError(OBJECT_TYPE);
+		}
+		
+	public:
+		ObjectWrap(const char* val);
+		ObjectWrap(const wchar_t* val);
+		ObjectWrap(int val);
+		ObjectWrap(double val);
+		ObjectWrap(BYTE* val, size_t length);
+		ObjectWrap(void* ptr);
+		ObjectWrap();
+		virtual ~ObjectWrap();
+
+		ObjectWrap& operator= (const ObjectWrap &v);
+		ObjectWrap(const ObjectWrap &v);
+
+		/*	Get the row data in various data types, if the requested type
+		 *	is not stored in this row a SQLiteError exception is thrown. Any
+		 *	modifications made to pointed types is reflected in the internal
+		 *	state. Do not free memory. */
+		std::string GetStr() const throw(ObjectError);
+		std::wstring GetWStr() const throw(ObjectError);
+		int GetInt() const throw(ObjectError);
+		double GetDouble() const throw(ObjectError);
+		BYTE* GetBlob() const throw(ObjectError);
+
+		/* Returns a string representation of the data held, non-string
+		 * data is converted if necessary. */
+		std::string ToString();
+
+		/* Returns the type of the stored data */
+		int GetType() const { return data->type; }
+
+		/* Returns the size of the stored data in bytes (for blobs only).*/
+		int size() const { return data->size; }
+	};	
+
 	// --------------------------------------------------------------------
 	// Memory commands
 	BOOL WriteBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount);
