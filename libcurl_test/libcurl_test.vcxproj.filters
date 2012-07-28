@@ -8,6 +8,7 @@
     <ClCompile Include="..\Phasor\Phasor.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\Common.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Server">
@@ -27,5 +28,6 @@
     <ClInclude Include="..\Phasor\Phasor.h">
       <Filter>Phasor</Filter>
     </ClInclude>
+    <ClInclude Include="..\Phasor\Common.h" />
   </ItemGroup>
 </Project>

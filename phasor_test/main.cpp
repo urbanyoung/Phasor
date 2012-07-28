@@ -5,6 +5,7 @@
 #include "../Phasor/Common.h"
 
 typedef std::map<std::string, Common::ObjectWrap> ThreadExecParam;
+
 /* This class is used for a two way function invocation between threads. The
  * spawned thread invokes functions in the callee thread (who checks this
  * object) and the callee invokes in the spawned thread. 
@@ -35,6 +36,7 @@ private:
 	std::list<ThreadEvent*> events, tmp, *active; // active points to list to modify
 	bool alive; // specifies whether the instance is being cleaned up
 	
+	// Thread owned by this object
 	static DWORD WINAPI ThreadProc(LPVOID lParam)
 	{
 		ThreadExec* _this = (ThreadExec*)lParam;
@@ -47,6 +49,7 @@ private:
 		return 0;
 	}
 
+	// Processes any events in the specified thread
 	bool ProcessEvents(DWORD threadid)
 	{
 		EnterCriticalSection(&cs);
@@ -66,6 +69,7 @@ private:
 		itr = tmp.begin();
 		
 		while (itr != tmp.end()) {
+			printf("Pushing from tmp\n");
 			events.push_back(*itr);
 			itr++;
 		}
@@ -76,6 +80,7 @@ private:
 		return alive; // if false we'll cleanup
 	}	
 
+	// Frees the memory and clears the specified list
 	void CleanupList(std::list<ThreadEvent*>& l)
 	{
 		std::list<ThreadEvent*>::iterator itr = l.begin();
@@ -168,26 +173,29 @@ public:
 
 void test(ThreadExec* t, ThreadExecParam& m)
 {
-	Sleep(500);
-	if (GetCurrentThreadId() == t->GetExecThread()) {
-		printf("%i\n", m["test"].GetInt());
-		t->Invoke(test, NULL);
+	try {
+
+		if (GetCurrentThreadId() == t->GetExecThread()) {
+			printf("%i\n", m["test"].GetInt());
+			t->Invoke(test, NULL);
+		}
+	} catch (Common::ObjectError & e)
+	{
+		printf("%s\n", e.what());
 	}
 }
 
 int main()
 {
 	ThreadExec* t = new ThreadExec();
-	ThreadExecParam m;
-	m["test"] = 123456;
-	t->Invoke(test, &m);
-	m.clear();
-	printf("Cleared\n");
+	
 	int i = 0;
 	while (t && t->Check()) {
-		Sleep(50);
+		ThreadExecParam m;
+		m["test"] = 135;
 		i++;
-		if (i == 20) {
+		t->Invoke(test, NULL);
+		if (i == 20000) {
 			printf("Closing\n");
 			ThreadExec::Close(&t);
 
@@ -198,16 +206,16 @@ int main()
 	return 0;
 }
 
-/*class Logging : public ThreadExec
+class Logging
 {
 private:
 	// stores open logs and their associated ids
 	static std::map<int, Logging*> logs;
-	DWORD exec_thread; // if non-null saving occurs in that thread
+	ThreadExec* exec_thread; // if non-null saving occurs in that thread
 
-	Logging(DWORD exec_thread)
+	Logging(ThreadExec* t=0)
 	{
-
+		this->exec_thread = t;
 	}
 
 	~Logging();
@@ -218,14 +226,14 @@ private:
 		const wchar_t* _Details, ...);
 
 public:
-	static void Create(int id, const std::string& file, const DWORD exec_thread = 0);
+	static void Create(int id, const std::string& file, ThreadExec* t=0);
 	static void Close(int id);
 	static void SetMaxSize(int id, size_t size);
 	static size_t GetMaxSize(int id);
+	static void SetCacheSize(int id, int n);
 
 	static void LogData(int id, const std::string& type, const std::string& name,
 		const char* _Details, ...);
 	static void LogData(int id, const std::string& type, const std::string& name,
 		const wchar_t* _Details, ...);		
 };
-*/

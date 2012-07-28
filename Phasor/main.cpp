@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include "Phasor.h"
+#include "Common.h"
 
 // Entry point
 BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)

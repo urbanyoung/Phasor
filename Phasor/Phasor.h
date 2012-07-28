@@ -2,7 +2,7 @@
 
 #include <string>
 #include <map>
-#include "Common.h"
+#include <windows.h>
 
 namespace Phasor
 {
@@ -21,7 +21,7 @@ namespace Phasor
 		std::string GetError() const;
 		bool hasError() const;
 	};
-
+	
 	class Logging
 	{
 	private:

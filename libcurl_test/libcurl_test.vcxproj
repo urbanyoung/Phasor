@@ -72,11 +72,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Phasor\Common.cpp" />
     <ClCompile Include="..\Phasor\Curl.cpp" />
     <ClCompile Include="..\Phasor\Phasor.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Phasor\Common.h" />
     <ClInclude Include="..\Phasor\Curl.h" />
     <ClInclude Include="..\Phasor\Phasor.h" />
   </ItemGroup>

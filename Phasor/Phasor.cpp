@@ -1,4 +1,5 @@
 #include "Phasor.h"
+#include "Common.h"
 #include <vector>
 #include <windows.h>
 #include <Shlobj.h>
