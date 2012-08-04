@@ -9,13 +9,14 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlMulti
 		//
-		CurlMultiPtr CurlMulti::Create()
+		CurlMultiPtr CurlMulti::Create(Phasor::ErrorStreamPtr error_stream)
 		{
-			return CurlMultiPtr(new CurlMulti());
+			return CurlMultiPtr(new CurlMulti(error_stream));
 		}
 
-		CurlMulti::CurlMulti()
+		CurlMulti::CurlMulti(Phasor::ErrorStreamPtr error_stream)
 		{
+			this->error_stream = error_stream;
 			multi_curl = curl_multi_init();
 			running = 0;
 			started = false;
@@ -31,12 +32,12 @@ namespace Server
 		{	
 			CURLMcode c = curl_multi_add_handle(multi_curl, simple_curl->GetCurl());
 			if (c != CURLM_OK) { // error
-				SetError("Failed to add CurlSimple connection, error code " + c);
+				error_stream->Write("Failed to add CurlSimple connection, error code %i", c);
 				return false;
 			}
 			if (!simple_curl->OnAdd()) {
 				curl_multi_remove_handle(multi_curl, simple_curl->GetCurl());
-				SetError("CurlSimple object is not ready to be processed.");
+				error_stream->Write("CurlSimple object is not ready to be processed.");
 				return false;
 			}
 			simples.push_back(simple_curl);
@@ -90,13 +91,14 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimple
 		//
-		CurlPtr CurlSimple::Create(const std::string& url)
+		CurlPtr CurlSimple::Create(const std::string& url, Phasor::ErrorStreamPtr error_stream)
 		{
-			return CurlPtr(new CurlSimple(url));
+			return CurlPtr(new CurlSimple(url, error_stream));
 		}
 
-		CurlSimple::CurlSimple(const std::string& url)
+		CurlSimple::CurlSimple(const std::string& url, Phasor::ErrorStreamPtr error_stream)
 		{
+			this->error_stream = error_stream;
 			init(url);
 		}
 
@@ -146,7 +148,7 @@ namespace Server
 			if (recvCount + nbytes > bufferSize) {
 				if (!ResizeBuffer(bufferSize + nbytes))	{
 					printf("Error\n");
-					SetError("OnDataWrite: Cannot allocate enough memory for received data.");
+					error_stream->Write("OnDataWrite: Cannot allocate enough memory for received data.");
 					return 0; // curl will abort
 				}
 			}
@@ -159,9 +161,7 @@ namespace Server
 		void CurlSimple::ConnectionDone(CURLMsg* msg)
 		{
 			if (msg->data.result != CURLM_OK) {
-				char err[128] = {0};
-				sprintf_s(err, sizeof(err), "Connection failed with error: %i", msg->data.result);
-				SetError(err);
+				error_stream->Write("Connection failed with error: %i", msg->data.result);
 				recvCount = 0;
 				return;
 			}
@@ -197,7 +197,8 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimpleHttp
 		//
-		CurlHttp::CurlHttp(const std::string& url) : CurlSimple(url)
+		CurlHttp::CurlHttp(const std::string& url, Phasor::ErrorStreamPtr error_stream) 
+			: CurlSimple(url, error_stream)
 		{
 			pair_added = false;
 			form = NULL;
@@ -214,9 +215,9 @@ namespace Server
 			if (form) curl_formfree(form);
 		}
 
-		CurlHttpPtr CurlHttp::Create(const std::string& url)
+		CurlHttpPtr CurlHttp::Create(const std::string& url, Phasor::ErrorStreamPtr error_stream)
 		{
-			return CurlHttpPtr(new CurlHttp(url));
+			return CurlHttpPtr(new CurlHttp(url, error_stream));
 		}
 
 		bool CurlHttp::OnAdd()
@@ -318,7 +319,8 @@ namespace Server
 		// Class: CurlSimplDownload
 		//
 		CurlDownload::CurlDownload(const std::string& url, 
-			const std::string& path_to_file) : CurlSimple(url) 
+			const std::string& path_to_file, Phasor::ErrorStreamPtr error_stream) 
+			: CurlSimple(url, error_stream) 
 		{
 			file = path_to_file;
 			pFile = fopen(file.c_str(), "wb");
@@ -336,9 +338,9 @@ namespace Server
 		}
 
 		CurlDownloadPtr CurlDownload::Create(const std::string& url, 
-			const std::string& path_to_file)
+			const std::string& path_to_file, Phasor::ErrorStreamPtr error_stream)
 		{
-			return CurlDownloadPtr(new CurlDownload(url, path_to_file));
+			return CurlDownloadPtr(new CurlDownload(url, path_to_file, error_stream));
 		}
 
 		size_t CurlDownload::OnDataWrite(BYTE* data, size_t size, size_t nmemb)

@@ -21,9 +21,15 @@
     <ClCompile Include="..\Phasor\Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\Phasor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Phasor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

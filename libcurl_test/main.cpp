@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "..\Phasor\Curl.h"
+#include "..\Phasor\Phasor.h"
 
 void test(BYTE* data, size_t len, void* userdata)
 {
@@ -15,10 +16,11 @@ int main()
 {
 	using namespace Server::Curl;
 
-	CurlMultiPtr multi = CurlMulti::Create();
+	Phasor::ErrorStreamPtr err = Phasor::ErrorStream::Create("errors.txt");
+	CurlMultiPtr multi = CurlMulti::Create(err);
 
 	// Connect and post data to a php script
-	CurlHttpPtr simp = CurlHttp::Create("http://127.0.0.1/test.php");
+	CurlHttpPtr simp = CurlHttp::Create("http://127.0.0.1/test.php", err);
 	simp->AddGetData("test", "data");
 	simp->AddGetData("test1", "data1");
 	simp->AddPostData("post1", "postdata1");
@@ -29,11 +31,11 @@ int main()
 
 	// Download a few files
 	CurlDownloadPtr dl = CurlDownload::Create("http://sohowww.nascom.nasa.gov/gallery/images/large/suncombo1_prev.jpg",
-		"nasa1.jpg");
+		"nasa1.jpg", err);
 	dl->Associate(multi);
 
 	CurlDownloadPtr dl1 = CurlDownload::Create("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
-		"hubble.jpg");
+		"hubble.jpg", err);
 	dl1->Associate(multi);
 
 	while (multi->Process())

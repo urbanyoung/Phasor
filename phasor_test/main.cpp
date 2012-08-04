@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <list>
 #include "../Phasor/Common.h"
+#include "../Phasor/Phasor.h"
 
 typedef std::map<std::string, Common::ObjectWrap> ThreadExecParam;
 
@@ -25,7 +26,6 @@ private:
 		{
 			this->id = id;
 			this->callback = callback;
-			printf("copying\n");
 			if (data) this->data = *data;
 		}
 	};
@@ -131,7 +131,9 @@ public:
 		printf("ThreadExec cleaned up\n");
 	}
 
-	/* Invokes the callback function in associated thread. */
+	/* Invokes the callback function in associated thread. Any event to be
+	 * invoked is guaranteed to be executed, even if the thread is to be closed
+	 * after a request is made. */
 	void Invoke(void (*callback)(ThreadExec*, ThreadExecParam&), 
 		ThreadExecParam* data=NULL)
 	{
@@ -212,20 +214,72 @@ private:
 	// stores open logs and their associated ids
 	static std::map<int, Logging*> logs;
 	ThreadExec* exec_thread; // if non-null saving occurs in that thread
+	std::list<std::string>* data;
+	std::string log_name;
+	FILE* pFile;
 
-	Logging(ThreadExec* t=0)
+	/* log_name should be the absolute directory */
+	Logging(const std::string& log_name, ThreadExec* t=0) : pFile(NULL)
 	{
 		this->exec_thread = t;
+		data = new std::list<std::string>();
+
+		this->log_name = log_name;/*Common::m_sprintf_s("%s\\%02i-%02i-%i_%02i-%02i-%02i_%s.log",
+			Phasor::GetLogDirectory().c_str(),
+			st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond,
+			log_name.c_str());*/
+		 
 	}
 
-	~Logging();
+	/* once this is called it is assumed that exec_thread is no longer
+	 * running and so this thread takes ownership of file objects */
+	~Logging()
+	{
+		if (data) delete data;
+	}
+
+	/* helper function for managing the file ptr */
+	FILE* GetFileHandle() 
+	{
+		/*if (pFile) return pFile;
+		pFile = fopen(log_name.c_str(), "a+");
+		if (!pFile)*/
+		return 0;
+	}
+
+	/* writes the data to file, usually called from exec_thread if enabled */
+	void WriteData(const std::wstring& data) 
+	{
+		//if (!pFile) pFile = fopen()
+	}
 
 	void LogData(const std::string& type, const std::string& name,
-		const char* _Details, ...);
+		const char* _Details, ...)
+	{
+		va_list ArgList;
+		va_start(ArgList, _Details);
+		std::string str = Common::FormatVarArgs(_Details, ArgList);
+		va_end(ArgList);
+		this->LogData(type, name, L"%s",
+			Common::WidenString(str).c_str());
+	}
+
 	void LogData(const std::string& type, const std::string& name,
-		const wchar_t* _Details, ...);
+		const wchar_t* _Details, ...)
+	{
+		va_list ArgList;
+		va_start(ArgList, _Details);
+		std::wstring str = Common::WFormatVarArgs(_Details, ArgList);
+		va_end(ArgList);
+
+		// timestamp
+		SYSTEMTIME st = {0};		
+		GetLocalTime(&st);
+		std::wstring timestamp = m_swprintf_s("")
+	}
 
 public:
+	/* file should be the absolute path to the file (including file type) */
 	static void Create(int id, const std::string& file, ThreadExec* t=0);
 	static void Close(int id);
 	static void SetMaxSize(int id, size_t size);

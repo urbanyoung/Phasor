@@ -117,7 +117,6 @@ namespace Common
 			length = v.length;
 			break;
 		case TYPE_PTR:
-			pdata.ptr = new BYTE*;
 			*pdata.ptr = *v.pdata.ptr;
 			break;
 		}		
@@ -147,9 +146,6 @@ namespace Common
 			break;
 		case TYPE_BLOB:
 			delete[] pdata.b;
-			break;
-		case TYPE_PTR:
-			delete pdata.ptr;
 			break;
 		} 
 	}
@@ -185,6 +181,12 @@ namespace Common
 	{
 		VerifyType(TYPE_BLOB);
 		return pdata.b;
+	}
+
+	void* ObjectWrap::GetPtr() const throw(ObjectError)
+	{
+		VerifyType(TYPE_PTR);
+		return (void*)pdata.ptr;
 	}
 
 	std::string ObjectWrap::ToString()

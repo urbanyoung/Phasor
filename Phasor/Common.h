@@ -97,6 +97,7 @@ namespace Common
 		int GetInt() const throw(ObjectError);
 		double GetDouble() const throw(ObjectError);
 		BYTE* GetBlob() const throw(ObjectError);
+		void* GetPtr() const throw(ObjectError);
 
 		/* Returns a string representation of the data held, non-string
 		 * data is converted if necessary. */

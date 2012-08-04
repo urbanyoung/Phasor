@@ -6,20 +6,32 @@
 
 namespace Phasor
 {
-	class Error
+	class ErrorStream;
+
+	typedef std::shared_ptr<ErrorStream> ErrorStreamPtr;
+
+	/* This class is used throughout Phasor for logging errors in a 
+	 * consistent way. Most Phasor classes require an ErrorStreamPtr on
+	 * creation. */
+	class ErrorStream
 	{
 	private:
-		std::string err;
-		bool hasErr;
+		std::string file;
+		HANDLE pFile;
+		HANDLE fMutex;
 
-	protected:
-		void SetError(const std::string& error);
+		ErrorStream(const std::string& file);	
+
+		static const char* STREAM_SYNC_MUTEX;
 
 	public:
-		Error();
-		~Error();
-		std::string GetError() const;
-		bool hasError() const;
+		~ErrorStream();
+
+		/* The directory where 'file' is located should already be created */
+		static ErrorStreamPtr Create(const std::string& file);
+		
+		/* Writes an error to the stream */
+		void Write(const char* _Format, ...);
 	};
 	
 	class Logging
@@ -60,6 +72,6 @@ namespace Phasor
 	std::string GetWorkingDirectory();
 	std::string GetDataDirectory();
 	std::string GetScriptDirectory();
-
+	std::string GetLogDirectory();
 	
 }

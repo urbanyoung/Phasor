@@ -6,37 +6,58 @@
 
 namespace Phasor
 {
-	Error::Error()
+	const char* ErrorStream::STREAM_SYNC_MUTEX = "Phasor_Halo_PC_Error_StreamMUTEX";
+
+	ErrorStream::ErrorStream(const std::string& file)
 	{
-		hasErr = false;
+		this->file = file;
+		pFile = CreateFile(file.c_str(), GENERIC_READ | GENERIC_WRITE,
+			FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, NULL, NULL);
+		if (pFile == INVALID_HANDLE_VALUE) { 
+			std::string err = Common::m_sprintf_s(
+				"The file to be used as an error stream cannot be accessed: %s", 
+				file.c_str());
+			throw std::exception(err.c_str());
+		}
+		fMutex = CreateMutex(NULL, FALSE, STREAM_SYNC_MUTEX);
+		if (fMutex == NULL)	{
+			CloseHandle(pFile);
+			std::string err = Common::m_sprintf_s(
+				"Cannot access error stream mutex, error code %i\n",
+				GetLastError());
+			throw std::exception(err.c_str());
+		}
 	}
 
-	Error::~Error()
+	ErrorStream::~ErrorStream()
 	{
-
+		CloseHandle(fMutex);
+		CloseHandle(pFile);		
 	}
 
-	void Error::SetError(const std::string& error)
+	ErrorStreamPtr ErrorStream::Create(const std::string& file)
 	{
-		printf("Error: %s\n", error.c_str());
-		this->err = error;
-		hasErr = true;
+		return ErrorStreamPtr(new ErrorStream(file));
 	}
 
-	std::string Error::GetError() const
+	void ErrorStream::Write(const char* _Format, ...)
 	{
-		return err;
-	}
+		va_list ArgList;
+		va_start(ArgList, _Format);
+		std::string str = Common::FormatVarArgs(_Format, ArgList) + "\n";
+		va_end(ArgList);
 
-	bool Error::hasError() const
-	{
-		return hasErr;
+		// the file can be shared between multiple processes so we need to get a lock
+		WaitForSingleObject(fMutex, 1000); // wait 1s then do it anyway
+		DWORD bytesWritten = 0;
+		WriteFile(pFile, str.c_str(), str.size(), &bytesWritten, NULL);
+		ReleaseMutex(fMutex);
 	}
 
 	// --------------------------------------------------------------------
 	// 
 	// Directory stuff
-	std::string working_dir, map_dir, data_dir, script_dir;
+	std::string working_dir, map_dir, data_dir, script_dir, log_dir;
 	bool SetupDirectories()
 	{
 		using namespace Common;
@@ -91,9 +112,11 @@ namespace Phasor
 		// set and force create the directories
 		data_dir = working_dir + "\\data";
 		script_dir = working_dir + "\\scripts";
+		log_dir = working_dir + "\\logs";
 
 		CreateDirectory(data_dir.c_str(), NULL);
 		CreateDirectory(script_dir.c_str(), NULL);
+		CreateDirectory(log_dir.c_str(), NULL);
 
 		return true;
 	}
@@ -116,5 +139,10 @@ namespace Phasor
 	std::string GetDataDirectory()
 	{
 		return data_dir;
+	}
+
+	std::string GetLogDirectory()
+	{
+		return log_dir;
 	}
 }

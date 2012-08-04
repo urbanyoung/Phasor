@@ -21,16 +21,17 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlMulti
 		// Purpose: Manages a non-blocking (ish) multi curl interface. 
-		class CurlMulti : public Phasor::Error
+		class CurlMulti
 		{
 		private:
 			CURLM* multi_curl; // the multi stack used
 			std::list<CurlPtr> simples; // simple connections tracked
 			int running; // number of connections active
 			bool started;
+			Phasor::ErrorStreamPtr error_stream;
 
 			/* Shouldn't be called directly */
-			CurlMulti();
+			CurlMulti(Phasor::ErrorStreamPtr error_stream);
 
 			/*	Adds a CurlSimple connection to tracking list. */
 			bool AddRequest(CurlPtr simple_curl);
@@ -41,7 +42,7 @@ namespace Server
 
 		public:
 			
-			static CurlMultiPtr Create();
+			static CurlMultiPtr Create(Phasor::ErrorStreamPtr error_stream);
 			~CurlMulti();			
 
 			/*	Processes any waiting data
@@ -57,12 +58,12 @@ namespace Server
 		//-----------------------------------------------------------------------------------------
 		// Class: CurlSimple
 		// Purpose: Manage simple curl connections for use in CurlMulti.
-		class CurlSimple : public std::enable_shared_from_this<CurlSimple>, 
-			public Phasor::Error
+		class CurlSimple : public std::enable_shared_from_this<CurlSimple>
 		{
 		private:
 			CURL* curl; // the easy curl interface used
 			static const unsigned long DEFAULT_BUFFER_SIZE = 4096;
+			Phasor::ErrorStreamPtr error_stream;
 
 			/*	Called by the curl object when there is data to be processed. This
 				function is simply used to call OnDataWrite in a C++ context. */
@@ -99,11 +100,11 @@ namespace Server
 			virtual void ConnectionDone(CURLMsg* msg);
 
 			/* Shouldn't be called directly */
-			CurlSimple(const std::string& url);
+			CurlSimple(const std::string& url, Phasor::ErrorStreamPtr error_stream);
 
 		public:
 
-			static CurlPtr Create(const std::string& url);
+			static CurlPtr Create(const std::string& url, Phasor::ErrorStreamPtr error_stream);
 			virtual ~CurlSimple();
 
 			/* Initializes the class */
@@ -150,10 +151,10 @@ namespace Server
 			 * Return values specifies whether or not it should be added. */
 			virtual bool OnAdd();
 
-			CurlHttp(const std::string& url);
+			CurlHttp(const std::string& url, Phasor::ErrorStreamPtr error_stream);
 		public:
 
-			static CurlHttpPtr Create(const std::string& url);
+			static CurlHttpPtr Create(const std::string& url, Phasor::ErrorStreamPtr error_stream);
 			virtual ~CurlHttp();
 
 			/* Adds data to the http request, any unicode strings are escaped. */
@@ -173,7 +174,8 @@ namespace Server
 			std::string file;
 			FILE* pFile;
 
-			CurlDownload(const std::string& url, const std::string& path_to_file);
+			CurlDownload(const std::string& url, const std::string& path_to_file,
+				Phasor::ErrorStreamPtr error_stream);
 
 		protected:
 			/*	Called by CurlMulti when the file has downloaded */
@@ -184,7 +186,7 @@ namespace Server
 
 		public:
 			static CurlDownloadPtr Create(const std::string& url, 
-				const std::string& path_to_file);
+				const std::string& path_to_file, Phasor::ErrorStreamPtr error_stream);
 			
 			~CurlDownload();
 		};
