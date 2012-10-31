@@ -30,7 +30,7 @@ namespace Scripting
 
 		//-----------------------------------------------------------------------------------------
 		// Class: State
-		// Lua state wrapper
+		// This class is analogous to lua_State 
 		//
 
 		class State
@@ -56,7 +56,7 @@ namespace Scripting
 			static State* NewState();
 
 			// Destroys the state
-			void Close();
+			static void Close(State* state);
 
 			// Loads and runs a file
 			void DoFile(const char* filename);
@@ -87,6 +87,9 @@ namespace Scripting
 
 			// Creates a new function
 			Function* NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>&));
+
+			// Create a new named function
+			void RegisterFunction(const char* name, std::vector<Object*> (*func)(State*, std::vector<Object*>&));
 
 			// Calls a function with an optional timeout
 			std::vector<Object*> Call(const char* name, std::vector<Object*>& args, int timeout = 0);

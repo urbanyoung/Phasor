@@ -48,9 +48,9 @@ namespace Scripting
 		}
 
 		// Destroys the state
-		void State::Close()
+		void State::Close(State* state)
 		{
-			delete this;
+			delete state;
 		}
 
 		// Loads and runs a file
@@ -154,8 +154,15 @@ namespace Scripting
 		{
 			Function* object = new Function(this, func);
 			this->objects.push_back(object);
-
+			
 			return object;
+		}
+
+		// Create a new named function
+		void State::RegisterFunction(const char* name, std::vector<Object*> (*func)(State*, std::vector<Object*>&))
+		{
+			Function* function = NewFunction(func);
+			this->SetGlobal(name, function);
 		}
 
 		// Calls a function

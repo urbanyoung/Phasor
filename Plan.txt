@@ -1,0 +1,47 @@
+Plan:
+
+Lua
+ - Need to decide on the how to handle multiple scripts.
+ - Obviously each script needs to be called for most functions, but should also have the 
+   capacity to call functions on a single vm.
+ - How to handle return values from scripts?
+   - What if multiple scripts both return an acting value?
+     - How would you determine what an acting value is?
+	   - Default value like previous version? Don't like that.
+	   - Could make scripts return, say, nil if they don't care what happens. Any other value is an "acting value".
+	     - Scripts would need to be updated ;/
+     - Could notify scripts if their return value will count, and only use the first one.
+	 - If a script requires its return value be used to function properly, let it notify Phasor
+	   which can then log the issue, alerting the host.
+ - Need to control script versions
+   - On load call GetRequiredVersion as previously and check if it's compatible. 
+     - If not compatible maybe check if there's an update available?
+	 
+	 
+Script class should be language independent, maybe have another class which is the interface for the calls.
+So all scripting languages implement same methods. Would be good if I intended to add others, but I don't so probably not
+necessary. 
+Multithreaded stuff should go in Lua class, as its implementation is Lua dependent. For multithreaded shit it runs
+in sandboxed environment, can only access passed table and Lua functions. No means of interacting with halo and as such
+it can be free running. No guarantees it will finish executing. Could maybe have a status function that the thread calls,
+but probably not necessary. It is completely independent of parent vm and can only be closed when it is finished.
+Script class should provide means for registering and calling functions. 
+Rest of phasor should only ever interact with Script - not Lua. 
+Script class needs to open, close scripts. Its objects should be generic and so LuaObject should inherit from ScriptObject
+and the ScriptInterface deals with ScriptObjects. This means adding support for another language is trivial.
+
+
+About other classes - curl and SQLite. Not sure if I like the smart pointers or not, definitely need to change how
+errors are propagated. Exception classes should derive from PhasorException and only describe the error - don't log.
+The handling code should take care of error reporting. Each exception should have a message and specific code. 
+When logging (from handling code), the line number should be logged and other descriptive information.
+
+
+Look into object invalidation that sehe mentioned, is probably the cause of phasor crashes. 
+
+
+Make a robust crash log system. I need a stack output too. Crashes shouldn't be just text and should of course be
+compressed. Restart the server, or provide the option for it, when it crashes. 
+
+Change the number class to handle ints/unsigned ints.. Using doubles won't work.
+overload Call to take no args

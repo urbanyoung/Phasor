@@ -30,8 +30,8 @@ int main()
 	simp->Associate(multi);
 
 	// Download a few files
-	CurlDownloadPtr dl = CurlDownload::Create("http://sohowww.nascom.nasa.gov/gallery/images/large/suncombo1_prev.jpg",
-		"nasa1.jpg", err);
+	CurlDownloadPtr dl = CurlDownload::Create("http://anon.nasa-global.edgesuite.net/anon.nasa-global/msl/figure_1_raw.png",
+		"mars.png", err);
 	dl->Associate(multi);
 
 	CurlDownloadPtr dl1 = CurlDownload::Create("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",

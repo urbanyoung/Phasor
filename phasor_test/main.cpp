@@ -4,6 +4,7 @@
 #include <list>
 #include "../Phasor/Common.h"
 #include "../Phasor/Phasor.h"
+#include <assert.h>
 
 typedef std::map<std::string, Common::ObjectWrap> ThreadExecParam;
 
@@ -208,6 +209,8 @@ int main()
 	return 0;
 }
 
+#define DEFAULT_CACHE_SIZE		10
+
 class Logging
 {
 private:
@@ -216,11 +219,19 @@ private:
 	ThreadExec* exec_thread; // if non-null saving occurs in that thread
 	std::list<std::string>* data;
 	std::string log_name;
-	FILE* pFile;
+	CRITICAL_SECTION cs;
+	size_t cache_size;
+	// what is checked for caching decisions. Usually cache_size but can
+	// be expanded if data wasn't saved.
+	size_t use_cache_size; 
 
-	/* log_name should be the absolute directory */
-	Logging(const std::string& log_name, ThreadExec* t=0) : pFile(NULL)
+	/* log_name should be the absolute directory.
+	 * NOTE: If a ThreadExec is specified then InvalidateThread() should
+	 * be called before cleaning up this object. You must also make sure 
+	 * that the ThreadExec queue is empty before cleaning up this object.*/
+	Logging(const std::string& log_name, ThreadExec* t=0)
 	{
+		InitializeCriticalSection(&cs);
 		this->exec_thread = t;
 		data = new std::list<std::string>();
 
@@ -228,29 +239,74 @@ private:
 			Phasor::GetLogDirectory().c_str(),
 			st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond,
 			log_name.c_str());*/
-		 
+
+		cache_size = DEFAULT_CACHE_SIZE;
+		use_cache_size = cache_size;		 
 	}
 
 	/* once this is called it is assumed that exec_thread is no longer
 	 * running and so this thread takes ownership of file objects */
 	~Logging()
 	{
-		if (data) delete data;
+		assert(exec_thread == 0);
+		Logging::WriteData(log_name, data, NULL);
+		// delete data; WriteData frees the memory
+		DeleteCriticalSection(&cs);
 	}
 
-	/* helper function for managing the file ptr */
-	FILE* GetFileHandle() 
+	void InvalidateThread() 
 	{
-		/*if (pFile) return pFile;
-		pFile = fopen(log_name.c_str(), "a+");
-		if (!pFile)*/
-		return 0;
+		exec_thread = 0;
 	}
 
+	/* Called by WriteData if the file couldn't be opened. The list referred
+	 * to by first is inserted at the start of any current data. */
+	void MergeLists(std::list<std::string>& first)
+	{
+		EnterCriticalSection(&cs);
+		use_cache_size += first.size();
+		data->splice(data->begin(), first);		
+		LeaveCriticalSection(&cs);
+	}
+
+	/* Called by WriteData when the requested data is successfully saved.*/
+	void ResetCache()
+	{
+		EnterCriticalSection(&cs);
+		use_cache_size = cache_size;
+		LeaveCriticalSection(&cs);
+	}
+	
 	/* writes the data to file, usually called from exec_thread if enabled */
-	void WriteData(const std::wstring& data) 
+	static void WriteData(const std::string& file, std::list<std::string>* data,
+		Logging* owner, size_t retry_count=5) 
 	{
-		//if (!pFile) pFile = fopen()
+		FILE* pFile = NULL;
+		// Attempt to open th file until the number of failures has been reached
+		size_t i = 0;
+		while (i++ < retry_count && 
+			(pFile = _fsopen(file.c_str(), "a+", _SH_DENYRW)) == NULL) 
+		{
+			Sleep(5);
+		}
+
+		// on failure add this data back to the list to try again later
+		if (!pFile) {
+			if (owner) owner->MergeLists(*data);
+			delete data; // cleanup memory
+			return;
+		}
+
+		std::list<std::string>::iterator itr = data->begin();
+		while (itr != data->end()) {
+			fprintf(pFile, "%s\n", itr->c_str());
+			itr++;
+		}
+
+		fclose(pFile);
+		delete data;
+
+		if (owner) owner->ResetCache();
 	}
 
 	void LogData(const std::string& type, const std::string& name,
@@ -280,7 +336,10 @@ private:
 
 public:
 	/* file should be the absolute path to the file (including file type) */
+	/*
+		put into namespace
 	static void Create(int id, const std::string& file, ThreadExec* t=0);
+	static void InvalidateThread(int id); // should be called before cleaning up
 	static void Close(int id);
 	static void SetMaxSize(int id, size_t size);
 	static size_t GetMaxSize(int id);
@@ -289,5 +348,16 @@ public:
 	static void LogData(int id, const std::string& type, const std::string& name,
 		const char* _Details, ...);
 	static void LogData(int id, const std::string& type, const std::string& name,
-		const wchar_t* _Details, ...);		
+		const wchar_t* _Details, ...);		*/
+};
+
+/*	Class for handling I/O safely between multiple processes. */
+class FileWriter {
+public:
+
+	/* file should be the absolute path (including file type) */
+	FileWriter(const std::string& file)  {
+
+	}
+
 };
