@@ -3,6 +3,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <map>
 #include "..\lua\lua.hpp"
 
 namespace Scripting
@@ -85,14 +86,19 @@ namespace Scripting
 			// Creates a new table
 			Table* NewTable();
 
+
 			// Creates a new function
 			Function* NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>&));
 
 			// Create a new named function
 			void RegisterFunction(const char* name, std::vector<Object*> (*func)(State*, std::vector<Object*>&));
 
+			// Checks if the specified function is defined in the script
+			bool HasFunction(const char* name);
+
 			// Calls a function with an optional timeout
-			std::vector<Object*> Call(const char* name, std::vector<Object*>& args, int timeout = 0);
+			std::vector<Object*> Call(const char* name, const std::vector<Object*>& args, int timeout = 0);
+			std::vector<Object*> Call(const char* name, int timeout = 0);
 
 			// Raises an error
 			void Error(const char* _Format, ...);
@@ -128,7 +134,7 @@ namespace Scripting
 			~Object();
 
 			// Gets the objects value and pushes it on the stack
-			void Push();
+			void Push() const;
 
 			// Pops a value off the stack and sets the object
 			void Pop();
@@ -254,6 +260,9 @@ namespace Scripting
 			Object* GetValue(const char* key);
 			Object* GetValue(Object* key);
 
+			// Gets the table as a C++ map
+			std::map<Object*, Object*> GetMap();
+
 			// Sets a key to a value
 			void SetValue(int key, Object* value);
 			void SetValue(const char* key, Object* value);
@@ -281,7 +290,7 @@ namespace Scripting
 
 		public:
 			// Calls the Lua function from C with an optional timeout
-			std::vector<Object*> Call(std::vector<Object*>& args, int timeout = 0);
+			std::vector<Object*> Call(const std::vector<Object*>& args, int timeout = 0);
 
 		public:
 			friend class State;

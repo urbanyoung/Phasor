@@ -1,10 +1,9 @@
 #include <vld.h> // check for memory leaks
 #include <iostream>
 #include <conio.h>
-#include "..\Phasor\Lua.h"
+#include "..\Phasor\Scripting.h"
 
 using namespace std;
-using namespace Scripting::Lua;
 
 const char* script = "i = 0\n"
 	"function func(a)\n"
@@ -17,7 +16,7 @@ const char* script = "i = 0\n"
 
 void main()
 {
-	State* state = State::NewState();
+	/*State* state = State::NewState();
 
 	try
 	{
@@ -25,12 +24,22 @@ void main()
 		state->DoFile("D:\\Development\\C++\\Phasor\\Release\\lua_test.lua");
 		vector<Object*> args;
 		args.push_back(state->NewString("Hello"));
-		state->Call("func", args, 5000);
+		state->Call("funca", args, 5000);
 	}
 	catch (std::exception e)
 	{
+		cout << "Exception" << endl;
 		cout << e.what() << endl;
 	}
 
-	State::Close(state);
+	cout << "Closing state" << endl;
+	State::Close(state);*/
+
+	Scripting::SetPath("D:\\Development\\C++\\Phasor\\Release");
+	Scripting::OpenScript("lua_test");
+
+	vector<Object*> args;
+	args.push_back(state->NewString("Hello"));
+
+	Scripting::Call("funca", args);
 }

@@ -42,6 +42,3 @@ Look into object invalidation that sehe mentioned, is probably the cause of phas
 
 Make a robust crash log system. I need a stack output too. Crashes shouldn't be just text and should of course be
 compressed. Restart the server, or provide the option for it, when it crashes. 
-
-Change the number class to handle ints/unsigned ints.. Using doubles won't work.
-overload Call to take no args

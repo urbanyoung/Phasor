@@ -165,14 +165,28 @@ namespace Scripting
 			this->SetGlobal(name, function);
 		}
 
+		// Checks if the specified function is defined in the script
+		bool State::HasFunction(const char* name)
+		{
+			Function* function = (Function*)this->GetGlobal(name);
+			return function->GetType() == Type_Function;
+		}
+
 		// Calls a function
-		std::vector<Object*> State::Call(const char* name, std::vector<Object*>& args, int timeout)
+		std::vector<Object*> State::Call(const char* name, const std::vector<Object*>& args, int timeout)
 		{
 			Function* function = (Function*)this->GetGlobal(name);
 			std::vector<Object*> results = function->Call(args, timeout);
 			function->Delete();
 
 			return results;
+		}
+
+		// Calls a function
+		std::vector<Object*> State::Call(const char* name, int timeout)
+		{
+			const std::vector<Object*> args;
+			return this->Call(name, args, timeout);
 		}
 
 		// Raises an error
@@ -221,7 +235,7 @@ namespace Scripting
 		}
 
 		// Gets the objects value and pushes it on the stack
-		void Object::Push()
+		void Object::Push() const
 		{
 			// Gets the value at the reference
 			// Pushes the value to the stack
@@ -480,6 +494,36 @@ namespace Scripting
 			this->Pop();
 		}
 
+		// Gets the table as a C++ map
+		std::map<Object*, Object*> Table::GetMap() 
+		{
+			std::map<Object*, Object*> table;
+			this->Push();
+
+			// Push first key
+			lua_pushnil(this->state->L);
+
+			// Add each key value pair to the table
+			// lua_next pops a key from the stack
+			// Then pushes the key value pair
+			while (lua_next(this->state->L, -2))
+			{
+				Object* value = this->state->NewObject();
+				value->Pop();
+
+				Object* key = this->state->NewObject();
+				key->Peek(); // Keep key on the stack
+
+				// Only add if key and value not nil
+				if (key->GetType() != Type_Nil && value->GetType() != Type_Nil)
+				{
+					table.insert(std::pair<Object*, Object*>(key, value));
+				}
+			}
+
+			return table;
+		}
+
 		// Gets a value from a key
 		Object* Table::GetValue(int key)
 		{
@@ -622,13 +666,13 @@ namespace Scripting
 		}
 
 		// Calls the Lua function from C
-		std::vector<Object*> Function::Call(std::vector<Object*>& args, int timeout)
+		std::vector<Object*> Function::Call(const std::vector<Object*>& args, int timeout)
 		{
 			// Push the function on the stack
 			this->Push();
 
 			// Push the arguments on the stack
-			for (std::vector<Object*>::iterator itr = args.begin(); itr != args.end(); ++itr)
+			for (std::vector<Object*>::const_iterator itr = args.begin(); itr != args.end(); ++itr)
 				(*itr)->Push();
 
 			// Call the Lua function
