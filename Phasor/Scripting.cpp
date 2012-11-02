@@ -1,4 +1,5 @@
 #include "Scripting.h"
+#include "Lua.h"
 #include <map>
 #include <string>
 #include <sstream>
@@ -12,7 +13,7 @@ namespace Scripting
 	#define exception_type std::exception // todo: change to custom type
 	#define DEFAULT_TIMEOUT 2000
 
-	const uint_32 versions[] = {1234};
+	const DWORD versions[] = {1234};
 
 	std::string scriptsDir;
 	std::map<std::string, Lua::State*> scripts;
@@ -41,26 +42,6 @@ namespace Scripting
 	// --------------------------------------------------------------------
 	//
 	// 
-	
-	// Checks if the specified function exists before calling it
-	// Return: TRUE (exists) FALSE (doesn't exist).
-	// Throws exceptions in same way as Call
-	bool CheckCall(Lua::State* state, const char* func,  
-		const std::vector<Lua::Object*>& args,
-		std::vector<Lua::Object*>& rets, int timeout=DEFAULT_TIMEOUT) 
-	{
-		if (!state->HasFunction(func)) return false;
-		rets = state->Call(func, args, timeout);
-		return true;
-	}
-
-	bool CheckCall(Lua::State* state, const char* func, int timeout=DEFAULT_TIMEOUT)
-	{
-		if (!state->HasFunction(func)) return false;
-		state->Call(func, timeout);
-		return true;
-	}
-
 	void OpenScript(const char* script)
 	{
 		// Make sure the script isn't already loaded
@@ -82,10 +63,12 @@ namespace Scripting
 			CheckScriptCompatibility(state, script);			
 
 			// Notify the script that it's been loaded.
-			std::vector<Lua::Object*> args;
-			args.push_back(state->NewNumber(GetCurrentProcessId()));
+			bool fexists = false;
+			Caller caller;
+			caller.AddArg(GetCurrentProcessId());
+			caller.Call(state, "OnScriptLoad", &fexists);
 
-			if (!CheckCall(state, "OnScriptLoad")) {
+			if (!fexists) {
 				std::stringstream err;
 				err << "script: " << script << " cannot be loaded, OnScriptLoad undefined.";
 				throw std::exception(err.str().c_str());
@@ -110,7 +93,9 @@ namespace Scripting
 			Lua::State* state = itr->second;
 			try 
 			{
-				CheckCall(state, "OnScriptUnload");
+				Caller caller;
+				caller.Call(state, "OnScriptUnload");
+
 				Lua::State::Close(state);
 			}
 			catch (exception_type) 
@@ -136,7 +121,7 @@ namespace Scripting
 	}
 
 	// Checks if the specified version is compatible
-	bool CompatibleVersion(uint_32 required) 
+	bool CompatibleVersion(DWORD required) 
 	{
 		const int n = sizeof(versions)/sizeof(versions[0]);
 		bool compatible = false;
@@ -153,8 +138,11 @@ namespace Scripting
 	// Checks if the script is compatible with this version of Phasor.
 	void CheckScriptCompatibility(Lua::State* state, const char* script) 
 	{
-		std::vector<Lua::Object*> args, vals;
-		if (!CheckCall(state, "GetRequiredVersion", args, vals)) {
+		bool funcExists = false;
+		Caller caller;
+		Result result = caller.Call(state, "GetRequiredVersion", &funcExists);
+
+		if (!funcExists) {
 			std::stringstream err;
 			err << "script: " << script << " cannot be loaded, GetRequiredVersion undefined.";
 			throw std::exception(err.str().c_str());
@@ -162,10 +150,9 @@ namespace Scripting
 
 		// Make sure the requested version is compatible
 		bool is_compatible = false;
-		if (vals.size() == 1) {
-			Lua::Number* ver = (Lua::Number* )vals[0];
-			if (ver->GetType() == Lua::Type_Number &&
-				CompatibleVersion((uint_32)ver->GetValue())) {
+		if (result.size() == 1 && result[0]->GetType() == TYPE_NUMBER) {
+			ObjNumber* ver = (ObjNumber*)result[0];
+			if (CompatibleVersion((DWORD)ver->GetValue())) {
 					is_compatible = true;
 			}
 		}
@@ -177,16 +164,198 @@ namespace Scripting
 		}
 	}
 
-	/*std::vector<Lua::Object*> Call(const char* function, 
-		const std::vector<Lua::Object*>& args)
+	// --------------------------------------------------------------------
+	// Class: Caller
+	// Provides an interface between calling code and scripts. Basically
+	// just provides a wrapper around std::vector for memory management.
+	// 
+	Caller::Caller()
 	{
-		return std
-	}*/
+	}
+
+	void Caller::SetData(const Caller& other)
+	{
+		std::list<Object*>::const_iterator args_itr = other.args.begin();
+		while (args_itr != other.args.end())
+		{
+			args.push_back((*args_itr)->NewCopy());
+			args_itr++;
+		}
+	}
+
+	Caller::Caller(const Caller& other)
+	{
+		SetData(other);
+	}
+
+	void Caller::Free()
+	{
+		std::list<Object*>::iterator args_itr = args.begin();
+		while (args_itr != args.end())
+		{
+			delete *args_itr;
+			args_itr = args.erase(args_itr);
+		}
+
+	}
+
+	Caller::~Caller()
+	{
+		Free();
+	}
+
+	Caller& Caller::operator=(const Caller& rhs)
+	{
+		if (this == &rhs) return *this;
+		Free();
+		SetData(rhs);
+		return *this;
+	}
+		
+	void Caller::AddArg(bool b)
+	{
+		args.push_back(new ObjBool(b));
+	}
+
+	void Caller::AddArg(const char* str)
+	{
+		args.push_back(new ObjString(str));
+	}
+
+	void Caller::AddArg(int value)
+	{
+		args.push_back(new ObjNumber(value));
+	}
+
+	void Caller::AddArg(DWORD value)
+	{
+		args.push_back(new ObjNumber(value));
+	}
+
+	void Caller::AddArg(float value)
+	{
+		args.push_back(new ObjNumber(value));
+	}
+
+	void Caller::AddArg(double value)
+	{
+		args.push_back(new ObjNumber(value));
+	}
+
+	void Caller::AddArg(const std::map<std::string, std::string>& table)
+	{
+		args.push_back(new ObjTable(table));
+	}
+
+	Result Caller::Call(Lua::State* state, const char* function, bool* found, bool erase)
+	{
+		if (!state->HasFunction(function))
+		{
+			if (found != NULL) *found = false;
+			return Result();
+		}
+		Result r = state->Call(function, args, DEFAULT_TIMEOUT);
+		if (erase) Free();
+		if (found != NULL) *found = true;
+		return r;
+	}
+
+	Result Caller::Call(const char* function)
+	{
+		using namespace std;
+		map<string, Lua::State*>::iterator itr = Scripting::scripts.begin();
+		Result result;
+
+		while (itr != Scripting::scripts.end())
+		{
+			Lua::State* state = itr->second;
+			result = Call(state, function, 0, false);
+
+			// todo: change how i handle return values for multiple scripts (see notes)
+			
+			itr++;
+		}
+		return result;
+	}
+
+	// --------------------------------------------------------------------
+	// Class: Result
+	// Provides an interface for retrieving values from scripts
+	//
+	Result::Result()
+	{
+
+	}
+
+	Result::Result(const std::vector<Object*>& result) : result(result)
+	{
+	}
+
+	void Result::SetData(const Result& other)
+	{
+		std::vector<Object*>::const_iterator itr = other.result.begin();
+		result.reserve(other.result.size());
+		while (itr != other.result.end())
+		{
+			result.push_back((*itr)->NewCopy());
+			itr++;
+		}
+	}
+
+	Result::Result(const Result& other)
+	{
+		SetData(other);
+	}
+
+	void Result::Free()
+	{
+		std::vector<Object*>::iterator itr = result.begin();
+		while (itr != result.end())
+		{
+			delete *itr;
+			itr++;
+		}
+		result.clear();
+	}
+
+	Result::~Result()
+	{
+		Free();
+	}
+
+	Result& Result::operator=(const Result& rhs)
+	{
+		if (this == &rhs) return *this;
+		Free();
+		SetData(rhs);
+		return *this;
+	}
+
+	const Object* Result::operator[](size_t index)
+	{
+		if (index < 0 || index >= result.size()) {
+			std::stringstream err;
+			err << "script: attempt to access out of bounds result.";
+			throw std::exception(err.str().c_str());
+		}
+		return result[index];
+	}
+
+	size_t Result::size() const
+	{
+		return result.size();
+	}
+
 	// --------------------------------------------------------------------
 	// Class: Object
 	// Provides an interface between Lua and Phasor objects. The derived
 	// classes provide specific types.
+	// 
 	Object::Object(obj_type _type) : type(_type) 
+	{
+	}
+
+	Object::Object() : type(TYPE_NIL)
 	{
 	}
 
@@ -194,9 +363,14 @@ namespace Scripting
 	{
 	}
 
-	obj_type Object::GetType()
+	obj_type Object::GetType() const
 	{
 		return type;
+	}
+
+	Object* Object::NewCopy() const
+	{
+		return new Object(TYPE_NIL);
 	}
 
 	// --------------------------------------------------------------------
@@ -207,25 +381,31 @@ namespace Scripting
 		this->b = b;
 	}
 
-	ObjBool::ObjBool(Lua::Boolean* b) : Object(TYPE_BOOL)
-	{
-		if (b->GetType() != Lua::Type_Boolean) {
-			std::stringstream err;
-			err << __FUNCTION__ << " expects boolean types, not " << b->GetType();
-			throw std::exception(err.str().c_str());
-		}
-		this->b = b->GetValue();
-	}
-
 	ObjBool::ObjBool(const ObjBool& other) : Object(TYPE_BOOL)
 	{
 		this->b = other.b;
 	}
 
+	ObjBool::~ObjBool()
+	{
+	}
+
 	ObjBool & ObjBool::operator=(const ObjBool &rhs) 
 	{
+		if (this == &rhs) return *this;
+
 		this->b = rhs.b;
 		return *this;
+	}
+
+	ObjBool* ObjBool::NewCopy() const
+	{
+		return new ObjBool(*this);
+	}
+
+	bool ObjBool::GetValue() const
+	{
+		return this->b;
 	}
 
 	// --------------------------------------------------------------------
@@ -236,7 +416,7 @@ namespace Scripting
 		this->value = value;
 	}
 
-	ObjNumber::ObjNumber(uint_32 value) : Object(TYPE_NUMBER)
+	ObjNumber::ObjNumber(DWORD value) : Object(TYPE_NUMBER)
 	{
 		this->value = value;
 	}
@@ -251,14 +431,9 @@ namespace Scripting
 		this->value = value;
 	}
 
-	ObjNumber::ObjNumber(Lua::Number* value) : Object(TYPE_NUMBER)
+	ObjNumber::~ObjNumber()
 	{
-		if (value->GetType() != Lua::Type_Boolean) {
-			std::stringstream err;
-			err << __FUNCTION__ << " expects number types, not " << value->GetType();
-			throw std::exception(err.str().c_str());
-		}
-		this->value = value->GetValue();
+
 	}
 
 	ObjNumber::ObjNumber(const ObjNumber& other) : Object(TYPE_NUMBER)
@@ -268,26 +443,27 @@ namespace Scripting
 
 	ObjNumber& ObjNumber::operator=(const ObjNumber& rhs)
 	{
+		if (this == &rhs) return *this;
+
 		this->value = rhs.value;
 		return *this;
 	}
 
+	ObjNumber* ObjNumber::NewCopy() const
+	{
+		return new ObjNumber(*this);
+	}
+
+	double ObjNumber::GetValue() const
+	{
+		return this->value;
+	}
 	// --------------------------------------------------------------------
 	//
 	
 	ObjString::ObjString(const char* str) : Object(TYPE_STRING)
 	{
 		CopyString(str);
-	}
-
-	ObjString::ObjString(Lua::String* str) : Object(TYPE_STRING)
-	{
-		if (str->GetType() != Lua::Type_String) {
-			std::stringstream err;
-			err << __FUNCTION__ << " expects string types, not " << str->GetType();
-			throw std::exception(err.str().c_str());
-		}
-		CopyString(str->GetValue());
 	}
 
 	ObjString::ObjString(const ObjString& other) : Object(TYPE_STRING)
@@ -302,14 +478,28 @@ namespace Scripting
 
 	ObjString& ObjString::operator=(const ObjString& rhs) 
 	{
+		if (this == &rhs) return *this;
+		
+		delete[] str;
 		CopyString(rhs.str);
+
 		return *this;
+	}
+
+	ObjString* ObjString::NewCopy() const
+	{
+		return new ObjString(*this);
 	}
 
 	void ObjString::CopyString(const char* str)
 	{
 		this->str = new char [strlen(str) + 1];
 		strcpy(this->str, str);
+	}
+
+	const char* ObjString::GetValue() const
+	{
+		return this->str;
 	}
 
 	// --------------------------------------------------------------------
@@ -328,28 +518,17 @@ namespace Scripting
 		}
 	}
 
-	ObjTable::ObjTable(Lua::Table* table) : Object(TYPE_TABLE)
+	ObjTable::ObjTable(const ObjTable& other) : Object(TYPE_TABLE)
 	{
-		if (table->GetType() != Lua::Type_Table) {
-			std::stringstream err;
-			err << __FUNCTION__ << " expects table types, not " << table->GetType();
-			throw std::exception(err.str().c_str());
-		}
-
-		std::map<Lua::Object*, Lua::Object*> tbl_map = table->GetMap();
-
-		std::map<Lua::Object*, Lua::Object*>::const_iterator itr = tbl_map.begin();
-		while (itr != tbl_map.end())
-		{
-			/*switch (itr->)
-			{
-
-			}*/
-			itr++;
-		}
+		CopyTable(other);
 	}
 
 	ObjTable::~ObjTable() 
+	{
+		FreeTable();
+	}
+
+	void ObjTable::FreeTable()
 	{
 		std::map<Object*, Object*>::iterator itr = table.begin();
 		while (itr != table.end())
@@ -360,19 +539,39 @@ namespace Scripting
 		}
 	}
 
-	Object* ObjTable::ConvertObject(Lua::Object* obj)
+	ObjTable& ObjTable::operator=(const ObjTable &rhs)
 	{
-		Object* out = NULL;
-		switch (obj->GetType())
-		{
-		case Lua::Type_Nil:
-			out = new Object(TYPE_NIL);
-			break;
-		case Lua::Type_Boolean:
-			out = new ObjBool((Lua::Boolean*)obj);
-			break;
+		if (this == &rhs) return *this;
+		FreeTable();
+		CopyTable(rhs);
+		return *this;
+	}
 
+	ObjTable* ObjTable::NewCopy() const
+	{
+		return new ObjTable(*this);
+	}
+
+	void ObjTable::CopyTable(const ObjTable& other)
+	{
+		std::map<Object*, Object*>::const_iterator itr = other.table.begin();
+
+		while (itr != other.table.end())
+		{
+			Object* key = itr->first->NewCopy();
+			Object* value = itr->second->NewCopy();
+			table.insert(std::pair<Object*, Object*>(key, value));
 		}
 	}
 
+	const Object* ObjTable::operator [] (const Object& key)
+	{
+		std::map<Object*, Object*>::iterator itr = table.find((Object*)&key);
+		if (itr == table.end()) {
+			std::stringstream err;
+			err << __FUNCTION__ << ": specified key doesn't exist ";
+			throw std::exception(err.str().c_str());
+		}
+		return itr->second;
+	}
 }

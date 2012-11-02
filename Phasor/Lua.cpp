@@ -1,9 +1,135 @@
 #include "Lua.h"
+#include <sstream>
 
 namespace Scripting
 {
 	namespace Lua
 	{
+		Scripting::Object* ConvertFromLua(const Lua::Object* obj);
+	}
+
+	// Copy constructor for conversion to Scripting::ObjTable
+	ObjTable::ObjTable(Lua::Table* table) : Object(TYPE_TABLE)
+	{
+		if (table->GetType() != Lua::Type_Table) {
+			std::stringstream err;
+			err << __FUNCTION__ << " expects table types, not " << table->GetType();
+			throw std::exception(err.str().c_str());
+		}
+
+		std::map<Lua::Object*, Lua::Object*> tbl_map = table->GetMap();
+
+		std::map<Lua::Object*, Lua::Object*>::const_iterator itr = tbl_map.begin();
+		while (itr != tbl_map.end())
+		{
+			Object* key = Lua::ConvertFromLua(itr->first);
+			Object* value = Lua::ConvertFromLua(itr->second);
+
+			this->table.insert(std::pair<Object*, Object*>(key, value));
+			itr++;
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	namespace Lua
+	{		
+		// ----------------------------------------------------------------
+		// The code implementing Scripting is responsible for conversion
+		// between the objects.
+		Lua::Object* ConvertToLua(State* state, const Scripting::Object* object)
+		{
+			Lua::Object* out = NULL;
+			switch (object->GetType())
+			{
+				case Scripting::TYPE_NIL: {
+					out = state->NewNil();
+				} break;
+				case Scripting::TYPE_BOOL: {
+					Scripting::ObjBool* b = (Scripting::ObjBool*)object;
+					out = state->NewBoolean(b->GetValue());
+				} break;
+				case Scripting::TYPE_NUMBER: {
+					Scripting::ObjNumber* n = (Scripting::ObjNumber*)object;
+					out = state->NewNumber(n->GetValue());
+				} break;
+				case Scripting::TYPE_STRING: {
+					Scripting::ObjString* str = (Scripting::ObjString*)object;
+					out = state->NewString(str->GetValue());
+				} break;
+				case Scripting::TYPE_TABLE: {
+					Scripting::ObjTable* t = (Scripting::ObjTable*)object;
+					Lua::Table* table = state->NewTable();
+
+					// iterate through table, adding values
+
+					out = table;
+				} break;
+			}
+			return out;
+		}
+
+		Scripting::Object* ConvertFromLua(const Lua::Object* obj)
+		{
+			Scripting::Object* out = NULL;
+			switch (obj->GetType())
+			{		
+			case Lua::Type_Boolean:
+				{
+					Lua::Boolean* b = (Lua::Boolean*)obj;
+					out = new Scripting::ObjBool(b->GetValue());
+				} break;
+			case Lua::Type_Number:
+				{
+					Lua::Number* n = (Lua::Number*)obj;
+					out = new Scripting::ObjNumber(n->GetValue());
+				} break;
+			case Lua::Type_String:
+				{
+					Lua::String* str = (Lua::String*)obj;
+					out = new Scripting::ObjString(str->GetValue());
+				} break;
+			case Lua::Type_Table:
+				{
+					Lua::Table* table = (Lua::Table*)obj;
+					out = new Scripting::ObjTable(table);
+				} break;
+			default:
+				{
+					out = new Scripting::Object();
+				} break;
+			}
+			return out;
+		}
+
+		std::list<Lua::Object*> ConvertObjectsToLua(State* state, 
+			const std::list<Scripting::Object*> objects)
+		{
+			std::list<Lua::Object*> output;
+			std::list<Scripting::Object*>::const_iterator itr = objects.begin();
+
+			while (itr != objects.end())
+			{
+				output.push_back(ConvertToLua(state, *itr));
+				itr++;
+			}
+			return output;
+		}
+
+		std::vector<Scripting::Object*> ConvertObjectsFromLua( 
+			const std::vector<Object*> objects)
+		{
+			std::vector<Scripting::Object*> output;
+			std::vector<Object*>::const_iterator itr = objects.begin();
+
+			while (itr != objects.end())
+			{
+				output.push_back(ConvertFromLua(*itr));
+				itr++;
+			}
+			return output;
+		}
+
 		//-----------------------------------------------------------------------------------------
 		// Class: State
 		// Lua state wrapper
@@ -173,20 +299,24 @@ namespace Scripting
 		}
 
 		// Calls a function
-		std::vector<Object*> State::Call(const char* name, const std::vector<Object*>& args, int timeout)
+		std::vector<Scripting::Object*> State::Call(const char* name, 
+			const std::list<Scripting::Object*>& args, int timeout)
 		{
+			std::list<Object*> largs = ConvertObjectsToLua(this, args);
+
 			Function* function = (Function*)this->GetGlobal(name);
-			std::vector<Object*> results = function->Call(args, timeout);
+			std::vector<Object*> results = function->Call(largs, timeout);
 			function->Delete();
 
-			return results;
+			return ConvertObjectsFromLua(results);
 		}
 
 		// Calls a function
-		std::vector<Object*> State::Call(const char* name, int timeout)
+		std::vector<Scripting::Object*> State::Call(const char* name, int timeout)
 		{
-			const std::vector<Object*> args;
-			return this->Call(name, args, timeout);
+			const std::list<Scripting::Object*> args;
+			std::vector<Scripting::Object*> results = this->Call(name, args, timeout);
+			return results;
 		}
 
 		// Raises an error
@@ -214,16 +344,17 @@ namespace Scripting
 		// Lua value wrapper
 		//
 
-		// Creates a new object with a value of 0
-		Object::Object(State* state)
+		// Creates a new object with a value of nil
+		Object::Object(State* state) : type(Type_Nil)
 		{
 			this->state = state;
 
-			// Push 0 on stack
-			lua_pushnumber(this->state->L, 0.0);
+			// Push 0 onto stack, can't use nil as it cannot be referenced.
+			// This object however, is treated as a nil value until a new
+			// value is popped into it.
+			lua_pushnumber(this->state->L, 0);
 
 			// Create new reference
-			// Pop 0 off stack and into reference
 			this->ref = luaL_ref(state->L, LUA_REGISTRYINDEX);
 		}
 
@@ -245,6 +376,7 @@ namespace Scripting
 		// Pops a value off the stack and sets the object
 		void Object::Pop()
 		{
+			this->type = (Type)lua_type(this->state->L, -1);
 			// Pops a value from the stack
 			// Sets the reference to the value
 			lua_rawseti(this->state->L, LUA_REGISTRYINDEX, this->ref);
@@ -275,12 +407,8 @@ namespace Scripting
 		}
 
 		// Returns the object type
-		Type Object::GetType()
+		Type Object::GetType() const
 		{
-			this->Push();
-			Type type = (Type)lua_type(this->state->L, -1);
-			this->Pop();
-
 			return type;
 		}
 
@@ -666,13 +794,13 @@ namespace Scripting
 		}
 
 		// Calls the Lua function from C
-		std::vector<Object*> Function::Call(const std::vector<Object*>& args, int timeout)
+		std::vector<Object*> Function::Call(const std::list<Object*>& args, int timeout)
 		{
 			// Push the function on the stack
 			this->Push();
 
 			// Push the arguments on the stack
-			for (std::vector<Object*>::const_iterator itr = args.begin(); itr != args.end(); ++itr)
+			for (std::list<Object*>::const_iterator itr = args.begin(); itr != args.end(); ++itr)
 				(*itr)->Push();
 
 			// Call the Lua function

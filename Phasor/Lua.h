@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include "..\lua\lua.hpp"
+#include "Scripting.h"
 
 namespace Scripting
 {
@@ -27,7 +28,7 @@ namespace Scripting
 			Type_String = 4,
 			Type_Table = 5,
 			Type_Function = 6
-		};
+		};	
 
 		//-----------------------------------------------------------------------------------------
 		// Class: State
@@ -86,7 +87,6 @@ namespace Scripting
 			// Creates a new table
 			Table* NewTable();
 
-
 			// Creates a new function
 			Function* NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>&));
 
@@ -97,8 +97,8 @@ namespace Scripting
 			bool HasFunction(const char* name);
 
 			// Calls a function with an optional timeout
-			std::vector<Object*> Call(const char* name, const std::vector<Object*>& args, int timeout = 0);
-			std::vector<Object*> Call(const char* name, int timeout = 0);
+			std::vector<Scripting::Object*> Call(const char* name, const std::list<Scripting::Object*>& args, int timeout = 0);
+			std::vector<Scripting::Object*> Call(const char* name, int timeout = 0);
 
 			// Raises an error
 			void Error(const char* _Format, ...);
@@ -120,6 +120,8 @@ namespace Scripting
 
 		class Object
 		{
+			Type type;
+
 		protected:
 			// State the object resides in
 			State* state;
@@ -147,7 +149,7 @@ namespace Scripting
 			void Delete();
 
 			// Returns the object type
-			Type GetType();
+			Type GetType() const;
 
 			// Returns a copy of the object
 			Object* Copy();
@@ -290,7 +292,7 @@ namespace Scripting
 
 		public:
 			// Calls the Lua function from C with an optional timeout
-			std::vector<Object*> Call(const std::vector<Object*>& args, int timeout = 0);
+			std::vector<Object*> Call(const std::list<Object*>& args, int timeout = 0);
 
 		public:
 			friend class State;

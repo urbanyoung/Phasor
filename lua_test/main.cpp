@@ -35,11 +35,23 @@ void main()
 	cout << "Closing state" << endl;
 	State::Close(state);*/
 
-	Scripting::SetPath("D:\\Development\\C++\\Phasor\\Release");
-	Scripting::OpenScript("lua_test");
+	try
+	{
+		Scripting::SetPath("D:\\Development\\C++\\Phasor\\Release");
+		Scripting::OpenScript("lua_test");
 
-	vector<Object*> args;
-	args.push_back(state->NewString("Hello"));
+		Scripting::Caller caller;
+		caller.AddArg("hello");
+		Scripting::Result result = caller.Call("funca");
+		Scripting::ObjString* str = (Scripting::ObjString*)result[0];
+		cout << str->GetValue() << endl;
 
-	Scripting::Call("funca", args);
+		Scripting::CloseScript("lua_test");
+
+	} catch (std::exception e)
+	{
+		cout << e.what() << endl;
+	}
+
+	//Scripting::Call("funca", args);
 }
