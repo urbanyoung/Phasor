@@ -166,8 +166,7 @@ namespace Scripting
 
 	// --------------------------------------------------------------------
 	// Class: Caller
-	// Provides an interface between calling code and scripts. Basically
-	// just provides a wrapper around std::vector for memory management.
+	// Provides an interface for passing parameters to scripts.
 	// 
 	Caller::Caller()
 	{
@@ -247,34 +246,59 @@ namespace Scripting
 		args.push_back(new ObjTable(table));
 	}
 
+	// Calls the function in the specific script.
+	// Doesn't automatically append the 'using' parameter
 	Result Caller::Call(Lua::State* state, const char* function, bool* found, bool erase)
 	{
-		if (!state->HasFunction(function))
+		Result result = Result();
+		if (state->HasFunction(function))
 		{
-			if (found != NULL) *found = false;
-			return Result();
+			result = state->Call(function, args, DEFAULT_TIMEOUT);
+			if (found) *found = true;
 		}
-		Result r = state->Call(function, args, DEFAULT_TIMEOUT);
-		if (erase) Free();
-		if (found != NULL) *found = true;
-		return r;
+		else if (found) *found = false;
+
+		if (erase) this->Free();
+		return result;
 	}
 
 	Result Caller::Call(const char* function)
 	{
+		// This is the argument which indicates if a scripts' return 
+		// value is used.
+		AddArg(true);
+		ObjBool* using_param = (ObjBool*)*args.rbegin();
+
 		using namespace std;
 		map<string, Lua::State*>::iterator itr = Scripting::scripts.begin();
 		Result result;
+		bool result_set = false;
 
 		while (itr != Scripting::scripts.end())
 		{
 			Lua::State* state = itr->second;
-			result = Call(state, function, 0, false);
+			Result r = Call(state, function, 0, false);
 
+			// The first result with any non-nil values is used
+			if (!result_set) {
+				for (size_t i = 0; i < r.size(); i++) {
+					if (r[i]->GetType() != TYPE_NIL) {
+						result = r;
+						result_set = true;
+
+						// Change the 'using' argument so other scripts know
+						// they won't be considered
+						*using_param = false;
+						break;
+					}
+				}
+			}
 			// todo: change how i handle return values for multiple scripts (see notes)
 			
 			itr++;
 		}
+		this->Free();
+
 		return result;
 	}
 

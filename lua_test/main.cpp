@@ -39,19 +39,22 @@ void main()
 	{
 		Scripting::SetPath("D:\\Development\\C++\\Phasor\\Release");
 		Scripting::OpenScript("lua_test");
+		Scripting::OpenScript("lua_test1");
 
 		Scripting::Caller caller;
 		caller.AddArg("hello");
 		Scripting::Result result = caller.Call("funca");
-		Scripting::ObjString* str = (Scripting::ObjString*)result[0];
-		cout << str->GetValue() << endl;
-
-		Scripting::CloseScript("lua_test");
+		cout << result.size() << endl;
+		/*Scripting::ObjString* str = (Scripting::ObjString*)result[0];
+		cout << str->GetValue() << endl;	*/
 
 	} catch (std::exception e)
 	{
 		cout << e.what() << endl;
 	}
+
+	Scripting::CloseScript("lua_test");
+	Scripting::CloseScript("lua_test1");
 
 	//Scripting::Call("funca", args);
 }

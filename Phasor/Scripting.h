@@ -35,6 +35,9 @@ namespace Scripting
 	// --------------------------------------------------------------------
 	// Class: Caller
 	// Provides an interface for passing parameters to scripts.
+	// The called function is always sent an automatic argument as its
+	// last argument. This argument is a boolean which indicates if its 
+	// return value will be considered.
 	class Caller
 	{
 	private:
@@ -156,7 +159,7 @@ namespace Scripting
 		ObjBool(bool b);
 		~ObjBool();
 
-		ObjBool & operator=(const ObjBool &rhs); // check for self assignment. see http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html
+		ObjBool & operator=(const ObjBool &rhs); 
 		ObjBool(const ObjBool& other );	
 
 		bool GetValue() const;

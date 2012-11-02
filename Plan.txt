@@ -9,6 +9,7 @@ Lua
      - How would you determine what an acting value is?
 	   - Default value like previous version? Don't like that.
 	   - Could make scripts return, say, nil if they don't care what happens. Any other value is an "acting value".
+	     - For functions multiple results, if any are non-nil then it is considered "acting"
 	     - Scripts would need to be updated ;/
      - Could notify scripts if their return value will count, and only use the first one.
 	 - If a script requires its return value be used to function properly, let it notify Phasor

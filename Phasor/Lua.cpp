@@ -103,7 +103,7 @@ namespace Scripting
 		}
 
 		std::list<Lua::Object*> ConvertObjectsToLua(State* state, 
-			const std::list<Scripting::Object*> objects)
+			const std::list<Scripting::Object*>& objects)
 		{
 			std::list<Lua::Object*> output;
 			std::list<Scripting::Object*>::const_iterator itr = objects.begin();
@@ -116,17 +116,20 @@ namespace Scripting
 			return output;
 		}
 
+		// Frees memory associated with the lua objects
 		std::vector<Scripting::Object*> ConvertObjectsFromLua( 
-			const std::vector<Object*> objects)
+			std::vector<Object*>& objects)
 		{
 			std::vector<Scripting::Object*> output;
-			std::vector<Object*>::const_iterator itr = objects.begin();
+			std::vector<Object*>::iterator itr = objects.begin();
 
 			while (itr != objects.end())
 			{
 				output.push_back(ConvertFromLua(*itr));
+				(*itr)->Delete();
 				itr++;
 			}
+			objects.clear(); // memory has been freed
 			return output;
 		}
 
@@ -295,10 +298,13 @@ namespace Scripting
 		bool State::HasFunction(const char* name)
 		{
 			Function* function = (Function*)this->GetGlobal(name);
-			return function->GetType() == Type_Function;
+			bool exists = function->GetType() == Type_Function;
+			function->Delete();
+			return exists;
 		}
 
 		// Calls a function
+		// Caller is responsible for memory management of return vector
 		std::vector<Scripting::Object*> State::Call(const char* name, 
 			const std::list<Scripting::Object*>& args, int timeout)
 		{
@@ -308,10 +314,20 @@ namespace Scripting
 			std::vector<Object*> results = function->Call(largs, timeout);
 			function->Delete();
 
+			// Lua objects are no longer needed, free them.
+			std::list<Object*>::iterator itr = largs.begin();
+			while (itr != largs.end())
+			{
+				(*itr)->Delete();
+				itr++;
+			}
+			largs.clear();
+
 			return ConvertObjectsFromLua(results);
 		}
 
 		// Calls a function
+		// Caller is responsible for memory management of return vector
 		std::vector<Scripting::Object*> State::Call(const char* name, int timeout)
 		{
 			const std::list<Scripting::Object*> args;

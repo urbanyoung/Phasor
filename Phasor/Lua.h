@@ -97,6 +97,7 @@ namespace Scripting
 			bool HasFunction(const char* name);
 
 			// Calls a function with an optional timeout
+			// Caller is responsible for memory management of return vector
 			std::vector<Scripting::Object*> Call(const char* name, const std::list<Scripting::Object*>& args, int timeout = 0);
 			std::vector<Scripting::Object*> Call(const char* name, int timeout = 0);
 
