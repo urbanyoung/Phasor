@@ -7,6 +7,12 @@
     <Filter Include="Scripting\Lua">
       <UniqueIdentifier>{e69fda23-7215-433e-974b-de2b9dad068f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripting\Manger">
+      <UniqueIdentifier>{d15ccfad-d15c-4e4c-af80-6d98275e92af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{4d87ae6a-d97e-46d5-894f-714c0a41884d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -16,6 +22,12 @@
     <ClCompile Include="..\Phasor\Scripting.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\Manager.cpp">
+      <Filter>Scripting\Manger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Lua.h">
@@ -23,6 +35,12 @@
     </ClInclude>
     <ClInclude Include="..\Phasor\Scripting.h">
       <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Manager.h">
+      <Filter>Scripting\Manger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

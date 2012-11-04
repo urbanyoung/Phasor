@@ -8,107 +8,144 @@
 
 namespace Common
 {
-	class ObjectWrap;
-
-	typedef std::shared_ptr<ObjectWrap> ObjectWrapPtr;
-
-	/* Types of data that can be stored in ObjectWrap */
-	enum VALUE_TYPES 
+	// Type of data stored by an Object
+	enum obj_type 
 	{
-		TYPE_NONE = -1,
+		TYPE_NIL = 0, // undefined type
+		TYPE_BOOL,
+		TYPE_NUMBER,
 		TYPE_STRING,
-		TYPE_WSTRING,
-		TYPE_INT,
-		TYPE_DOUBLE,
-		TYPE_BLOB,
-		TYPE_PTR,
-	};
-
-	/* Error codes */
-	enum OBJECT_ERRCODE
-	{
-		OBJECT_TYPE = 0 // access unexpected type
+		TYPE_TABLE
 	};
 
 	// --------------------------------------------------------------------
-	// Classes
-	// These classes are used for wrapping objects for transferring between
-	// contexts
-	class ObjectError : public std::exception
+	// Class: Object
+	// Provides an interface between Lua and Phasor objects. The derived
+	// classes provide specific types.
+	class Object
 	{
+	private: 
+		obj_type type;
+
 	protected:
-		int err;
-		std::string msg;
-		bool processed;
 
-		bool IsProcessed() const { return processed; }
+		// Should be called by derived classes to set the object type.
+		Object(obj_type type);
 
 	public:
-		ObjectError(int error, const char* desc=NULL);
-		virtual ~ObjectError();
-		virtual const char* what() const throw();
-		const int type() { return err; }
+		// Creates a nil object
+		Object();
+		virtual ~Object();
+
+		// Create a new, independent copy of this object.
+		virtual Object* NewCopy() const;
+
+		// Returns the type of this object
+		obj_type GetType() const;
 	};
-		
-	//---------------------------------------------------------------------
-	// Class: ObjectWrap
-	// Purpose: Represent an object
-	class ObjectWrap
-	{
-	private:	
-		/* Store the data in a union for easy type casting */
-		union {
-			int* i;
-			double* d;
-			std::string* s;
-			std::wstring* ws;
-			BYTE* b;
-			BYTE** ptr;
-		} pdata;
-		size_t length;
-		int type;
 
-		// Ensures the type of data stored is what's expected
-		inline void VerifyType(int expected) const throw(ObjectError) {
-			if (expected != type) throw ObjectError(OBJECT_TYPE);
-		}
-		
-		void Copy(const ObjectWrap& v);
+	// --------------------------------------------------------------------
+	// Class: ObjBool
+	// Wrapper for a boolean type
+	class ObjBool : public Object
+	{
+	private:
+		bool b;
 
 	public:
-		ObjectWrap(const char* val);
-		ObjectWrap(const wchar_t* val);
-		ObjectWrap(int val);
-		ObjectWrap(double val);
-		ObjectWrap(BYTE* val, size_t length);
-		ObjectWrap(void* ptr);
-		ObjectWrap();
-		virtual ~ObjectWrap();
+		ObjBool(bool b);
+		~ObjBool();
 
-		ObjectWrap& operator= (const ObjectWrap &v);
-		ObjectWrap(const ObjectWrap &v);
+		ObjBool & operator=(const ObjBool &rhs); 
+		ObjBool(const ObjBool& other );	
 
-		/*	Get the row data in various data types, if the requested type
-		 *	is not stored in this row a ObjectError exception is thrown. Any
-		 *	modifications made to pointed types is reflected in the internal
-		 *	state. Do not free memory. */
-		std::string GetStr() const throw(ObjectError);
-		std::wstring GetWStr() const throw(ObjectError);
-		int GetInt() const throw(ObjectError);
-		double GetDouble() const throw(ObjectError);
-		BYTE* GetBlob() const throw(ObjectError);
-		void* GetPtr() const throw(ObjectError);
+		// Create a new, independent copy of this object.
+		virtual ObjBool* NewCopy() const;
 
-		/* Returns a string representation of the data held, non-string
-		 * data is converted if necessary. */
-		std::string ToString();
+		// Return the value stored in this object.
+		bool GetValue() const;
+	};
 
-		/* Returns the type of the stored data */
-		int GetType() const { return type; }
+	// --------------------------------------------------------------------
+	// Class: ObjNumber
+	// Wrapper for a number type
+	class ObjNumber : public Object
+	{
+	private:
+		double value;
 
-		/* Returns the size of the stored data in bytes (for blobs only).*/
-		int size() const { return length; }
-	};	
+	public: 
+		ObjNumber(int value);
+		ObjNumber(DWORD value);
+		ObjNumber(double value);
+		ObjNumber(float value);
+		~ObjNumber();
+
+		ObjNumber & operator=(const ObjNumber &rhs); 
+		ObjNumber(const ObjNumber& other );
+
+		// Create a new, independent copy of this object.
+		virtual ObjNumber* NewCopy() const;
+
+		// Return the value stored in this object
+		double GetValue() const;
+	};
+
+	// --------------------------------------------------------------------
+	// Class: ObjString
+	// Wrapper for a string type
+	class ObjString  : public Object
+	{
+	private:
+		char* str;
+
+		// Copies str into this object.
+		void CopyString(const char* str);
+
+	public:
+		ObjString(const char* str);
+		~ObjString();
+
+		ObjString & operator=(const ObjString &rhs);
+		ObjString(const ObjString& other );
+
+		// Create a new, independent copy of this object.
+		virtual ObjString* NewCopy() const;
+
+		// Return the value stored in this object
+		const char* GetValue() const;
+	};
+
+	// --------------------------------------------------------------------
+	// Class: ObjTable
+	// Wrapper for an associative container
+	class ObjTable : public Object
+	{
+	private:
+		std::map<Object*, Object*> table;
+
+		// Copies other into this object
+		void CopyTable(const ObjTable& other);
+
+		// Frees the table associated with this object
+		void FreeTable();
+
+	public:
+		ObjTable(const std::map<std::string, std::string>& table);
+		ObjTable(std::map<Object*, Object*>& table);
+		~ObjTable();
+
+		ObjTable & operator=(const ObjTable &rhs);
+		ObjTable(const ObjTable& other );
+
+		// Create a new, independent copy of this object.
+		virtual ObjTable* NewCopy() const;
+
+		// Get value at index
+		//const Object* operator [] (size_t i);
+		// Returns the value associated with the specified key
+		const Object* operator [] (const Object& key);
+	};
 
 	// --------------------------------------------------------------------
 	// Memory commands

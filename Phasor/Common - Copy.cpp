@@ -4,239 +4,214 @@
 
 namespace Common
 {
-	// --------------------------------------------------------------------
-	// Class: Object
-	// Provides an interface between Lua and Phasor objects. The derived
-	// classes provide specific types.
-	// 
-	Object::Object(obj_type _type) : type(_type) 
-	{
-	}
-
-	Object::Object() : type(TYPE_NIL)
-	{
-	}
-
-	Object::~Object()
-	{
-	}
-
-	obj_type Object::GetType() const
-	{
-		return type;
-	}
-
-	Object* Object::NewCopy() const
-	{
-		return new Object(TYPE_NIL);
-	}
-
-	// --------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------
+	// Class: ObjectError
 	//
-
-	ObjBool::ObjBool(bool b) : Object(TYPE_BOOL)
+	ObjectError::ObjectError(int err, const char* desc) : std::exception() 
 	{
-		this->b = b;
-	}
-
-	ObjBool::ObjBool(const ObjBool& other) : Object(TYPE_BOOL)
-	{
-		this->b = other.b;
-	}
-
-	ObjBool::~ObjBool()
-	{
-	}
-
-	ObjBool & ObjBool::operator=(const ObjBool &rhs) 
-	{
-		if (this == &rhs) return *this;
-
-		this->b = rhs.b;
-		return *this;
-	}
-
-	ObjBool* ObjBool::NewCopy() const
-	{
-		return new ObjBool(*this);
-	}
-
-	bool ObjBool::GetValue() const
-	{
-		return this->b;
-	}
-
-	// --------------------------------------------------------------------
-	//
-
-	ObjNumber::ObjNumber(int value) : Object(TYPE_NUMBER)
-	{
-		this->value = value;
-	}
-
-	ObjNumber::ObjNumber(DWORD value) : Object(TYPE_NUMBER)
-	{
-		this->value = value;
-	}
-
-	ObjNumber::ObjNumber(double value) : Object(TYPE_NUMBER)
-	{
-		this->value = value;
-	}
-
-	ObjNumber::ObjNumber(float value) : Object(TYPE_NUMBER)
-	{
-		this->value = value;
-	}
-
-	ObjNumber::~ObjNumber()
-	{
-
-	}
-
-	ObjNumber::ObjNumber(const ObjNumber& other) : Object(TYPE_NUMBER)
-	{
-		this->value = other.value;
-	}
-
-	ObjNumber& ObjNumber::operator=(const ObjNumber& rhs)
-	{
-		if (this == &rhs) return *this;
-
-		this->value = rhs.value;
-		return *this;
-	}
-
-	ObjNumber* ObjNumber::NewCopy() const
-	{
-		return new ObjNumber(*this);
-	}
-
-	double ObjNumber::GetValue() const
-	{
-		return this->value;
-	}
-	// --------------------------------------------------------------------
-	//
-
-	ObjString::ObjString(const char* str) : Object(TYPE_STRING)
-	{
-		CopyString(str);
-	}
-
-	ObjString::ObjString(const ObjString& other) : Object(TYPE_STRING)
-	{
-		CopyString(other.str);
-	}
-
-	ObjString::~ObjString()
-	{
-		delete[] str;
-	}
-
-	ObjString& ObjString::operator=(const ObjString& rhs) 
-	{
-		if (this == &rhs) return *this;
-
-		delete[] str;
-		CopyString(rhs.str);
-
-		return *this;
-	}
-
-	ObjString* ObjString::NewCopy() const
-	{
-		return new ObjString(*this);
-	}
-
-	void ObjString::CopyString(const char* str)
-	{
-		this->str = new char [strlen(str) + 1];
-		strcpy(this->str, str);
-	}
-
-	const char* ObjString::GetValue() const
-	{
-		return this->str;
-	}
-
-	// --------------------------------------------------------------------
-	//
-
-	ObjTable::ObjTable(const std::map<std::string, std::string>& table) : Object(TYPE_TABLE)
-	{
-		using namespace std;
-		map<string, string>::const_iterator itr = table.begin();
-		while (itr != table.end())
+		this->err = err;
+		processed = true; // assume we're processing it
+		switch (err)
 		{
-			ObjString* key = new ObjString(itr->first.c_str());
-			ObjString* value = new ObjString(itr->second.c_str());
-			this->table.insert(pair<Object*, Object*>(key, value));
-			itr++;
-		}
+		case OBJECT_TYPE:
+			msg.assign("ObjectError - Attempted to access unexpected data type.");
+			break;
+
+		default:
+			processed = false; // not processed
+		}		
+
+		if (processed && desc) 
+			msg += "\ndescription: " + std::string(desc);
 	}
 
-	ObjTable::ObjTable(std::map<Object*, Object*>& table)
+	ObjectError::~ObjectError()
 	{
-		this->table = table;
-		table.clear();
 	}
 
-	ObjTable::ObjTable(const ObjTable& other) : Object(TYPE_TABLE)
-	{
-		CopyTable(other);
-	}
-		
-	ObjTable::~ObjTable() 
-	{
-		FreeTable();
+	const char* ObjectError::what() const throw()
+	{ 
+		return msg.c_str();
 	}
 
-	void ObjTable::FreeTable()
+	//-----------------------------------------------------------------------------------------
+	// Class: ObjectWrap
+	//
+	ObjectWrap::ObjectWrap() : length(0)
 	{
-		std::map<Object*, Object*>::iterator itr = table.begin();
-		while (itr != table.end())
+		type = TYPE_NONE;
+	}
+
+	ObjectWrap::ObjectWrap(const char* val) : length(4)
+	{		
+		pdata.s = new std::string;
+		pdata.s->assign(val);
+		type = TYPE_STRING;
+	}
+
+	ObjectWrap::ObjectWrap(const wchar_t* val) : length(4)
+	{		
+		pdata.ws = new std::wstring;
+		pdata.ws->assign(val);
+		type = TYPE_WSTRING;
+	}
+
+	ObjectWrap::ObjectWrap(int val) : length(4)
+	{		
+		pdata.i = new int;
+		*pdata.i = val;
+		type = TYPE_INT;
+	}
+
+	ObjectWrap::ObjectWrap(double val) : length(4)
+	{
+		pdata.d = new double;
+		*pdata.d = val;
+		type = TYPE_DOUBLE;	
+	}
+
+	ObjectWrap::ObjectWrap(BYTE* val, size_t length)
+	{
+		pdata.b = new BYTE[length];
+		memcpy(pdata.b, val, length);
+		type = TYPE_BLOB;
+		this->length = length;
+	}
+
+	ObjectWrap::ObjectWrap(void* ptr) : length(4)
+	{
+		pdata.ptr = new BYTE*;
+		*pdata.ptr = (BYTE*)ptr;
+		type = TYPE_PTR;
+	}
+
+	ObjectWrap::ObjectWrap(const ObjectWrap &v) // copy constructor
+	{
+		Copy(v);
+	}
+
+	void ObjectWrap::Copy(const ObjectWrap& v)
+	{
+		type = v.type;
+		switch (v.type)
 		{
-			delete itr->first;
-			delete itr->second;
-			itr = table.erase(itr);
-		}
+		case TYPE_STRING:
+			pdata.s = new std::string;
+			pdata.s->assign(*v.pdata.s);
+			break;
+		case TYPE_WSTRING:
+			pdata.ws = new std::wstring;
+			pdata.ws->assign(*v.pdata.ws);
+			break;
+		case TYPE_INT:
+			pdata.i = new int;
+			*pdata.i = *v.pdata.i;
+			break;
+		case TYPE_DOUBLE:
+			pdata.d = new double;
+			*pdata.d = *v.pdata.d;
+			break;
+		case TYPE_BLOB:
+			pdata.b = new BYTE[v.length];
+			memcpy(pdata.b, v.pdata.b, v.length);
+			length = v.length;
+			break;
+		case TYPE_PTR:
+			*pdata.ptr = *v.pdata.ptr;
+			break;
+		}		
 	}
 
-	ObjTable& ObjTable::operator=(const ObjTable &rhs)
+	ObjectWrap& ObjectWrap::operator= (const ObjectWrap &v)
 	{
-		if (this == &rhs) return *this;
-		FreeTable();
-		CopyTable(rhs);
+		this->Copy(v);
 		return *this;
 	}
 
-	ObjTable* ObjTable::NewCopy() const
+	ObjectWrap::~ObjectWrap()
 	{
-		return new ObjTable(*this);
-	}
-
-	void ObjTable::CopyTable(const ObjTable& other)
-	{
-		std::map<Object*, Object*>::const_iterator itr = other.table.begin();
-
-		while (itr != other.table.end())
+		switch (type)
 		{
-			Object* key = itr->first->NewCopy();
-			Object* value = itr->second->NewCopy();
-			table.insert(std::pair<Object*, Object*>(key, value));
-		}
+		case TYPE_INT:
+			delete pdata.i;
+			break;		
+		case TYPE_STRING:
+			delete pdata.s;
+			break;
+		case TYPE_WSTRING:
+			delete pdata.ws;
+			break;
+		case TYPE_DOUBLE:
+			delete pdata.d;
+			break;
+		case TYPE_BLOB:
+			delete[] pdata.b;
+			break;
+		} 
 	}
 
-	const Object* ObjTable::operator [] (const Object& key)
+	std::string ObjectWrap::GetStr() const throw(ObjectError)
 	{
-		std::map<Object*, Object*>::iterator itr = table.find((Object*)&key);
-		if (itr == table.end()) {
-			std::stringstream err;
-			err << __FUNCTION__ << ": specified key doesn't exist ";
-			throw std::exception(err.str().c_str());
+		// let strings convert themselves
+		if (type == TYPE_WSTRING) return Common::NarrowString(*pdata.ws);
+		VerifyType(TYPE_STRING);
+		return *(pdata.s);
+	}
+
+	std::wstring ObjectWrap::GetWStr() const throw(ObjectError)
+	{
+		if (type == TYPE_STRING) return Common::WidenString(*pdata.s);
+		VerifyType(TYPE_WSTRING);
+		return *(pdata.ws);
+	}
+
+	int ObjectWrap::GetInt() const throw(ObjectError)
+	{
+		VerifyType(TYPE_INT);
+		return *(pdata.i);
+	}
+
+	double ObjectWrap::GetDouble() const throw(ObjectError)
+	{
+		VerifyType(TYPE_DOUBLE);
+		return *(pdata.d);
+	}
+
+	BYTE* ObjectWrap::GetBlob() const throw(ObjectError)
+	{
+		VerifyType(TYPE_BLOB);
+		return pdata.b;
+	}
+
+	void* ObjectWrap::GetPtr() const throw(ObjectError)
+	{
+		VerifyType(TYPE_PTR);
+		return (void*)pdata.ptr;
+	}
+
+	std::string ObjectWrap::ToString()
+	{
+		std::stringstream s;
+		switch (type)
+		{
+		case TYPE_STRING:
+			s << *pdata.s;
+			break;
+		case TYPE_WSTRING:
+			s << Common::NarrowString(*pdata.ws);
+			break;
+		case TYPE_INT:
+			s << *pdata.i;
+			break;
+		case TYPE_DOUBLE:
+			s << *pdata.d;
+			break;
+		case TYPE_BLOB:
+			s << length << " byte BLOB@" << (DWORD)pdata.b;
+			break;
 		}
-		return itr->second;
+		std::string str = s.str();
+		return str;
 	}
 
 	// --------------------------------------------------------------------

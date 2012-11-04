@@ -41,12 +41,11 @@ void main()
 		Scripting::OpenScript("lua_test");
 		Scripting::OpenScript("lua_test1");
 
-		Scripting::Caller caller;
+		Scripting::PhasorCaller caller;
 		caller.AddArg("hello");
 		Scripting::Result result = caller.Call("funca");
 		cout << result.size() << endl;
-		/*Scripting::ObjString* str = (Scripting::ObjString*)result[0];
-		cout << str->GetValue() << endl;	*/
+
 
 	} catch (std::exception e)
 	{
@@ -55,6 +54,6 @@ void main()
 
 	Scripting::CloseScript("lua_test");
 	Scripting::CloseScript("lua_test1");
-
+	
 	//Scripting::Call("funca", args);
 }
