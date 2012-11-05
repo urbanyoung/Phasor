@@ -19,6 +19,9 @@ namespace Common
 
 typedef Lua::State ScriptState;	
 
+// Namespace: Manager
+// Provides an interface for managing scripts of different types.
+// Currently only Lua is supported, but others can be integrated easily.
 namespace Manager
 {		
 	class Result;			
@@ -27,18 +30,10 @@ namespace Manager
 
 	// Opens the script specified, relative to the scripts directory
 	// May throw an exception <todo: add specific info>
-	ScriptState* OpenScript(const char* file, const char* script_id);
+	ScriptState* OpenScript(const char* file);
 
 	// Closes the specified script
-	void CloseScript(const char* script_id);
-
-	// Attempts to find the specified, loaded, script.
-	// Return: 0 (failure) otherwise success
-	ScriptState* FindScript(const char* script_id);
-
-	const std::map<std::string, ScriptState*>& GetScripts();
-
-	Result Call(ScriptState* state, const char* function, bool* found, int timeout);
+	void CloseScript(ScriptState* state);
 
 	// --------------------------------------------------------------------
 	// Class: Result
@@ -75,8 +70,7 @@ namespace Manager
 	protected:
 		std::list<Common::Object*> args;
 
-		void SetData(const Caller& other);
-		void Free();		
+		void SetData(const Caller& other);			
 
 	public:
 		Caller();
@@ -92,6 +86,9 @@ namespace Manager
 		void AddArg(float value);
 		void AddArg(double value);	
 		void AddArg(const std::map<std::string, std::string>& table);	
+
+		// Clears the current argument list
+		void Clear();
 
 		Result Call(ScriptState* state, const char* function, bool* found, int timeout);
 		Result Call(ScriptState* state, const char* function, int timeout);

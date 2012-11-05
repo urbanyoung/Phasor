@@ -1,5 +1,6 @@
 #include "Scripting.h"
 #include "Manager.h"
+#include "Common.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()
@@ -17,6 +18,7 @@ namespace Scripting
 	const DWORD versions[] = {1234};
 
 	std::string scriptsDir;
+	std::map<std::string, ScriptState*> scripts;
 
 	/*struct PhasorAPI
 	{
@@ -44,12 +46,19 @@ namespace Scripting
 	//
 	void OpenScript(const char* script)
 	{
+		// Make sure the script isn't already loaded
+		if (scripts.find(script) != scripts.end()) {
+			std::stringstream err;
+			err << "script: " << script << " is already loaded.";
+			throw std::exception(err.str().c_str());
+		}
+
 		std::stringstream abs_file;
 		abs_file << scriptsDir << "\\" << script << ".lua";
 
 		try 
 		{
-			ScriptState* state = Manager::OpenScript(abs_file.str().c_str(), script);
+			ScriptState* state = Manager::OpenScript(abs_file.str().c_str());
 			
 			//RegisterFunctions(state);
 			CheckScriptCompatibility(state, script);			
@@ -65,6 +74,9 @@ namespace Scripting
 				err << "script: " << script << " cannot be loaded, OnScriptLoad undefined.";
 				throw std::exception(err.str().c_str());
 			}
+
+			scripts[script] = state;
+
 		}
 		catch (exception_type) 
 		{
@@ -75,18 +87,20 @@ namespace Scripting
 
 	void CloseScript(const char* script) 
 	{
-		ScriptState* state = Manager::FindScript(script);
+		std::map<std::string, ScriptState*>::iterator itr = scripts.find(script);
 
-		if (state) {
+		if (itr != scripts.end()) {
+			ScriptState* state = itr->second;
+			scripts.erase(itr);
 			try 
 			{
 				Manager::Caller caller;
 				caller.Call(state, "OnScriptUnload", DEFAULT_TIMEOUT);
-				Manager::CloseScript(script);
+				Manager::CloseScript(state);
 			}
 			catch (exception_type) 
 			{
-				Manager::CloseScript(script);
+				Manager::CloseScript(state);
 				throw;
 			}					
 		}
@@ -154,12 +168,10 @@ namespace Scripting
 	// 
 	Result PhasorCaller::Call(const char* function)
 	{
-		// This is the argument which indicates if a scripts' return 
-		// value is used.
+		// This is the argument which indicates if a scripts' return value is used.
 		this->AddArg(true);
 		ObjBool* using_param = (ObjBool*)*args.rbegin();
 
-		std::map<std::string, ScriptState*> scripts = Manager::GetScripts();
 		std::map<std::string, ScriptState*>::const_iterator itr = scripts.begin();
 
 		Result result;
@@ -169,7 +181,7 @@ namespace Scripting
 		{
 			ScriptState* state = itr->second;
 			bool found = false;
-			Result r = Manager::Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
+			Result r = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
 
 			// The first result with any non-nil values is used
 			if (found && !result_set) {
@@ -189,7 +201,7 @@ namespace Scripting
 			itr++;
 		}
 
-		this->Free();
+		this->Clear();
 
 		return result;
 	}

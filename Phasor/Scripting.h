@@ -1,18 +1,8 @@
 #pragma once
 
-#include <map>
-#include <vector>
-#include <list>
-#include "Common.h"
 #include "Manager.h"
 
 typedef unsigned long DWORD;
-
-namespace Manager
-{
-	class Result;
-	class Caller;
-}
 
 /*
  * Each script is uniquely identified by its name relative to the 

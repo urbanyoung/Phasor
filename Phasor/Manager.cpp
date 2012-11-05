@@ -2,29 +2,18 @@
 #include "Common.h"
 #include "Lua.h"
 #include <sstream>
-#include <map>
 
 using namespace Common;
 
 namespace Manager
 {
-	std::map<std::string, ScriptState*> scripts;
-
-	ScriptState* OpenScript(const char* file, const char* script_id)
-	{
-		// Make sure the script isn't already loaded
-		if (FindScript(script_id)) {
-			std::stringstream err;
-			err << "script: " << script_id << " is already loaded.";
-			throw std::exception(err.str().c_str());
-		}
-
+	ScriptState* OpenScript(const char* file)
+	{	
 		Lua::State* state = Lua::State::NewState();
 
 		try 
 		{
-			state->DoFile(file);
-			scripts[script_id] = state;
+			state->DoFile(file);			
 		}
 		catch (std::exception) 
 		{
@@ -35,25 +24,9 @@ namespace Manager
 		return state;
 	}
 
-	void CloseScript(const char* script_id)
+	void CloseScript(ScriptState* state)
 	{
-		std::map<std::string, ScriptState*>::iterator itr = scripts.find(script_id);
-		if (itr != scripts.end())
-		{
-			Lua::State::Close(itr->second);
-			scripts.erase(itr);
-		}
-	}
-
-	ScriptState* FindScript(const char* script_id)
-	{
-		std::map<std::string, ScriptState*>::iterator itr = scripts.find(script_id);
-		return itr == scripts.end() ? NULL : itr->second;
-	}
-
-	const std::map<std::string, ScriptState*>& GetScripts()
-	{
-		return scripts;
+		Lua::State::Close(state);
 	}
 
 	// --------------------------------------------------------------------
@@ -147,7 +120,7 @@ namespace Manager
 		SetData(other);
 	}
 
-	void Caller::Free()
+	void Caller::Clear()
 	{
 		std::list<Object*>::iterator args_itr = args.begin();
 		while (args_itr != args.end())
@@ -160,13 +133,13 @@ namespace Manager
 
 	Caller::~Caller()
 	{
-		Free();
+		Clear();
 	}
 
 	Caller& Caller::operator=(const Caller& rhs)
 	{
 		if (this == &rhs) return *this;
-		Free();
+		Clear();
 		SetData(rhs);
 		return *this;
 	}
