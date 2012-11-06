@@ -1,26 +1,3 @@
-Phasor
- - Scripting (integrate into Phasor)
-   - Manager (interface with Scripts, call functions etc.)
-     - Lua
-	 - Python
-	 etc
-
-Scripting (or PhasorScript idk):
- - Responsible for integration into Phasor.
- - Handles exceptions thrown by Manager, log them/notify user. 
- - Implements the PhasorAPI and so needs to register functions with Manager.
-   - Maybe manage expected types in registration, so API functions are only called if the
-     data is of expected type.
- - Responsible for black listing functions that have failed.
-   - How to determine which scripts failed? Only Manager can do this atm, maybe send another param?
- - Shouldn't throw exceptions. If a call fails it should return a nil type (after dealing with the error).
- 
-Manager (ScriptManager):
- - Loads the scripts, manages the loaded scripts.
- - Responsible for calling script functions, converting types from Lua to Scripting.
- - Result / Caller classes
- - Throws exceptions on errors
- 
- Lua:
-  - As is
-
+Function registering:
+ - Lua should check types match those expected (on any of the overloads)
+ - Use lua_tox to convert types and lua_checkx to check types. 

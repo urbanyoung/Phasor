@@ -13,6 +13,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{4d87ae6a-d97e-46d5-894f-714c0a41884d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripting\PhasorAPI">
+      <UniqueIdentifier>{f88b9cb6-d2cd-4299-9725-2a6fe63f55c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -28,6 +31,9 @@
     <ClCompile Include="..\Phasor\Common.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\PhasorAPI.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Lua.h">
@@ -41,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="..\Phasor\Common.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\PhasorAPI.h">
+      <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

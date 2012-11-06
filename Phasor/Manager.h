@@ -15,9 +15,18 @@ namespace Lua
 namespace Common
 {
 	class Object;
+	class ObjBool;
+	class ObjNumber;
+	class ObjString;
+	class ObjTable;
 }
 
-typedef Lua::State ScriptState;	
+namespace Manager
+{
+	class ScriptState;
+}
+
+typedef Manager::ScriptState ScriptState;	
 
 // Namespace: Manager
 // Provides an interface for managing scripts of different types.
@@ -25,6 +34,7 @@ typedef Lua::State ScriptState;
 namespace Manager
 {		
 	class Result;			
+	class MObject;
 
 	// --------------------------------------------------------------------
 
@@ -34,6 +44,38 @@ namespace Manager
 
 	// Closes the specified script
 	void CloseScript(ScriptState* state);
+
+	// --------------------------------------------------------------------
+	// Class: ScriptState
+	// Classes compatible with this interface should inherit this class.
+	class ScriptState
+	{
+	public:
+		virtual MObject* ToNativeObject(const Common::Object* in) = 0; 
+
+		// Checks if the specified function is defined in the script
+		virtual bool HasFunction(const char* name) = 0;
+
+		// Calls a function with an optional timeout
+		// Caller is responsible for memory management of return vector
+		virtual std::vector<MObject*> Call(const char* name, const std::list<MObject*>& args, int timeout = 0) = 0;
+		virtual std::vector<MObject*> Call(const char* name, int timeout = 0) = 0;
+	};
+
+	// --------------------------------------------------------------------
+	// Class: MObject
+	// Classes compatible with this interface should return objects derived
+	// from this type and provide conversions to Common::Object and its derivatives
+	class MObject
+	{
+	public:
+		// All objects should be allocated via 'new'.
+		virtual Common::Object* ToGeneric() const = 0;
+
+		// Called when an object should delete itself
+		virtual void Delete() = 0;
+		
+	};
 
 	// --------------------------------------------------------------------
 	// Class: Result
@@ -67,6 +109,17 @@ namespace Manager
 	// Provides an interface for passing parameters to scripts.
 	class Caller
 	{
+	private:
+		// Converts state-bound objects to generic ones.
+		void ConvertFromState(const std::vector<MObject*>& in, std::vector<Common::Object*>& out);
+
+		// Converts generic objects to state-bound ones.
+		void ConvertToState(ScriptState* state, const std::list<Common::Object*>& in, std::list<MObject*>& out);
+
+		// Frees state-bound objects
+		void FreeStateBound(std::vector<MObject*>& in);
+		void FreeStateBound(std::list<MObject*>& in);
+
 	protected:
 		std::list<Common::Object*> args;
 

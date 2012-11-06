@@ -5,12 +5,7 @@
 #include <vector>
 #include <map>
 #include "..\lua\lua.hpp"
-#include "Scripting.h"
-
-namespace Common
-{
-	class Object;
-}
+#include "Manager.h"
 
 namespace Lua
 {
@@ -38,7 +33,7 @@ namespace Lua
 	// This class is analogous to lua_State 
 	//
 
-	class State
+	class State : public Manager::ScriptState
 	{
 	private:
 		// Underlying Lua state
@@ -101,11 +96,13 @@ namespace Lua
 
 		// Calls a function with an optional timeout
 		// Caller is responsible for memory management of return vector
-		std::vector<Common::Object*> Call(const char* name, const std::list<Common::Object*>& args, int timeout = 0);
-		std::vector<Common::Object*> Call(const char* name, int timeout = 0);
+		std::vector<Manager::MObject*> Call(const char* name, const std::list<Manager::MObject*>& args, int timeout = 0);
+		std::vector<Manager::MObject*> Call(const char* name, int timeout = 0);
 
 		// Raises an error
 		void Error(const char* _Format, ...);
+
+		Manager::MObject* ToNativeObject(const Common::Object* in);
 
 		friend class Object;
 		friend class Nil;
@@ -122,7 +119,7 @@ namespace Lua
 	// Lua value wrapper
 	//
 
-	class Object
+	class Object : public Manager::MObject
 	{
 		Type type;
 
@@ -160,6 +157,9 @@ namespace Lua
 
 		// Returns a copy of the object in another state
 		Object* CopyTo(State* state);
+
+		// Convert this object into a generic one.
+		Common::Object* ToGeneric() const;
 
 		friend class State;
 		friend class Table;
@@ -201,6 +201,9 @@ namespace Lua
 		// Sets the value of the boolean
 		void SetValue(bool value);
 
+		// Convert this object into a generic one.
+		Common::ObjBool* GetGeneric();
+
 		friend class State;
 	};
 
@@ -222,6 +225,9 @@ namespace Lua
 
 		// Sets the value of the number
 		void SetValue(double value);
+
+		// Convert this object into a generic one.
+		Common::ObjNumber* GetGeneric();
 
 		friend class State;
 	};
@@ -245,6 +251,9 @@ namespace Lua
 		// Sets the value of the string
 		void SetValue(const char* value);
 
+		// Convert this object into a generic one.
+		Common::ObjString* GetGeneric();
+
 		friend class State;
 	};
 
@@ -266,13 +275,13 @@ namespace Lua
 		Object* GetValue(const char* key);
 		Object* GetValue(Object* key);
 
-		// Gets the table as a C++ map
-		std::map<Object*, Object*> GetMap();
-
 		// Sets a key to a value
 		void SetValue(int key, Object* value);
 		void SetValue(const char* key, Object* value);
 		void SetValue(Object* key, Object* value);
+
+		// Convert this object into a generic one.
+		Common::ObjTable* GetGeneric();
 
 		friend class State;
 	};
@@ -296,7 +305,7 @@ namespace Lua
 
 	public:
 		// Calls the Lua function from C with an optional timeout
-		std::vector<Object*> Call(const std::list<Object*>& args, int timeout = 0);
+		std::vector<MObject*> Call(const std::list<MObject*>& args, int timeout = 0);
 
 	public:
 		friend class State;

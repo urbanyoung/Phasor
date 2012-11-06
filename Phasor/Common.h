@@ -18,6 +18,15 @@ namespace Common
 		TYPE_TABLE
 	};
 
+	static const char* obj_desc[] = 
+	{
+		"nil",
+		"bool",
+		"number",
+		"string",
+		"table"
+	};
+
 	// --------------------------------------------------------------------
 	// Class: Object
 	// Provides an interface between Lua and Phasor objects. The derived
@@ -32,6 +41,8 @@ namespace Common
 		// Should be called by derived classes to set the object type.
 		Object(obj_type type);
 
+		std::stringstream ConversionDesc(obj_type totype) const;
+
 	public:
 		// Creates a nil object
 		Object();
@@ -42,6 +53,12 @@ namespace Common
 
 		// Returns the type of this object
 		obj_type GetType() const;
+
+		// Convert managed objects into specific types.
+		// If a conversion isn't possible, an exception is thrown.
+		virtual bool AsBool() const;
+		virtual double AsNumber() const;
+		virtual std::string AsString() const;
 	};
 
 	// --------------------------------------------------------------------
@@ -64,6 +81,11 @@ namespace Common
 
 		// Return the value stored in this object.
 		bool GetValue() const;
+
+		// Convert managed objects into specific types.
+		virtual bool AsBool() const;
+		virtual double AsNumber() const;
+		virtual std::string AsString() const;
 	};
 
 	// --------------------------------------------------------------------
@@ -89,6 +111,11 @@ namespace Common
 
 		// Return the value stored in this object
 		double GetValue() const;
+
+		// Convert managed objects into specific types.
+		virtual bool AsBool() const;
+		virtual double AsNumber() const;
+		virtual std::string AsString() const;
 	};
 
 	// --------------------------------------------------------------------

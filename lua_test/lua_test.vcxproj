@@ -47,6 +47,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Profile>false</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -67,6 +68,7 @@
     <ClCompile Include="..\Phasor\Common.cpp" />
     <ClCompile Include="..\Phasor\Lua.cpp" />
     <ClCompile Include="..\Phasor\Manager.cpp" />
+    <ClCompile Include="..\Phasor\PhasorAPI.cpp" />
     <ClCompile Include="..\Phasor\Scripting.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -74,6 +76,7 @@
     <ClInclude Include="..\Phasor\Common.h" />
     <ClInclude Include="..\Phasor\Lua.h" />
     <ClInclude Include="..\Phasor\Manager.h" />
+    <ClInclude Include="..\Phasor\PhasorAPI.h" />
     <ClInclude Include="..\Phasor\Scripting.h" />
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,7 @@ namespace Manager
 {
 	ScriptState* OpenScript(const char* file)
 	{	
+		//todo: if support other languages, add handlers here
 		Lua::State* state = Lua::State::NewState();
 
 		try 
@@ -26,7 +27,8 @@ namespace Manager
 
 	void CloseScript(ScriptState* state)
 	{
-		Lua::State::Close(state);
+		//todo: if support other languages, add handlers here
+		Lua::State::Close((Lua::State*)state);
 	}
 
 	// --------------------------------------------------------------------
@@ -181,11 +183,24 @@ namespace Manager
 
 	Result Caller::Call(ScriptState* state, const char* function, bool* found, int timeout)
 	{
+		// todo: make more efficient w.r.t object copying
 		Result result = Result();
 		if (state->HasFunction(function))
 		{
-			result = state->Call(function, args, timeout);
+			std::list<MObject*> state_args;
+			ConvertToState(state, args, state_args);
+
+			std::vector<MObject*> state_results = state->Call(function, state_args, timeout);
+
+			std::vector<Common::Object*> results;
+			ConvertFromState(state_results, results);
+
+			result = results;
 			*found = true;
+
+			// Free the state-bound stuff
+			FreeStateBound(state_results);
+			FreeStateBound(state_args);
 		}
 		else *found = false;
 
@@ -196,5 +211,49 @@ namespace Manager
 	{
 		bool found = false;
 		return Call(state, function, &found, timeout);
+	}
+
+	void Caller::ConvertFromState(const std::vector<MObject*>& in, std::vector<Common::Object*>& out)
+	{
+		std::vector<MObject*>::const_iterator itr = in.begin();
+
+		while (itr != in.end())
+		{
+			out.push_back((*itr)->ToGeneric());
+			itr++;
+		}
+	}
+
+	void Caller::ConvertToState(ScriptState* state, const std::list<Common::Object*>& in, std::list<MObject*>& out)
+	{
+		std::list<Common::Object*>::const_iterator itr = in.begin();
+
+		while (itr != in.end())
+		{
+			out.push_back(state->ToNativeObject(*itr));
+			itr++;
+		}
+	}
+
+	void Caller::FreeStateBound(std::vector<MObject*>& in)
+	{
+		std::vector<MObject*>::iterator itr = in.begin();
+		while (itr != in.end())
+		{
+			(*itr)->Delete();
+			itr++;
+		}
+		in.clear();
+	}
+
+	void Caller::FreeStateBound(std::list<MObject*>& in)
+	{
+		std::list<MObject*>::iterator itr = in.begin();
+		while (itr != in.end())
+		{
+			(*itr)->Delete();
+			itr++;
+		}
+		in.clear();
 	}
 }

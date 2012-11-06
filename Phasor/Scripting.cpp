@@ -20,13 +20,13 @@ namespace Scripting
 	std::string scriptsDir;
 	std::map<std::string, ScriptState*> scripts;
 
-	/*struct PhasorAPI
+	struct PhasorAPI
 	{
 		std::vector<Object*> (*func)(ScriptState*, std::vector<Object*>&);
 		const char* name;
 	};
 
-	std::vector<Object*> testf(ScriptState*, std::vector<Object*>&)
+	/*std::vector<Object*> testf(ScriptState*, std::vector<Object*>&)
 	{
 		return std::vector<Object*>();
 	}
@@ -40,7 +40,7 @@ namespace Scripting
 	void RegisterFunctions(ScriptState* state);
 
 	// Checks if the script is compatible with this version of Phasor.
-	void CheckScriptCompatibility(Lua::State* state, const char* script);
+	void CheckScriptCompatibility(ScriptState* state, const char* script);
 
 	// --------------------------------------------------------------------
 	//

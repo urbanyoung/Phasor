@@ -21,15 +21,44 @@ namespace Common
 	{
 	}
 
+	Object* Object::NewCopy() const
+	{
+		return new Object(TYPE_NIL);
+	}
+
 	obj_type Object::GetType() const
 	{
 		return type;
 	}
 
-	Object* Object::NewCopy() const
+	std::stringstream Object::ConversionDesc(obj_type totype) const
 	{
-		return new Object(TYPE_NIL);
+		std::stringstream err;
+		err << "object: no possible conversion from '" << obj_desc[type]
+		<< "' to '" << obj_desc[totype] << "'";
+		return err;
 	}
+
+	// The default object (Nil) cannot be converted to any types,
+	// all possible conversions should override these methods.
+	bool Object::AsBool() const
+	{		
+		std::stringstream desc = ConversionDesc(TYPE_BOOL);
+		throw std::exception(desc.str().c_str());
+	}
+
+	double Object::AsNumber() const 
+	{
+		std::stringstream desc = ConversionDesc(TYPE_NUMBER);
+		throw std::exception(desc.str().c_str());
+	}
+
+	std::string Object::AsString() const
+	{
+		std::stringstream desc = ConversionDesc(TYPE_STRING);
+		throw std::exception(desc.str().c_str());
+	}
+
 
 	// --------------------------------------------------------------------
 	//
@@ -64,6 +93,21 @@ namespace Common
 	bool ObjBool::GetValue() const
 	{
 		return this->b;
+	}
+
+	bool ObjBool::AsBool() const
+	{		
+		return b;
+	}
+
+	double ObjBool::AsNumber() const 
+	{
+		return b == true ? 1 : 0;
+	}
+
+	std::string ObjBool::AsString() const
+	{
+		return b == true ? "true" : "false";
 	}
 
 	// --------------------------------------------------------------------
@@ -116,6 +160,28 @@ namespace Common
 	{
 		return this->value;
 	}
+
+	bool ObjNumber::AsBool() const
+	{		
+		int i = (int)value;
+		if (i != 1 && i != 0) {
+			std::stringstream desc = ConversionDesc(TYPE_BOOL);
+			desc << " for value '" << AsString() << "'";
+			throw std::exception(desc.str().c_str());
+		}
+		return i == 1;
+	}
+
+	double ObjNumber::AsNumber() const 
+	{
+		return value;
+	}
+
+	std::string ObjNumber::AsString() const
+	{
+		return m_sprintf_s("%.2f", value);
+	}
+
 	// --------------------------------------------------------------------
 	//
 
