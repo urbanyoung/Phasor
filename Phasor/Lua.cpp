@@ -41,12 +41,12 @@ namespace Lua
 		lua_close(this->L);
 	}
 
-	std::vector<Object*> test_func(State* state, std::vector<Object*>& args)
+	std::deque<Object*> test_func(State* state, std::deque<Object*>& args)
 	{
 		String* str = (String*)args[0];
 		printf("test_func called with %s\n", str->GetValue());
 		String* outStr = state->NewString("value returned");
-		std::vector<Object*> results;
+		std::deque<Object*> results;
 		results.push_back(outStr);
 		return results;
 	}
@@ -163,7 +163,7 @@ namespace Lua
 	}
 
 	// Creates a new function
-	Function* State::NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>&))
+	Function* State::NewFunction(std::deque<Object*> (*func)(State*, std::deque<Object*>&))
 	{
 		Function* object = new Function(this, func);
 		this->objects.push_back(object);
@@ -172,7 +172,7 @@ namespace Lua
 	}
 
 	// Create a new named function
-	void State::RegisterFunction(const char* name, std::vector<Object*> (*func)(State*, std::vector<Object*>&))
+	void State::RegisterFunction(const char* name, std::deque<Object*> (*func)(State*, std::deque<Object*>&))
 	{
 		Function* function = NewFunction(func);
 		this->SetGlobal(name, function);
@@ -189,7 +189,7 @@ namespace Lua
 
 	// Calls a function
 	// Caller is responsible for memory management of return vector
-	std::vector<MObject*> State::Call(const char* name, 
+	std::deque<MObject*> State::Call(const char* name, 
 		const std::list<MObject*>& args, int timeout)
 	{
 		Function* function = (Function*)this->GetGlobal(name);
@@ -198,7 +198,7 @@ namespace Lua
 			throw std::exception("lua: Attempted function call on non-function entity.");
 		}
 
-		std::vector<MObject*> results = function->Call(args, timeout);
+		std::deque<MObject*> results = function->Call(args, timeout);
 		function->Delete();
 
 		return results;
@@ -206,11 +206,10 @@ namespace Lua
 
 	// Calls a function
 	// Caller is responsible for memory management of return vector
-	std::vector<MObject*> State::Call(const char* name, int timeout)
+	std::deque<MObject*> State::Call(const char* name, int timeout)
 	{
 		const std::list<MObject*> args;
-		std::vector<MObject*> results = this->Call(name, args, timeout);
-		return results;
+		return this->Call(name, args, timeout);
 	}
 
 	// Raises an error
@@ -704,7 +703,7 @@ namespace Lua
 	// Lua function wrapper
 	//
 
-	Function::Function(State* state, std::vector<Object*> (*func)(State*, std::vector<Object*>&)) : Object(state)
+	Function::Function(State* state, std::deque<Object*> (*func)(State*, std::deque<Object*>&)) : Object(state)
 	{
 		this->func = func;
 
@@ -720,7 +719,7 @@ namespace Lua
 		// Get the Function class from upvalue
 		Function* function = (Function*)lua_touserdata(L, lua_upvalueindex(1));
 
-		std::vector<Object*> args;
+		std::deque<Object*> args;
 
 		// Pop items off stack (first param is last on stack)
 		/*int nparams = lua_gettop(L);
@@ -745,33 +744,27 @@ namespace Lua
 			object->Pop();
 			printf("Type %i\n", object->GetType());
 
-			// Add argument to front
-			if (args.size())
-			{
-				std::vector<Object*>::iterator itr = args.begin();
-				args.insert(itr, object);
-			}
-			else
-				args.push_back(object);
+			args.push_front(object);
 		}
 		
 		// Call the C function
-		std::vector<Object*> results = function->func(function->state, args);
+		std::deque<Object*> results = function->func(function->state, args);
 
 		// Push the results on the stack
-		for (std::vector<Object*>::iterator itr = results.begin(); itr != results.end(); ++itr)
+		for (std::deque<Object*>::iterator itr = results.begin(); itr != results.end(); ++itr)
 			(*itr)->Push();
 
 		int nresults = results.size();
 
-		std::vector<Object*>::iterator itr = args.begin();
+		std::deque<Object*>::iterator itr = args.begin();
 
 		// Clean up arguments
 		while (itr != args.end())
 		{
 			(*itr)->Delete();
-			itr = args.erase(itr);
+			itr++;
 		}
+		args.clear();
 
 		itr = results.begin();
 
@@ -779,14 +772,15 @@ namespace Lua
 		while (itr != results.end())
 		{
 			(*itr)->Delete();
-			itr = results.erase(itr);
+			itr++;
 		}
+		results.clear();
 
 		return nresults;
 	}
 
 	// Calls the Lua function from C
-	std::vector<MObject*> Function::Call(const std::list<MObject*>& args, int timeout)
+	std::deque<MObject*> Function::Call(const std::list<MObject*>& args, int timeout)
 	{
 		// todo: change to use deque 
 		// Push the function on the stack
@@ -809,36 +803,14 @@ namespace Lua
 			throw std::exception(error.c_str());
 		}
 
-		std::vector<MObject*> results;
-
-		/*int nparams = lua_gettop(this->state->L);
-		if (nparams > 0)
-		{
-			printf("%i results\n", nparams);
-			results.reserve(nparams);
-			printf("%i vector slots", results.size());
-			for (int i = nparams - 1; i >= 0; i--)
-			{
-				Object* object = this->state->NewObject();
-				object->Pop();
-				results[i] = object;
-			}
-		}*/
+		std::deque<MObject*> results;
 
 		// Pop the results off the stack
 		while (lua_gettop(this->state->L))
 		{
 			Object* object = this->state->NewObject();
 			object->Pop();
-
-			// Add result to front
-			if (results.size())
-			{
-				std::vector<MObject*>::iterator itr = results.begin();
-				results.insert(itr, object);
-			}
-			else
-				results.push_back(object);
+			results.push_front(object);
 		}
 
 		return results;

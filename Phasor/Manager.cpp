@@ -40,14 +40,13 @@ namespace Manager
 
 	}
 
-	Result::Result(const std::vector<Object*>& result) : result(result)
+	Result::Result(const std::deque<Object*>& result) : result(result)
 	{
 	}
 
 	void Result::SetData(const Result& other)
 	{
-		std::vector<Object*>::const_iterator itr = other.result.begin();
-		result.reserve(other.result.size());
+		std::deque<Object*>::const_iterator itr = other.result.begin();
 		while (itr != other.result.end())
 		{
 			result.push_back((*itr)->NewCopy());
@@ -62,7 +61,7 @@ namespace Manager
 
 	void Result::Free()
 	{
-		std::vector<Object*>::iterator itr = result.begin();
+		std::deque<Object*>::iterator itr = result.begin();
 		while (itr != result.end())
 		{
 			delete *itr;
@@ -109,6 +108,7 @@ namespace Manager
 
 	void Caller::SetData(const Caller& other)
 	{
+		Clear();
 		std::list<Object*>::const_iterator args_itr = other.args.begin();
 		while (args_itr != other.args.end())
 		{
@@ -141,7 +141,6 @@ namespace Manager
 	Caller& Caller::operator=(const Caller& rhs)
 	{
 		if (this == &rhs) return *this;
-		Clear();
 		SetData(rhs);
 		return *this;
 	}
@@ -190,9 +189,9 @@ namespace Manager
 			std::list<MObject*> state_args;
 			ConvertToState(state, args, state_args);
 
-			std::vector<MObject*> state_results = state->Call(function, state_args, timeout);
+			std::deque<MObject*> state_results = state->Call(function, state_args, timeout);
 
-			std::vector<Common::Object*> results;
+			std::deque<Common::Object*> results;
 			ConvertFromState(state_results, results);
 
 			result = results;
@@ -213,9 +212,9 @@ namespace Manager
 		return Call(state, function, &found, timeout);
 	}
 
-	void Caller::ConvertFromState(const std::vector<MObject*>& in, std::vector<Common::Object*>& out)
+	void Caller::ConvertFromState(const std::deque<MObject*>& in, std::deque<Common::Object*>& out)
 	{
-		std::vector<MObject*>::const_iterator itr = in.begin();
+		std::deque<MObject*>::const_iterator itr = in.begin();
 
 		while (itr != in.end())
 		{
@@ -235,9 +234,9 @@ namespace Manager
 		}
 	}
 
-	void Caller::FreeStateBound(std::vector<MObject*>& in)
+	void Caller::FreeStateBound(std::deque<MObject*>& in)
 	{
-		std::vector<MObject*>::iterator itr = in.begin();
+		std::deque<MObject*>::iterator itr = in.begin();
 		while (itr != in.end())
 		{
 			(*itr)->Delete();

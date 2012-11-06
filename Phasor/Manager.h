@@ -1,7 +1,7 @@
 #pragma  once
 
 #include <map>
-#include <vector>
+#include <deque>
 #include <list>
 
 typedef unsigned long DWORD;
@@ -58,8 +58,8 @@ namespace Manager
 
 		// Calls a function with an optional timeout
 		// Caller is responsible for memory management of return vector
-		virtual std::vector<MObject*> Call(const char* name, const std::list<MObject*>& args, int timeout = 0) = 0;
-		virtual std::vector<MObject*> Call(const char* name, int timeout = 0) = 0;
+		virtual std::deque<MObject*> Call(const char* name, const std::list<MObject*>& args, int timeout = 0) = 0;
+		virtual std::deque<MObject*> Call(const char* name, int timeout = 0) = 0;
 	};
 
 	// --------------------------------------------------------------------
@@ -83,13 +83,13 @@ namespace Manager
 	class Result
 	{
 	protected:
-		std::vector<Common::Object*> result;
+		std::deque<Common::Object*> result;
 
 		void SetData(const Result& other);
 		void Free();
 
 		// Constructs the result and takes ownership of the memory.
-		Result(const std::vector<Common::Object*>& result);
+		Result(const std::deque<Common::Object*>& result);
 
 	public:
 		Result();
@@ -111,13 +111,13 @@ namespace Manager
 	{
 	private:
 		// Converts state-bound objects to generic ones.
-		void ConvertFromState(const std::vector<MObject*>& in, std::vector<Common::Object*>& out);
+		void ConvertFromState(const std::deque<MObject*>& in, std::deque<Common::Object*>& out);
 
 		// Converts generic objects to state-bound ones.
 		void ConvertToState(ScriptState* state, const std::list<Common::Object*>& in, std::list<MObject*>& out);
 
 		// Frees state-bound objects
-		void FreeStateBound(std::vector<MObject*>& in);
+		void FreeStateBound(std::deque<MObject*>& in);
 		void FreeStateBound(std::list<MObject*>& in);
 
 	protected:

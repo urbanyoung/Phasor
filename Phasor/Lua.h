@@ -2,7 +2,7 @@
 
 #include <list>
 #include <string>
-#include <vector>
+#include <deque>
 #include <map>
 #include "..\lua\lua.hpp"
 #include "Manager.h"
@@ -86,18 +86,18 @@ namespace Lua
 		Table* NewTable();
 
 		// Creates a new function
-		Function* NewFunction(std::vector<Object*> (*func)(State*, std::vector<Object*>&));
+		Function* NewFunction(std::deque<Object*> (*func)(State*, std::deque<Object*>&));
 
 		// Create a new named function
-		void RegisterFunction(const char* name, std::vector<Object*> (*func)(State*, std::vector<Object*>&));
+		void RegisterFunction(const char* name, std::deque<Object*> (*func)(State*, std::deque<Object*>&));
 
 		// Checks if the specified function is defined in the script
 		bool HasFunction(const char* name);
 
 		// Calls a function with an optional timeout
 		// Caller is responsible for memory management of return vector
-		std::vector<Manager::MObject*> Call(const char* name, const std::list<Manager::MObject*>& args, int timeout = 0);
-		std::vector<Manager::MObject*> Call(const char* name, int timeout = 0);
+		std::deque<Manager::MObject*> Call(const char* name, const std::list<Manager::MObject*>& args, int timeout = 0);
+		std::deque<Manager::MObject*> Call(const char* name, int timeout = 0);
 
 		// Raises an error
 		void Error(const char* _Format, ...);
@@ -295,17 +295,17 @@ namespace Lua
 	class Function : public Object
 	{
 	private:
-		std::vector<Object*> (*func)(State*, std::vector<Object*>&);
+		std::deque<Object*> (*func)(State*, std::deque<Object*>&);
 
 		// Creates a new C function
-		Function(State* state, std::vector<Object*> (*func)(State*, std::vector<Object*>&));
+		Function(State* state, std::deque<Object*> (*func)(State*, std::deque<Object*>&));
 
 		// Calls the C function from Lua
 		static int LuaCall(lua_State* L);
 
 	public:
 		// Calls the Lua function from C with an optional timeout
-		std::vector<MObject*> Call(const std::list<MObject*>& args, int timeout = 0);
+		std::deque<MObject*> Call(const std::list<MObject*>& args, int timeout = 0);
 
 	public:
 		friend class State;
