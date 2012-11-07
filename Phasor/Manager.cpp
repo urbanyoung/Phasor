@@ -31,6 +31,106 @@ namespace Manager
 		Lua::State::Close((Lua::State*)state);
 	}
 
+	// Register the specified functions with the script
+	void RegisterFunctions(ScriptState* state, const ScriptCallback* funcs, size_t n)
+	{
+		// todo: if support other languages, add handlers here.
+		for (size_t i = 0; i < n; i++)
+		{
+			state->RegisterFunction(&funcs[i]);
+		}
+	}
+
+	// Scripts should use call this function when invoking a C function
+	std::list<MObject*> InvokeCFunction(ScriptState* state, 
+		const std::deque<MObject*>& args, const ScriptCallback* cb)
+	{
+		// todo: if support other languages, add handlers here.
+		std::deque<Common::Object*> c_args;
+		MObject::ConvertFromState(args, c_args);
+
+		std::list<Common::Object*> c_results;
+		cb->func(c_args, c_results);
+
+		std::list<MObject*> results;
+		MObject::ConvertToState(state, c_results, results);
+
+		std::list<Common::Object*>::iterator itr = c_results.begin();
+		while (itr != c_results.end())
+		{
+			delete *itr;
+			itr++;
+		}
+		c_results.clear();
+
+		std::deque<Common::Object*>::iterator itr1 = c_args.begin();
+		while (itr1 != c_args.end())
+		{
+			delete *itr1;
+			itr1++;
+		}
+		return results;
+	}
+
+	// --------------------------------------------------------------------
+	//
+	// 
+
+	void MObject::ConvertFromState(const std::deque<MObject*>& in, std::deque<Common::Object*>& out)
+	{
+		std::deque<MObject*>::const_iterator itr = in.begin();
+
+		while (itr != in.end())
+		{
+			out.push_back((*itr)->ToGeneric());
+			itr++;
+		}
+	}
+
+	void MObject::ConvertToState(ScriptState* state, const std::list<Common::Object*>& in, std::list<MObject*>& out)
+	{
+		std::list<Common::Object*>::const_iterator itr = in.begin();
+
+		while (itr != in.end())
+		{
+			out.push_back(state->ToNativeObject(*itr));
+			itr++;
+		}
+	}
+
+	void MObject::ConvertToState(ScriptState* state, const std::list<Common::Object>& in, std::list<MObject*>& out)
+	{
+		std::list<Common::Object>::const_iterator itr = in.begin();
+
+		while (itr != in.end())
+		{
+			out.push_back(state->ToNativeObject(&(*itr)));
+			itr++;
+		}
+	}
+
+	void MObject::FreeStateBound(std::deque<MObject*>& in)
+	{
+		std::deque<MObject*>::iterator itr = in.begin();
+		while (itr != in.end())
+		{
+			(*itr)->Delete();
+			itr++;
+		}
+		in.clear();
+	}
+
+	void MObject::FreeStateBound(std::list<MObject*>& in)
+	{
+		std::list<MObject*>::iterator itr = in.begin();
+		while (itr != in.end())
+		{
+			(*itr)->Delete();
+			itr++;
+		}
+		in.clear();
+	}
+
 	// --------------------------------------------------------------------
 	// Class: Result
 	// Provides an interface for retrieving values from scripts
@@ -46,6 +146,7 @@ namespace Manager
 
 	void Result::SetData(const Result& other)
 	{
+		Clear();
 		std::deque<Object*>::const_iterator itr = other.result.begin();
 		while (itr != other.result.end())
 		{
@@ -59,7 +160,7 @@ namespace Manager
 		SetData(other);
 	}
 
-	void Result::Free()
+	void Result::Clear()
 	{
 		std::deque<Object*>::iterator itr = result.begin();
 		while (itr != result.end())
@@ -72,13 +173,12 @@ namespace Manager
 
 	Result::~Result()
 	{
-		Free();
+		Clear();
 	}
 
 	Result& Result::operator=(const Result& rhs)
 	{
 		if (this == &rhs) return *this;
-		Free();
 		SetData(rhs);
 		return *this;
 	}
@@ -187,19 +287,19 @@ namespace Manager
 		if (state->HasFunction(function))
 		{
 			std::list<MObject*> state_args;
-			ConvertToState(state, args, state_args);
+			MObject::ConvertToState(state, args, state_args);
 
 			std::deque<MObject*> state_results = state->Call(function, state_args, timeout);
 
 			std::deque<Common::Object*> results;
-			ConvertFromState(state_results, results);
+			MObject::ConvertFromState(state_results, results);
 
 			result = results;
 			*found = true;
 
 			// Free the state-bound stuff
-			FreeStateBound(state_results);
-			FreeStateBound(state_args);
+			MObject::FreeStateBound(state_results);
+			MObject::FreeStateBound(state_args);
 		}
 		else *found = false;
 
@@ -210,49 +310,5 @@ namespace Manager
 	{
 		bool found = false;
 		return Call(state, function, &found, timeout);
-	}
-
-	void Caller::ConvertFromState(const std::deque<MObject*>& in, std::deque<Common::Object*>& out)
-	{
-		std::deque<MObject*>::const_iterator itr = in.begin();
-
-		while (itr != in.end())
-		{
-			out.push_back((*itr)->ToGeneric());
-			itr++;
-		}
-	}
-
-	void Caller::ConvertToState(ScriptState* state, const std::list<Common::Object*>& in, std::list<MObject*>& out)
-	{
-		std::list<Common::Object*>::const_iterator itr = in.begin();
-
-		while (itr != in.end())
-		{
-			out.push_back(state->ToNativeObject(*itr));
-			itr++;
-		}
-	}
-
-	void Caller::FreeStateBound(std::deque<MObject*>& in)
-	{
-		std::deque<MObject*>::iterator itr = in.begin();
-		while (itr != in.end())
-		{
-			(*itr)->Delete();
-			itr++;
-		}
-		in.clear();
-	}
-
-	void Caller::FreeStateBound(std::list<MObject*>& in)
-	{
-		std::list<MObject*>::iterator itr = in.begin();
-		while (itr != in.end())
-		{
-			(*itr)->Delete();
-			itr++;
-		}
-		in.clear();
 	}
 }

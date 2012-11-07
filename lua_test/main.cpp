@@ -39,7 +39,7 @@ void main()
 	{
 		Scripting::SetPath("D:\\Development\\C++\\Phasor\\Release");
 		Scripting::OpenScript("lua_test");
-		Scripting::OpenScript("lua_test1");
+		//Scripting::OpenScript("lua_test1");
 
 		Scripting::PhasorCaller caller;
 		caller.AddArg("hello");
@@ -53,7 +53,7 @@ void main()
 	}
 
 	Scripting::CloseScript("lua_test");
-	Scripting::CloseScript("lua_test1");
+	//Scripting::CloseScript("lua_test1");
 	
 	//Scripting::Call("funca", args);
 }

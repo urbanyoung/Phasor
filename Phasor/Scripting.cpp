@@ -1,9 +1,11 @@
 #include "Scripting.h"
 #include "Manager.h"
 #include "Common.h"
+#include "PhasorAPI.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()
+#include <array>
 
 // todo: overload Call for no args
 // check what happens if attempt to call non existent lua function
@@ -20,24 +22,6 @@ namespace Scripting
 	std::string scriptsDir;
 	std::map<std::string, ScriptState*> scripts;
 
-	struct PhasorAPI
-	{
-		std::vector<Object*> (*func)(ScriptState*, std::vector<Object*>&);
-		const char* name;
-	};
-
-	/*std::vector<Object*> testf(ScriptState*, std::vector<Object*>&)
-	{
-		return std::vector<Object*>();
-	}
-
-	PhasorAPI PhasorExportTable[] =
-	{
-		{&testf, "updateammo"}
-	};*/
-
-	// Registers the Phasor API with scripts
-	void RegisterFunctions(ScriptState* state);
 
 	// Checks if the script is compatible with this version of Phasor.
 	void CheckScriptCompatibility(ScriptState* state, const char* script);
@@ -60,8 +44,8 @@ namespace Scripting
 		{
 			ScriptState* state = Manager::OpenScript(abs_file.str().c_str());
 			
-			//RegisterFunctions(state);
-			CheckScriptCompatibility(state, script);			
+			CheckScriptCompatibility(state, script);	
+			PhasorAPI::Register(state);
 
 			// Notify the script that it's been loaded.
 			bool fexists = false;

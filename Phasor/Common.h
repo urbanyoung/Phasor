@@ -18,6 +18,7 @@ namespace Common
 		TYPE_TABLE
 	};
 
+	// String descriptions matching types in obj_type
 	static const char* obj_desc[] = 
 	{
 		"nil",

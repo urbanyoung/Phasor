@@ -41,22 +41,10 @@ namespace Lua
 		lua_close(this->L);
 	}
 
-	std::deque<Object*> test_func(State* state, std::deque<Object*>& args)
-	{
-		String* str = (String*)args[0];
-		printf("test_func called with %s\n", str->GetValue());
-		String* outStr = state->NewString("value returned");
-		std::deque<Object*> results;
-		results.push_back(outStr);
-		return results;
-	}
-
 	// Creates a new state
 	State* State::NewState()
 	{
 		State* state = new State();
-		state->RegisterFunction("test_func", test_func);
-
 		return state;
 	}
 
@@ -163,25 +151,25 @@ namespace Lua
 	}
 
 	// Creates a new function
-	Function* State::NewFunction(std::deque<Object*> (*func)(State*, std::deque<Object*>&))
+	CFunction* State::NewFunction(const Manager::ScriptCallback* cb)
 	{
-		Function* object = new Function(this, func);
+		CFunction* object = new CFunction(this, cb);
 		this->objects.push_back(object);
 			
 		return object;
 	}
 
 	// Create a new named function
-	void State::RegisterFunction(const char* name, std::deque<Object*> (*func)(State*, std::deque<Object*>&))
+	void State::RegisterFunction(const Manager::ScriptCallback* cb)
 	{
-		Function* function = NewFunction(func);
-		this->SetGlobal(name, function);
+		CFunction* function = NewFunction(cb);
+		this->SetGlobal(cb->name, function);
 	}
 
-	// Checks if the specified function is defined in the script
+	// Checks if the specified lua function is defined in the script
 	bool State::HasFunction(const char* name)
 	{
-		Function* function = (Function*)this->GetGlobal(name);
+		LuaFunction* function = (LuaFunction*)this->GetGlobal(name);
 		bool exists = function->GetType() == Type_Function;
 		function->Delete();
 		return exists;
@@ -192,7 +180,7 @@ namespace Lua
 	std::deque<MObject*> State::Call(const char* name, 
 		const std::list<MObject*>& args, int timeout)
 	{
-		Function* function = (Function*)this->GetGlobal(name);
+		LuaFunction* function = (LuaFunction*)this->GetGlobal(name);
 		if (function->GetType() != Type_Function)
 		{
 			throw std::exception("lua: Attempted function call on non-function entity.");
@@ -494,7 +482,7 @@ namespace Lua
 	bool Boolean::GetValue()
 	{
 		this->Push();
-		bool value = (bool)lua_toboolean(this->state->L, -1);
+		bool value = lua_toboolean(this->state->L, -1) == 1;
 		this->Pop();
 
 		return value;
@@ -702,85 +690,160 @@ namespace Lua
 	// Class: Function
 	// Lua function wrapper
 	//
-
-	Function::Function(State* state, std::deque<Object*> (*func)(State*, std::deque<Object*>&)) : Object(state)
+	CFunction::CFunction(State* state, const Manager::ScriptCallback* cb)
+		: Object(state), cb(cb)
 	{
-		this->func = func;
+		printf("Creating named function : %s\n", this->cb->name);
 
 		lua_pushlightuserdata(this->state->L, this);
-		lua_pushcclosure(this->state->L, Function::LuaCall, 1);
+		lua_pushcclosure(this->state->L, CFunction::LuaCall, 1);
 		this->Pop();
 	}
 
-	// Calls the C function from Lua
-	int Function::LuaCall(lua_State* L)
+	// Formats a message describing an argument error
+	std::string CFunction::DescribeError(lua_State* L, int narg, int got, int expected)
 	{
-		// todo: change to use deque 
-		// Get the Function class from upvalue
-		Function* function = (Function*)lua_touserdata(L, lua_upvalueindex(1));
+		std::stringstream ss;
+		ss << "bad argument #" << narg << " to '" << this->cb->name << "' ("
+			<< lua_typename(L, expected) << " expected got " << lua_typename(L, got) << ")";
+		return ss.str();
+	}
 
-		std::deque<Object*> args;
+	std::string CFunction::RaiseError(lua_State* L, int narg, int got, int expected)
+	{
+		luaL_error(L, DescribeError(L, narg, got, expected).c_str());
+		return std::string(); // never returns
+	}
 
-		// Pop items off stack (first param is last on stack)
-		/*int nparams = lua_gettop(L);
-		if (nparams > 0)
+	// Calls the C function from Lua
+	int CFunction::LuaCall(lua_State* L)
+	{
+		// Get the CFunction class from upvalue
+		CFunction* function = (CFunction*)lua_touserdata(L, lua_upvalueindex(1));	
+
+		const size_t maxargs_all = function->cb->fmt.size(); // max any function can receive
+		size_t maxargs = 0; // max number of arguments this specific function expects
+		size_t minargs = function->cb->minargs; // minmum allowed
+		size_t nargs = lua_gettop(L); // number of args received
+
+		// Make sure the received arguments are within the extreme limits
+		if (nargs < minargs) { 
+			std::stringstream ss;
+			ss << "'" << function->cb->name << "' expects at least " << minargs  
+				<< " argument(s) and received " << nargs;
+			luaL_error(L, ss.str().c_str());
+		} else if (nargs > maxargs_all) {
+			std::stringstream ss;
+			ss << "'" << function->cb->name << "' expects at most " << maxargs_all  
+				<< " argument(s) and received " << nargs;
+			luaL_error(L, ss.str().c_str());
+		}
+
+		// Check the arguments are of expected type - without removing from
+		// stack. (two steps to prevent memory leak from lua longjmp)
+		// This loop should change stack values to the expected types because
+		// that's how the Lua::Object class works.
+		for (size_t i = 0; i < nargs; i++)
 		{
-			args.reserve(nparams);
-			for (int i = nparams - 1; i >= 0; i--)
+			if (function->cb->fmt[i] == Common::TYPE_NIL)
+				break; // no more args expected.
+
+			int indx = i + 1;
+
+			maxargs++;
+			switch (function->cb->fmt[i])
 			{
-				Object* object = function->state->NewObject();
-				object->Pop();
-				args.assign(i,object);
-			}
-		}*/
+			case Common::TYPE_BOOL:
+				{
+					int b;
+					// phasor_legacy: this "fix" is specific to Phaosr
+					// old versions accepted 0 as boolean false but Lua treats
+					// it as boolean true.
+					if (lua_type(L, indx) == Type_Number && lua_tonumber(L, indx) == 0) 
+						b = 0;
+					else
+						b = lua_toboolean(L, indx);
+					lua_pushboolean(L, b);
+					lua_replace(L, indx);
 
+					break;
+				}
+			case Common::TYPE_NUMBER:
+				{
+					// if it can't be converted luaL_checknumber raises an error
+					lua_Number n = luaL_checknumber(L, indx);
+					lua_pushnumber(L, n);
+					lua_replace(L, indx);
+					break;
+				}
+			case Common::TYPE_STRING:
+				{
+					// checkstring converts stack value and raises an error
+					// if no conversion exists
+					luaL_checkstring(L, indx);
+					break;
+				}
+			case Common::TYPE_TABLE:
+				{
+					int type = lua_type(L, indx);
+
+					if (type != Type_Table) {
+						function->RaiseError(L, i + 1, type, Type_Table);
+						// RaiseError never returns
+					}
+
+					break;
+				}
+			}
+		}
+
+		// Too many arguments were received
+		if (maxargs < nargs) {
+			function->RaiseError(L, maxargs + 1, lua_type(L, maxargs + 1), Type_Nil);
+			// RaiseError never returns
+		}
+
+		std::deque<MObject*> args;
 		// Pop the arguments off the stack
-		while (lua_gettop(L))
+		for (size_t i = 0; i < nargs; i++)
 		{
-			printf("Type pre-check: %i\n", lua_type(L, 1));
-			luaL_checkstring(L, 1);
-			printf("Type post-check: %i\n", lua_type(L, 1));
 			Object* object = function->state->NewObject();
 			object->Pop();
-			printf("Type %i\n", object->GetType());
-
 			args.push_front(object);
 		}
 		
 		// Call the C function
-		std::deque<Object*> results = function->func(function->state, args);
+		std::list<MObject*> results = Manager::InvokeCFunction(function->state, args, function->cb);//function->func(function->state, args);
 
-		// Push the results on the stack
-		for (std::deque<Object*>::iterator itr = results.begin(); itr != results.end(); ++itr)
-			(*itr)->Push();
+		// Push the results on the stack, and then free them
+		for (std::list<MObject*>::iterator itr = results.begin(); itr != results.end(); ++itr)
+		{
+			Object* object = (Object*)*itr;
+			object->Push();
+			object->Delete();
+		}
 
 		int nresults = results.size();
+		results.clear();
 
-		std::deque<Object*>::iterator itr = args.begin();
+		std::deque<MObject*>::iterator itr = args.begin();
 
 		// Clean up arguments
 		while (itr != args.end())
 		{
-			(*itr)->Delete();
+			Object* object = (Object*)*itr;
+			object->Delete();
 			itr++;
 		}
 		args.clear();
 
-		itr = results.begin();
-
-		// Clean up results
-		while (itr != results.end())
-		{
-			(*itr)->Delete();
-			itr++;
-		}
-		results.clear();
-
 		return nresults;
 	}
 
+	// --------------------------------------------------------------------
+
 	// Calls the Lua function from C
-	std::deque<MObject*> Function::Call(const std::list<MObject*>& args, int timeout)
+	std::deque<MObject*> LuaFunction::Call(const std::list<MObject*>& args, int timeout)
 	{
 		// todo: change to use deque 
 		// Push the function on the stack

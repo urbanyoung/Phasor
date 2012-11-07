@@ -3,7 +3,6 @@
 #include <list>
 #include <string>
 #include <deque>
-#include <map>
 #include "..\lua\lua.hpp"
 #include "Manager.h"
 
@@ -16,7 +15,8 @@ namespace Lua
 	class Number;
 	class String;
 	class Table;
-	class Function;
+	class LuaFunction;
+	class CFunction;
 
 	enum Type
 	{
@@ -86,10 +86,10 @@ namespace Lua
 		Table* NewTable();
 
 		// Creates a new function
-		Function* NewFunction(std::deque<Object*> (*func)(State*, std::deque<Object*>&));
+		CFunction* NewFunction(const Manager::ScriptCallback* cb);
 
 		// Create a new named function
-		void RegisterFunction(const char* name, std::deque<Object*> (*func)(State*, std::deque<Object*>&));
+		void RegisterFunction(const Manager::ScriptCallback* cb);
 
 		// Checks if the specified function is defined in the script
 		bool HasFunction(const char* name);
@@ -102,6 +102,7 @@ namespace Lua
 		// Raises an error
 		void Error(const char* _Format, ...);
 
+		// Converts the input object to a native (Lua) one.
 		Manager::MObject* ToNativeObject(const Common::Object* in);
 
 		friend class Object;
@@ -110,7 +111,8 @@ namespace Lua
 		friend class Number;
 		friend class String;
 		friend class Table;
-		friend class Function;
+		friend class LuaFunction;
+		friend class CFunction;
 	};
 
 	//
@@ -121,6 +123,7 @@ namespace Lua
 
 	class Object : public Manager::MObject
 	{
+		// Type of object stored
 		Type type;
 
 	protected:
@@ -163,15 +166,14 @@ namespace Lua
 
 		friend class State;
 		friend class Table;
-		friend class Function;
+		friend class LuaFunction;
+		friend class CFunction;
 	};
 
 	//
 	//-----------------------------------------------------------------------------------------
 	// Class: Nil
 	// Lua nil wrapper
-	//
-
 	class Nil : public Object
 	{
 	private:
@@ -292,25 +294,33 @@ namespace Lua
 	// Lua function wrapper
 	//
 
-	class Function : public Object
+	class LuaFunction : public Object
+	{
+	public:
+		// Calls the Lua function from C with an optional timeout
+		std::deque<MObject*> Call(const std::list<MObject*>& args, int timeout = 0);
+	};
+
+	class CFunction : public Object
 	{
 	private:
-		std::deque<Object*> (*func)(State*, std::deque<Object*>&);
-
-		// Creates a new C function
-		Function(State* state, std::deque<Object*> (*func)(State*, std::deque<Object*>&));
+		// C function associated with this function
+		const Manager::ScriptCallback* cb;
 
 		// Calls the C function from Lua
 		static int LuaCall(lua_State* L);
 
-	public:
-		// Calls the Lua function from C with an optional timeout
-		std::deque<MObject*> Call(const std::list<MObject*>& args, int timeout = 0);
+		// Formats a message describing an argument error
+		std::string DescribeError(lua_State* L, int narg, int got, int expected);
+
+		// Raises the Lua error, function never returns.
+		std::string RaiseError(lua_State* L, int narg, int got, int expected);
 
 	public:
-		friend class State;
+		// Creates a new C function
+		CFunction(State* state, const Manager::ScriptCallback* cb);
+
 	};
-
 	//
 	//-----------------------------------------------------------------------------------------
 }
