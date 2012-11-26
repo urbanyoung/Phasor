@@ -20,6 +20,7 @@ void main()
 	{
 		Scripting::SetPath("D:\\Development\\C++\\Phasor - Copy\\Release");
 		Scripting::OpenScript("lua_test");
+		Scripting::OpenScript("lua_test1");
 		//Scripting::OpenScript("lua_test1");
 
 		Scripting::PhasorCaller caller;

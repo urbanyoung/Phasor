@@ -102,7 +102,7 @@ namespace Lua
 	std::unique_ptr<Object> State::PeekLuaObject()
 	{
 		std::unique_ptr<Object> object;
-		printf("Type %i\n", lua_type(L, -1));
+
 		switch ((Type)lua_type(L, -1))
 		{
 		case Type_Boolean:

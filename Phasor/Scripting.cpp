@@ -141,7 +141,7 @@ namespace Scripting
 	{
 		// This is the argument which indicates if a scripts' return value is used.
 		this->AddArg(true);
-		ObjBool& using_param = (ObjBool&)*args.rbegin();
+		ObjBool& using_param = **args.rbegin();
 
 		auto itr = scripts.begin();
 
@@ -158,6 +158,7 @@ namespace Scripting
 			if (found && !result_set) {
 				for (size_t i = 0; i < r.size(); i++) {
 					if (r[i].GetType() != TYPE_NIL) {
+						printf("Found value, ignoring rest.\n");
 						result = r;
 						result_set = true;
 
