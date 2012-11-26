@@ -234,6 +234,9 @@ namespace Lua
 	void State::Error(const char* _Format, ...)
 	{
 		// not exception safe
+		// will probably change to either
+		// http://www.codeproject.com/Articles/15115/How-to-Format-a-String
+		// or http://www.boost.org/doc/libs/1_42_0/libs/format/doc/format.html
 		va_list _Args;
 		va_start(_Args, _Format);
 
@@ -405,10 +408,8 @@ namespace Lua
 
 		MObject::unique_deque args;		
 
-		// Check the arguments are of expected type - without removing from
-		// stack. (two steps to prevent memory leak from lua longjmp)
-		// This loop should change stack values to the expected types because
-		// that's how the Lua::Object class works.
+		// Check the arguments are of expected type and add them to
+		// args.
 		for (size_t i = 0; i < nargs; i++)
 		{
 			if (function->cb->fmt[i] == Common::TYPE_NIL)
