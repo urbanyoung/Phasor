@@ -4,5 +4,5 @@
 
 namespace PhasorAPI
 {
-	void Register(ScriptState* state);
+	void Register(ScriptState& state);
 }

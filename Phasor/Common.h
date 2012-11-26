@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <list>
+#include <deque>
 
 namespace Common
 {
@@ -45,12 +47,16 @@ namespace Common
 		std::stringstream ConversionDesc(obj_type totype) const;
 
 	public:
+		typedef std::unique_ptr<Object> unique_ptr;
+		typedef std::list<unique_ptr> unique_list;
+		typedef std::deque<unique_ptr> unique_deque;
+
 		// Creates a nil object
 		Object();
 		virtual ~Object();
 
 		// Create a new, independent copy of this object.
-		virtual Object* NewCopy() const;
+		virtual std::unique_ptr<Object> NewCopy() const;
 
 		// Returns the type of this object
 		obj_type GetType() const;
@@ -78,7 +84,7 @@ namespace Common
 		ObjBool(const ObjBool& other );	
 
 		// Create a new, independent copy of this object.
-		virtual ObjBool* NewCopy() const;
+		virtual std::unique_ptr<Object> NewCopy() const;
 
 		// Return the value stored in this object.
 		bool GetValue() const;
@@ -108,7 +114,7 @@ namespace Common
 		ObjNumber(const ObjNumber& other );
 
 		// Create a new, independent copy of this object.
-		virtual ObjNumber* NewCopy() const;
+		virtual std::unique_ptr<Object> NewCopy() const;
 
 		// Return the value stored in this object
 		double GetValue() const;
@@ -138,7 +144,7 @@ namespace Common
 		ObjString(const ObjString& other );
 
 		// Create a new, independent copy of this object.
-		virtual ObjString* NewCopy() const;
+		virtual std::unique_ptr<Object> NewCopy() const;
 
 		// Return the value stored in this object
 		const char* GetValue() const;
@@ -167,12 +173,12 @@ namespace Common
 		ObjTable(const ObjTable& other );
 
 		// Create a new, independent copy of this object.
-		virtual ObjTable* NewCopy() const;
+		virtual std::unique_ptr<Object> NewCopy() const;
 
 		// Get value at index
 		//const Object* operator [] (size_t i);
 		// Returns the value associated with the specified key
-		const Object* operator [] (const Object& key);
+		//const Object& operator [] (const Object& key);
 	};
 
 	// --------------------------------------------------------------------

@@ -4,7 +4,6 @@
 
 namespace Lua
 {		
-	typedef Manager::MObject MObject;
 
 	//-----------------------------------------------------------------------------------------
 	// Class: State
@@ -12,46 +11,26 @@ namespace Lua
 	//
 
 	// Creates a new state
-	State::State()
+	State::State(const char* file)
 	{
 		// Create a new Lua state
 		this->L = luaL_newstate();
 
 		// Check if an error occured
 		if (!this->L)
-			throw std::exception();
+			throw std::exception("can't open lua state.");
 
 		// Load the Lua librarys into the state
 		luaL_openlibs(this->L);
+		DoFile(file);
 	}
 
 	// Destroys the state
 	State::~State()
 	{
-		std::list<Object*>::iterator objects_itr = this->objects.begin();
-
-		// Clean up objects
-		while (objects_itr != this->objects.end())
-		{
-			delete *objects_itr;
-			objects_itr = this->objects.erase(objects_itr);
-		}
-
+		printf("Closing script\n");
 		// Destroy the Lua state
 		lua_close(this->L);
-	}
-
-	// Creates a new state
-	State* State::NewState()
-	{
-		State* state = new State();
-		return state;
-	}
-
-	// Destroys the state
-	void State::Close(State* state)
-	{
-		delete state;
 	}
 
 	// Loads and runs a file
@@ -78,125 +57,170 @@ namespace Lua
 		}
 	}
 
-	// Creates a new object with a value of nil
-	Object* State::NewObject()
+	std::unique_ptr<MObject> State::PeekMObject()
 	{
-		Object* object = new Object(this);
-		this->objects.push_back(object);
+		std::unique_ptr<MObject> object;
+		switch ((Type)lua_type(L, -1))
+		{
+		case Type_Boolean:
+			{
+				bool value = lua_toboolean(L, -1) == 1;
+				object = std::unique_ptr<MObject>(new MObjBool(value));
+			} break;
+		case Type_Number:
+			{
+				double value = lua_tonumber(L, -1);
+				object = std::unique_ptr<MObject>(new MObjNumber(value));
+			} break;
+		case Type_String:
+			{
+				const char* value = lua_tostring(L, -1);
+				object = std::unique_ptr<MObject>(new MObjString(value));
+			} break;
+		case Type_Table:
+			{
+				// not ready to support tables yet
+				// todo: support tables
+				object = std::unique_ptr<MObject>(new MObject());
+			} break;
 
+		default: // nil
+			{
+				object = std::unique_ptr<MObject>(new MObject());			
+			} break;
+		}
 		return object;
+	}
+
+	std::unique_ptr<MObject> State::PopMObject()
+	{
+		std::unique_ptr<MObject> object = PeekMObject();
+		lua_pop(L, 1);
+		return object;
+	}
+
+	std::unique_ptr<Object> State::PeekLuaObject()
+	{
+		std::unique_ptr<Object> object;
+		printf("Type %i\n", lua_type(L, -1));
+		switch ((Type)lua_type(L, -1))
+		{
+		case Type_Boolean:
+			{
+				bool value = lua_toboolean(L, -1) == 1;
+				object = std::unique_ptr<Object>(new Boolean(this, value));
+			} break;
+		case Type_Number:
+			{
+				double value = lua_tonumber(L, -1);
+				object = std::unique_ptr<Object>(new Number(this, value));
+			} break;
+		case Type_String:
+			{
+				const char* value = lua_tostring(L, -1);
+				object = std::unique_ptr<Object>(new String(this, value));
+			} break;
+		case Type_Table:
+			{
+				// not ready to support tables yet
+				// todo: support tables
+				object = std::unique_ptr<Object>(new Nil(this));
+			} break;
+		case Type_Function:
+			{
+				int ref = luaL_ref(L, LUA_REGISTRYINDEX); // this pops
+				object = std::unique_ptr<Object>(new LuaFunction(this, ref));
+				object->Push();
+			} break;
+
+		default: // nil
+			{
+				object = std::unique_ptr<Object>(new Nil(this));			
+			} break;
+		}
+		return object;
+	}
+
+	// Creates a new object with type w/e is on top of stack
+	std::unique_ptr<Object> State::PopLuaObject()
+	{
+		std::unique_ptr<Object> object = PeekLuaObject();
+		lua_pop(L, 1);
+		return object;
+	}
+
+	void State::Push(const MObject& object)
+	{
+		switch (object.GetType())
+		{
+		case Common::TYPE_BOOL:
+			{
+				MObjBool& b = (MObjBool&)object;
+				lua_pushboolean(L, b.GetValue());
+			} break;
+		case Common::TYPE_NUMBER:
+			{
+				MObjNumber& n = (MObjNumber&)object;
+				lua_pushnumber(L, n.GetValue());
+			} break;
+		case Common::TYPE_STRING:
+			{
+				MObjString& s = (MObjString&)object;
+				lua_pushstring(L, s.GetValue());
+			} break;
+		case Common::TYPE_TABLE: // not supported yet
+		default:
+			{
+				lua_pushnil(L);
+			} break;
+		}
 	}
 
 	// Gets a global value
-	Object* State::GetGlobal(const char* name)
+	std::unique_ptr<Object> State::GetGlobal(const char* name)
 	{
 		lua_getglobal(this->L, name);
-
-		Object* object = this->NewObject();
-		object->Pop();
-
-		return object;
+		return PopLuaObject();
 	}
 
 	// Sets a global value
-	void State::SetGlobal(const char* name, Object* object)
+	void State::SetGlobal(const char* name, const Object& object)
 	{
-		object->Push();
+		object.Push();
 		lua_setglobal(this->L, name);
-	}
-
-	// Creates a new nil
-	Nil* State::NewNil()
-	{
-		Nil* object = new Nil(this);
-		this->objects.push_back(object);
-
-		return object;
-	}
-
-	// Creates a new boolean
-	Boolean* State::NewBoolean(bool value)
-	{
-		Boolean* object = new Boolean(this, value);
-		this->objects.push_back(object);
-
-		return object;
-	}
-
-	// Creates a new number
-	Number* State::NewNumber(double value)
-	{
-		Number* object = new Number(this, value);
-		this->objects.push_back(object);
-
-		return object;
-	}
-
-	// Creates a new string
-	String* State::NewString(const char* value)
-	{
-		String* object = new String(this, value);
-		this->objects.push_back(object);
-
-		return object;
-	}
-
-	// Creates a new table
-	Table* State::NewTable()
-	{
-		Table* object = new Table(this);
-		this->objects.push_back(object);
-
-		return object;
-	}
-
-	// Creates a new function
-	CFunction* State::NewFunction(const Manager::ScriptCallback* cb)
-	{
-		CFunction* object = new CFunction(this, cb);
-		this->objects.push_back(object);
-			
-		return object;
 	}
 
 	// Create a new named function
 	void State::RegisterFunction(const Manager::ScriptCallback* cb)
 	{
-		CFunction* function = NewFunction(cb);
-		this->SetGlobal(cb->name, function);
+		CFunction* function = new CFunction(this, cb);
+		this->SetGlobal(cb->name, *function);
+		registeredFunctions.push_back(std::unique_ptr<CFunction>(function));
 	}
 
-	// Checks if the specified lua function is defined in the script
+	// Checks if the specified Lua function is defined in the script
 	bool State::HasFunction(const char* name)
 	{
-		LuaFunction* function = (LuaFunction*)this->GetGlobal(name);
-		bool exists = function->GetType() == Type_Function;
-		function->Delete();
-		return exists;
+		return GetGlobal(name)->GetType() == Type_Function;
 	}
 
-	// Calls a function
-	// Caller is responsible for memory management of return vector
-	std::deque<MObject*> State::Call(const char* name, 
-		const std::list<MObject*>& args, int timeout)
+	// Calls a Lua function from C
+	MObject::unique_deque State::Call(const char* name,
+		const MObject::unique_list& args, int timeout)
 	{
-		LuaFunction* function = (LuaFunction*)this->GetGlobal(name);
-		if (function->GetType() != Type_Function)
-		{
+		std::unique_ptr<Object> _function = this->GetGlobal(name);
+		LuaFunction& function = (LuaFunction&)*_function;
+		if (function.GetType() != Type_Function)
 			throw std::exception("lua: Attempted function call on non-function entity.");
-		}
 
-		std::deque<MObject*> results = function->Call(args, timeout);
-		function->Delete();
-
-		return results;
+		return function.Call(args, timeout);
 	}
 
 	// Calls a function
 	// Caller is responsible for memory management of return vector
-	std::deque<MObject*> State::Call(const char* name, int timeout)
+	MObject::unique_deque State::Call(const char* name, int timeout)
 	{
-		const std::list<MObject*> args;
+		const MObject::unique_list args;
 		return this->Call(name, args, timeout);
 	}
 
@@ -219,37 +243,44 @@ namespace Lua
 		luaL_error(this->L, error.c_str());
 	}
 
-	MObject* State::ToNativeObject(const Common::Object* in)
-	{
-		Lua::Object* out = NULL;
-		switch (in->GetType())
-		{
-			case Common::TYPE_NIL: {
-				out = NewNil();
-			} break;
-			case Common::TYPE_BOOL: {
-				Common::ObjBool* b = (Common::ObjBool*)in;
-				out = NewBoolean(b->GetValue());
-			} break;
-			case Common::TYPE_NUMBER: {
-				Common::ObjNumber* n = (Common::ObjNumber*)in;
-				out = NewNumber(n->GetValue());
-			} break;
-			case Common::TYPE_STRING: {
-				Common::ObjString* str = (Common::ObjString*)in;
-				out = NewString(str->GetValue());
-			} break;
-			case Common::TYPE_TABLE: {
-				Common::ObjTable* t = (Common::ObjTable*)in;
-				Lua::Table* table = NewTable();
-
-				// iterate through table, adding values
-
-				out = table;
-			} break;
-		}
-		return out;
-	}
+/*
+// 	std::unique_ptr<MObject> State::ToNativeObject(const Common::Object& in)
+// 	{
+// 		std::unique_ptr<MObject> out;
+// 		switch (in.GetType())
+// 		{
+// 			case Common::TYPE_NIL: 
+// 			{
+// 				out = NewNil();
+// 			} break;
+// 			case Common::TYPE_BOOL: 
+// 			{
+// 				Common::ObjBool& b = (Common::ObjBool&)in;
+// 				out = NewBoolean(b.GetValue());
+// 			} break;
+// 			case Common::TYPE_NUMBER: 
+// 			{
+// 				Common::ObjNumber& n = (Common::ObjNumber&)in;
+// 				out = NewNumber(n.GetValue());
+// 			} break;
+// 			case Common::TYPE_STRING: 
+// 			{
+// 				Common::ObjString& str = (Common::ObjString&)in;
+// 				out = NewString(str.GetValue());
+// 			} break;
+// 			case Common::TYPE_TABLE:
+// 			{
+// 				Common::ObjTable& t = (Common::ObjTable&)in;
+// 				std::unique_ptr<Table> table = NewTable();
+// 
+// 				// iterate through table, adding values
+// 
+// 				out = std::move(table);
+// 			} break;
+// 		}
+// 		return out;
+// 	}
+*/
 
 	//
 	//-----------------------------------------------------------------------------------------
@@ -258,36 +289,38 @@ namespace Lua
 	//
 
 	// Creates a new object with a value of nil
-	Object::Object(State* state) : Manager::MObject(), type(Type_Nil)
+	Object::Object(State* state) : type(Type_Nil)
 	{
 		this->state = state;
-
-		// Push 0 onto stack, can't use nil as it cannot be referenced.
-		// This object however, is treated as a nil value until a new
-		// value is popped into it.
-		lua_pushnumber(this->state->L, 0);
-
-		// Create new reference
-		this->ref = luaL_ref(state->L, LUA_REGISTRYINDEX);
 	}
+
+	Object::Object(State* state, Type type) : state(state), type(type){}
 
 	// Deletes the object
 	Object::~Object()
 	{
-		// Destroy reference
-		luaL_unref(this->state->L, LUA_REGISTRYINDEX, this->ref);
 	}
 
-	// Gets the objects value and pushes it on the stack
-	void Object::Push() const
+	// Associates this object with the top value on the stack, and pops it.
+	/*void Object::Associate()
 	{
-		// Gets the value at the reference
-		// Pushes the value to the stack
-		lua_rawgeti(this->state->L, LUA_REGISTRYINDEX, this->ref);
+		Disassociate();
+		assert((Type)lua_type(state->L, -1) == type);
+		this->ref = luaL_ref(state->L, LUA_REGISTRYINDEX);
+		set = true;
 	}
+
+	// If this object is associated with a registry value, free it.
+	void Object::Disassociate()
+	{
+		// Destroy reference
+		if (set)
+			luaL_unref(this->state->L, LUA_REGISTRYINDEX, this->ref);
+		set = false;
+	}*/
 
 	// Pops a value off the stack and sets the object
-	void Object::Pop()
+	/*void Object::Pop()
 	{
 		this->type = (Type)lua_type(this->state->L, -1);
 		// Pops a value from the stack
@@ -300,159 +333,7 @@ namespace Lua
 	{
 		this->Pop();
 		this->Push();
-	}
-
-	// Deletes the object
-	void Object::Delete()
-	{
-		for (std::list<Object*>::iterator itr = this->state->objects.begin();
-			itr != this->state->objects.end(); ++itr)
-		{
-			if (*itr == this)
-			{
-				this->state->objects.erase(itr);
-
-				break;
-			}
-		}
-
-		delete this;
-	}
-
-	// Returns the object type
-	Type Object::GetType() const
-	{
-		return type;
-	}
-
-	// Returns a copy of the object
-	Object* Object::Copy()
-	{
-		Object* object = this->state->NewObject();
-		this->Push();
-		object->Pop();
-
-		return object;
-	}
-
-	// Returns a copy of the object in another state
-	Object* Object::CopyTo(State* state)
-	{
-		Object* object = state->NewObject();
-
-		// Push the old value on the stack
-		this->Push();
-
-		switch (this->GetType())
-		{
-		case Type_Boolean:
-			{
-				int value = lua_toboolean(this->state->L, -1);
-				lua_pushboolean(object->state->L, value);
-
-				break;
-			}
-
-		case Type_Number:
-			{
-				double value = lua_tonumber(this->state->L, -1);
-				lua_pushnumber(object->state->L, value);
-
-				break;
-			}
-
-		case Type_String:
-			{
-				const char* value = lua_tostring(this->state->L, -1);
-				lua_pushstring(object->state->L, value);
-
-				break;
-			}
-
-		case Type_Table:
-			{
-				lua_newtable(object->state->L);
-
-				// Push first key
-				lua_pushnil(this->state->L);
-
-				// Add each key value pair to the table
-				// lua_next pops a key from the stack
-				// Then pushes the key value pair
-				while (lua_next(this->state->L, -2))
-				{
-					Object* oldValue = this->state->NewObject();
-					oldValue->Pop();
-
-					Object* oldKey = this->state->NewObject();
-					oldKey->Peek(); // Keep key on the stack
-
-					Object* newKey = oldKey->CopyTo(object->state);
-					newKey->Push(); // Push key on stack
-
-					Object* newValue = oldKey->CopyTo(object->state);
-					newValue->Push(); // Push value on stack
-
-					// Only add if key and value not nil
-					if (newKey->GetType() != Type_Nil && newValue->GetType() != Type_Nil)
-					{
-						// Add key value pair to table
-						// Pops key value pair from stack
-						lua_rawset(object->state->L, -3);
-					}
-
-					// Clean up objects
-					oldKey->Delete();
-					oldValue->Delete();
-					newKey->Delete();
-					newValue->Delete();
-				}
-
-				break;
-			}
-		}
-
-		// Pop the old value off the stack
-		this->Pop();
-
-		// Pop the new value off the stack
-		object->Pop();
-
-		return object;
-	}
-
-	Common::Object* Object::ToGeneric() const
-	{
-		Common::Object* out = NULL;
-		switch (GetType())
-		{		
-		case Lua::Type_Boolean:
-			{
-				Lua::Boolean* b = (Lua::Boolean*)this;
-				out = b->GetGeneric();
-			} break;
-		case Lua::Type_Number:
-			{
-				Lua::Number* n = (Lua::Number*)this;
-				out = n->GetGeneric();
-			} break;
-		case Lua::Type_String:
-			{
-				Lua::String* str = (Lua::String*)this;
-				out = str->GetGeneric();
-			} break;
-		case Lua::Type_Table:
-			{
-				Lua::Table* table = (Lua::Table*)this;
-				out = table->GetGeneric();
-			} break;
-		default:
-			{
-				out = new Common::Object();
-			} break;
-		}
-		return out;
-	}
+	}*/
 
 	//
 	//-----------------------------------------------------------------------------------------
@@ -460,9 +341,13 @@ namespace Lua
 	// Lua nil wrapper
 	//
 
-	Nil::Nil(State* state) : Object(state)
+	Nil::Nil(State* state) : Object(state, Type_Nil)
 	{
-		// Object constructor sets default value to nil
+	}
+
+	void Nil::Push() const
+	{
+		lua_pushnil(state->L);
 	}
 
 	//
@@ -470,34 +355,26 @@ namespace Lua
 	// Class: Boolean
 	// Lua boolean wrapper
 	//
-
-	// Creates a new boolean
-	Boolean::Boolean(State* state, bool value) : Object(state)
+	Boolean::Boolean(State* state, bool value) : Object(state, Type_Boolean)
 	{
-		lua_pushboolean(this->state->L, value);
-		this->Pop();
+		SetValue(value);
 	}
 
 	// Returns the value of the boolean
 	bool Boolean::GetValue()
 	{
-		this->Push();
-		bool value = lua_toboolean(this->state->L, -1) == 1;
-		this->Pop();
-
 		return value;
 	}
 
 	// Sets the value of the boolean
 	void Boolean::SetValue(bool value)
 	{
-		lua_pushboolean(this->state->L, value);
-		this->Pop();
+		this->value = value;
 	}
 
-	Common::ObjBool* Boolean::GetGeneric()
+	void Boolean::Push() const
 	{
-		return new Common::ObjBool(this->GetValue());
+		lua_pushboolean(state->L, value);
 	}
 
 	//
@@ -505,71 +382,53 @@ namespace Lua
 	// Class: Number
 	// Lua number wrapper
 	//
-
-	// Creates a new number
-	Number::Number(State* state, double value) : Object(state)
+	Number::Number(State* state, double value) : Object(state, Type_Number)
 	{
-		lua_pushnumber(this->state->L, value);
-		this->Pop();
-	}
+		SetValue(value);
+	}	
 
 	// Returns the value of the number
 	double Number::GetValue()
 	{
-		this->Push();
-		double value = lua_tonumber(this->state->L, -1);
-		this->Pop();
-
 		return value;
 	}
 
 	// Sets the value of the number
 	void Number::SetValue(double value)
 	{
-		lua_pushnumber(this->state->L, value);
-		this->Pop();
+		this->value = value;
 	}
 
-	Common::ObjNumber* Number::GetGeneric()
+	void Number::Push() const 
 	{
-		return new Common::ObjNumber(this->GetValue());
+		lua_pushnumber(state->L, value);
 	}
-
 	//
 	//-----------------------------------------------------------------------------------------
 	// Class: String
 	// Lua string wrapper
 	//
-
-	// Creates a new string
-	String::String(State* state, const char* value) : Object(state)
+	String::String(State* state, const std::string& value) : Object(state, Type_String)
 	{
-		lua_pushstring(this->state->L, value);
-		this->Pop();
+		SetValue(value);
 	}
 
 	// Returns the value of the string
-	const char* String::GetValue()
+	std::string String::GetValue()
 	{
-		this->Push();
-		const char* value = lua_tostring(this->state->L, -1);
-		this->Pop();
-
 		return value;
 	}
 
 	// Sets the value of the string
-	void String::SetValue(const char* value)
+	void String::SetValue(const std::string& value)
 	{
-		lua_pushstring(this->state->L, value);
-		this->Pop();
+		this->value = value;
 	}
 
-	Common::ObjString* String::GetGeneric()
+	void String::Push() const 
 	{
-		return new Common::ObjString(this->GetValue());
+		lua_pushstring(state->L, value.c_str());
 	}
-
 	//
 	//-----------------------------------------------------------------------------------------
 	// Class: Table
@@ -577,16 +436,14 @@ namespace Lua
 	//
 
 	// Creates a new table
-	Table::Table(State* state) : Object(state)
+	/*Table::Table(State* state) : Object(state), type(Table)
 	{
-		lua_newtable(this->state->L);
-		this->Pop();
 	}
 
 	// Gets a value from a key
-	Object* Table::GetValue(int key)
+	std::unique_ptr<Object> Table::GetValue(int key)
 	{
-		Object* object = this->state->NewObject();
+		std::unique_ptr<Object> object = this->state->NewObject();
 
 		this->Push();
 		lua_pushnumber(this->state->L, key);
@@ -598,9 +455,9 @@ namespace Lua
 	}
 
 	// Gets a value from a key
-	Object* Table::GetValue(const char* key)
+	std::unique_ptr<Object> Table::GetValue(const char* key)
 	{
-		Object* object = this->state->NewObject();
+		std::unique_ptr<Object> object = this->state->NewObject();
 
 		this->Push();
 		lua_pushstring(this->state->L, key);
@@ -612,9 +469,9 @@ namespace Lua
 	}
 
 	// Gets a value from a key
-	Object* Table::GetValue(Object* key)
+	std::unique_ptr<Object> Table::GetValue(Object* key)
 	{
-		Object* object = this->state->NewObject();
+		std::unique_ptr<Object> object = this->state->NewObject();
 
 		this->Push();
 		key->Push();
@@ -626,38 +483,86 @@ namespace Lua
 	}
 
 	// Sets a key to a value
-	void Table::SetValue(int key, Object* value)
+	void Table::SetValue(int key, Object& value)
 	{
 		this->Push();
 		lua_pushnumber(this->state->L, key);
-		value->Push();
+		value.Push();
 		lua_settable(this->state->L, -3);
 		this->Pop();
 	}
 
 	// Sets a key to a value
-	void Table::SetValue(const char* key, Object* value)
+	void Table::SetValue(const char* key, Object& value)
 	{
 		this->Push();
 		lua_pushstring(this->state->L, key);
-		value->Push();
+		value.Push();
 		lua_settable(this->state->L, -3);
 		this->Pop();
 	}
 
 	// Sets a key to a value
-	void Table::SetValue(Object* key, Object* value)
+	void Table::SetValue(Object* key, Object& value)
 	{
 		this->Push();
 		key->Push();
-		value->Push();
+		value.Push();
 		lua_settable(this->state->L, -3);
 		this->Pop();
 	}
 
-	Common::ObjTable* Table::GetGeneric()
+	std::unique_ptr<Object> Table::Copy()
+	{
+		return CopyTo(state);
+	}
+
+	// Returns a copy of the object
+	std::unique_ptr<Object> Table::CopyTo(State* state)
+	{
+		std::unique_ptr<Object> table = state->NewTable();
+		//table->Push();
+
+		// Push first key
+		this->Push();
+		lua_pushnil(this->state->L);
+
+
+		// Add each key value pair to the table
+		// lua_next pops a key from the stack
+		// Then pushes the key value pair
+		while (lua_next(this->state->L, -2))
+		{
+			std::unique_ptr<Object> oldValue = this->state->NewObject();
+			oldValue->Pop();
+
+			std::unique_ptr<Object> oldKey = this->state->NewObject();
+			oldKey->Peek(); // Keep key on the stack
+
+			if (oldValue->GetType() == Type_Nil || oldKey->GetType() == Type_Nil)
+				continue;
+
+			std::unique_ptr<Object> newKey = oldKey->CopyTo(state);
+			newKey->Push(); // Push key on stack
+
+			std::unique_ptr<Object> newValue = oldKey->CopyTo(state);
+			newValue->Push(); // Push value on stack
+
+			table->Push();
+			// Add key value pair to table
+			// Pops key value pair from stack
+			lua_rawset(state->L, -3);
+			table->Pop();
+
+		}
+
+		return table;
+	}
+
+	std::unique_ptr<Common::Object> Table::ToGeneric()
 	{
 		std::map<Common::Object*, Common::Object*> table;
+
 		this->Push();
 
 		// Push first key
@@ -668,23 +573,28 @@ namespace Lua
 		// Then pushes the key value pair
 		while (lua_next(this->state->L, -2))
 		{
-			Object* value = this->state->NewObject();
+			std::unique_ptr<Object> value = this->state->NewObject();
 			value->Pop();
 
-			Object* key = this->state->NewObject();
+			std::unique_ptr<Object> key = this->state->NewObject();
 			key->Peek(); // Keep key on the stack
 
 			// Only add if key and value not nil
 			if (key->GetType() != Type_Nil && value->GetType() != Type_Nil)
 			{
-				table.insert(std::pair<Common::Object*, Common::Object*>
-					(key->ToGeneric(), value->ToGeneric()));
+				auto pair = std::pair<Common::Object*,Common::Object*>(
+					key->ToGeneric().release(), 
+					value->ToGeneric().release()
+					);
+				table.insert(pair);
 			}
 		}
 
-		return new Common::ObjTable(table);
+		return std::unique_ptr<Common::Object>(
+			new Common::ObjTable(table)
+			);
 	}
-
+	*/
 	//
 	//-----------------------------------------------------------------------------------------
 	// Class: Function
@@ -694,10 +604,12 @@ namespace Lua
 		: Object(state), cb(cb)
 	{
 		printf("Creating named function : %s\n", this->cb->name);
+	}
 
-		lua_pushlightuserdata(this->state->L, this);
+	void CFunction::Push() const
+	{
+		lua_pushlightuserdata(this->state->L, (void*)this);
 		lua_pushcclosure(this->state->L, CFunction::LuaCall, 1);
-		this->Pop();
 	}
 
 	// Formats a message describing an argument error
@@ -721,10 +633,10 @@ namespace Lua
 		// Get the CFunction class from upvalue
 		CFunction* function = (CFunction*)lua_touserdata(L, lua_upvalueindex(1));	
 
-		const size_t maxargs_all = function->cb->fmt.size(); // max any function can receive
-		size_t maxargs = 0; // max number of arguments this specific function expects
-		size_t minargs = function->cb->minargs; // minmum allowed
-		size_t nargs = lua_gettop(L); // number of args received
+		const int maxargs_all = function->cb->fmt.size(); // max any function can receive
+		int maxargs = 0; // max number of arguments this specific function expects
+		int minargs = function->cb->minargs; // minimum allowed
+		int nargs = lua_gettop(L); // number of args received
 
 		// Make sure the received arguments are within the extreme limits
 		if (nargs < minargs) { 
@@ -803,58 +715,51 @@ namespace Lua
 			// RaiseError never returns
 		}
 
-		std::deque<MObject*> args;
 		// Pop the arguments off the stack
-		for (size_t i = 0; i < nargs; i++)
-		{
-			Object* object = function->state->NewObject();
-			object->Pop();
-			args.push_front(object);
-		}
+		MObject::unique_deque args;		
+		for (size_t i = 0; i < nargs; i++) 
+			args.push_front(function->state->PopMObject());
 		
 		// Call the C function
-		std::list<MObject*> results = Manager::InvokeCFunction(function->state, args, function->cb);//function->func(function->state, args);
+		MObject::unique_list results = 
+			Manager::InvokeCFunction(*(function->state), args, function->cb);
 
-		// Push the results on the stack, and then free them
-		for (std::list<MObject*>::iterator itr = results.begin(); itr != results.end(); ++itr)
-		{
-			Object* object = (Object*)*itr;
-			object->Push();
-			object->Delete();
-		}
+		// Push the results on the stack
+		for (auto itr = results.begin(); itr != results.end(); ++itr)
+			function->state->Push(*(*itr));
 
 		int nresults = results.size();
-		results.clear();
-
-		std::deque<MObject*>::iterator itr = args.begin();
-
-		// Clean up arguments
-		while (itr != args.end())
-		{
-			Object* object = (Object*)*itr;
-			object->Delete();
-			itr++;
-		}
-		args.clear();
 
 		return nresults;
 	}
 
 	// --------------------------------------------------------------------
 
-	// Calls the Lua function from C
-	std::deque<MObject*> LuaFunction::Call(const std::list<MObject*>& args, int timeout)
+	LuaFunction::LuaFunction(State* state, int ref) : Object(state, Type_Function),
+		ref(ref)
 	{
-		// todo: change to use deque 
+	}
+
+	LuaFunction::~LuaFunction()
+	{
+		luaL_unref(state->L, LUA_REGISTRYINDEX, ref);
+	}
+
+	void LuaFunction::Push() const
+	{
+		lua_rawgeti(this->state->L, LUA_REGISTRYINDEX, this->ref);
+	}
+
+	// Calls the Lua function from C
+	MObject::unique_deque LuaFunction::Call(
+		const MObject::unique_list& args, int timeout)
+	{
 		// Push the function on the stack
 		this->Push();
 
 		// Push the arguments on the stack
-		for (std::list<MObject*>::const_iterator itr = args.begin(); itr != args.end(); ++itr)
-		{
-			Object* obj = (Object*)*itr;
-			obj->Push();
-		}
+		for (auto itr = args.begin(); itr != args.end(); ++itr)
+			state->Push(**itr);
 
 		// Call the Lua function
 		// Check if error occurred
@@ -866,15 +771,13 @@ namespace Lua
 			throw std::exception(error.c_str());
 		}
 
-		std::deque<MObject*> results;
+		MObject::unique_deque results;
 
 		// Pop the results off the stack
-		while (lua_gettop(this->state->L))
-		{
-			Object* object = this->state->NewObject();
-			object->Pop();
-			results.push_front(object);
-		}
+		int n = lua_gettop(state->L);
+		printf("%i results\n", n);
+		for (int i = 0; i < n; i++)
+			results.push_front(state->PopMObject());
 
 		return results;
 	}

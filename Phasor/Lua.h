@@ -3,11 +3,22 @@
 #include <list>
 #include <string>
 #include <deque>
+#include <memory>
 #include "..\lua\lua.hpp"
 #include "Manager.h"
 
+// define object ownerships for Lua stuff. Each object needs to refer to
+// the lua state, but atm the lua state is a unique_ptr. 
+// Maybe have the objects use a weak_ptr to State and its factory method
+// returns a shared_ptr
 namespace Lua
 {
+	typedef Manager::MObject MObject;
+	typedef Manager::MObjBool MObjBool;
+	typedef Manager::MObjNumber MObjNumber;
+	typedef Manager::MObjString MObjString;
+	typedef Manager::MObjTable MObjTable;
+
 	class State;
 	class Object;
 	class Nil;
@@ -17,6 +28,12 @@ namespace Lua
 	class Table;
 	class LuaFunction;
 	class CFunction;
+
+	// global ones (use lua references)
+	class GBoolean;
+	class GNumber;
+	class GString;
+	class GTable;
 
 	enum Type
 	{
@@ -37,23 +54,15 @@ namespace Lua
 	{
 	private:
 		// Underlying Lua state
-		lua_State* L;
-
-		// List of objects in the state
-		std::list<Object*> objects;
+		lua_State* L;	
+		std::list<std::unique_ptr<CFunction>> registeredFunctions;
+	public:
 
 		// Creates a new state
-		State();
+		State(const char* file);
 
 		// Destroys the state
 		~State();
-
-		// Creates a new object with a value of nil
-		Object* NewObject();
-
-	public:
-		// Creates a new state
-		static State* NewState();
 
 		// Destroys the state
 		static void Close(State* state);
@@ -65,45 +74,38 @@ namespace Lua
 		void DoString(const char* str);
 
 		// Gets a global value
-		Object* GetGlobal(const char* name);
+		std::unique_ptr<Object> GetGlobal(const char* name);
 
 		// Sets a global value
-		void SetGlobal(const char* name, Object* object);
+		void SetGlobal(const char* name, const Object& object);
 
-		// Creates a new nil
-		Nil* NewNil();
+		// Pop an object off the Lua stack and return it.
+		std::unique_ptr<Object> PopLuaObject();
+		std::unique_ptr<Object> PeekLuaObject();
+		std::unique_ptr<MObject> PopMObject();
+		std::unique_ptr<MObject> PeekMObject();
 
-		// Creates a new boolean
-		Boolean* NewBoolean(bool value);
+		// Push a generic object onto the Lua stack
+		void Push(const MObject& object);
 
-		// Creates a new number
-		Number* NewNumber(double value);
-
-		// Creates a new string
-		String* NewString(const char* value);
-
-		// Creates a new table
-		Table* NewTable();
-
-		// Creates a new function
-		CFunction* NewFunction(const Manager::ScriptCallback* cb);
-
-		// Create a new named function
+		// The below functions are for creating GLOBAL Lua objects,
+		// they can be tracked and thus updated.
+		/*std::unique_ptr<GBoolean> GlobalBoolean(const char* name, bool value);
+		std::unique_ptr<GNumber> GlobalNumber(const char* name, double value);
+		std::unique_ptr<GString> GlobalString(const char* name, const char* value);
+		std::unique_ptr<GTable> GlobalTable();*/
 		void RegisterFunction(const Manager::ScriptCallback* cb);
 
 		// Checks if the specified function is defined in the script
 		bool HasFunction(const char* name);
 
 		// Calls a function with an optional timeout
-		// Caller is responsible for memory management of return vector
-		std::deque<Manager::MObject*> Call(const char* name, const std::list<Manager::MObject*>& args, int timeout = 0);
-		std::deque<Manager::MObject*> Call(const char* name, int timeout = 0);
+		MObject::unique_deque Call(const char* name,
+			const MObject::unique_list& args, int timeout = 0);
+		MObject::unique_deque Call(const char* name, int timeout = 0);
 
 		// Raises an error
 		void Error(const char* _Format, ...);
-
-		// Converts the input object to a native (Lua) one.
-		Manager::MObject* ToNativeObject(const Common::Object* in);
 
 		friend class Object;
 		friend class Nil;
@@ -120,54 +122,46 @@ namespace Lua
 	// Class: Object
 	// Lua value wrapper
 	//
-
-	class Object : public Manager::MObject
-	{
-		// Type of object stored
-		Type type;
+	// Objects should not out live the State which created them. The creator
+	// is responsible for ensuring this. 
+	// These objects are only created by PopStackObject and are simply meant
+	// as local CPP wrappers for Lua types.
+	class Object
+	{	
+	private:
+		Object(const Object& other);
+		
+		//Object operator=(const Object& other);
 
 	protected:
 		// State the object resides in
 		State* state;
 
-		// Lua registry reference; where the value is stored
-		int ref;
+		// Type of object stored
+		Type type;	
 
-		// Creates a new object with a value of 0
 		Object(State* state);
-
-		// Deletes the object
-		~Object();
-
-		// Gets the objects value and pushes it on the stack
-		void Push() const;
-
-		// Pops a value off the stack and sets the object
-		void Pop();
-
-		// Gets a value off the stack without removing it and sets the object
-		void Peek();
+		Object(State* state, Type type);
 
 	public:
+
+		// Push the contained value onto the Lua stack.
+		virtual void Push() const = 0;
+
 		// Deletes the object
-		void Delete();
+		virtual ~Object();
 
 		// Returns the object type
-		Type GetType() const;
+		Type GetType() const { return type; };
 
 		// Returns a copy of the object
-		Object* Copy();
+		/*virtual std::unique_ptr<Object> Copy();
 
 		// Returns a copy of the object in another state
-		Object* CopyTo(State* state);
+		virtual std::unique_ptr<Object> CopyTo(State* state);
 
 		// Convert this object into a generic one.
-		Common::Object* ToGeneric() const;
-
-		friend class State;
-		friend class Table;
-		friend class LuaFunction;
-		friend class CFunction;
+		virtual std::unique_ptr<Common::Object> ToGeneric() const;*/
 	};
 
 	//
@@ -176,11 +170,10 @@ namespace Lua
 	// Lua nil wrapper
 	class Nil : public Object
 	{
-	private:
-		// Creates a new nil
-		Nil(State* state);
-
 	public:
+		Nil(State* state);
+		void Push() const;
+
 		friend class State;
 	};
 
@@ -189,24 +182,16 @@ namespace Lua
 	// Class: Boolean
 	// Lua boolean wrapper
 	//
-
 	class Boolean : public Object
 	{
 	private:
-		// Creates a new boolean
-		Boolean(State* state, bool value);
+		bool value;
 
 	public:
-		// Returns the value of the boolean
+		Boolean(State* state, bool value);
+		void Push() const;
 		bool GetValue();
-
-		// Sets the value of the boolean
 		void SetValue(bool value);
-
-		// Convert this object into a generic one.
-		Common::ObjBool* GetGeneric();
-
-		friend class State;
 	};
 
 	//
@@ -218,20 +203,13 @@ namespace Lua
 	class Number : public Object
 	{
 	private:
-		// Creates a new number
-		Number(State* state, double value);
+		double value;
 
 	public:
-		// Returns the value of the number
+		Number(State* state, double value);
+		void Push() const;
 		double GetValue();
-
-		// Sets the value of the number
 		void SetValue(double value);
-
-		// Convert this object into a generic one.
-		Common::ObjNumber* GetGeneric();
-
-		friend class State;
 	};
 
 	//
@@ -239,24 +217,16 @@ namespace Lua
 	// Class: String
 	// Lua string wrapper
 	//
-
 	class String : public Object
 	{
 	private:
-		// Creates a new string
-		String(State* state, const char* value);
+		std::string value;
 
 	public:
-		// Returns the value of the string
-		const char* GetValue();
-
-		// Sets the value of the string
-		void SetValue(const char* value);
-
-		// Convert this object into a generic one.
-		Common::ObjString* GetGeneric();
-
-		friend class State;
+		String(State* state, const std::string& value);
+		void Push() const;
+		std::string GetValue();
+		void SetValue(const std::string& value);
 	};
 
 	//
@@ -264,8 +234,22 @@ namespace Lua
 	// Class: Table
 	// Lua table wrapper
 	//
+	/*class Table : public Object
+	{
+	private:
+		std::map<Object, Object> table;
 
-	class Table : public Object
+	public:
+		Table(State* state, const std::map<Object,Object>& table);
+		void Push() const;
+		
+		const Object& operator[](const Object& key);
+		const Object& operator[](int key);
+
+		//void SetValue(double value);
+	};*/
+
+	/*class Table : public Object
 	{
 	private:
 		// Creates a new table
@@ -273,34 +257,47 @@ namespace Lua
 
 	public:
 		// Gets a value from a key
-		Object* GetValue(int key);
-		Object* GetValue(const char* key);
-		Object* GetValue(Object* key);
+		std::unique_ptr<Object> GetValue(int key);
+		std::unique_ptr<Object> GetValue(const char* key);
+		std::unique_ptr<Object> GetValue(Object* key);
 
 		// Sets a key to a value
-		void SetValue(int key, Object* value);
-		void SetValue(const char* key, Object* value);
-		void SetValue(Object* key, Object* value);
+		void SetValue(int key, Object& value);
+		void SetValue(const char* key,  Object& value);
+		void SetValue(Object* key, Object& value);
+
+		virtual std::unique_ptr<Object> Copy();
+
+		// Returns a copy of the object
+		virtual std::unique_ptr<Object> CopyTo(State* state);
 
 		// Convert this object into a generic one.
-		Common::ObjTable* GetGeneric();
+		virtual std::unique_ptr<Common::Object> ToGeneric();
 
 		friend class State;
-	};
+	};*/
 
 	//
 	//-----------------------------------------------------------------------------------------
 	// Class: Function
 	// Lua function wrapper
-	//
-
+	// 
 	class LuaFunction : public Object
 	{
+		int ref;
 	public:
+		LuaFunction(State* state, int ref);
+		~LuaFunction();
+		void Push() const;
+
 		// Calls the Lua function from C with an optional timeout
-		std::deque<MObject*> Call(const std::list<MObject*>& args, int timeout = 0);
+		MObject::unique_deque 
+			Call(const MObject::unique_list& args, int timeout = 0);
 	};
 
+	// --------------------------------------------------------------------
+	// Class: CFunction
+	// Register a C function that can be called from Lua
 	class CFunction : public Object
 	{
 	private:
@@ -319,6 +316,7 @@ namespace Lua
 	public:
 		// Creates a new C function
 		CFunction(State* state, const Manager::ScriptCallback* cb);
+		void Push() const;
 
 	};
 	//

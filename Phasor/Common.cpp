@@ -9,21 +9,15 @@ namespace Common
 	// Provides an interface between Lua and Phasor objects. The derived
 	// classes provide specific types.
 	// 
-	Object::Object(obj_type _type) : type(_type) 
-	{
-	}
+	Object::Object(obj_type _type) : type(_type) {}
 
-	Object::Object() : type(TYPE_NIL)
-	{
-	}
+	Object::Object() : type(TYPE_NIL) {}
 
-	Object::~Object()
-	{
-	}
+	Object::~Object() {}
 
-	Object* Object::NewCopy() const
+	std::unique_ptr<Object> Object::NewCopy() const
 	{
-		return new Object(TYPE_NIL);
+		return std::unique_ptr<Object>(new Object(TYPE_NIL));
 	}
 
 	obj_type Object::GetType() const
@@ -85,9 +79,9 @@ namespace Common
 		return *this;
 	}
 
-	ObjBool* ObjBool::NewCopy() const
+	std::unique_ptr<Object> ObjBool::NewCopy() const
 	{
-		return new ObjBool(*this);
+		return std::unique_ptr<Object>(new ObjBool(*this));
 	}
 
 	bool ObjBool::GetValue() const
@@ -151,9 +145,9 @@ namespace Common
 		return *this;
 	}
 
-	ObjNumber* ObjNumber::NewCopy() const
+	std::unique_ptr<Object> ObjNumber::NewCopy() const
 	{
-		return new ObjNumber(*this);
+		return std::unique_ptr<Object>(new ObjNumber(*this));
 	}
 
 	double ObjNumber::GetValue() const
@@ -210,9 +204,9 @@ namespace Common
 		return *this;
 	}
 
-	ObjString* ObjString::NewCopy() const
+	std::unique_ptr<Object> ObjString::NewCopy() const
 	{
-		return new ObjString(*this);
+		return std::unique_ptr<Object>(new ObjString(*this));
 	}
 
 	void ObjString::CopyString(const char* str)
@@ -277,9 +271,9 @@ namespace Common
 		return *this;
 	}
 
-	ObjTable* ObjTable::NewCopy() const
+	std::unique_ptr<Object> ObjTable::NewCopy() const
 	{
-		return new ObjTable(*this);
+		return std::unique_ptr<Object>(new ObjTable(*this));
 	}
 
 	void ObjTable::CopyTable(const ObjTable& other)
@@ -288,13 +282,13 @@ namespace Common
 
 		while (itr != other.table.end())
 		{
-			Object* key = itr->first->NewCopy();
-			Object* value = itr->second->NewCopy();
+			Object* key = itr->first->NewCopy().release();
+			Object* value = itr->second->NewCopy().release();
 			table.insert(std::pair<Object*, Object*>(key, value));
 		}
 	}
 
-	const Object* ObjTable::operator [] (const Object& key)
+	/*const Object& ObjTable::operator [] (const Object& key)
 	{
 		std::map<Object*, Object*>::iterator itr = table.find((Object*)&key);
 		if (itr == table.end()) {
@@ -303,7 +297,7 @@ namespace Common
 			throw std::exception(err.str().c_str());
 		}
 		return itr->second;
-	}
+	}*/
 
 	// --------------------------------------------------------------------
 	// Memory commands

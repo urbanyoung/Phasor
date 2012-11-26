@@ -20,11 +20,11 @@ namespace Scripting
 	const DWORD versions[] = {1234};
 
 	std::string scriptsDir;
-	std::map<std::string, ScriptState*> scripts;
+	std::map<std::string, std::unique_ptr<ScriptState>> scripts;
 
 
 	// Checks if the script is compatible with this version of Phasor.
-	void CheckScriptCompatibility(ScriptState* state, const char* script);
+	void CheckScriptCompatibility(ScriptState& state, const char* script);
 
 	// --------------------------------------------------------------------
 	//
@@ -40,53 +40,40 @@ namespace Scripting
 		std::stringstream abs_file;
 		abs_file << scriptsDir << "\\" << script << ".lua";
 
-		try 
-		{
-			ScriptState* state = Manager::OpenScript(abs_file.str().c_str());
+		std::unique_ptr<ScriptState> state = Manager::OpenScript(abs_file.str().c_str());
 			
-			CheckScriptCompatibility(state, script);	
-			PhasorAPI::Register(state);
+		CheckScriptCompatibility(*state, script);	
+		PhasorAPI::Register(*state);
 
-			// Notify the script that it's been loaded.
-			bool fexists = false;
-			Manager::Caller caller;
-			caller.AddArg(GetCurrentProcessId());
-			caller.Call(state, "OnScriptLoad", &fexists, DEFAULT_TIMEOUT);
+		// Notify the script that it's been loaded.
+		bool fexists = false;
+		Manager::Caller caller;
+		caller.AddArg(GetCurrentProcessId());
+		caller.Call(*state, "OnScriptLoad", &fexists, DEFAULT_TIMEOUT);
 
-			if (!fexists) {
-				std::stringstream err;
-				err << "script: " << script << " cannot be loaded, OnScriptLoad undefined.";
-				throw std::exception(err.str().c_str());
-			}
-
-			scripts[script] = state;
-
+		if (!fexists) {
+			std::stringstream err;
+			err << "script: " << script << " cannot be loaded, OnScriptLoad undefined.";
+			throw std::exception(err.str().c_str());
 		}
-		catch (exception_type) 
-		{
-			CloseScript(script);
-			throw;
-		}	
+
+		scripts[script] = std::move(state);
+
 	}
 
 	void CloseScript(const char* script) 
 	{
-		std::map<std::string, ScriptState*>::iterator itr = scripts.find(script);
+		auto itr = scripts.find(script);
 
 		if (itr != scripts.end()) {
-			ScriptState* state = itr->second;
+			std::unique_ptr<ScriptState> state(std::move(itr->second));
 			scripts.erase(itr);
-			try 
-			{
-				Manager::Caller caller;
-				caller.Call(state, "OnScriptUnload", DEFAULT_TIMEOUT);
-				Manager::CloseScript(state);
-			}
-			catch (exception_type) 
-			{
-				Manager::CloseScript(state);
-				throw;
-			}					
+			
+			Manager::Caller caller;
+			caller.Call(*state, "OnScriptUnload", DEFAULT_TIMEOUT);
+			
+			//Manager::CloseScript(state);		
+			// script closed when state goes out of scope
 		}
 	}
 
@@ -120,7 +107,7 @@ namespace Scripting
 	}
 
 	// Checks if the script is compatible with this version of Phasor.
-	void CheckScriptCompatibility(ScriptState* state, const char* script) 
+	void CheckScriptCompatibility(ScriptState& state, const char* script) 
 	{
 		bool funcExists = false;
 		Manager::Caller caller;
@@ -134,10 +121,10 @@ namespace Scripting
 
 		// Make sure the requested version is compatible
 		bool is_compatible = false;
-		if (result.size() == 1 && result[0]->GetType() == TYPE_NUMBER) {
-			ObjNumber* ver = (ObjNumber*)result[0];
-			if (CompatibleVersion((DWORD)ver->GetValue())) {
-					is_compatible = true;
+		if (result.size() == 1 && result[0].GetType() == TYPE_NUMBER) {
+			const ObjNumber& ver = (const ObjNumber&)result[0];
+			if (CompatibleVersion((DWORD)ver.GetValue())) {
+				is_compatible = true;
 			}
 		}
 
@@ -154,29 +141,29 @@ namespace Scripting
 	{
 		// This is the argument which indicates if a scripts' return value is used.
 		this->AddArg(true);
-		ObjBool* using_param = (ObjBool*)*args.rbegin();
+		ObjBool& using_param = (ObjBool&)*args.rbegin();
 
-		std::map<std::string, ScriptState*>::const_iterator itr = scripts.begin();
+		auto itr = scripts.begin();
 
 		Result result;
 		bool result_set = false;
 
 		while (itr != scripts.end())
 		{
-			ScriptState* state = itr->second;
+			std::unique_ptr<ScriptState>& state = itr->second;
 			bool found = false;
-			Result r = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
+			Result r = Caller::Call(*state, function, &found, DEFAULT_TIMEOUT);
 
 			// The first result with any non-nil values is used
 			if (found && !result_set) {
 				for (size_t i = 0; i < r.size(); i++) {
-					if (r[i]->GetType() != TYPE_NIL) {
+					if (r[i].GetType() != TYPE_NIL) {
 						result = r;
 						result_set = true;
 
 						// Change the 'using' argument so other scripts know
 						// they won't be considered
-						*using_param = false;
+						using_param = false;
 						break;
 					}
 				}

@@ -16,28 +16,9 @@ const char* script = "i = 0\n"
 
 void main()
 {
-	/*State* state = State::NewState();
-
 	try
 	{
-		//state->DoString(script);
-		state->DoFile("D:\\Development\\C++\\Phasor\\Release\\lua_test.lua");
-		vector<Object*> args;
-		args.push_back(state->NewString("Hello"));
-		state->Call("funca", args, 5000);
-	}
-	catch (std::exception e)
-	{
-		cout << "Exception" << endl;
-		cout << e.what() << endl;
-	}
-
-	cout << "Closing state" << endl;
-	State::Close(state);*/
-
-	try
-	{
-		Scripting::SetPath("D:\\Development\\C++\\Phasor\\Release");
+		Scripting::SetPath("D:\\Development\\C++\\Phasor - Copy\\Release");
 		Scripting::OpenScript("lua_test");
 		//Scripting::OpenScript("lua_test1");
 
