@@ -415,8 +415,6 @@ namespace Lua
 				break; // no more args expected.
 
 			int indx = i + 1;
-			//int indx = -1;
-
 			maxargs++;
 
 			std::unique_ptr<MObject> obj;
@@ -433,10 +431,6 @@ namespace Lua
 					else
 						b = lua_toboolean(L, indx);
 					obj.reset(new MObjBool(b));
-					//std::unique_ptr<MObject> obj(new MObjBool(b));
-					//args.push_front(obj);
-					//lua_pushboolean(L, b);
-					//lua_replace(L, indx);
 
 					break;
 				}
@@ -445,8 +439,7 @@ namespace Lua
 					// if it can't be converted luaL_checknumber raises an error
 					lua_Number n = luaL_checknumber(L, indx);
 					obj.reset(new MObjNumber(n));
-					//lua_pushnumber(L, n);
-					//lua_replace(L, indx);
+
 					break;
 				}
 			case Common::TYPE_STRING:
@@ -480,11 +473,6 @@ namespace Lua
 			return function->RaiseError(L, maxargs + 1, lua_type(L, maxargs + 1), Type_Nil);
 			// RaiseError never returns
 		}
-
-		// Pop the arguments off the stack
-		/*MObject::unique_deque args;		
-		for (size_t i = 0; i < nargs; i++) 
-			args.push_front(function->state->PopMObject());*/
 		
 		// Call the C function
 		MObject::unique_list results = 
