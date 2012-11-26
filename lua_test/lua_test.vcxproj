@@ -78,6 +78,7 @@
     <ClInclude Include="..\Phasor\Manager.h" />
     <ClInclude Include="..\Phasor\PhasorAPI.h" />
     <ClInclude Include="..\Phasor\Scripting.h" />
+    <ClInclude Include="Streams.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lua\lua.vcxproj">

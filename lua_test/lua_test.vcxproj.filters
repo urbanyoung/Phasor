@@ -51,5 +51,8 @@
     <ClInclude Include="..\Phasor\PhasorAPI.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
+    <ClInclude Include="Streams.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

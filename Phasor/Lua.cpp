@@ -22,7 +22,13 @@ namespace Lua
 
 		// Load the Lua librarys into the state
 		luaL_openlibs(this->L);
-		DoFile(file);
+		try {
+			DoFile(file);
+		} catch (std::exception& e)
+		{
+			lua_close(this->L);
+			throw e;
+		}
 	}
 
 	// Destroys the state
@@ -193,9 +199,9 @@ namespace Lua
 	// Create a new named function
 	void State::RegisterFunction(const Manager::ScriptCallback* cb)
 	{
-		CFunction* function = new CFunction(this, cb);
+		std::unique_ptr<CFunction> function(new CFunction(this, cb));
 		this->SetGlobal(cb->name, *function);
-		registeredFunctions.push_back(std::unique_ptr<CFunction>(function));
+		registeredFunctions.push_back(std::move(function));
 	}
 
 	// Checks if the specified Lua function is defined in the script
@@ -227,6 +233,7 @@ namespace Lua
 	// Raises an error
 	void State::Error(const char* _Format, ...)
 	{
+		// not exception safe
 		va_list _Args;
 		va_start(_Args, _Format);
 
@@ -243,52 +250,6 @@ namespace Lua
 		luaL_error(this->L, error.c_str());
 	}
 
-/*
-// 	std::unique_ptr<MObject> State::ToNativeObject(const Common::Object& in)
-// 	{
-// 		std::unique_ptr<MObject> out;
-// 		switch (in.GetType())
-// 		{
-// 			case Common::TYPE_NIL: 
-// 			{
-// 				out = NewNil();
-// 			} break;
-// 			case Common::TYPE_BOOL: 
-// 			{
-// 				Common::ObjBool& b = (Common::ObjBool&)in;
-// 				out = NewBoolean(b.GetValue());
-// 			} break;
-// 			case Common::TYPE_NUMBER: 
-// 			{
-// 				Common::ObjNumber& n = (Common::ObjNumber&)in;
-// 				out = NewNumber(n.GetValue());
-// 			} break;
-// 			case Common::TYPE_STRING: 
-// 			{
-// 				Common::ObjString& str = (Common::ObjString&)in;
-// 				out = NewString(str.GetValue());
-// 			} break;
-// 			case Common::TYPE_TABLE:
-// 			{
-// 				Common::ObjTable& t = (Common::ObjTable&)in;
-// 				std::unique_ptr<Table> table = NewTable();
-// 
-// 				// iterate through table, adding values
-// 
-// 				out = std::move(table);
-// 			} break;
-// 		}
-// 		return out;
-// 	}
-*/
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Object
-	// Lua value wrapper
-	//
-
-	// Creates a new object with a value of nil
 	Object::Object(State* state) : type(Type_Nil)
 	{
 		this->state = state;
@@ -300,46 +261,6 @@ namespace Lua
 	Object::~Object()
 	{
 	}
-
-	// Associates this object with the top value on the stack, and pops it.
-	/*void Object::Associate()
-	{
-		Disassociate();
-		assert((Type)lua_type(state->L, -1) == type);
-		this->ref = luaL_ref(state->L, LUA_REGISTRYINDEX);
-		set = true;
-	}
-
-	// If this object is associated with a registry value, free it.
-	void Object::Disassociate()
-	{
-		// Destroy reference
-		if (set)
-			luaL_unref(this->state->L, LUA_REGISTRYINDEX, this->ref);
-		set = false;
-	}*/
-
-	// Pops a value off the stack and sets the object
-	/*void Object::Pop()
-	{
-		this->type = (Type)lua_type(this->state->L, -1);
-		// Pops a value from the stack
-		// Sets the reference to the value
-		lua_rawseti(this->state->L, LUA_REGISTRYINDEX, this->ref);
-	}
-
-	// Gets a value off the stack without removing it and sets the object
-	void Object::Peek()
-	{
-		this->Pop();
-		this->Push();
-	}*/
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Nil
-	// Lua nil wrapper
-	//
 
 	Nil::Nil(State* state) : Object(state, Type_Nil)
 	{
@@ -429,181 +350,12 @@ namespace Lua
 	{
 		lua_pushstring(state->L, value.c_str());
 	}
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Table
-	// Lua table wrapper
-	//
-
-	// Creates a new table
-	/*Table::Table(State* state) : Object(state), type(Table)
-	{
-	}
-
-	// Gets a value from a key
-	std::unique_ptr<Object> Table::GetValue(int key)
-	{
-		std::unique_ptr<Object> object = this->state->NewObject();
-
-		this->Push();
-		lua_pushnumber(this->state->L, key);
-		lua_gettable(this->state->L, -2);
-		object->Pop();
-		this->Pop();
-
-		return object;
-	}
-
-	// Gets a value from a key
-	std::unique_ptr<Object> Table::GetValue(const char* key)
-	{
-		std::unique_ptr<Object> object = this->state->NewObject();
-
-		this->Push();
-		lua_pushstring(this->state->L, key);
-		lua_gettable(this->state->L, -2);
-		object->Pop();
-		this->Pop();
-
-		return object;
-	}
-
-	// Gets a value from a key
-	std::unique_ptr<Object> Table::GetValue(Object* key)
-	{
-		std::unique_ptr<Object> object = this->state->NewObject();
-
-		this->Push();
-		key->Push();
-		lua_gettable(this->state->L, -2);
-		object->Pop();
-		this->Pop();
-
-		return object;
-	}
-
-	// Sets a key to a value
-	void Table::SetValue(int key, Object& value)
-	{
-		this->Push();
-		lua_pushnumber(this->state->L, key);
-		value.Push();
-		lua_settable(this->state->L, -3);
-		this->Pop();
-	}
-
-	// Sets a key to a value
-	void Table::SetValue(const char* key, Object& value)
-	{
-		this->Push();
-		lua_pushstring(this->state->L, key);
-		value.Push();
-		lua_settable(this->state->L, -3);
-		this->Pop();
-	}
-
-	// Sets a key to a value
-	void Table::SetValue(Object* key, Object& value)
-	{
-		this->Push();
-		key->Push();
-		value.Push();
-		lua_settable(this->state->L, -3);
-		this->Pop();
-	}
-
-	std::unique_ptr<Object> Table::Copy()
-	{
-		return CopyTo(state);
-	}
-
-	// Returns a copy of the object
-	std::unique_ptr<Object> Table::CopyTo(State* state)
-	{
-		std::unique_ptr<Object> table = state->NewTable();
-		//table->Push();
-
-		// Push first key
-		this->Push();
-		lua_pushnil(this->state->L);
-
-
-		// Add each key value pair to the table
-		// lua_next pops a key from the stack
-		// Then pushes the key value pair
-		while (lua_next(this->state->L, -2))
-		{
-			std::unique_ptr<Object> oldValue = this->state->NewObject();
-			oldValue->Pop();
-
-			std::unique_ptr<Object> oldKey = this->state->NewObject();
-			oldKey->Peek(); // Keep key on the stack
-
-			if (oldValue->GetType() == Type_Nil || oldKey->GetType() == Type_Nil)
-				continue;
-
-			std::unique_ptr<Object> newKey = oldKey->CopyTo(state);
-			newKey->Push(); // Push key on stack
-
-			std::unique_ptr<Object> newValue = oldKey->CopyTo(state);
-			newValue->Push(); // Push value on stack
-
-			table->Push();
-			// Add key value pair to table
-			// Pops key value pair from stack
-			lua_rawset(state->L, -3);
-			table->Pop();
-
-		}
-
-		return table;
-	}
-
-	std::unique_ptr<Common::Object> Table::ToGeneric()
-	{
-		std::map<Common::Object*, Common::Object*> table;
-
-		this->Push();
-
-		// Push first key
-		lua_pushnil(this->state->L);
-
-		// Add each key value pair to the table
-		// lua_next pops a key from the stack
-		// Then pushes the key value pair
-		while (lua_next(this->state->L, -2))
-		{
-			std::unique_ptr<Object> value = this->state->NewObject();
-			value->Pop();
-
-			std::unique_ptr<Object> key = this->state->NewObject();
-			key->Peek(); // Keep key on the stack
-
-			// Only add if key and value not nil
-			if (key->GetType() != Type_Nil && value->GetType() != Type_Nil)
-			{
-				auto pair = std::pair<Common::Object*,Common::Object*>(
-					key->ToGeneric().release(), 
-					value->ToGeneric().release()
-					);
-				table.insert(pair);
-			}
-		}
-
-		return std::unique_ptr<Common::Object>(
-			new Common::ObjTable(table)
-			);
-	}
-	*/
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Function
-	// Lua function wrapper
-	//
+	
+	// -------------------------------------------------------------------
 	CFunction::CFunction(State* state, const Manager::ScriptCallback* cb)
 		: Object(state), cb(cb)
 	{
-		printf("Creating named function : %s\n", this->cb->name);
+		//printf("Creating named function : %s\n", this->cb->name);
 	}
 
 	void CFunction::Push() const
@@ -621,10 +373,10 @@ namespace Lua
 		return ss.str();
 	}
 
-	std::string CFunction::RaiseError(lua_State* L, int narg, int got, int expected)
+	int CFunction::RaiseError(lua_State* L, int narg, int got, int expected)
 	{
-		luaL_error(L, DescribeError(L, narg, got, expected).c_str());
-		return std::string(); // never returns
+		// this function never returns (throws exc
+		return luaL_error(L, DescribeError(L, narg, got, expected).c_str());
 	}
 
 	// Calls the C function from Lua
@@ -643,13 +395,15 @@ namespace Lua
 			std::stringstream ss;
 			ss << "'" << function->cb->name << "' expects at least " << minargs  
 				<< " argument(s) and received " << nargs;
-			luaL_error(L, ss.str().c_str());
+			return luaL_error(L, ss.str().c_str()); // noret
 		} else if (nargs > maxargs_all) {
 			std::stringstream ss;
 			ss << "'" << function->cb->name << "' expects at most " << maxargs_all  
 				<< " argument(s) and received " << nargs;
-			luaL_error(L, ss.str().c_str());
+			return luaL_error(L, ss.str().c_str()); // noret
 		}
+
+		MObject::unique_deque args;		
 
 		// Check the arguments are of expected type - without removing from
 		// stack. (two steps to prevent memory leak from lua longjmp)
@@ -661,8 +415,11 @@ namespace Lua
 				break; // no more args expected.
 
 			int indx = i + 1;
+			//int indx = -1;
 
 			maxargs++;
+
+			std::unique_ptr<MObject> obj;
 			switch (function->cb->fmt[i])
 			{
 			case Common::TYPE_BOOL:
@@ -675,8 +432,11 @@ namespace Lua
 						b = 0;
 					else
 						b = lua_toboolean(L, indx);
-					lua_pushboolean(L, b);
-					lua_replace(L, indx);
+					obj.reset(new MObjBool(b));
+					//std::unique_ptr<MObject> obj(new MObjBool(b));
+					//args.push_front(obj);
+					//lua_pushboolean(L, b);
+					//lua_replace(L, indx);
 
 					break;
 				}
@@ -684,8 +444,9 @@ namespace Lua
 				{
 					// if it can't be converted luaL_checknumber raises an error
 					lua_Number n = luaL_checknumber(L, indx);
-					lua_pushnumber(L, n);
-					lua_replace(L, indx);
+					obj.reset(new MObjNumber(n));
+					//lua_pushnumber(L, n);
+					//lua_replace(L, indx);
 					break;
 				}
 			case Common::TYPE_STRING:
@@ -693,32 +454,37 @@ namespace Lua
 					// checkstring converts stack value and raises an error
 					// if no conversion exists
 					luaL_checkstring(L, indx);
+					obj.reset(new MObjString(lua_tostring(L, indx)));
 					break;
 				}
 			case Common::TYPE_TABLE:
 				{
-					int type = lua_type(L, indx);
+					obj.reset(new MObject());
+				/*	int type = lua_type(L, indx);
 
 					if (type != Type_Table) {
-						function->RaiseError(L, i + 1, type, Type_Table);
+						return function->RaiseError(L, i + 1, type, Type_Table);
 						// RaiseError never returns
-					}
+					}*/
 
 					break;
 				}
 			}
+			args.push_front(std::move(obj));
+			//lua_pop(L, 1);
 		}
+		lua_pop(L, nargs);
 
 		// Too many arguments were received
 		if (maxargs < nargs) {
-			function->RaiseError(L, maxargs + 1, lua_type(L, maxargs + 1), Type_Nil);
+			return function->RaiseError(L, maxargs + 1, lua_type(L, maxargs + 1), Type_Nil);
 			// RaiseError never returns
 		}
 
 		// Pop the arguments off the stack
-		MObject::unique_deque args;		
+		/*MObject::unique_deque args;		
 		for (size_t i = 0; i < nargs; i++) 
-			args.push_front(function->state->PopMObject());
+			args.push_front(function->state->PopMObject());*/
 		
 		// Call the C function
 		MObject::unique_list results = 

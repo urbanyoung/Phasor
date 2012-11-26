@@ -29,12 +29,6 @@ namespace Lua
 	class LuaFunction;
 	class CFunction;
 
-	// global ones (use lua references)
-	class GBoolean;
-	class GNumber;
-	class GString;
-	class GTable;
-
 	enum Type
 	{
 		Type_Nil = 0,
@@ -311,7 +305,7 @@ namespace Lua
 		std::string DescribeError(lua_State* L, int narg, int got, int expected);
 
 		// Raises the Lua error, function never returns.
-		std::string RaiseError(lua_State* L, int narg, int got, int expected);
+		int RaiseError(lua_State* L, int narg, int got, int expected);
 
 	public:
 		// Creates a new C function
