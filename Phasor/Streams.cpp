@@ -1,7 +1,6 @@
 #include "Streams.h"
 #include "MyString.h"
 #include <vector>
-#include <iomanip>
 
 COutStream::~COutStream()
 {
@@ -117,7 +116,7 @@ CLoggingStream::~CLoggingStream()
 
 void CLoggingStream::CheckAndMove(DWORD curSize, const SYSTEMTIME& st)
 {
-	if (curSize >=0) {
+	if (curSize >= byteSize) {
 		std::wstring newfile = m_swprintf(
 			L"%s\\%s_%02i-%02i-%02i_%02i-%02i-%02i.log",
 			moveDirectory.c_str(), fileName.c_str(),
