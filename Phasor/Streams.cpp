@@ -1,6 +1,7 @@
 #include "Streams.h"
 #include "MyString.h"
 #include <vector>
+#include <iomanip>
 
 COutStream::~COutStream()
 {
@@ -106,6 +107,7 @@ bool COutFileStream::Write(const std::wstring& str)
 CLoggingStream::CLoggingStream(const std::wstring& file) : filePath(file),
 	byteSize(0)
 {
+	// todo: set fileName and fileExtension
 }
 
 CLoggingStream::~CLoggingStream()
@@ -113,14 +115,16 @@ CLoggingStream::~CLoggingStream()
 	Flush();
 }
 
-void CLoggingStream::CheckAndMove(DWORD curSize)
+void CLoggingStream::CheckAndMove(DWORD curSize, const SYSTEMTIME& st)
 {
-	if (curSize >= byteSize) {
-		// todo: add timestamps to file name
-		std::wstringstream ss;
-		ss << moveDirectory << "\\" << fileName;
+	if (curSize >=0) {
+		std::wstring newfile = m_swprintf(
+			L"%s\\%s_%02i-%02i-%02i_%02i-%02i-%02i.log",
+			moveDirectory.c_str(), fileName.c_str(),
+			st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 
-		std::wstring newfile = ss.str();
+		
+		//std::wstring newfile = ss.str();
 		
 		// attempt to move the file (ignoring any errors)
 		CFile::Move(filePath, newfile, true);		
@@ -159,6 +163,6 @@ bool CLoggingStream::Write(const std::wstring& str)
 	DWORD fileSize = h_file.GetFileSize();
 	h_file.Close(); // done with it now
 
-	CheckAndMove(fileSize);
+	CheckAndMove(fileSize,st);
 	return true;
 }

@@ -2,8 +2,7 @@
 #include <iostream>
 #include <conio.h>
 #include "..\Phasor\Scripting.h"
-
-using namespace std;
+#include "..\Phasor\Streams.h"
 
 const char* script = "i = 0\n"
 	"function func(a)\n"
@@ -28,14 +27,17 @@ void main()
 		Scripting::Result result = caller.Call("funca");
 		caller.AddArg("hello_again");
 		caller.Call("funca");
-		cout << result.size() << endl;
+		std::cout << result.size() << std::endl;
 	}
 	catch (std::exception& e)
 	{
-		cout << e.what() << endl;
+		std::cout << e.what() << std::endl;
 	}
 
 	Scripting::CloseScript("lua_test");
+
+	CLoggingStream log(L"zzz.txt");
+	log << "First line" << endl;
 	//Scripting::CloseScript("lua_test1");
 	
 	//Scripting::Call("funca", args);

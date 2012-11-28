@@ -72,12 +72,13 @@ class CLoggingStream : public COutStream
 private:
 
 	std::wstring moveDirectory; // directory to move file to
-	std::wstring filePath; // path to file inclusive of name
-	std::wstring fileName; //  name of file (no path info, but w/ extension)
+	std::wstring filePath; // path to file inclusive of name and extension
+	std::wstring fileName; //  name of file (no path info, no extension)
+	std::wstring fileExtension;
 	DWORD byteSize; // max size for file
 
 	// Check if the file should be moved.
-	void CheckAndMove(DWORD curSize);
+	void CheckAndMove(DWORD curSize, const SYSTEMTIME& st);
 
 	virtual bool Write(const std::wstring& str);
 
