@@ -30,8 +30,22 @@ namespace Manager
 		MObject::unique_deque& args, const ScriptCallback* cb)
 	{
 		Common::Object::unique_list results;
+		state.PushCall(cb->name, true);
 		cb->func(args, results);
+		state.PopCall();
 		return results;
+	}
+
+	// --------------------------------------------------------------------
+	// Class: ScriptState
+	void ScriptState::PushCall(const std::string& func, bool scriptInvoked)
+	{
+		callstack.push(std::unique_ptr<ScriptCallstack>(new ScriptCallstack(func, scriptInvoked)));
+	}
+
+	void ScriptState::PopCall()
+	{
+		if (!callstack.empty()) callstack.pop();
 	}
 
 	// --------------------------------------------------------------------
@@ -173,12 +187,14 @@ namespace Manager
 		args.push_back(std::move(arg));
 	}
 
-	Result Caller::Call(ScriptState& state, const char* function, bool* found, int timeout)
+	Result Caller::Call(ScriptState& state, const std::string& function, bool* found, int timeout)
 	{
 		Result result;
-		if (state.HasFunction(function))
+		if (state.HasFunction(function.c_str()))
 		{
-			result.result = state.Call(function, args, timeout);
+			state.PushCall(function, false);
+			result.result = state.Call(function.c_str(), args, timeout);
+			state.PopCall();
 			if (found) *found = true;
 		}
 		else if(found) *found = false;
@@ -186,7 +202,7 @@ namespace Manager
 		return result;
 	}
 
-	Result Caller::Call(ScriptState& state, const char* function, int timeout)
+	Result Caller::Call(ScriptState& state, const std::string& function, int timeout)
 	{
 		return Call(state, function, NULL, timeout);
 	}

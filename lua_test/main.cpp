@@ -26,10 +26,10 @@ void main()
 		Scripting::PhasorCaller caller;
 		caller.AddArg("hello");
 		Scripting::Result result = caller.Call("funca");
+		caller.Call("funca");
 		cout << result.size() << endl;
-
-
-	} catch (std::exception e)
+	}
+	catch (std::exception& e)
 	{
 		cout << e.what() << endl;
 	}

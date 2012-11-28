@@ -1,5 +1,6 @@
 #pragma once
-
+#ifndef _SCRIPTING_H
+#define _SCRIPTING_H
 #include "Manager.h"
 
 typedef unsigned long DWORD;
@@ -47,7 +48,8 @@ namespace Scripting
 	{
 	public:
 		// Calls the specified function on all loaded scripts.
-		Result Call(const char* function);
+		Result Call(const std::string& function);
 	};
 
 }
+#endif

@@ -2,6 +2,7 @@
 #include "Manager.h"
 #include "Common.h"
 #include "PhasorAPI.h"
+#include "PhasorScript.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()
@@ -22,6 +23,8 @@ namespace Scripting
 	std::string scriptsDir;
 	std::map<std::string, std::unique_ptr<ScriptState>> scripts;
 
+	// Called when an error is raised by a script.
+	void HandleError(ScriptState& state, std::exception & e);
 
 	// Checks if the script is compatible with this version of Phasor.
 	void CheckScriptCompatibility(ScriptState& state, const char* script);
@@ -137,7 +140,7 @@ namespace Scripting
 
 	// --------------------------------------------------------------------
 	// 
-	Result PhasorCaller::Call(const char* function)
+	Result PhasorCaller::Call(const std::string& function)
 	{
 		// This is the argument which indicates if a scripts' return value is used.
 		this->AddArg(true);
@@ -148,32 +151,71 @@ namespace Scripting
 		Result result;
 		bool result_set = false;
 
-		while (itr != scripts.end())
+		for (; itr != scripts.end(); ++itr)
 		{
-			std::unique_ptr<ScriptState>& state = itr->second;
-			bool found = false;
-			Result r = Caller::Call(*state, function, &found, DEFAULT_TIMEOUT);
+			ScriptState& state = *itr->second;
+			if (!state.FunctionAllowed(function)) continue;
 
-			// The first result with any non-nil values is used
-			if (found && !result_set) {
-				for (size_t i = 0; i < r.size(); i++) {
-					if (r[i].GetType() != TYPE_NIL) {
-						result = r;
-						result_set = true;
+			try
+			{				
+				bool found = false;
+				Result r = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
 
-						// Change the 'using' argument so other scripts know
-						// they won't be considered
-						using_param = false;
-						break;
+				// The first result with any non-nil values is used
+				if (found && !result_set) {
+					for (size_t i = 0; i < r.size(); i++) {
+						if (r[i].GetType() != TYPE_NIL) {
+							result = r;
+							result_set = true;
+
+							// Change the 'using' argument so other scripts know
+							// they won't be considered
+							using_param = false;
+							break;
+						}
 					}
 				}
+			} 
+			catch (std::exception & e)
+			{
+				// script errored, process it (for now just rethrow)
+				// todo: add handling
+				HandleError(state, e);
+				//throw;
 			}
-		
-			itr++;
 		}
 
 		this->Clear();
 
 		return result;
+	}
+
+	// Called when an error is raised by a script.
+	void HandleError(ScriptState& state, std::exception & e)
+	{
+		// log error here
+
+		
+		// Process the callstack, block last Phasor -> Script function called
+		// there should only be one.
+		bool blocked = false;
+		while (!state.callstack.empty())
+		{
+			Manager::ScriptCallstack& entry = *state.callstack.top();
+
+			// write callstack entry to error file here
+
+			if (!blocked && !entry.scriptInvoked) { 
+				printf("Blocking function : %s\n", entry.func.c_str());
+				state.BlockFunction(entry.func);
+				blocked = true;
+			}
+
+			state.callstack.pop();
+		}
+
+		// log 
+
+		
 	}
 }

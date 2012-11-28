@@ -66,19 +66,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Phasor\Common.cpp" />
+    <ClCompile Include="..\Phasor\FileIO.cpp" />
     <ClCompile Include="..\Phasor\Lua.cpp" />
     <ClCompile Include="..\Phasor\Manager.cpp" />
+    <ClCompile Include="..\Phasor\MyString.cpp" />
     <ClCompile Include="..\Phasor\PhasorAPI.cpp" />
     <ClCompile Include="..\Phasor\Scripting.cpp" />
+    <ClCompile Include="..\Phasor\Streams.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Common.h" />
+    <ClInclude Include="..\Phasor\FileIO.h" />
     <ClInclude Include="..\Phasor\Lua.h" />
     <ClInclude Include="..\Phasor\Manager.h" />
+    <ClInclude Include="..\Phasor\MyString.h" />
     <ClInclude Include="..\Phasor\PhasorAPI.h" />
+    <ClInclude Include="..\Phasor\PhasorScript.h" />
     <ClInclude Include="..\Phasor\Scripting.h" />
-    <ClInclude Include="Streams.h" />
+    <ClInclude Include="..\Phasor\Streams.h" />
+    <ClInclude Include="..\Phasor\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lua\lua.vcxproj">

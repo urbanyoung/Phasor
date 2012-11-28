@@ -34,6 +34,15 @@
     <ClCompile Include="..\Phasor\PhasorAPI.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\FileIO.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\MyString.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Streams.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Lua.h">
@@ -51,7 +60,17 @@
     <ClInclude Include="..\Phasor\PhasorAPI.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
-    <ClInclude Include="Streams.h">
+    <ClInclude Include="..\Phasor\PhasorScript.h" />
+    <ClInclude Include="..\Phasor\FileIO.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\MyString.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Streams.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Types.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

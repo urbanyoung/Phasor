@@ -1,11 +1,13 @@
-#pragma  once
+#pragma once
 
 #include <map>
 #include <deque>
 #include <list>
 #include <array>
 #include <memory>
+#include <stack>
 #include "Common.h"
+#include "PhasorScript.h" // for ScriptState
 
 typedef unsigned long DWORD;
 
@@ -14,7 +16,6 @@ namespace Lua
 {
 	class State;
 }
-
 
 namespace Manager
 {
@@ -34,8 +35,7 @@ namespace Manager
 	// nice article about aggregate types http://stackoverflow.com/questions/4178175/what-are-aggregates-and-pods-and-how-why-are-they-special
 	struct ScriptCallback 
 	{
-		void (*func)(Common::Object::unique_deque&,
-			Common::Object::unique_list&);
+		void (*func)(Common::Object::unique_deque&,	Common::Object::unique_list&);
 		const char* name;
 		int minargs;
 		std::tr1::array<Common::obj_type, 5> fmt; // change max args as needed
@@ -64,13 +64,27 @@ namespace Manager
 	MObject::unique_list InvokeCFunction(ScriptState& state,
 		MObject::unique_deque & args, const ScriptCallback* cb);
 
+	struct ScriptCallstack
+	{
+		std::string func;
+		bool scriptInvoked; // false: called script, true script called
+
+		ScriptCallstack(const std::string& func, bool scriptInvoked)
+			: func(func), scriptInvoked(scriptInvoked) {}
+	};
+
 	// --------------------------------------------------------------------
 	// Class: ScriptState
 	// Classes compatible with this interface should inherit this class.
-	class ScriptState
+	class ScriptState : public Scripting::PhasorScript
 	{
 	public:
 		virtual ~ScriptState(){}
+
+		std::stack<std::unique_ptr<ScriptCallstack>> callstack;
+
+		void PushCall(const std::string& func, bool scriptInvoked);
+		void PopCall();
 
 		// Checks if the specified function is defined in the script
 		virtual bool HasFunction(const char* name) = 0;
@@ -144,7 +158,8 @@ namespace Manager
 		void Clear();
 
 		// Calls the specified function on the specified script.
-		Result Call(ScriptState& state, const char* function, bool* found, int timeout);
-		Result Call(ScriptState& state, const char* function, int timeout);
+		Result Call(ScriptState& state, const std::string& function, bool* found, int timeout);
+		Result Call(ScriptState& state, const std::string& function, int timeout);
 	};
 }
+
