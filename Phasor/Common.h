@@ -1,5 +1,5 @@
 #pragma once
-#pragma warning( disable : 4290 )
+
 
 #include <windows.h>
 #include <string>
@@ -60,12 +60,6 @@ namespace Common
 
 		// Returns the type of this object
 		obj_type GetType() const;
-
-		// Convert managed objects into specific types.
-		// If a conversion isn't possible, an exception is thrown.
-		virtual bool AsBool() const;
-		virtual double AsNumber() const;
-		virtual std::string AsString() const;
 	};
 
 	// --------------------------------------------------------------------
@@ -88,11 +82,6 @@ namespace Common
 
 		// Return the value stored in this object.
 		bool GetValue() const;
-
-		// Convert managed objects into specific types.
-		virtual bool AsBool() const;
-		virtual double AsNumber() const;
-		virtual std::string AsString() const;
 	};
 
 	// --------------------------------------------------------------------
@@ -118,11 +107,6 @@ namespace Common
 
 		// Return the value stored in this object
 		double GetValue() const;
-
-		// Convert managed objects into specific types.
-		virtual bool AsBool() const;
-		virtual double AsNumber() const;
-		virtual std::string AsString() const;
 	};
 
 	// --------------------------------------------------------------------
@@ -189,37 +173,9 @@ namespace Common
 	DWORD FindAddress(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0, DWORD dwIndex = 0, DWORD dwOffset = 0);
 	BOOL CreateCodeCave(DWORD dwAddress, BYTE cbSize, VOID (*pFunction)());
 
-	// --------------------------------------------------------------------
-	// String commands
-	std::string NarrowString(std::wstring&);
-	std::wstring WidenString(std::string&);
-
 	// Format strings
-	std::string FormatVarArgs(const char* _Format, va_list ArgList);
-	std::wstring WFormatVarArgs(const wchar_t* _Format, va_list ArgList);
-	std::string m_sprintf_s(const char* _Format, ...);
-	std::wstring m_swprintf_s(const wchar_t* _Format, ...);
 	
-	// Tokenization functions
-	std::vector<std::string> TokenizeCommand(const std::string& str);
-
-	template <class T>
-	std::vector<T> TokenizeString(const T& str, const T& delim)
-	{
-		// http://www.gamedev.net/community/forums/topic.asp?topic_id=381544#TokenizeString
-		std::vector<T> tokens;
-		size_t p0 = 0, p1 = T::npos;
-		while (p0 != T::npos) {
-			p1 = str.find_first_of(delim, p0);
-			if(p1 != p0) {
-				T token = str.substr(p0, p1 - p0);
-				tokens.push_back(token);
-			}
-			p0 = str.find_first_not_of(delim, p1);
-		}
-		return tokens;
-	}
-	
+		
 	// --------------------------------------------------------------------
 	//
 	// Windows error stuff

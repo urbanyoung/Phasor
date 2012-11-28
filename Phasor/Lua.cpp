@@ -231,7 +231,7 @@ namespace Lua
 	}
 
 	// Raises an error
-	void State::Error(const char* _Format, ...)
+	/*void State::Error(const char* _Format, ...)
 	{
 		// not exception safe
 		// will probably change to either
@@ -251,7 +251,7 @@ namespace Lua
 		delete[] msg;
 
 		luaL_error(this->L, error.c_str());
-	}
+	}*/
 
 	Object::Object(State* state) : type(Type_Nil)
 	{
@@ -408,9 +408,8 @@ namespace Lua
 
 		MObject::unique_deque args;		
 
-		// Check the arguments are of expected type and add them to
-		// args.
-		for (size_t i = 0; i < nargs; i++)
+		// Check the arguments are of expected type and add them to args.
+		for (int i = 0; i < nargs; i++)
 		{
 			if (function->cb->fmt[i] == Common::TYPE_NIL)
 				break; // no more args expected.
@@ -431,7 +430,7 @@ namespace Lua
 						b = 0;
 					else
 						b = lua_toboolean(L, indx);
-					obj.reset(new MObjBool(b));
+					obj.reset(new MObjBool(b != 0));
 
 					break;
 				}

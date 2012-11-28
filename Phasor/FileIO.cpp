@@ -42,13 +42,13 @@ bool CFile::IsOpen() const
 bool CFile::Move(const std::wstring& file,
 	const std::wstring& newfile, bool overwrite)
 {
-	return (bool)MoveFileExW(file.c_str(), newfile.c_str(), 
-		overwrite ? MOVEFILE_REPLACE_EXISTING : NULL);
+	return MoveFileExW(file.c_str(), newfile.c_str(), 
+		overwrite ? MOVEFILE_REPLACE_EXISTING : NULL) == TRUE;
 }
 
 bool CFile::Delete(const std::wstring& file)
 {
-	return DeleteFileW(file.c_str());
+	return DeleteFileW(file.c_str()) == TRUE;
 }
 
 bool CFile::SeekBegin()
@@ -90,7 +90,7 @@ bool COutFile::WriteSome(BYTE* data, DWORD size, DWORD* processedSize)
 {
 	if (!IsOpen()) return false;
 	DWORD to_write = size > kWriteSize ? kWriteSize : size;
-	return WriteFile(hFile, data, to_write, processedSize, NULL);
+	return WriteFile(hFile, data, to_write, processedSize, NULL) == TRUE;
 }
 
 bool COutFile::Write(BYTE* data, DWORD size, DWORD* processedSize)

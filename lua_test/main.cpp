@@ -26,6 +26,7 @@ void main()
 		Scripting::PhasorCaller caller;
 		caller.AddArg("hello");
 		Scripting::Result result = caller.Call("funca");
+		caller.AddArg("hello_again");
 		caller.Call("funca");
 		cout << result.size() << endl;
 	}

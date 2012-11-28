@@ -2,37 +2,6 @@
 #include "MyString.h"
 #include <vector>
 
-std::wstring m_swprintf(const wchar_t *fmt, ...) 
-{ 
-	// http://www.codeproject.com/Articles/15115/How-to-Format-a-String
-	using std::wstring;
-	using std::vector;
-
-	wstring retStr;
-
-	if (NULL != fmt)
-	{
-		va_list marker = NULL; 
-
-		// initialize variable arguments
-		va_start(marker, fmt); 
-
-		// Get formatted string length adding one for NULL
-		size_t len = _vscwprintf(fmt, marker) + 1;
-
-		// Create a char vector to hold the formatted string.
-		vector<wchar_t> buffer(len, '\0');
-		int nWritten = _vsnwprintf_s(&buffer[0], buffer.size(), len, fmt, marker);    
-
-		if (nWritten > 0) retStr = &buffer[0];
-
-		// Reset variable arguments
-		va_end(marker); 
-	}
-
-	return retStr; 
-}
-
 COutStream::~COutStream()
 {
 	// derived classes should flush

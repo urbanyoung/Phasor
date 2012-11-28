@@ -7,10 +7,6 @@
 #include "..\lua\lua.hpp"
 #include "Manager.h"
 
-// define object ownerships for Lua stuff. Each object needs to refer to
-// the lua state, but atm the lua state is a unique_ptr. 
-// Maybe have the objects use a weak_ptr to State and its factory method
-// returns a shared_ptr
 namespace Lua
 {
 	typedef Manager::MObject MObject;
@@ -82,12 +78,6 @@ namespace Lua
 		// Push a generic object onto the Lua stack
 		void Push(const MObject& object);
 
-		// The below functions are for creating GLOBAL Lua objects,
-		// they can be tracked and thus updated.
-		/*std::unique_ptr<GBoolean> GlobalBoolean(const char* name, bool value);
-		std::unique_ptr<GNumber> GlobalNumber(const char* name, double value);
-		std::unique_ptr<GString> GlobalString(const char* name, const char* value);
-		std::unique_ptr<GTable> GlobalTable();*/
 		void RegisterFunction(const Manager::ScriptCallback* cb);
 
 		// Checks if the specified function is defined in the script
@@ -97,9 +87,6 @@ namespace Lua
 		MObject::unique_deque Call(const char* name,
 			const MObject::unique_list& args, int timeout = 0);
 		MObject::unique_deque Call(const char* name, int timeout = 0);
-
-		// Raises an error
-		void Error(const char* _Format, ...);
 
 		friend class Object;
 		friend class Nil;
