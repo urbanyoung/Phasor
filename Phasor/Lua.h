@@ -57,9 +57,6 @@ namespace Lua
 		// Destroys the state
 		static void Close(State* state);
 
-		// Loads and runs a file
-		void DoFile(const char* filename);
-
 		// Loads and runs a string
 		void DoString(const char* str);
 

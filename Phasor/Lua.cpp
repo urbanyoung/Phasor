@@ -20,35 +20,24 @@ namespace Lua
 		if (!this->L)
 			throw std::exception("can't open lua state.");
 
-		// Load the Lua librarys into the state
+		// Load the Lua libraries into the state
 		luaL_openlibs(this->L);
-		try {
-			DoFile(file);
-		} catch (std::exception& e)
+
+		if (luaL_dofile(this->L, file))
 		{
+			std::string error = lua_tostring(this->L, -1);
+			lua_pop(this->L, 1);
 			lua_close(this->L);
-			throw e;
+
+			throw std::exception(error.c_str());
 		}
 	}
 
 	// Destroys the state
 	State::~State()
 	{
-		printf("Closing script\n");
 		// Destroy the Lua state
 		lua_close(this->L);
-	}
-
-	// Loads and runs a file
-	void State::DoFile(const char* filename)
-	{
-		if (luaL_dofile(this->L, filename))
-		{
-			std::string error = lua_tostring(this->L, -1);
-			lua_pop(this->L, 1);
-
-			throw std::exception(error.c_str());
-		}
 	}
 
 	// Loads and runs a string

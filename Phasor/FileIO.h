@@ -3,6 +3,25 @@
 #include <windows.h>
 #include <string>
 
+namespace NDirectory
+{
+#ifdef _WIN32
+	const wchar_t kDirSeparator = L'\\';
+#else
+	const wchar_t kDirSeparator = L'/';
+#endif
+	const wchar_t kExtensionSeparator = L'.';
+
+	// Ensure the directory ends with a single kDirSeparator character.
+	void NormalizeDirectory(std::wstring& dir);
+
+	// Get the file name from the given path -- excluding extension.
+	void GetFileName(const std::wstring& path, std::wstring& fileName);
+
+	// Strip the file name, and extension, from the given path
+	void StripFile(const std::wstring& path);
+}
+
 class CFile
 {
 protected:

@@ -2,6 +2,7 @@
 #ifndef _SCRIPTING_H
 #define _SCRIPTING_H
 #include "Manager.h"
+#include "Streams.h"
 
 typedef unsigned long DWORD;
 
@@ -17,16 +18,16 @@ typedef unsigned long DWORD;
  *   hello.lua's unique id would be hello
  */
 
-// todo: decide what to do when a script function errors (should it be blocked)
-// todo: determine who should take responsibility for Scripting errors,
-// Scripting interface should probably log the errors. Is caller responsible
-// for catching the exceptions? I think yes.
 namespace Scripting
 {
 	typedef Manager::Result Result;
 
 	// --------------------------------------------------------------------
 	// 
+
+	// Sets the stream to report errors to
+	// MUST BE SET BEFORE USING ANY OTHER FUNCTIONS
+	void SetErrorStream(COutStream* errstream);
 	
 	// Sets the path to be used by this namespace (where scripts are).
 	void SetPath(const char* scriptPath);

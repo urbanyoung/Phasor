@@ -89,10 +89,10 @@ namespace Manager
 		// Checks if the specified function is defined in the script
 		virtual bool HasFunction(const char* name) = 0;
 
+		// Registers a C function with the script
 		virtual void RegisterFunction(const ScriptCallback* cb) = 0;
 
 		// Calls a function with an optional timeout
-		// Caller is responsible for memory management of return vector
 		virtual MObject::unique_deque Call(const char* name,
 			const MObject::unique_list& args, int timeout = 0) = 0;
 		virtual MObject::unique_deque Call(const char* name, int timeout = 0) = 0;

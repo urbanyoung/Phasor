@@ -5,7 +5,6 @@
 #include "Types.h"
 #include "FileIO.h"
 
-// comment this out if you want to change the line ending
 #define _WINDOWS_LINE_END
 #ifndef _WINDOWS_LINE_END
 static const wchar_t NEW_LINE_CHAR = L'\n';
@@ -15,6 +14,8 @@ static const wchar_t* NEW_LINE_CHAR = L"\r\n";
 
 struct endl_tag {};
 static const endl_tag endl;
+
+class CStreamModifier;
 
 class CInStream
 {
@@ -31,9 +32,13 @@ class COutStream
 {
 private:
 	std::wstringstream ss;
-
 	virtual bool Write(const std::wstring& str) = 0;
+
+public: // stream modifiers
+	bool no_flush;
+
 public:
+	COutStream();
 	virtual ~COutStream();
 
 	// Called to flush the stream (and on endl)
@@ -48,6 +53,25 @@ public:
 	COutStream & operator<<(DWORD number);
 	COutStream & operator<<(int number);
 	COutStream & operator<<(double number);
+};
+
+class NoFlush
+{
+private:
+	COutStream& stream;
+	bool prev;
+public:
+	explicit NoFlush(COutStream& stream) : stream(stream), 
+		prev(stream.no_flush)
+	{
+		stream.no_flush = true;
+	}
+
+	~NoFlush()
+	{
+		stream.Flush();
+		stream.no_flush = prev;
+	}
 };
 
 // Output to a file which is kept open for the duration of the stream
@@ -66,16 +90,17 @@ public:
 	virtual bool Write(const std::wstring& str);
 };
 
-// Output to a log file which is only opened when writing to it
+// Output to a log file which is only opened when writing to it.
+// .log extension is used
 class CLoggingStream : public COutStream
 {
 private:
-
 	std::wstring moveDirectory; // directory to move file to
 	std::wstring filePath; // path to file inclusive of name and extension
 	std::wstring fileName; //  name of file (no path info, no extension)
-	std::wstring fileExtension;
+
 	DWORD byteSize; // max size for file
+	DWORD errorOffset; // increases when moving the file fails
 
 	// Check if the file should be moved.
 	void CheckAndMove(DWORD curSize, const SYSTEMTIME& st);

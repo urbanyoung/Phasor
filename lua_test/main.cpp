@@ -15,8 +15,9 @@ const char* script = "i = 0\n"
 
 void main()
 {
-	try
-	{
+	CLoggingStream errors(L"errorLogs");
+
+		Scripting::SetErrorStream(&errors);
 		Scripting::SetPath("D:\\Development\\C++\\Phasor - Copy\\Release");
 		Scripting::OpenScript("lua_test");
 		Scripting::OpenScript("lua_test1");
@@ -28,17 +29,7 @@ void main()
 		caller.AddArg("hello_again");
 		caller.Call("funca");
 		std::cout << result.size() << std::endl;
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-	}
 
 	Scripting::CloseScript("lua_test");
-
-	CLoggingStream log(L"zzz.txt");
-	log << "First line" << endl;
-	//Scripting::CloseScript("lua_test1");
-	
-	//Scripting::Call("funca", args);
+	Scripting::CloseScript("lua_test1");
 }

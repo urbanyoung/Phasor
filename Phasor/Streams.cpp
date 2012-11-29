@@ -2,6 +2,10 @@
 #include "MyString.h"
 #include <vector>
 
+COutStream::COutStream() : no_flush(false)
+{
+}
+
 COutStream::~COutStream()
 {
 	// derived classes should flush
@@ -21,7 +25,7 @@ void COutStream::Flush()
 COutStream& COutStream::operator<<(const endl_tag&)
 {
 	*this << NEW_LINE_CHAR;
-	Flush();
+	if (!no_flush) Flush();
 	return *this;
 }
 
@@ -103,10 +107,10 @@ bool COutFileStream::Write(const std::wstring& str)
 }
 
 // ----------------------------------------------------------------------
-CLoggingStream::CLoggingStream(const std::wstring& file) : filePath(file),
-	byteSize(0)
+CLoggingStream::CLoggingStream(const std::wstring& file) : filePath(file + L".log"),
+	byteSize(0), errorOffset(0)
 {
-	// todo: set fileName and fileExtension
+	NDirectory::GetFileName(filePath, fileName);
 }
 
 CLoggingStream::~CLoggingStream()
@@ -116,29 +120,33 @@ CLoggingStream::~CLoggingStream()
 
 void CLoggingStream::CheckAndMove(DWORD curSize, const SYSTEMTIME& st)
 {
-	if (curSize >= byteSize) {
+	if (byteSize == 0) return;
+	DWORD checkSize = byteSize + errorOffset;
+	if (curSize >= checkSize) {
 		std::wstring newfile = m_swprintf(
-			L"%s\\%s_%02i-%02i-%02i_%02i-%02i-%02i.log",
+			L"%s%s_%02i-%02i-%02i_%02i-%02i-%02i.log",
 			moveDirectory.c_str(), fileName.c_str(),
 			st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 
-		
-		//std::wstring newfile = ss.str();
-		
-		// attempt to move the file (ignoring any errors)
-		CFile::Move(filePath, newfile, true);		
+		// If the move fails we don't want the overhead of trying again
+		// for every write, so we try again later.
+		if (CFile::Move(filePath, newfile, true))
+			errorOffset = 0;
+		else
+			errorOffset += (1 << 12); // 4kB
 	}
 }
 
 void CLoggingStream::SetMoveInfo(const std::wstring& move_to, DWORD kbSize)
 {
 	moveDirectory = move_to;
+	NDirectory::NormalizeDirectory(moveDirectory);
 	byteSize = kbSize * 1024;
 }
 
 bool CLoggingStream::Write(const std::wstring& str)
 {
-	// todo: add timestamps etc here
+
 	SYSTEMTIME st = {0};		
 	GetLocalTime(&st);
 

@@ -1,6 +1,55 @@
 #include "FileIO.h"
 #include <sstream>
 
+namespace NDirectory
+{
+	// Ensure the directory ends with a single kDirSeparator character.
+	void NormalizeDirectory(std::wstring& dir)
+	{
+		size_t dirEnd = dir.size();
+		if (dirEnd == 0) return;
+		wchar_t lastChar;
+
+		do {
+			dirEnd--;
+			lastChar = dir.at(dirEnd);
+		} while (dirEnd > 0 && lastChar == kDirSeparator);
+
+		if (dirEnd == 0) {
+			// no data or all slashes
+			dir.clear();
+			return;
+		}
+
+		if (dirEnd + 1 == dir.size())
+			dir.push_back(kDirSeparator);
+		else
+			dir = dir.substr(0, dirEnd + 2);
+	}
+
+	// Get the file name from the given path -- excluding extension.
+	void GetFileName(const std::wstring& path, std::wstring& fileName)
+	{
+		size_t fileStart = path.find_last_of(kDirSeparator);
+		if (fileStart == path.npos) {
+			fileStart = 0;
+		}
+		// check for extension
+		size_t fileEnd = path.size(); // assume no extension
+		size_t extensionStart = path.find_last_of(kExtensionSeparator);
+		if (extensionStart != path.npos) fileEnd = extensionStart;
+		fileName = path.substr(fileStart, fileEnd-fileStart);
+	}
+
+	// Strip the file name, and extension, from the given path (if there is one)
+	void StripFile(std::wstring& path)
+	{
+		size_t fileStart = path.find_last_of(kDirSeparator);
+		if (fileStart == path.npos) return;
+		path = path.substr(0, fileStart);
+	}
+}
+
 CFile::CFile() : hFile(INVALID_HANDLE_VALUE)
 {
 }
