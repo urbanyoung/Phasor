@@ -166,7 +166,7 @@ int PhasorThread::thread_main()
 	{
 		ProcessEvents(true, false);
 	}
-	printf("closing thread\n");
+
 	return 0;
 }
 

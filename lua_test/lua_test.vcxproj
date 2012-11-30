@@ -79,6 +79,7 @@
     <ClCompile Include="..\Phasor\PhasorThread.cpp" />
     <ClCompile Include="..\Phasor\Scripting.cpp" />
     <ClCompile Include="..\Phasor\Streams.cpp" />
+    <ClCompile Include="..\Phasor\Threads.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

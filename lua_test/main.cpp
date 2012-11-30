@@ -38,13 +38,13 @@ void main()
 	thread.run();
 	std::unique_ptr<PhasorThreadEvent> e = TestEvent::Create(0);
 	thread.InvokeInAux(std::move(e));
-	int count = 0;
-	while (1)
+
+	for (int i =0; i < 100000; i++)
 	{
 		thread.ProcessEvents();
-		Sleep(33);
-		count++;
-		if (count == 10) break;
+		Sleep(5);
+
+		//if (count == 100) break;
 	}
 	thread.close();
 	while (!thread.has_closed()) {

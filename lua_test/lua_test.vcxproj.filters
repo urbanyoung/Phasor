@@ -49,6 +49,9 @@
     <ClCompile Include="..\Phasor\PhasorThread.cpp">
       <Filter>Phasor Thread</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\Threads.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Lua.h">

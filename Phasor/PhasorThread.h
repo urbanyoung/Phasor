@@ -113,8 +113,8 @@ public:
 	// Event is invoked in the main thread
 	void OnEventMain(PhasorThread& thread) {
 		printf("Invoked in main %08X\n", GetCurrentThreadId());
-		if (count < 1)
-		ReinvokeInAux(thread, 1000);
+		//if (count < 1)
+		ReinvokeInAux(thread, 10);
 
 	}
 };
