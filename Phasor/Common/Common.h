@@ -44,7 +44,8 @@ namespace Common
 		// Should be called by derived classes to set the object type.
 		Object(obj_type type);
 
-		std::stringstream ConversionDesc(obj_type totype) const;
+		Object& operator=(const Object &rhs); 
+		Object(const Object& other);
 
 	public:
 		typedef std::unique_ptr<Object> unique_ptr;

@@ -1,6 +1,5 @@
 #include <windows.h>
 #include "..\Phasor\Curl.h"
-#include "..\Phasor\Phasor.h"
 
 void test(BYTE* data, size_t len, void* userdata)
 {
@@ -14,33 +13,40 @@ void test(BYTE* data, size_t len, void* userdata)
 
 int main()
 {
-	using namespace Server::Curl;
+	using namespace Curl;
 
-	Phasor::ErrorStreamPtr err = Phasor::ErrorStream::Create("errors.txt");
-	CurlMultiPtr multi = CurlMulti::Create(err);
+	CurlMulti multi;
 
 	// Connect and post data to a php script
-	CurlHttpPtr simp = CurlHttp::Create("http://127.0.0.1/test.php", err);
+	CurlHttpPtr simp = CurlHttpPtr(new CurlHttp("http://127.0.0.1/test.php"));
 	simp->AddGetData("test", "data");
 	simp->AddGetData("test1", "data1");
 	simp->AddPostData("post1", "postdata1");
 	simp->AddPostData("post2", L"postdata2");
 	simp->AddPostFile("testfile", "libcurl_test.exe");
 	simp->RegisterCompletion(test);
-	simp->Associate(multi);
+	multi.AddRequest(std::move(simp));
 
 	// Download a few files
-	CurlDownloadPtr dl = CurlDownload::Create("http://anon.nasa-global.edgesuite.net/anon.nasa-global/msl/figure_1_raw.png",
-		"mars.png", err);
-	dl->Associate(multi);
+	FILE* output = CurlDownload::OpenOutputFile("mars.png");
 
-	CurlDownloadPtr dl1 = CurlDownload::Create("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
+	if (!output) {
+		printf("Couldn't create output file\n");
+		return 1;
+	}
+
+	CurlDownloadPtr dl = CurlDownloadPtr( 
+		new CurlDownload("http://anon.nasa-global.edgesuite.net/anon.nasa-global/msl/figure_1_raw.png",
+		//new CurlDownload("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
+		output));
+	multi.AddRequest(std::move(dl));
+
+	/*CurlDownloadPtr dl1 = CurlDownload::Create("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
 		"hubble.jpg", err);
-	dl1->Associate(multi);
+	dl1->Associate(multi);*/
 
-	while (multi->Process())
+	while (multi.Process())
 		Sleep(50);
-	printf("cleanup\n");
 
 	return 0;
 }

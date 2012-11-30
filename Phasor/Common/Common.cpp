@@ -9,11 +9,17 @@ namespace Common
 	// Provides an interface between Lua and Phasor objects. The derived
 	// classes provide specific types.
 	// 
-	Object::Object(obj_type _type) : type(_type) {}
+	Object::Object(obj_type _type) : type(_type) 
+	{
+	}
 
-	Object::Object() : type(TYPE_NIL) {}
+	Object::Object() : type(TYPE_NIL)
+	{
+	}
 
-	Object::~Object() {}
+	Object::~Object() 
+	{
+	}
 
 	std::unique_ptr<Object> Object::NewCopy() const
 	{
@@ -25,20 +31,11 @@ namespace Common
 		return type;
 	}
 
-	std::stringstream Object::ConversionDesc(obj_type totype) const
-	{
-		std::stringstream err;
-		err << "object: no possible conversion from '" << obj_desc[type]
-		<< "' to '" << obj_desc[totype] << "'";
-		return err;
-	}
-
 	// --------------------------------------------------------------------
 	//
 
-	ObjBool::ObjBool(bool b) : Object(TYPE_BOOL)
+	ObjBool::ObjBool(bool b) : Object(TYPE_BOOL), b(b)
 	{
-		this->b = b;
 	}
 
 	ObjBool::ObjBool(const ObjBool& other) : Object(TYPE_BOOL)
@@ -53,7 +50,6 @@ namespace Common
 	ObjBool & ObjBool::operator=(const ObjBool &rhs) 
 	{
 		if (this == &rhs) return *this;
-
 		this->b = rhs.b;
 		return *this;
 	}
@@ -103,7 +99,6 @@ namespace Common
 	ObjNumber& ObjNumber::operator=(const ObjNumber& rhs)
 	{
 		if (this == &rhs) return *this;
-
 		this->value = rhs.value;
 		return *this;
 	}
@@ -139,10 +134,8 @@ namespace Common
 	ObjString& ObjString::operator=(const ObjString& rhs) 
 	{
 		if (this == &rhs) return *this;
-
 		delete[] str;
 		CopyString(rhs.str);
-
 		return *this;
 	}
 

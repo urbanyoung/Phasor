@@ -5,10 +5,24 @@
     <ClCompile Include="..\Phasor\Curl.cpp">
       <Filter>Server\Curl</Filter>
     </ClCompile>
-    <ClCompile Include="..\Phasor\Phasor.cpp">
-      <Filter>Phasor</Filter>
+    <ClCompile Include="..\Phasor\Common\Common.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Phasor\Common.cpp" />
+    <ClCompile Include="..\Phasor\Common\FileIO.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\MyString.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\Streams.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\Threads.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\Timers.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Server">
@@ -17,17 +31,34 @@
     <Filter Include="Server\Curl">
       <UniqueIdentifier>{a975fa73-654b-442c-81fa-af7a5fab76b7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Phasor">
-      <UniqueIdentifier>{53831773-fca6-4c2a-8508-468817169962}</UniqueIdentifier>
+    <Filter Include="Common">
+      <UniqueIdentifier>{2c07cb59-2c41-4400-8ab1-645007c13251}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Phasor\Curl.h">
       <Filter>Server\Curl</Filter>
     </ClInclude>
-    <ClInclude Include="..\Phasor\Phasor.h">
-      <Filter>Phasor</Filter>
+    <ClInclude Include="..\Phasor\Common\Common.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Phasor\Common.h" />
+    <ClInclude Include="..\Phasor\Common\FileIO.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\MyString.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Streams.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Threads.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Timers.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Types.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

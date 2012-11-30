@@ -2,207 +2,188 @@
 #include <list>
 #include "../libcurl/curl/curl.h"
 #include <sstream>
-#include "Phasor.h"
+#include "../Phasor/Common/Streams.h"
 
-namespace Server
+namespace Curl
 {
-	namespace Curl
+	class CurlMulti;
+	class CurlSimple;
+	class CurlHttp;
+	class CurlDownload;
+
+	typedef std::unique_ptr<CurlMulti> CurlMultiPtr;
+	typedef std::unique_ptr<CurlSimple> CurlPtr;
+	typedef std::unique_ptr<CurlHttp> CurlHttpPtr;
+	typedef std::unique_ptr<CurlDownload> CurlDownloadPtr;
+
+	//-----------------------------------------------------------------------------------------
+	// Class: CurlMulti
+	// Purpose: Manages a non-blocking (ish) multi curl interface. 
+	class CurlMulti
 	{
-		class CurlMulti;
-		class CurlSimple;
-		class CurlHttp;
-		class CurlDownload;
+	private:
+		CURLM* multi_curl; // the multi stack used
+		std::list<CurlPtr> simples; // simple connections tracked
+		int running; // number of connections active
+		bool started;
 
-		typedef std::shared_ptr<CurlMulti> CurlMultiPtr;
-		typedef std::shared_ptr<CurlSimple> CurlPtr;
-		typedef std::shared_ptr<CurlHttp> CurlHttpPtr;
-		typedef std::shared_ptr<CurlDownload> CurlDownloadPtr;
+	protected:
+		// Returns the CurlSimple associated with the CURL connection
+		bool FindConnection(CURL* con, CurlSimple** out);
 
-		//-----------------------------------------------------------------------------------------
-		// Class: CurlMulti
-		// Purpose: Manages a non-blocking (ish) multi curl interface. 
-		class CurlMulti
-		{
-		private:
-			CURLM* multi_curl; // the multi stack used
-			std::list<CurlPtr> simples; // simple connections tracked
-			int running; // number of connections active
-			bool started;
-			Phasor::ErrorStreamPtr error_stream;
-
-			/* Shouldn't be called directly */
-			CurlMulti(Phasor::ErrorStreamPtr error_stream);
-
-			/*	Adds a CurlSimple connection to tracking list. */
-			bool AddRequest(CurlPtr simple_curl);
-
-		protected:
-			/* Returns the CurlSimple associated with the CURL connection */
-			CurlPtr FindConnection(CURL* con);
-
-		public:
+	public:
 			
-			static CurlMultiPtr Create(Phasor::ErrorStreamPtr error_stream);
-			~CurlMulti();			
+		CurlMulti();
+		~CurlMulti();			
 
-			/*	Processes any waiting data
-				Return: true (active connections), false (no active connections)*/
-			bool Process();
+		void HandleError(const std::string& err);
 
-			/*	Removes a CurlSimple connection */
-			void Remove(CurlPtr simple_curl);
+		//	Processes any waiting data
+		//	Return: true (active connections), false (no active connections)
+		bool Process();
 
-			friend class CurlSimple;
-		};
+		//	Removes a CurlSimple connection 
+		void Remove(CurlSimple** simple_curl);
 
-		//-----------------------------------------------------------------------------------------
-		// Class: CurlSimple
-		// Purpose: Manage simple curl connections for use in CurlMulti.
-		class CurlSimple : public std::enable_shared_from_this<CurlSimple>
-		{
-		private:
-			CURL* curl; // the easy curl interface used
-			static const unsigned long DEFAULT_BUFFER_SIZE = 4096;
-			Phasor::ErrorStreamPtr error_stream;
+		// Add a request to the multi interface
+		bool AddRequest(CurlPtr simple_curl);
 
-			/*	Called by the curl object when there is data to be processed. This
-				function is simply used to call OnDataWrite in a C++ context. */
-			static size_t Curl_OnDataWrite(BYTE* data, size_t size, size_t nmemb, void* userdata);
+		friend class CurlSimple;
+	};
 
-			/* Called by CurlMulti when this instance is added to the multistack 
-			 * Return values specifies whether or not it should be added. */
-			virtual bool OnAdd() { return true; }
+	//-----------------------------------------------------------------------------------------
+	// Class: CurlSimple
+	// Purpose: Manage simple curl connections for use in CurlMulti.
+	class CurlSimple
+	{
+	private:
+		CURL* curl; // the easy curl interface used
+		static const unsigned long DEFAULT_BUFFER_SIZE = 4096;
 
-			/* Returns a shared pointer to this object */
-			CurlPtr get_shared();
+		// Called by the curl object when there is data to be processed. This
+		// function is simply used to call OnDataWrite in a C++ context.
+		static size_t Curl_OnDataWrite(BYTE* data, size_t size, size_t nmemb, void* userdata);
 
-		protected:
-			std::string url; // url the connection is to be made on
-			BYTE* buffer; // buffer containing all data received
-			size_t recvCount; // number of bytes received
-			size_t bufferSize; // size of the allocated buffer
-			void (*completionRoutine)(BYTE*, size_t, void* userdata); // ptr to function called on completion
-			void* userdata; // set by user for passing to completion routine
+		// Called by CurlMulti when this instance is added to the multistack 
+		// Return values specifies whether or not it should be added. 
+		virtual bool OnAdd() { return true; }
 
-			/* Returns the pointer to this curl instance */
-			CURL* GetCurl() { return curl; };
+	protected:
+		std::string url; // url the connection is to be made on
+		BYTE* buffer; // buffer containing all data received
+		size_t recvCount; // number of bytes received
+		size_t bufferSize; // size of the allocated buffer
+		void (*completionRoutine)(BYTE*, size_t, void* userdata); // ptr to function called on completion
+		void* userdata; // set by user for passing to completion routine
 
-			/*  Processes data received from the curl interface.
-				Unless overridden this function will store all received data in
-				the internal buffer. As such this method should be overridden if
-				the expected data is too large to store into memory.
-				The internal buffer is expanded as required.
-			*/
-			virtual size_t OnDataWrite(BYTE* data, size_t size, size_t nmemb);
+		/* Returns the pointer to this curl instance */
+		CURL* GetCurl() { return curl; };
 
-			/*	Called by CurlMulti when the current operation has completed, 
-				successfully or not. */
-			virtual void ConnectionDone(CURLMsg* msg);
+		/*  Processes data received from the curl interface.
+			Unless overridden this function will store all received data in
+			the internal buffer. As such this method should be overridden if
+			the expected data is too large to store into memory.
+			The internal buffer is expanded as required.
+		*/
+		virtual size_t OnDataWrite(BYTE* data, size_t size, size_t nmemb);
 
-			/* Shouldn't be called directly */
-			CurlSimple(const std::string& url, Phasor::ErrorStreamPtr error_stream);
+		/*	Called by CurlMulti when the current operation has completed, 
+			successfully or not. */
+		virtual void ConnectionDone(CURLMsg* msg);
 
-		public:
+	public:
 
-			static CurlPtr Create(const std::string& url, Phasor::ErrorStreamPtr error_stream);
-			virtual ~CurlSimple();
+		CurlSimple(const std::string& url);
+		virtual ~CurlSimple();
 
-			/* Initializes the class */
-			void init(const std::string& url);
+		void HandleError(const std::string& err);
 
-			/* Associates this with a specified multi connection */
-			void Associate(CurlMultiPtr multi);
-
-			/*	Sets the user defined function to call upon request completion.
-				The data passed to the function is this object's internal buffer
-				and should not be modified. Once the function completes	the 
-				buffer's state is not guaranteed to be consistent and as such the 
-				data should be copied into a new buffer if required. */
-			virtual void RegisterCompletion(void (*function)(BYTE*, size_t, void*), void* userdata=0);	
+		/*	Sets the user defined function to call upon request completion.
+			The data passed to the function is this object's internal buffer
+			and should not be modified. Once the function completes	the 
+			buffer's state is not guaranteed to be consistent and as such the 
+			data should be copied into a new buffer if required. */
+		virtual void RegisterCompletion(void (*function)(BYTE*, size_t, void*), void* userdata=0);	
 		
-			/*	Resizes the internal buffer which is used for storing received
-				data. 
-				If new_size is smaller than the current buffer size, only
-				the first new_size bytes are copied into the new buffer.*/
-			bool ResizeBuffer(size_t new_size);
+		/*	Resizes the internal buffer which is used for storing received
+			data. 
+			If new_size is smaller than the current buffer size, only
+			the first new_size bytes are copied into the new buffer.*/
+		bool ResizeBuffer(size_t new_size);
 
-			friend class CurlMulti;
-		};
+		friend class CurlMulti;
+	};
 
-		//-----------------------------------------------------------------------------------------
-		// Class: CurlSimpleHttp
-		// Purpose: Connects to and downloads a web page and (optionally) sends get or post data
-		class CurlHttp : public CurlSimple
-		{
-		private:
-			bool pair_added; // should & be prepended
-			std::stringstream ssurl; // used for building get urls
-			curl_httppost* form; // used for posts
-			curl_httppost* last;
+	//-----------------------------------------------------------------------------------------
+	// Class: CurlSimpleHttp
+	// Purpose: Connects to and downloads a web page and (optionally) sends get or post data
+	class CurlHttp : public CurlSimple
+	{
+	private:
+		bool pair_added; // should & be prepended
+		std::stringstream ssurl; // used for building get urls
+		curl_httppost* form; // used for posts
+		curl_httppost* last;
 
-			/* Helper function for escaping strings */
-			std::string wstring_to_utf8_hex(const std::wstring &input);
+		/* Helper function for escaping strings */
+		std::string wstring_to_utf8_hex(const std::wstring &input);
 
-			/* Escapes the input string for url encoding */
-			std::string Escape(const std::wstring& input);
-			std::string Escape(const std::string& input);
+		/* Escapes the input string for url encoding */
+		std::string Escape(const std::wstring& input);
+		std::string Escape(const std::string& input);
 
-			/* Called by CurlMulti when this instance is added to the multistack 
-			 * Return values specifies whether or not it should be added. */
-			virtual bool OnAdd();
+		/* Called by CurlMulti when this instance is added to the multistack 
+			* Return values specifies whether or not it should be added. */
+		virtual bool OnAdd();
+		
+	public:
 
-			CurlHttp(const std::string& url, Phasor::ErrorStreamPtr error_stream);
-		public:
+		CurlHttp(const std::string& url);
+		virtual ~CurlHttp();
 
-			static CurlHttpPtr Create(const std::string& url, Phasor::ErrorStreamPtr error_stream);
-			virtual ~CurlHttp();
+		/* Adds data to the http request, any unicode strings are escaped. */
+		void AddPostData(const std::string& key, const std::wstring& data);
+		void AddPostData(const std::string& key, const std::string& data, bool b=false);
+		void AddPostFile(const std::string& key, const std::string& path_to_file);
+		void AddGetData(const std::string& key, const std::wstring& data);
+		void AddGetData(const std::string& key, const std::string& data, bool b=false);			
+	};
 
-			/* Adds data to the http request, any unicode strings are escaped. */
-			void AddPostData(const std::string& key, const std::wstring& data);
-			void AddPostData(const std::string& key, const std::string& data, bool b=false);
-			void AddPostFile(const std::string& key, const std::string& path_to_file);
-			void AddGetData(const std::string& key, const std::wstring& data);
-			void AddGetData(const std::string& key, const std::string& data, bool b=false);			
-		};
+	//-----------------------------------------------------------------------------------------
+	// Class: CurlSimpleDownload
+	// Purpose: Downloads the file at the specified url
+	class CurlDownload : public CurlSimple
+	{
+	private:
+		std::string file;
+		FILE* pFile;		
 
-		//-----------------------------------------------------------------------------------------
-		// Class: CurlSimpleDownload
-		// Purpose: Downloads the file at the specified url
-		class CurlDownload : public CurlSimple
-		{
-		private:
-			std::string file;
-			FILE* pFile;
+	protected:
+		/*	Called by CurlMulti when the file has downloaded */
+		virtual void ConnectionDone(CURLMsg* msg);
 
-			CurlDownload(const std::string& url, const std::string& path_to_file,
-				Phasor::ErrorStreamPtr error_stream);
+		/*	Writes any received data to file with fwrite. */
+		virtual size_t OnDataWrite(BYTE* data, size_t size, size_t nmemb);
 
-		protected:
-			/*	Called by CurlMulti when the file has downloaded */
-			virtual void ConnectionDone(CURLMsg* msg);
+	public:
+		CurlDownload(const std::string& url, FILE* pFile);
 
-			/*	Writes any received data to file with fwrite. */
-			virtual size_t OnDataWrite(BYTE* data, size_t size, size_t nmemb);
-
-		public:
-			static CurlDownloadPtr Create(const std::string& url, 
-				const std::string& path_to_file, Phasor::ErrorStreamPtr error_stream);
+		static FILE* OpenOutputFile(const std::string& file);
 			
-			~CurlDownload();
-		};
+		~CurlDownload();
+	};
 
 
-		//-----------------------------------------------------------------------------------------
-		// Class: CurlSimpleFtp
-		// Purpose: Connects to an ftp server and uploads/downloads file(s)
-		/*class CurlSimpleFtp : CurlSimple
-		{
-		private:
-			std::string outFile;
+	//-----------------------------------------------------------------------------------------
+	// Class: CurlSimpleFtp
+	// Purpose: Connects to an ftp server and uploads/downloads file(s)
+	/*class CurlSimpleFtp : CurlSimple
+	{
+	private:
+		std::string outFile;
 
-		public:
-			CurlSimpleFtp(const char* outFile);
-			~CurlSimpleFtp();
-		};*/
-	}
+	public:
+		CurlSimpleFtp(const char* outFile);
+		~CurlSimpleFtp();
+	};*/
 }

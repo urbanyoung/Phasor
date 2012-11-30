@@ -72,15 +72,24 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Phasor\Common.cpp" />
+    <ClCompile Include="..\Phasor\Common\Common.cpp" />
+    <ClCompile Include="..\Phasor\Common\FileIO.cpp" />
+    <ClCompile Include="..\Phasor\Common\MyString.cpp" />
+    <ClCompile Include="..\Phasor\Common\Streams.cpp" />
+    <ClCompile Include="..\Phasor\Common\Threads.cpp" />
+    <ClCompile Include="..\Phasor\Common\Timers.cpp" />
     <ClCompile Include="..\Phasor\Curl.cpp" />
-    <ClCompile Include="..\Phasor\Phasor.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Phasor\Common.h" />
+    <ClInclude Include="..\Phasor\Common\Common.h" />
+    <ClInclude Include="..\Phasor\Common\FileIO.h" />
+    <ClInclude Include="..\Phasor\Common\MyString.h" />
+    <ClInclude Include="..\Phasor\Common\Streams.h" />
+    <ClInclude Include="..\Phasor\Common\Threads.h" />
+    <ClInclude Include="..\Phasor\Common\Timers.h" />
+    <ClInclude Include="..\Phasor\Common\Types.h" />
     <ClInclude Include="..\Phasor\Curl.h" />
-    <ClInclude Include="..\Phasor\Phasor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
