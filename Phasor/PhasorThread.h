@@ -1,7 +1,7 @@
 // PhasorThread.h
 #pragma once
 
-#include "Threads.h"
+#include "Common/Threads.h"
 #include <memory>
 #include <stdio.h>
 #include <list>
@@ -39,10 +39,10 @@ public:
 	bool ready(DWORD dwCurTicks) const;
 	
 	// Event is invoked in the aux thread
-	virtual void OnEventAux(PhasorThread& thread) = 0;
+	virtual void OnEventAux(PhasorThread& thread) {};
 
 	// Event is invoked in the main thread
-	virtual void OnEventMain(PhasorThread& thread) = 0;
+	virtual void OnEventMain(PhasorThread& thread) {};
 };
 
 // This class implements Phasor's worker (auxillary) thread.

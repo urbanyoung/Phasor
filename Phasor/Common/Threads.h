@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Types.h"
-#include <stdio.h>
 
 class Lock
 {

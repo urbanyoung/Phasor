@@ -1,6 +1,6 @@
 #include "Scripting.h"
 #include "Manager.h"
-#include "Common.h"
+#include "Common/Common.h"
 #include "PhasorAPI.h"
 #include "PhasorScript.h"
 #include <string>

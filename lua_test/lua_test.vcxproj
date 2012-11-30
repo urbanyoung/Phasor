@@ -70,31 +70,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Phasor\Common.cpp" />
-    <ClCompile Include="..\Phasor\FileIO.cpp" />
+    <ClCompile Include="..\Phasor\Common\Common.cpp" />
+    <ClCompile Include="..\Phasor\Common\FileIO.cpp" />
+    <ClCompile Include="..\Phasor\Common\MyString.cpp" />
+    <ClCompile Include="..\Phasor\Common\Streams.cpp" />
+    <ClCompile Include="..\Phasor\Common\Threads.cpp" />
+    <ClCompile Include="..\Phasor\Common\Timers.cpp" />
     <ClCompile Include="..\Phasor\Lua.cpp" />
     <ClCompile Include="..\Phasor\Manager.cpp" />
-    <ClCompile Include="..\Phasor\MyString.cpp" />
     <ClCompile Include="..\Phasor\PhasorAPI.cpp" />
     <ClCompile Include="..\Phasor\PhasorThread.cpp" />
     <ClCompile Include="..\Phasor\Scripting.cpp" />
-    <ClCompile Include="..\Phasor\Streams.cpp" />
-    <ClCompile Include="..\Phasor\Threads.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Phasor\Common.h" />
-    <ClInclude Include="..\Phasor\FileIO.h" />
+    <ClInclude Include="..\Phasor\Common\Common.h" />
+    <ClInclude Include="..\Phasor\Common\FileIO.h" />
+    <ClInclude Include="..\Phasor\Common\MyString.h" />
+    <ClInclude Include="..\Phasor\Common\Streams.h" />
+    <ClInclude Include="..\Phasor\Common\Threads.h" />
+    <ClInclude Include="..\Phasor\Common\Timers.h" />
+    <ClInclude Include="..\Phasor\Common\Types.h" />
     <ClInclude Include="..\Phasor\Lua.h" />
     <ClInclude Include="..\Phasor\Manager.h" />
-    <ClInclude Include="..\Phasor\MyString.h" />
     <ClInclude Include="..\Phasor\PhasorAPI.h" />
     <ClInclude Include="..\Phasor\PhasorScript.h" />
     <ClInclude Include="..\Phasor\PhasorThread.h" />
     <ClInclude Include="..\Phasor\Scripting.h" />
-    <ClInclude Include="..\Phasor\Streams.h" />
-    <ClInclude Include="..\Phasor\Threads.h" />
-    <ClInclude Include="..\Phasor\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lua\lua.vcxproj">

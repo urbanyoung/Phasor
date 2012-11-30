@@ -6,7 +6,7 @@
 #include <array>
 #include <memory>
 #include <stack>
-#include "Common.h"
+#include "Common/Common.h"
 #include "PhasorScript.h" // for ScriptState
 
 typedef unsigned long DWORD;

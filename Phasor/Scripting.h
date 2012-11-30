@@ -2,7 +2,7 @@
 #ifndef _SCRIPTING_H
 #define _SCRIPTING_H
 #include "Manager.h"
-#include "Streams.h"
+#include "Common/Streams.h"
 
 typedef unsigned long DWORD;
 

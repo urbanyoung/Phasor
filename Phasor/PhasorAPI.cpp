@@ -1,5 +1,5 @@
 #include "PhasorAPI.h"
-#include "Common.h"
+#include "Common/Common.h"
 #include <list>
 
 using namespace Common;

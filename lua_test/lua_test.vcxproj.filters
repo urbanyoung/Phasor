@@ -31,25 +31,28 @@
     <ClCompile Include="..\Phasor\Manager.cpp">
       <Filter>Scripting\Manger</Filter>
     </ClCompile>
-    <ClCompile Include="..\Phasor\Common.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Phasor\PhasorAPI.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Phasor\FileIO.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Phasor\MyString.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Phasor\Streams.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Phasor\PhasorThread.cpp">
       <Filter>Phasor Thread</Filter>
     </ClCompile>
-    <ClCompile Include="..\Phasor\Threads.cpp">
+    <ClCompile Include="..\Phasor\Common\Common.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\FileIO.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\MyString.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\Streams.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\Threads.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\Common\Timers.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,30 +66,33 @@
     <ClInclude Include="..\Phasor\Manager.h">
       <Filter>Scripting\Manger</Filter>
     </ClInclude>
-    <ClInclude Include="..\Phasor\Common.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\Phasor\PhasorAPI.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
     <ClInclude Include="..\Phasor\PhasorScript.h" />
-    <ClInclude Include="..\Phasor\FileIO.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Phasor\MyString.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Phasor\Streams.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Phasor\Types.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Phasor\Threads.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\Phasor\PhasorThread.h">
       <Filter>Phasor Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\FileIO.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\MyString.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Streams.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Threads.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Timers.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Common\Types.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
