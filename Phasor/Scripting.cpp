@@ -8,9 +8,8 @@
 #include <windows.h> // for GetCurrentProcessId()
 #include <array>
 
-// todo: overload Call for no args
-// check what happens if attempt to call non existent lua function
-// 
+std::unique_ptr<Scripting::Scripts> g_Scripts;
+
 namespace Scripting
 {
 	using namespace Common;
@@ -18,33 +17,36 @@ namespace Scripting
 
 	#define DEFAULT_TIMEOUT 2000
 
-	const DWORD versions[] = {1234};
+	static const DWORD versions[] = {1234};
 
-	std::string scriptsDir;
-	std::map<std::string, std::unique_ptr<ScriptState>> scripts;
+	// Checks if the specified version is compatible
+	bool CompatibleVersion(DWORD required) 
+	{
+		const int n = sizeof(versions)/sizeof(versions[0]);
+		bool compatible = false;
+		for (int i = 0; i < n; i++)
+		{
+			if (versions[i] == required) {
+				compatible = true;
+				break;
+			}
+		}
+		return compatible;		
+	}
 
-	COutStream* errstream = NULL;
-	
-	// Called when an error is raised by a script.
-	void HandleError(ScriptState& state, const std::string& desc);
-
-	// Checks if the script is compatible with this version of Phasor.
-	void CheckScriptCompatibility(ScriptState& state, const char* script);
 
 	// --------------------------------------------------------------------
 	//
-	
-	// Sets the stream to report errors to
-	void SetErrorStream(COutStream* errstream)
+	Scripts::Scripts(COutStream& errstream, const std::string& scriptsDir)
+		: errstream(errstream), scriptsDir(scriptsDir)
 	{
-		::Scripting::errstream = errstream;
 	}
 
-	void OpenScript(const char* script)
+	void Scripts::OpenScript(const char* script)
 	{
 		// Make sure the script isn't already loaded
 		if (scripts.find(script) != scripts.end()) {
-			*errstream << script << " is already loaded." << endl;
+			errstream << script << " is already loaded." << endl;
 			return;
 		}
 
@@ -75,13 +77,13 @@ namespace Scripting
 		}
 		catch (std::exception& e)
 		{
-			NoFlush _(*errstream);
-			*errstream << script << " cannot be loaded. Why? " <<
+			NoFlush _(errstream);
+			errstream << script << " cannot be loaded. Why? " <<
 				endl << log_prefix << e.what() << endl;
 		}
 	}
 
-	void CloseScript(const char* script) 
+	void Scripts::CloseScript(const char* script) 
 	{
 		auto itr = scripts.find(script);
 
@@ -89,46 +91,26 @@ namespace Scripting
 			std::unique_ptr<ScriptState> state(std::move(itr->second));
 			scripts.erase(itr);
 			
-			Manager::Caller caller;
-			caller.Call(*state, "OnScriptUnload", DEFAULT_TIMEOUT);
-			
+			try 
+			{
+				Manager::Caller caller;
+				caller.Call(*state, "OnScriptUnload", DEFAULT_TIMEOUT);
+			} catch (std::exception & e) {
+				HandleError(*state, e.what());
+			}
 			//Manager::CloseScript(state);		
 			// script closed when state goes out of scope
 		}
 	}
 
-	// Sets the path to be used by this namespace (where scripts are).
-	void SetPath(const char* scriptPath)
-	{
-		scriptsDir = scriptPath;
-	}
-
-	// Checks if the specified version is compatible
-	bool CompatibleVersion(DWORD required) 
-	{
-		const int n = sizeof(versions)/sizeof(versions[0]);
-		bool compatible = false;
-		for (int i = 0; i < n; i++)
-		{
-			if (versions[i] == required) {
-				compatible = true;
-				break;
-			}
-		}
-		return compatible;		
-	}
-
-	// Checks if the script is compatible with this version of Phasor.
-	void CheckScriptCompatibility(ScriptState& state, const char* script) 
+	void Scripts::CheckScriptCompatibility(ScriptState& state, const char* script) 
 	{
 		bool funcExists = false;
 		Manager::Caller caller;
 		Result result = caller.Call(state, "GetRequiredVersion", &funcExists, DEFAULT_TIMEOUT);
 
 		if (!funcExists) {
-			std::stringstream err;
-			err << "GetRequiredVersion undefined.";
-			throw std::exception(err.str().c_str());
+			throw std::exception("GetRequiredVersion undefined.");
 		}
 
 		// Make sure the requested version is compatible
@@ -141,26 +123,59 @@ namespace Scripting
 		}
 
 		if (!is_compatible) {
-			std::stringstream err;
-			err << "Not compatible with this version of Phasor.";
-			throw std::exception(err.str().c_str());
+			throw std::exception("Not compatible with this version of Phasor.");
 		}
+	}
+
+	// Called when an error is raised by a script.
+	void Scripts::HandleError(ScriptState& state, const std::string& desc)
+	{
+		NoFlush _(errstream); // flush once at the end of the func
+
+		errstream << L"Error in '" << state.GetName() << L'\'' <<  endl;
+		errstream << log_prefix << L"Path: " << state.GetPath() << endl;
+		errstream << log_prefix << L"Error: " << desc << endl;
+
+		std::string blockedFunc;
+
+		// Process the callstack, block last Phasor -> Script function called
+		// there should only be one.
+		bool blocked = false;
+		while (!state.callstack.empty())
+		{
+			Manager::ScriptCallstack& entry = *state.callstack.top();
+
+			if (!blocked && !entry.scriptInvoked) { 
+				state.BlockFunction(entry.func);
+				blocked = true;
+				blockedFunc = entry.func;
+			}
+
+			state.callstack.pop();
+		}
+
+		if (blocked) {
+			errstream << log_prefix << L"Action: Further calls to '" << blockedFunc << 
+				L"' will be ignored." << endl;
+		}
+
+		errstream << endl;			
 	}
 
 	// --------------------------------------------------------------------
 	// 
-	Result PhasorCaller::Call(const std::string& function)
+	Result PhasorCaller::Call(const std::string& function, Scripts& s)
 	{
 		// This is the argument which indicates if a scripts' return value is used.
 		this->AddArg(true);
 		ObjBool& using_param = (ObjBool&)**args.rbegin();
 
-		auto itr = scripts.begin();
+		auto itr = s.scripts.begin();
 
 		Result result;
 		bool result_set = false;
 
-		for (; itr != scripts.end(); ++itr)
+		for (; itr != s.scripts.end(); ++itr)
 		{
 			ScriptState& state = *itr->second;
 			if (!state.FunctionAllowed(function)) continue;
@@ -189,7 +204,7 @@ namespace Scripting
 			{
 				// script errored, process it (for now just rethrow)
 				// todo: add handling
-				HandleError(state, e.what());
+				s.HandleError(state, e.what());
 				//throw;
 			}
 		}
@@ -197,45 +212,5 @@ namespace Scripting
 		this->Clear();
 
 		return result;
-	}
-
-	// Called when an error is raised by a script.
-	void HandleError(ScriptState& state, const std::string& desc)
-	{
-		NoFlush _(*errstream); // flush once at the end of the func
-
-		*errstream << L"Error in " << state.GetName() << endl;
-		*errstream << log_prefix << L"Path: " << state.GetPath() << endl;
-		*errstream << log_prefix << L"Error: " << desc << endl;
-		if (!state.callstack.empty()) *errstream << L" Callstack: " << endl;
-
-		std::string blockedFunc;
-		
-		// Process the callstack, block last Phasor -> Script function called
-		// there should only be one.
-		bool blocked = false;
-		while (!state.callstack.empty())
-		{
-			Manager::ScriptCallstack& entry = *state.callstack.top();
-
-			// basic callstack
-			*errstream << entry.func;
-
-			if (!blocked && !entry.scriptInvoked) { 
-				state.BlockFunction(entry.func);
-				blocked = true;
-				blockedFunc = entry.func;
-			}
-
-			state.callstack.pop();
-			if (state.callstack.empty()) *errstream << L" -> ";
-		}
-
-		if (blocked) {
-			*errstream << log_prefix << L"Further calls to '" << blockedFunc << 
-				L"' will be ignored." << endl;
-		}
-
-		*errstream << endl;			
 	}
 }

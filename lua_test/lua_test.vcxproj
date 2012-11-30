@@ -38,7 +38,12 @@
     <Import Project="pathtest.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>D:\Development\C++\boost_1_52_0;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>D:\Development\C++\boost_1_52_0\stage\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -71,6 +76,7 @@
     <ClCompile Include="..\Phasor\Manager.cpp" />
     <ClCompile Include="..\Phasor\MyString.cpp" />
     <ClCompile Include="..\Phasor\PhasorAPI.cpp" />
+    <ClCompile Include="..\Phasor\PhasorThread.cpp" />
     <ClCompile Include="..\Phasor\Scripting.cpp" />
     <ClCompile Include="..\Phasor\Streams.cpp" />
     <ClCompile Include="main.cpp" />
@@ -83,8 +89,10 @@
     <ClInclude Include="..\Phasor\MyString.h" />
     <ClInclude Include="..\Phasor\PhasorAPI.h" />
     <ClInclude Include="..\Phasor\PhasorScript.h" />
+    <ClInclude Include="..\Phasor\PhasorThread.h" />
     <ClInclude Include="..\Phasor\Scripting.h" />
     <ClInclude Include="..\Phasor\Streams.h" />
+    <ClInclude Include="..\Phasor\Threads.h" />
     <ClInclude Include="..\Phasor\Types.h" />
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +104,9 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Phasor\includes.props" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

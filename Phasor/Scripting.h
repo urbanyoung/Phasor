@@ -17,29 +17,43 @@ typedef unsigned long DWORD;
  *   dostuff.lua's unique would be MyScript/dostuff
  *   hello.lua's unique id would be hello
  */
+namespace Scripting
+{
+	class Scripts;
+}
+
+extern std::unique_ptr<Scripting::Scripts> g_Scripts;
 
 namespace Scripting
 {
 	typedef Manager::Result Result;
 
 	// --------------------------------------------------------------------
-	// 
+	// Only reason this is a class is to ensure the errstream is set.
+	class Scripts
+	{
+	private:
+		std::string scriptsDir;
+		std::map<std::string, std::unique_ptr<ScriptState>> scripts;
+		COutStream& errstream;
 
-	// Sets the stream to report errors to
-	// MUST BE SET BEFORE USING ANY OTHER FUNCTIONS
-	void SetErrorStream(COutStream* errstream);
-	
-	// Sets the path to be used by this namespace (where scripts are).
-	void SetPath(const char* scriptPath);
+		// Checks if the script is compatible with this version of Phasor.
+		void CheckScriptCompatibility(ScriptState& state, const char* script);
 
-	// Opens the script specified, relative to the scripts directory
-	// May throw an exception <todo: add specific info>
-	void OpenScript(const char* script);
+		// Called when an error is raised by a script.
+		void HandleError(ScriptState& state, const std::string& desc);
 
-	// Closes the specified script, if it exists.
-	// Guarantees the script is closed (if it exists) but may still throw
-	// exception if an error occurs in OnScriptUnload
-	void CloseScript(const char* script);
+	public:
+		Scripts(COutStream& errstream, const std::string& scriptsDir);
+
+		// Opens the script specified, relative to the scripts directory
+		void OpenScript(const char* script);
+
+		// Closes the specified script, if it exists.
+		void CloseScript(const char* script);
+
+		friend class PhasorCaller;
+	};
 
 	// --------------------------------------------------------------------
 	// Class: PhasorCaller
@@ -49,8 +63,10 @@ namespace Scripting
 	{
 	public:
 		// Calls the specified function on all loaded scripts.
-		Result Call(const std::string& function);
+		Result Call(const std::string& function,
+			Scripts& s=*g_Scripts);
 	};
 
 }
+
 #endif

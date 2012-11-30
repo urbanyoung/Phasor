@@ -16,6 +16,9 @@
     <Filter Include="Scripting\PhasorAPI">
       <UniqueIdentifier>{f88b9cb6-d2cd-4299-9725-2a6fe63f55c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Phasor Thread">
+      <UniqueIdentifier>{fab44960-0a19-469f-b45e-46ca3ac7c158}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -42,6 +45,9 @@
     </ClCompile>
     <ClCompile Include="..\Phasor\Streams.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phasor\PhasorThread.cpp">
+      <Filter>Phasor Thread</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,5 +79,14 @@
     <ClInclude Include="..\Phasor\Types.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Phasor\Threads.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\PhasorThread.h">
+      <Filter>Phasor Thread</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Phasor\includes.props" />
   </ItemGroup>
 </Project>
