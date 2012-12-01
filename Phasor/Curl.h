@@ -1,10 +1,10 @@
 #pragma once
-#include <list>
-#include "../libcurl/curl/curl.h"
+
 #include <sstream>
 #include <vector>
-#include "../Phasor/Common/Streams.h"
+#include <list>
 #include "../Phasor/Common/MyException.h"
+#include "../libcurl/curl/curl.h"
 
 namespace Curl
 {
@@ -38,7 +38,7 @@ namespace Curl
 		CurlMulti();
 		~CurlMulti();			
 
-		void HandleError(const std::string& err);
+		virtual void HandleError(const std::string& err);
 
 		//	Processes any waiting data
 		//	Return: true (active connections), false (no active connections)
@@ -98,7 +98,7 @@ namespace Curl
 		CurlSimple(const std::string& url);
 		virtual ~CurlSimple();
 
-		void HandleError(const std::string& err);
+		virtual void HandleError(const std::string& err);
 
 		friend class CurlMulti;
 	};
