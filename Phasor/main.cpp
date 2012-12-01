@@ -19,6 +19,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 	//using namespace Common;
 	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
 
+
 /*	if (!Phasor::SetupDirectories()) {
 		std::string last_err;
 		GetLastErrorAsText(last_err);
