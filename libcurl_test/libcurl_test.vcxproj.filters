@@ -60,5 +60,8 @@
     <ClInclude Include="..\Phasor\Common\Types.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Phasor\Common\MyException.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

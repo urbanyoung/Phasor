@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="..\Phasor\Common\Common.h" />
     <ClInclude Include="..\Phasor\Common\FileIO.h" />
+    <ClInclude Include="..\Phasor\Common\MyException.h" />
     <ClInclude Include="..\Phasor\Common\MyString.h" />
     <ClInclude Include="..\Phasor\Common\Streams.h" />
     <ClInclude Include="..\Phasor\Common\Threads.h" />

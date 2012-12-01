@@ -1,15 +1,34 @@
 #include <windows.h>
 #include "..\Phasor\Curl.h"
 
-void test(BYTE* data, size_t len, void* userdata)
+class http_post_test : public Curl::CurlHttp
 {
-	char* str = new char[len+1];
-	memcpy(str, data, len);
-	str[len] = 0;
+public:
+	http_post_test(const std::string& url) : CurlHttp(url)
+	{
+	}
 
-	printf("Data: %s\n", str);
-	delete[] str;
-}
+	void OnCompletion(bool success, const BYTE* data, size_t size)
+	{
+		success ? printf("success %i bytes\n", size) : printf("post failed %i bytes\n", size);
+		CurlHttp::OnCompletion(success, data, size);
+	}
+};
+
+class cdownload : public Curl::CurlDownload
+{
+public:
+	cdownload(const std::string& url, FILE* pFile) : CurlDownload(url, pFile)
+	{
+	}
+
+	void OnCompletion(bool success, const BYTE*, size_t)
+	{
+		success ? printf("success\n") : printf("download failed\n");
+		CurlDownload::OnCompletion(success, NULL, NULL);
+	}
+};
+
 
 int main()
 {
@@ -18,13 +37,13 @@ int main()
 	CurlMulti multi;
 
 	// Connect and post data to a php script
-	CurlHttpPtr simp = CurlHttpPtr(new CurlHttp("http://127.0.0.1/test.php"));
-	simp->AddGetData("test", "data");
+	CurlHttpPtr simp = CurlHttpPtr(new http_post_test("http://www.google.co.nz/"));
+	simp->AddGetData("q", "postdata1");
+	/*simp->AddGetData("test", "data");
 	simp->AddGetData("test1", "data1");
 	simp->AddPostData("post1", "postdata1");
 	simp->AddPostData("post2", L"postdata2");
-	simp->AddPostFile("testfile", "libcurl_test.exe");
-	simp->RegisterCompletion(test);
+	simp->AddPostFile("testfile", "libcurl_test.exe");*/
 	multi.AddRequest(std::move(simp));
 
 	// Download a few files
@@ -35,11 +54,11 @@ int main()
 		return 1;
 	}
 
-	CurlDownloadPtr dl = CurlDownloadPtr( 
-		new CurlDownload("http://anon.nasa-global.edgesuite.net/anon.nasa-global/msl/figure_1_raw.png",
+	/*CurlDownloadPtr dl = CurlDownloadPtr( 
+		new cdownload("http://anon.nasa-global.edgesuite.net/anon.nasa-global/msl/figure_1_raw.png",
 		//new CurlDownload("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
-		output));
-	multi.AddRequest(std::move(dl));
+// 		output));/*
+// 	multi.AddRequest(std::move(dl));*/
 
 	/*CurlDownloadPtr dl1 = CurlDownload::Create("http://www.nasa.gov/images/content/665773main_image_2302_946-710.jpg",
 		"hubble.jpg", err);

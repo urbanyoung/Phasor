@@ -2,7 +2,9 @@
 #include <list>
 #include "../libcurl/curl/curl.h"
 #include <sstream>
+#include <vector>
 #include "../Phasor/Common/Streams.h"
+#include "../Phasor/Common/MyException.h"
 
 namespace Curl
 {
@@ -59,37 +61,37 @@ namespace Curl
 	private:
 		CURL* curl; // the easy curl interface used
 		static const unsigned long DEFAULT_BUFFER_SIZE = 4096;
+		std::vector<BYTE> buffer;
 
 		// Called by the curl object when there is data to be processed. This
 		// function is simply used to call OnDataWrite in a C++ context.
 		static size_t Curl_OnDataWrite(BYTE* data, size_t size, size_t nmemb, void* userdata);
 
+	protected:
+		std::string url; // url the connection is to be made on
+		
+		// Returns the pointer to this curl instance
+		CURL* GetCurl() { return curl; };
+
+		// Processes data received from the curl interface.
+		// Unless overridden this function will store all received data in
+		// the internal buffer. As such this method should be overridden if
+		// the expected data is too large to store into memory.
+		// The internal buffer is expanded as required.
+		virtual size_t OnDataWrite(BYTE* data, size_t size, size_t nmemb);
+
+		// Called by CurlMulti when the current operation has completed, 
+		// successfully or not. The connect is cleaned up after this call.
+		void ConnectionDone(CURLMsg* msg);
+
+		// Classes should implement these functions for custom completion,
+		// or error handling. data may be null if the internal buffer wasn't
+		// used (ie in CurlDownload)
+		virtual void OnCompletion(bool success, const BYTE* data, size_t size) {}
+
 		// Called by CurlMulti when this instance is added to the multistack 
 		// Return values specifies whether or not it should be added. 
 		virtual bool OnAdd() { return true; }
-
-	protected:
-		std::string url; // url the connection is to be made on
-		BYTE* buffer; // buffer containing all data received
-		size_t recvCount; // number of bytes received
-		size_t bufferSize; // size of the allocated buffer
-		void (*completionRoutine)(BYTE*, size_t, void* userdata); // ptr to function called on completion
-		void* userdata; // set by user for passing to completion routine
-
-		/* Returns the pointer to this curl instance */
-		CURL* GetCurl() { return curl; };
-
-		/*  Processes data received from the curl interface.
-			Unless overridden this function will store all received data in
-			the internal buffer. As such this method should be overridden if
-			the expected data is too large to store into memory.
-			The internal buffer is expanded as required.
-		*/
-		virtual size_t OnDataWrite(BYTE* data, size_t size, size_t nmemb);
-
-		/*	Called by CurlMulti when the current operation has completed, 
-			successfully or not. */
-		virtual void ConnectionDone(CURLMsg* msg);
 
 	public:
 
@@ -97,19 +99,6 @@ namespace Curl
 		virtual ~CurlSimple();
 
 		void HandleError(const std::string& err);
-
-		/*	Sets the user defined function to call upon request completion.
-			The data passed to the function is this object's internal buffer
-			and should not be modified. Once the function completes	the 
-			buffer's state is not guaranteed to be consistent and as such the 
-			data should be copied into a new buffer if required. */
-		virtual void RegisterCompletion(void (*function)(BYTE*, size_t, void*), void* userdata=0);	
-		
-		/*	Resizes the internal buffer which is used for storing received
-			data. 
-			If new_size is smaller than the current buffer size, only
-			the first new_size bytes are copied into the new buffer.*/
-		bool ResizeBuffer(size_t new_size);
 
 		friend class CurlMulti;
 	};
@@ -120,20 +109,20 @@ namespace Curl
 	class CurlHttp : public CurlSimple
 	{
 	private:
-		bool pair_added; // should & be prepended
+		bool pair_added, do_post; // should & be prepended
 		std::stringstream ssurl; // used for building get urls
 		curl_httppost* form; // used for posts
 		curl_httppost* last;
 
-		/* Helper function for escaping strings */
+		// Helper function for escaping strings
 		std::string wstring_to_utf8_hex(const std::wstring &input);
 
-		/* Escapes the input string for url encoding */
+		// Escapes the input string for url encoding 
 		std::string Escape(const std::wstring& input);
 		std::string Escape(const std::string& input);
 
-		/* Called by CurlMulti when this instance is added to the multistack 
-			* Return values specifies whether or not it should be added. */
+		// Called by CurlMulti when this instance is added to the multistack 
+		// Return values specifies whether or not it should be added.
 		virtual bool OnAdd();
 		
 	public:
@@ -141,7 +130,7 @@ namespace Curl
 		CurlHttp(const std::string& url);
 		virtual ~CurlHttp();
 
-		/* Adds data to the http request, any unicode strings are escaped. */
+		// Adds data to the http request, any unicode strings are escaped. 
 		void AddPostData(const std::string& key, const std::wstring& data);
 		void AddPostData(const std::string& key, const std::string& data, bool b=false);
 		void AddPostFile(const std::string& key, const std::string& path_to_file);
@@ -154,23 +143,19 @@ namespace Curl
 	// Purpose: Downloads the file at the specified url
 	class CurlDownload : public CurlSimple
 	{
-	private:
-		std::string file;
-		FILE* pFile;		
-
 	protected:
-		/*	Called by CurlMulti when the file has downloaded */
-		virtual void ConnectionDone(CURLMsg* msg);
+		std::string file;
+		FILE* pFile;
 
-		/*	Writes any received data to file with fwrite. */
+		//	Writes any received data to file with fwrite.
 		virtual size_t OnDataWrite(BYTE* data, size_t size, size_t nmemb);
+
+		virtual void OnCompletion(bool success, const BYTE*, size_t size);
 
 	public:
 		CurlDownload(const std::string& url, FILE* pFile);
-
-		static FILE* OpenOutputFile(const std::string& file);
-			
-		~CurlDownload();
+		virtual ~CurlDownload();
+		static FILE* OpenOutputFile(const std::string& file);	
 	};
 
 

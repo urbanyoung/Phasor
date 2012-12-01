@@ -1,5 +1,6 @@
 #include "Curl.h"
 #include "../Phasor/Common/Common.h"
+#include <iterator>
 
 namespace Curl
 {
@@ -9,8 +10,10 @@ namespace Curl
 	CurlMulti::CurlMulti() : running(0), started(false)
 	{
 		multi_curl = curl_multi_init();
-		if (!multi_curl) //throw std::exception();
+		if (!multi_curl) { //throw std::exception();
 			HandleError("couldn't init curl_multi interface");
+			throw CFailedCtor();
+		}
 	}
 
 	CurlMulti::~CurlMulti()
@@ -92,8 +95,7 @@ namespace Curl
 	// Class: CurlSimple
 	//
 	CurlSimple::CurlSimple(const std::string& url)
-		: url(url), completionRoutine(NULL),
-		bufferSize(DEFAULT_BUFFER_SIZE), recvCount(0)
+		: url(url)
 	{
 		curl = curl_easy_init();
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Curl_OnDataWrite);
@@ -101,14 +103,12 @@ namespace Curl
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
 		curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT, 5);
 		curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, 10);
-
-		buffer = new BYTE[DEFAULT_BUFFER_SIZE];
+		buffer.reserve(DEFAULT_BUFFER_SIZE);
 	}
 
 	CurlSimple::~CurlSimple()
 	{
 		curl_easy_cleanup(curl);
-		delete[] buffer;
 	}
 
 	size_t CurlSimple::Curl_OnDataWrite(BYTE* data, size_t size, size_t nmemb, void* userdata)
@@ -121,55 +121,23 @@ namespace Curl
 	size_t CurlSimple::OnDataWrite(BYTE* data, size_t size, size_t nmemb)
 	{
 		size_t nbytes = size*nmemb;
-
-		if (recvCount + nbytes > bufferSize) {
-			if (!ResizeBuffer(bufferSize + nbytes))	{
-				HandleError("cannot allocate enough memory for received data.");
-				return 0; // curl will abort
-			}
-		}
-
-		memcpy(buffer + recvCount, data, nbytes);
-		recvCount += nbytes;
+		buffer.reserve(buffer.size() + nbytes);
+		std::copy(data, data + nbytes, std::back_inserter(buffer));
 		return nbytes;
 	}
 
 	void CurlSimple::ConnectionDone(CURLMsg* msg)
 	{
+		bool success = true;
 		if (msg->data.result != CURLM_OK) {
 			std::stringstream ss;
 			ss << "Connection failed with error: " << msg->data.result;
 			HandleError(ss.str());
-			recvCount = 0;
-			return;
+			success = false;
 		}
 
-		if (completionRoutine) completionRoutine(buffer, recvCount, userdata);	
-	}
-
-	void CurlSimple::RegisterCompletion(void (*function)(BYTE*, size_t, void*), void* userdata)
-	{
-		completionRoutine = function;
-		this->userdata = userdata;
-	}
-
-	bool CurlSimple::ResizeBuffer(size_t new_size)
-	{
-		bool success = true;
-		try 
-		{
-			BYTE* new_buffer = new BYTE[new_size];
-			size_t ncopy = (new_size < bufferSize) ? new_size : bufferSize;
-			for (size_t x = 0; x < ncopy; x++)	new_buffer[x] = buffer[x];
-			delete[] buffer;
-			buffer = new_buffer;
-			bufferSize = new_size;
-		}
-		catch (std::bad_alloc &)
-		{
-			success = false;			
-		}
-		return success;
+		OnCompletion(success, buffer.data(), buffer.size());
+		//ResetBuffer(); no point, gets destroyed after return
 	}
 
 	void CurlSimple::HandleError(const std::string& err)
@@ -182,7 +150,7 @@ namespace Curl
 	//
 	CurlHttp::CurlHttp(const std::string& url) 
 		: CurlSimple(url), pair_added(false), form(NULL),
-		last(NULL)
+		last(NULL), do_post(false)
 	{
 		ssurl << url;
 		if (url[url.size()-1] != '?')
@@ -198,7 +166,8 @@ namespace Curl
 	{
 		url = ssurl.str();
 		curl_easy_setopt(GetCurl(), CURLOPT_URL, url.c_str());
-		curl_easy_setopt(GetCurl(), CURLOPT_HTTPPOST, form);
+		if (do_post)
+			curl_easy_setopt(GetCurl(), CURLOPT_HTTPPOST, form);
 		return true;
 	}
 
@@ -210,6 +179,7 @@ namespace Curl
 
 		curl_formadd(&form, &last, CURLFORM_COPYNAME, key.c_str(),
 			CURLFORM_COPYCONTENTS, post_data.c_str(), CURLFORM_END);
+		do_post = true;
 	}
 
 	void CurlHttp::AddPostData(const std::string& key, const std::wstring& data)
@@ -220,6 +190,7 @@ namespace Curl
 
 	void CurlHttp::AddPostFile(const std::string& key, const std::string& path_to_file)
 	{
+		do_post = true;
 		curl_formadd(&form, &last, CURLFORM_COPYNAME, key.c_str(), CURLFORM_FILE, path_to_file.c_str(), CURLFORM_END);			
 	}
 
@@ -312,10 +283,10 @@ namespace Curl
 		return fwrite(data, size, nmemb, pFile);
 	}
 
-	void CurlDownload::ConnectionDone(CURLMsg* msg)
+	void CurlDownload::OnCompletion(bool success, const BYTE*, size_t)
 	{
 		fclose(pFile);
 		pFile = NULL;
-		CurlSimple::ConnectionDone(msg);
+		CurlSimple::OnCompletion(success, NULL, NULL);
 	}
 }
