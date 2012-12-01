@@ -31,12 +31,19 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="paths.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="paths.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -60,12 +67,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Phasor\Common.cpp" />
+    <ClCompile Include="..\Phasor\Common\Common.cpp" />
+    <ClCompile Include="..\Phasor\Common\FileIO.cpp" />
+    <ClCompile Include="..\Phasor\Common\MyString.cpp" />
+    <ClCompile Include="..\Phasor\Common\Streams.cpp" />
+    <ClCompile Include="..\Phasor\Common\Threads.cpp" />
+    <ClCompile Include="..\Phasor\Common\Timers.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sqlitepp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Phasor\Common.h" />
+    <ClInclude Include="..\Phasor\Common\Common.h" />
+    <ClInclude Include="..\Phasor\Common\FileIO.h" />
+    <ClInclude Include="..\Phasor\Common\MyException.h" />
+    <ClInclude Include="..\Phasor\Common\MyString.h" />
+    <ClInclude Include="..\Phasor\Common\Streams.h" />
+    <ClInclude Include="..\Phasor\Common\Threads.h" />
+    <ClInclude Include="..\Phasor\Common\Timers.h" />
+    <ClInclude Include="..\Phasor\Common\Types.h" />
     <ClInclude Include="sqlitepp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

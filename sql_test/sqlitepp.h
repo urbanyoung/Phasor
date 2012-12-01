@@ -1,14 +1,10 @@
 #pragma once
-#pragma warning( disable : 4290 )
 
 #include <string>
 #include <vector>
-#include <set>
-#include <sstream>
 #include <map>
-#include <windows.h>
 #include "../sqlite/sqlite3.h"
-#include "../Phasor/Common.h"
+#include "../Phasor/Common/Common.h"
 
 #pragma comment(lib, "../release/sqlite.lib")
 
@@ -16,35 +12,34 @@ namespace sqlite
 {
 	using namespace Common;
 
-	class SQLiteObject;
-	class SQLiteRow;
 	class SQLiteResult;
-	class SQLiteValue;
+	class SQLiteRow;
 	class SQLiteQuery;
-	class SQLite;
 
-	typedef std::shared_ptr<SQLite> SQLitePtr; 
-	typedef std::shared_ptr<SQLiteQuery> SQLiteQueryPtr; 
-	typedef std::shared_ptr<SQLiteResult> SQLiteResultPtr;
-	typedef std::shared_ptr<SQLiteRow> SQLiteRowPtr;
-	typedef ObjectWrapPtr SQLiteValuePtr;
-	
 	/* Error codes */
-	enum SQLPP_ERRCODE
+	enum sqlite_errs
 	{
-		SQL_ERR_NONE = 100,
 		SQL_ERRCODE_FAILED_OPEN, // sqlite3_open failed for some reason
 		SQL_ERRCODE_NO_INIT, // Attempting to use data that hasn't been initialized
 		SQL_ERRCODE_BAD_INDEX, // Attempted to access out of bounds data
 		SQL_ERRCODE_NO_PARAM, // Attempting to bind to a non existent parameter
 		SQL_ERRCODE_MISUSE, // The API was used incorrectly
-		SQL_ERRCODE_NDE, // sqlite3 returned data but none was expected
 		SQL_ERRCODE_CLOSED, // The database has been closed
 		SQL_ERRCODE_UNK // unknown error
 	};
 
+	static const char* err_descs[] = {
+		{"Unable to open the database file."},
+		{"Attempted to use uninitialized data."},
+		{"Out of bounds access attempt on SQLiteResult or SQLiteRow"},
+		{"Attempted to bind to an unknown parameter"},
+		{"api misuse"},
+		{"The database has been closed and an operation was attempted."},
+		{"Unknown error"}
+	};
+
 	/* Types of data that can be stored in SQLiteValue */
-	enum VALUE_TYPES 
+	enum sqlite_types
 	{
 		TYPE_STRING = 0,
 		TYPE_WSTRING,
@@ -56,38 +51,38 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteError
 	// Purpose: Exception class used by this namespace
-	class SQLiteError : public ObjectError
+	class SQLiteError : public std::exception
 	{
 	public:
-		SQLiteError(int error, const char* desc=NULL);
+		SQLiteError(int error);
+		SQLiteError(const char* e);
 		virtual ~SQLiteError();
 	};
 
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLite
 	// Purpose: Provide a basic wrapper around the sqlite3 C interface. 
-	class SQLite : public std::enable_shared_from_this<SQLite>
+	class SQLite
 	{
 	private:
 		sqlite3* sqlhandle;
-		SQLite(SQLitePtr* ptr, const std::string& path_to_db) throw(SQLiteError);
-
-		/* Returns a shared pointer to this object */
-		SQLitePtr get_shared();
 
 	public:
-		static void Connect(SQLitePtr* ptr, const std::string& path_to_db) throw(SQLiteError);
+		SQLite(const std::string& path_to_db);
 		~SQLite();
 
-		/* Closes the database connection */
+		// Closes the database connection
 		void Close();
 
-		/* Creates a new query */
-		void SQLite::NewQuery(SQLiteQueryPtr* ptr, const char* query);
+		// Creates a new query
+		std::unique_ptr<SQLiteQuery> NewQuery(const char* query);
 
 		/* Returns a pointer to the open sqlite3 database. If the database
 		 * has been closed an exception is thrown. */
-		sqlite3* GetSQLite() throw (SQLiteError);
+		sqlite3* GetSQLite();
+
+		// Gets the last error
+		const char* LastError();
 
 		friend class SQLiteQuery;
 		friend class SQLiteObject;
@@ -95,22 +90,37 @@ namespace sqlite
 
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteObject
-	// Purpose: Base class for objects returned to the user
+	// Purpose: Base class for objects returned to the user which require
+	// an associated state.
 	class SQLiteObject
 	{
 	protected:
-		SQLitePtr parent;
-
-		/* Associates the object with a "parent" so it can perform sqlite
-		 * operations*/
-		void SetParent(SQLitePtr& parent);
+		SQLite& parent;
 
 	public:
-		SQLiteObject();
+		SQLiteObject(SQLite& parent);
 		virtual ~SQLiteObject();
 
 		friend class SQLite;
 	};
+
+	//-----------------------------------------------------------------------------------------
+	// Class: SQLiteValue
+	// Purpose: Wrapper for converting types
+	struct SQLiteValue
+	{		
+		Object::unique_ptr object;
+		sqlite_types type;
+
+		SQLiteValue(const char* val);
+		SQLiteValue(const wchar_t* val);
+		SQLiteValue(int val);
+		SQLiteValue(double val);
+		SQLiteValue(BYTE* val, size_t length);
+
+		friend class SQLiteRow;
+	};
+
 
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteQuery
@@ -121,71 +131,47 @@ namespace sqlite
 		sqlite3_stmt* stmt;
 		char* query;
 
-		/* Allocates memory for and copies over the query. If there is an
-		 * existing query it is freed before copying the new one. */
+		// Allocates memory for and copies over the query. If there is an
+		// existing query it is freed
 		void copy_query(const char* new_query);
 
-		/* Prepares the statement */
-		void prepare_statement() throw(SQLiteError);
+		// Prepares the statement
+		void prepare_statement();
 		
 	public:	
 
-		SQLiteQuery(SQLitePtr& parent, const char* query) throw(SQLiteError);
+		SQLiteQuery(SQLite& parent, const char* query);
 		virtual ~SQLiteQuery();
 
-		/* Executes the statement */
-		void Execute(SQLiteResultPtr* out_result=NULL) throw(SQLiteError);
-		/* Resets the statement to use the given query */
-		void Reset(const char* query) throw(SQLiteError);
-		/* Binds values to the required parameters */
-		void BindValue(const char* name, const SQLiteValue& value) throw(SQLiteError);
-		void BindValue(int index, const SQLiteValue& value) throw(SQLiteError);
+		// Executes the statement
+		std::unique_ptr<SQLiteResult> Execute();
+
+		// Resets the statement to use the given query
+		void Reset(const char* query);
+
+		// Binds values to the required parameters
+		void BindValue(const char* name, const SQLiteValue& value);
+		void BindValue(int index, const SQLiteValue& value);
 	
 		friend class SQLite;
 	};
 
 	//-----------------------------------------------------------------------------------------
-	// Class: SQLiteValue
-	// Purpose: Represents data for exchange between program and database.
-	// Note: Values never get managed directly by SQLite and as such there
-	// is no need to track the parent.
-	class SQLiteValue : public ObjectWrap, public SQLiteObject
-	{		
-	public:
-		SQLiteValue(const char* val);
-		SQLiteValue(const wchar_t* val);
-		SQLiteValue(int val);
-		SQLiteValue(double val);
-		SQLiteValue(BYTE* val, size_t length);
-		virtual ~SQLiteValue();
-
-		friend class SQLiteRow;
-	};
-
-	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteRow
 	// Purpose: Represent a row of data returned
-	// The columns are stored in an associative map, as such access via
-	// direct indexing is O(n) and access via names is O(logn)
-	class SQLiteRow : public SQLiteObject
+	class SQLiteRow
 	{
 	private:
-		typedef std::map<std::string, SQLiteValuePtr> MapType;
-		/* data stored in the column */
-		MapType columns;
+		typedef std::pair<std::string, Object::unique_ptr> pair_t;
+		std::map<std::string, Object::unique_ptr> columns;
 
 		/* Adds data to the row */
-		void AddColumn(SQLiteValue* value, const std::string& name);
-
+		void AddColumn(Object::unique_ptr value,
+			const std::string& name);
 	public:
 
-		SQLiteRow();
-		virtual ~SQLiteRow();
-
-		SQLiteValuePtr operator [] (size_t i) throw(SQLiteError);
-		SQLiteValuePtr get(size_t i) throw(SQLiteError);
-		SQLiteValuePtr operator[] (const std::string& key) throw(SQLiteError);
-		SQLiteValuePtr get(const std::string& key) throw(SQLiteError);
+		Object& operator[] (const std::string& key);
+		Object& get(const std::string& key);
 
 		/* Returns the number of items in the row*/
 		size_t size();
@@ -197,26 +183,20 @@ namespace sqlite
 	//-----------------------------------------------------------------------------------------
 	// Class: SQLiteResult
 	// Purpose: Represent a data set returned via SELECT statements
-	class SQLiteResult : public SQLiteObject
+	class SQLiteResult
 	{
 	private: 
-		/* used to store the retrieved rows */
-		std::vector<SQLiteRowPtr> rows;
+		// used to store the retrieved rows 
+		std::vector<std::unique_ptr<SQLiteRow>> rows;
 		
-		/* Adds a new row to the result */
-		void AddRow(SQLiteRow* row);
+		// Adds a new row to the result
+		void AddRow(std::unique_ptr<SQLiteRow> row);
 		
 	public:
 
-		SQLiteResult(SQLitePtr& parent);
-		virtual ~SQLiteResult();
-
-		/* Returns the row at position i.
-		 * Note: The value returned is simply a pointer to the row object
-		 * and so any changes made to the row will be reflected in this class
-		 * too.*/
-		SQLiteRowPtr operator[] (size_t i) throw(SQLiteError);
-		SQLiteRowPtr get(size_t i) throw(SQLiteError);
+		// Returns the row at position i.
+		SQLiteRow& operator[] (size_t i);
+		SQLiteRow& get(size_t i);
 
 		size_t size();
 		friend class SQLiteQuery;

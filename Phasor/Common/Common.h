@@ -17,7 +17,8 @@ namespace Common
 		TYPE_BOOL,
 		TYPE_NUMBER,
 		TYPE_STRING,
-		TYPE_TABLE
+		TYPE_TABLE,
+		TYPE_BLOB
 	};
 
 	// String descriptions matching types in obj_type
@@ -113,26 +114,50 @@ namespace Common
 	// --------------------------------------------------------------------
 	// Class: ObjString
 	// Wrapper for a string type
-	class ObjString  : public Object
+	template <class T, class _Tc>
+	class ObjStr  : public Object
 	{
 	private:
-		char* str;
-
-		// Copies str into this object.
-		void CopyString(const char* str);
+		T str;
 
 	public:
-		ObjString(const char* str);
-		~ObjString();
+		ObjStr(const T& str) : Object(TYPE_STRING), str(str)
+		{
+		}
 
-		ObjString & operator=(const ObjString &rhs);
-		ObjString(const ObjString& other );
+		ObjStr(const ObjStr<T, _Tc>& other) : Object(TYPE_STRING)
+		{
+			str = other.str;
+		}
+
+		// Create a new, independent copy of this object.
+		virtual std::unique_ptr<Object> NewCopy() const
+		{
+			return std::unique_ptr<Object>(new ObjStr<T, _Tc>(*this));
+		}
+
+		// Return the value stored in this object
+		const _Tc* GetValue() const
+		{
+			return str.c_str();
+		}
+	};
+
+	typedef ObjStr<std::string, char> ObjString;
+	typedef ObjStr<std::wstring, wchar_t> ObjWString;
+
+	class ObjBlob : public Object
+	{
+	private:
+		std::vector<BYTE> data;
+	public:
+		ObjBlob(BYTE* data, size_t size);
+		ObjBlob(const ObjBlob& other);
+
+		BYTE* GetData(size_t& size);
 
 		// Create a new, independent copy of this object.
 		virtual std::unique_ptr<Object> NewCopy() const;
-
-		// Return the value stored in this object
-		const char* GetValue() const;
 	};
 
 	// --------------------------------------------------------------------
@@ -141,7 +166,9 @@ namespace Common
 	class ObjTable : public Object
 	{
 	private:
-		std::map<Object*, Object*> table;
+		typedef std::pair<Object::unique_ptr, Object::unique_ptr> pair_t;
+		typedef std::map<Object::unique_ptr, Object::unique_ptr> table_t;
+		table_t table;
 
 		// Copies other into this object
 		void CopyTable(const ObjTable& other);
@@ -151,7 +178,9 @@ namespace Common
 
 	public:
 		ObjTable(const std::map<std::string, std::string>& table);
-		ObjTable(std::map<Object*, Object*>& table);
+		ObjTable(const std::map<std::string, std::unique_ptr<Object>>& table);
+		ObjTable(const table_t& table);
+
 		~ObjTable();
 
 		ObjTable & operator=(const ObjTable &rhs);

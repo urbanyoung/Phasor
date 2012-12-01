@@ -1,6 +1,7 @@
 #include "Common.h"
 #include <sstream>
 #include <stdio.h>
+#include <iterator>
 
 namespace Common
 {
@@ -116,7 +117,7 @@ namespace Common
 	// --------------------------------------------------------------------
 	//
 
-	ObjString::ObjString(const char* str) : Object(TYPE_STRING)
+	/*ObjString::ObjString(const char* str) : Object(TYPE_STRING)
 	{
 		CopyString(str);
 	}
@@ -153,31 +154,70 @@ namespace Common
 	const char* ObjString::GetValue() const
 	{
 		return this->str;
+	}*/
+
+
+	// --------------------------------------------------------------------
+	//
+	ObjBlob::ObjBlob(BYTE* data, size_t size) : Object(TYPE_BLOB)
+	{
+		std::copy(data, data + size, std::back_inserter(this->data));
+	}
+
+	ObjBlob::ObjBlob(const ObjBlob& other) : Object(TYPE_BLOB)
+	{
+		this->data = other.data;
+	}
+
+	BYTE* ObjBlob::GetData(size_t& size)
+	{
+		size = data.size();
+		return data.data();
+	}
+
+	std::unique_ptr<Object> ObjBlob::NewCopy() const
+	{
+		return std::unique_ptr<Object>(new ObjBlob(*this));
 	}
 
 	// --------------------------------------------------------------------
 	//
-
-	ObjTable::ObjTable(const std::map<std::string, std::string>& table) : Object(TYPE_TABLE)
+	ObjTable::ObjTable(const std::map<std::string, std::string>& table) 
+		: Object(TYPE_TABLE)
 	{
 		using namespace std;
-		map<string, string>::const_iterator itr = table.begin();
+		auto itr = table.cbegin();
 		while (itr != table.end())
 		{
-			ObjString* key = new ObjString(itr->first.c_str());
-			ObjString* value = new ObjString(itr->second.c_str());
-			this->table.insert(pair<Object*, Object*>(key, value));
+			Object::unique_ptr key(new ObjString(itr->first.c_str()));
+			Object::unique_ptr value(new ObjString(itr->second.c_str()));
+			this->table.insert(pair_t(move(key), move(value)));
 			itr++;
 		}
 	}
 
-	ObjTable::ObjTable(std::map<Object*, Object*>& table)
+	ObjTable::ObjTable(const std::map<std::string, Object::unique_ptr>& table)
+		: Object(TYPE_TABLE)
 	{
-		this->table = table;
-		table.clear();
+		auto itr = table.cbegin();
+		while (itr != table.end())
+		{
+			Object::unique_ptr key(new ObjString(itr->first.c_str()));
+			Object::unique_ptr value(itr->second->NewCopy());
+			this->table.insert(pair_t(move(key), move(value)));
+			itr++;
+		}
 	}
 
-	ObjTable::ObjTable(const ObjTable& other) : Object(TYPE_TABLE)
+/*	ObjTable::ObjTable(const table_t& table) 
+		: Object(TYPE_TABLE)
+	{
+		//this->table = table;
+		//table.clear();
+	}*/
+
+	ObjTable::ObjTable(const ObjTable& other)
+		: Object(TYPE_TABLE)
 	{
 		CopyTable(other);
 	}
@@ -189,13 +229,7 @@ namespace Common
 
 	void ObjTable::FreeTable()
 	{
-		std::map<Object*, Object*>::iterator itr = table.begin();
-		while (itr != table.end())
-		{
-			delete itr->first;
-			delete itr->second;
-			itr = table.erase(itr);
-		}
+		table.clear();
 	}
 
 	ObjTable& ObjTable::operator=(const ObjTable &rhs)
@@ -213,13 +247,11 @@ namespace Common
 
 	void ObjTable::CopyTable(const ObjTable& other)
 	{
-		std::map<Object*, Object*>::const_iterator itr = other.table.begin();
-
+		auto itr = other.table.begin();
 		while (itr != other.table.end())
 		{
-			Object* key = itr->first->NewCopy().release();
-			Object* value = itr->second->NewCopy().release();
-			table.insert(std::pair<Object*, Object*>(key, value));
+			table.insert(pair_t(
+				itr->first->NewCopy(), itr->second->NewCopy()));
 		}
 	}
 

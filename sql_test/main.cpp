@@ -1,3 +1,4 @@
+#include <vld.h>
 #include <string>
 #include <stdio.h>
 #include "sqlitepp.h"
@@ -7,48 +8,39 @@ int main()
 	using namespace sqlite;
 	try
 	{
-		SQLitePtr sql = 0;
-		SQLite::Connect(&sql, "test.sqlite");
-
-		SQLiteQueryPtr query = NULL;
-		sql->NewQuery(&query, "CREATE TABLE IF NOT EXISTS admins("
+		SQLite sql("test.sqlite");
+		std::unique_ptr<SQLiteQuery> query =
+			sql.NewQuery("CREATE TABLE IF NOT EXISTS admins("
 			//"id INTEGER PRIMARY KEY,"
 			"id int,"
 			"username varchar(16),"
 			"password char(32), b BLOB)");
+
 		query->Execute();
 		query->Reset("INSERT INTO admins (id, username, password, b) VALUES(:id, :username, :password, :b)");
 		query->BindValue(":id", 1);
-		query->BindValue(":username", "user");
+		query->BindValue(":username", "dfgiujf");
 		query->BindValue(":password", "pass2");
 		BYTE ptr[4096] = {0};
 		query->BindValue(":b", SQLiteValue(ptr, sizeof(ptr)));
 		query->Execute();
 
-		SQLiteResultPtr result = 0;
 		query->Reset("SELECT * FROM admins");
 		printf("Executing SELECT\n");
-		query->Execute(&result);
+		std::unique_ptr<SQLiteResult> result = query->Execute();
 
 		printf("Received %i rows of data\n", result->size());
 		for (size_t x = 0; x < result->size(); x++) {
-			SQLiteRowPtr row = result->get(x);
-			for (size_t c = 0; c < row->size(); c++) {
-				SQLiteValuePtr value = row->get(c);
-				printf("%s\n", value->ToString().c_str());
-			}
-			printf("username: %s\n", (*row)["username"]->ToString().c_str());//row->get("username")->ToString().c_str());
+			SQLiteRow& row = result->get(x);
+			Common::ObjWString& username = (Common::ObjWString&)row["username"];
+			wprintf(L"username: %s\n", username.GetValue());
 		}
 	}
 	catch (SQLiteError & e)
 	{
 		printf("%s\n", e.what());
 	}
-	catch (ObjectError & e)
-	{
-		printf("%s\n", e.what());
-	}
-	
+
 	return 0;
 }
 
