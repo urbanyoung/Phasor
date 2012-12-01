@@ -88,20 +88,37 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common.cpp" />
-    <ClCompile Include="Core.cpp" />
-    <ClCompile Include="Curl.cpp" />
+    <ClCompile Include="Common\Common.cpp" />
+    <ClCompile Include="Common\FileIO.cpp" />
+    <ClCompile Include="Common\MyString.cpp" />
+    <ClCompile Include="Common\Streams.cpp" />
+    <ClCompile Include="Common\Threads.cpp" />
+    <ClCompile Include="Common\Timers.cpp" />
+    <ClCompile Include="Libraries\Curl.cpp" />
+    <ClCompile Include="Libraries\sqlitepp.cpp" />
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Phasor.cpp" />
+    <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="PhasorAPI.cpp" />
+    <ClCompile Include="Phasor\PhasorThread.cpp" />
     <ClCompile Include="Scripting.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Common.h" />
-    <ClInclude Include="Core.h" />
-    <ClInclude Include="Curl.h" />
+    <ClInclude Include="Common\Common.h" />
+    <ClInclude Include="Common\FileIO.h" />
+    <ClInclude Include="Common\MyException.h" />
+    <ClInclude Include="Common\MyString.h" />
+    <ClInclude Include="Common\Streams.h" />
+    <ClInclude Include="Common\Threads.h" />
+    <ClInclude Include="Common\Timers.h" />
+    <ClInclude Include="Common\Types.h" />
+    <ClInclude Include="Libraries\Curl.h" />
+    <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="Lua.h" />
-    <ClInclude Include="Phasor.h" />
+    <ClInclude Include="Manager.h" />
+    <ClInclude Include="PhasorAPI.h" />
+    <ClInclude Include="PhasorScript.h" />
+    <ClInclude Include="Phasor\PhasorThread.h" />
     <ClInclude Include="Scripting.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

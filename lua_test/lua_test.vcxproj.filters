@@ -52,7 +52,7 @@
     <ClCompile Include="..\Phasor\Common\Timers.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Phasor\PhasorThread.cpp">
+    <ClCompile Include="..\Phasor\Phasor\PhasorThread.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -91,7 +91,7 @@
     <ClInclude Include="..\Phasor\Common\Types.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Phasor\PhasorThread.h">
+    <ClInclude Include="..\Phasor\Phasor\PhasorThread.h">
       <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>

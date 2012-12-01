@@ -78,7 +78,7 @@
     <ClCompile Include="..\Phasor\Common\Streams.cpp" />
     <ClCompile Include="..\Phasor\Common\Threads.cpp" />
     <ClCompile Include="..\Phasor\Common\Timers.cpp" />
-    <ClCompile Include="..\Phasor\Curl.cpp" />
+    <ClCompile Include="..\Phasor\Libraries\Curl.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -90,7 +90,7 @@
     <ClInclude Include="..\Phasor\Common\Threads.h" />
     <ClInclude Include="..\Phasor\Common\Timers.h" />
     <ClInclude Include="..\Phasor\Common\Types.h" />
-    <ClInclude Include="..\Phasor\Curl.h" />
+    <ClInclude Include="..\Phasor\Libraries\Curl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

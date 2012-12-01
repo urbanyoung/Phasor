@@ -3,7 +3,7 @@
 #include <conio.h>
 #include "../Phasor/Scripting.h"
 #include "../Phasor/Common/Streams.h"
-#include "../Phasor/PhasorThread.h"
+#include "../Phasor/Phasor/PhasorThread.h"
 #include "../Phasor/Common/Timers.h"
 
 const char* script = "i = 0\n"

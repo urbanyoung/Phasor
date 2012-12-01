@@ -5,19 +5,40 @@
     <ClCompile Include="Lua.cpp">
       <Filter>Scripting\Lua</Filter>
     </ClCompile>
-    <ClCompile Include="Curl.cpp">
-      <Filter>Server\Curl</Filter>
-    </ClCompile>
-    <ClCompile Include="Common.cpp">
-      <Filter>Phasor\Common</Filter>
-    </ClCompile>
     <ClCompile Include="Scripting.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="Core.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="Common\Common.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor.cpp">
+    <ClCompile Include="Common\FileIO.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\MyString.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Streams.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Threads.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Timers.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>Scripting\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\sqlitepp.cpp">
+      <Filter>Libraries\SQLite</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\Curl.cpp">
+      <Filter>Libraries\cURL</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\PhasorThread.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -28,39 +49,75 @@
     <Filter Include="Scripting\Lua">
       <UniqueIdentifier>{c84675ec-0b57-47b5-941d-c121e818861f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server">
-      <UniqueIdentifier>{56e5980e-8bb4-4e17-8d89-9d3229ded0c6}</UniqueIdentifier>
+    <Filter Include="Common">
+      <UniqueIdentifier>{9f3ef030-3b45-4918-b148-807ef010790b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\Curl">
+    <Filter Include="Scripting\Manager">
+      <UniqueIdentifier>{e75bf6ba-31fe-4005-be76-52be7291a71b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting\PhasorAPI">
+      <UniqueIdentifier>{2ecdf623-1246-4bc4-beaf-6b7470b864cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{84ce3342-9772-488a-82b1-75bb013069a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\SQLite">
+      <UniqueIdentifier>{b79b28ae-4eac-429f-9faf-9704db66da51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\cURL">
       <UniqueIdentifier>{bda8da5b-c6fc-4c0c-8db4-b8f13e524c81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core">
-      <UniqueIdentifier>{9bd87356-e0e4-4d53-a439-725a53ed2ae6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Phasor">
-      <UniqueIdentifier>{33aed109-e7cf-4e2f-b91b-0a5057af84b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Phasor\Common">
-      <UniqueIdentifier>{b9f647b2-6887-4430-b7a0-455103332c44}</UniqueIdentifier>
+      <UniqueIdentifier>{6de8fee8-ff2e-4593-b343-5581cfec9017}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lua.h">
       <Filter>Scripting\Lua</Filter>
     </ClInclude>
-    <ClInclude Include="Curl.h">
-      <Filter>Server\Curl</Filter>
-    </ClInclude>
-    <ClInclude Include="Common.h">
-      <Filter>Phasor\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Scripting.h">
       <Filter>Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="Core.h">
-      <Filter>Core</Filter>
+    <ClInclude Include="Common\Common.h">
+      <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor.h">
+    <ClInclude Include="Common\FileIO.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MyException.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MyString.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Streams.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Threads.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Timers.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Types.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorScript.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>Scripting\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\sqlitepp.h">
+      <Filter>Libraries\SQLite</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\Curl.h">
+      <Filter>Libraries\cURL</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\PhasorThread.h">
       <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>

@@ -79,7 +79,7 @@
     <ClCompile Include="..\Phasor\Lua.cpp" />
     <ClCompile Include="..\Phasor\Manager.cpp" />
     <ClCompile Include="..\Phasor\PhasorAPI.cpp" />
-    <ClCompile Include="..\Phasor\PhasorThread.cpp" />
+    <ClCompile Include="..\Phasor\Phasor\PhasorThread.cpp" />
     <ClCompile Include="..\Phasor\Scripting.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -95,7 +95,7 @@
     <ClInclude Include="..\Phasor\Manager.h" />
     <ClInclude Include="..\Phasor\PhasorAPI.h" />
     <ClInclude Include="..\Phasor\PhasorScript.h" />
-    <ClInclude Include="..\Phasor\PhasorThread.h" />
+    <ClInclude Include="..\Phasor\Phasor\PhasorThread.h" />
     <ClInclude Include="..\Phasor\Scripting.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
 #include <windows.h>
-#include "..\Phasor\Curl.h"
+#include "../Phasor/Libraries/Curl.h"
 
 class http_post_test : public Curl::CurlHttp
 {

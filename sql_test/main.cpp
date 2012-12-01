@@ -1,14 +1,14 @@
 #include <vld.h>
 #include <string>
 #include <stdio.h>
-#include "sqlitepp.h"
+#include "../Phasor/Libraries/sqlitepp.h"
 
 int main()
 {
 	using namespace sqlite;
 	try
 	{
-		SQLite sql("test.sqlite");
+		SQLite sql("test45.sqlite");
 		std::unique_ptr<SQLiteQuery> query =
 			sql.NewQuery("CREATE TABLE IF NOT EXISTS admins("
 			//"id INTEGER PRIMARY KEY,"

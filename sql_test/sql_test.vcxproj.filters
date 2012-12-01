@@ -24,9 +24,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sqlitepp.cpp">
-      <Filter>SQLite</Filter>
-    </ClCompile>
     <ClCompile Include="..\Phasor\Common\Common.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -45,11 +42,11 @@
     <ClCompile Include="..\Phasor\Common\Timers.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\Phasor\Libraries\sqlitepp.cpp">
+      <Filter>SQLite</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sqlitepp.h">
-      <Filter>SQLite</Filter>
-    </ClInclude>
     <ClInclude Include="..\Phasor\Common\Common.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -73,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="..\Phasor\Common\Types.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Phasor\Libraries\sqlitepp.h">
+      <Filter>SQLite</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
