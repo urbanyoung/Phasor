@@ -41,6 +41,9 @@
     <ClCompile Include="Phasor\PhasorThread.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Logging.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -118,6 +121,9 @@
       <Filter>Libraries\cURL</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\PhasorThread.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Logging.h">
       <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>

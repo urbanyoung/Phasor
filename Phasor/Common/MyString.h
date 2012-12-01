@@ -24,11 +24,18 @@ std::wstring m_swprintf(const wchar_t* _Format, ...);
 	str = FormatVarArgsW(marker, ArgList); \
 	va_end(ArgList);
 
+//
 // Tokenization functions
-std::vector<std::string> TokenizeCommand(const std::string& str);
+// -----------------------------------------------------------------------
+
+// Tokenize a string into its constituent arguments, an argument
+// ends at a space unless within ' or " in which case it ends at the
+// next escaping ' or ".
+std::vector<std::string> TokenizeArgs(const std::string& in);
+std::vector<std::wstring> TokenizeWArgs(const std::wstring& in);
 
 template <class T>
-std::vector<T> _TokenizeString(const T& str, const T& delim)
+std::vector<T> Tokenize(const T& str, const T& delim)
 {
 	// http://www.gamedev.net/community/forums/topic.asp?topic_id=381544#TokenizeString
 	std::vector<T> tokens;

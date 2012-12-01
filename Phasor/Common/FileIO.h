@@ -20,6 +20,9 @@ namespace NDirectory
 
 	// Strip the file name, and extension, from the given path
 	void StripFile(const std::wstring& path);
+
+	// Gets if the specified path points to a valid directory
+	bool IsDirectory(const std::wstring& path);
 }
 
 class CFile

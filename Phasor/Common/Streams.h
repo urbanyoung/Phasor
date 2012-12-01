@@ -89,27 +89,3 @@ public:
 
 	virtual bool Write(const std::wstring& str);
 };
-
-// Output to a log file which is only opened when writing to it.
-// .log extension is used
-class CLoggingStream : public COutStream
-{
-private:
-	std::wstring moveDirectory; // directory to move file to
-	std::wstring filePath; // path to file inclusive of name and extension
-	std::wstring fileName; //  name of file (no path info, no extension)
-
-	DWORD byteSize; // max size for file
-	DWORD errorOffset; // increases when moving the file fails
-
-	// Check if the file should be moved.
-	void CheckAndMove(DWORD curSize, const SYSTEMTIME& st);
-
-	virtual bool Write(const std::wstring& str);
-
-public:
-	CLoggingStream(const std::wstring& file);
-	virtual ~CLoggingStream();
-
-	void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);	
-};

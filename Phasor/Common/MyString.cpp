@@ -69,48 +69,62 @@ std::string m_sprintf(const char *fmt, ...)
 	return str;
 }
 
-// Tokenize a string at spaces/quotation blocks
-std::vector<std::string> TokenizeCommand(const std::string& str)
+// Get the substring ending at the next occurrence of c.
+// start is the position (inclusive) where to start searching from.
+// end is the position after the next occurrence, or npos if none.
+template <class T, class _Tc>
+T GetStringEndingAtNext(const T& input, _Tc c, size_t start, size_t& end)
 {
-	std::vector<std::string> tokens;
-	size_t len = str.size();
+	size_t found = input.find_first_of(c, start);
+	T out = input.substr(start, found - start);
+	end = found == input.npos ? input.npos : found + 1;
+	return out;
+}
 
-	if (len) {
-		bool inQuote = false, data = false;
-		std::stringstream curToken;
+std::vector<std::string> TokenizeArgs(const std::string& in)
+{
+	using namespace std;
+	vector<string> out;
+	const string tofind = "\"' "; // " ' or space
 
-		for (size_t i = 0; i < len; i++) {
-			if (str[i] == '"') {
-				// If there's currently data save it
-				if (data) {
-					tokens.push_back(curToken.str());
-					curToken.clear();
-					data = false;
-				}
-				inQuote = !inQuote;
-				continue;
-			}
-
-			// If in quote append data regardless of what it is
-			if (inQuote) {
-				curToken << str[i];
-				data = true;
-			}
-			else {
-				if (str[i] == ' ' && data) {
-					tokens.push_back(curToken.str());
-					curToken.clear();
-					data = false;
-				}
-				else {
-					curToken << str[i];
-					data = true;
-				}
-			}
+	size_t curpos = 0;
+	while (curpos != in.npos)
+	{
+		curpos = in.find_first_not_of(' ', curpos);
+		if (curpos == in.npos) break;
+		size_t nextpos = in.find_first_of(tofind, curpos);
+		if (nextpos == in.npos) { // no more matches, copy everything.
+			out.push_back(in.substr(curpos, in.npos));
+			break;
 		}
-
-		if (data) tokens.push_back(curToken.str());
+		char c = in.at(nextpos);
+		size_t startfrom = c == ' ' ? curpos : curpos + 1;
+		string token = GetStringEndingAtNext<string, char>(in, c, startfrom, curpos);	
+		if (token.size()) out.push_back(token);
 	}
+	return out;
+}
 
-	return tokens;
+std::vector<std::wstring> TokenizeWArgs(const std::wstring& in)
+{
+	using namespace std;
+	vector<wstring> out;
+	const wstring tofind = L"\"' "; // " ' or space
+
+	size_t curpos = 0;
+	while (curpos != in.npos)
+	{
+		curpos = in.find_first_not_of(' ', curpos);
+		if (curpos == in.npos) break;
+		size_t nextpos = in.find_first_of(tofind, curpos);
+		if (nextpos == in.npos) { // no more matches, copy everything.
+			out.push_back(in.substr(curpos, in.npos));
+			break;
+		}
+		wchar_t c = in.at(nextpos);
+		size_t startfrom = c == ' ' ? curpos : curpos + 1;
+		wstring token = GetStringEndingAtNext<wstring, wchar_t>(in, c, startfrom, curpos);	
+		if (token.size()) out.push_back(token);
+	}
+	return out;
 }

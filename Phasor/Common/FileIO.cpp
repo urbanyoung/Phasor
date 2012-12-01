@@ -48,6 +48,15 @@ namespace NDirectory
 		if (fileStart == path.npos) return;
 		path = path.substr(0, fileStart);
 	}
+
+	bool IsDirectory(const std::wstring& path)
+	{
+		DWORD dwAttributes = GetFileAttributesW(path.c_str());
+
+		return dwAttributes != INVALID_FILE_ATTRIBUTES && 
+			dwAttributes & FILE_ATTRIBUTE_DIRECTORY;
+	}
+
 }
 
 CFile::CFile() : hFile(INVALID_HANDLE_VALUE)
