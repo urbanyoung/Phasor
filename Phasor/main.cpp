@@ -1,56 +1,65 @@
 #include <windows.h>
 #include <stdio.h>
 #include "Phasor/Logging.h"
+#include "Phasor/Directory.h"
 #include "Scripting.h"
-#include "Common/MyString.h"
-#include "Common/FileIO.h"
 
 std::unique_ptr<CLoggingStream> g_ScriptsLog;
+std::unique_ptr<CLoggingStream> g_PhasorLog;
 
-void ParseCommandLine(const std::wstring& input,
-	std::wstring& dataPath, std::wstring& mapPath);
-
-// Entry point
-BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
-{
-	if (dwReason == DLL_PROCESS_ATTACH)
-	{
-		// Disable calls for DLL_THREAD_ATTACH and DLL_THREAD_DETACH
-		DisableThreadLibraryCalls(hModule);
-	}
-
-	return TRUE;
-}
+// Locate and create all directories Phasor will use. If an error occurs
+// this function never returns and the process is terminated.
+void LocateDirectories();
 
 // Called when the dll is loaded
-extern "C" __declspec(dllexport) void OnLoad()
+//extern "C" __declspec(dllexport) void OnLoad()
+int main()
 {
-	// probably won't be able to save the log (can't write to program files)
-	// but oh well.
-	CLoggingStream earlyerror(L"earlyerror");
+	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
+	LocateDirectories();
+
+	try
+	{
+		g_PhasorLog.reset(new CLoggingStream(g_LogsDirectory, L"PhasorLog"));
+		//CLoggingStream g_PhasorLog(g_LogsDirectory, L"PhasorLog");
+		*g_PhasorLog << "test" << endl;
+	}
+	catch (...)
+	{
+
+	}
+	
+}
+
+class CEarlyError : public CLoggingStream
+{
+private:
+	virtual bool Write(const std::wstring& str)
+	{
+		wprintf(L"%s\n", str.c_str());
+		CLoggingStream::Write(str);
+		Sleep(10000);
+		exit(1);
+		return true; // no return
+	}
+
+public:
+	CEarlyError (const std::wstring& file)
+		: CLoggingStream(file)
+	{
+	}
+
+	virtual ~CEarlyError() {}
+};
+
+// Locate and create all directories Phasor will use. If an error occurs
+// this function never returns and the process is terminated.
+void LocateDirectories()
+{
+	CEarlyError earlyerror(L"earlyerror");
 	try 
 	{
-		//using namespace Common;
-		printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
-
-		std::wstring dataPath, mapPath;
-		ParseCommandLine(GetCommandLineW(), dataPath, mapPath);
-	
-		throw std::exception("sad face");
-		//g_ScriptsLog(new CLoggingStream(
-
-	/*	if (!Phasor::SetupDirectories()) {
-			std::string last_err;
-			GetLastErrorAsText(last_err);
-			printf("Phasor was unable to setup the required directories\n");
-			printf("LastError details: %s\n", last_err.c_str());
-			return;
-		}*/
-	}
-	catch (std::bad_alloc&)
-	{
-		earlyerror << L"Phasor was unable to load because sufficient memory wasn't available"
-			<< endl;
+		SetupDirectories();
 	}
 	catch (std::exception & e)
 	{
@@ -63,24 +72,14 @@ extern "C" __declspec(dllexport) void OnLoad()
 	}
 }
 
-void ParseCommandLine(const std::wstring& commandline, // first is exe name
-	std::wstring& dataPath, std::wstring& mapPath)
+// Windows entry point
+/*BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
 {
-	using namespace std;
-	vector<wstring> tokens = TokenizeWArgs(commandline);
-	if (tokens.size() < 2)	return;
-
-	for (size_t x = 1; x < tokens.size(); x++) {
-		if (x + 1 < tokens.size()) {
-			if (tokens[x] == L"-path") {
-				NDirectory::NormalizeDirectory(tokens[x+1]);
-				if (NDirectory::IsDirectory(tokens[x+1])) dataPath = tokens[x+1];
-				x++;
-			} else if (tokens[x] == L"-mappath") {
-				NDirectory::NormalizeDirectory(tokens[x+1]);
-				if (NDirectory::IsDirectory(tokens[x+1])) mapPath = tokens[x+1];
-				x++;
-			}
-		}
+	if (dwReason == DLL_PROCESS_ATTACH)
+	{
+		// Disable calls for DLL_THREAD_ATTACH and DLL_THREAD_DETACH
+		DisableThreadLibraryCalls(hModule);
 	}
-}
+
+	return TRUE;
+}*/

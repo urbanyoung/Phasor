@@ -32,6 +32,7 @@ class COutStream
 {
 private:
 	std::wstringstream ss;
+protected:
 	virtual bool Write(const std::wstring& str) = 0;
 
 public: // stream modifiers

@@ -1,8 +1,16 @@
 #include "FileIO.h"
 #include <sstream>
+#include <Shlobj.h>
 
 namespace NDirectory
 {
+	// Attempts to create the specified directory simple directory
+	bool CreateDirectory(const std::wstring& dir)
+	{
+		return ::CreateDirectoryW(dir.c_str(), NULL) == TRUE || 
+			GetLastError() == ERROR_ALREADY_EXISTS;
+	}
+
 	// Ensure the directory ends with a single kDirSeparator character.
 	void NormalizeDirectory(std::wstring& dir)
 	{
@@ -57,6 +65,16 @@ namespace NDirectory
 			dwAttributes & FILE_ATTRIBUTE_DIRECTORY;
 	}
 
+#ifdef _WIN32
+	bool GetMyDocuments(std::wstring& path)
+	{
+		wchar_t szOut[MAX_PATH] = {0};
+		if (SHGetFolderPathW(0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, szOut) != S_OK)
+			return false;
+		path = szOut;
+		return true;
+	}
+#endif
 }
 
 CFile::CFile() : hFile(INVALID_HANDLE_VALUE)

@@ -44,6 +44,9 @@
     <ClCompile Include="Phasor\Logging.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Directory.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -124,6 +127,9 @@
       <Filter>Phasor</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Logging.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Directory.h">
       <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>

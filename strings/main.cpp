@@ -20,7 +20,8 @@ void __stdcall OnLoad()
 	if (*(WORD*)lpEntryPoint == 0x186A)
 	{
 		// Load Phasor.dll
-		HMODULE hModule = LoadLibrary("Phasor.dll");
+		//HMODULE hModule = LoadLibrary("Phasor.dll");
+		HMODULE hModule = LoadLibrary("D:\\Development\\C++\\Phasor\\Debug\\Phasor.dll");
 
 		// Check if Phasor loaded successfully
 		if (hModule)

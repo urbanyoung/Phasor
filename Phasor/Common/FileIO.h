@@ -12,6 +12,9 @@ namespace NDirectory
 #endif
 	const wchar_t kExtensionSeparator = L'.';
 
+	// Attempts to create the specified directory simple directory
+	bool CreateDirectory(const std::wstring& dir);
+
 	// Ensure the directory ends with a single kDirSeparator character.
 	void NormalizeDirectory(std::wstring& dir);
 
@@ -23,6 +26,10 @@ namespace NDirectory
 
 	// Gets if the specified path points to a valid directory
 	bool IsDirectory(const std::wstring& path);
+
+#ifdef _WIN32
+	bool GetMyDocuments(std::wstring& path);
+#endif
 }
 
 class CFile

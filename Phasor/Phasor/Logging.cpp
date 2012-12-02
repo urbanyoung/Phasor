@@ -3,10 +3,21 @@
 
 // ----------------------------------------------------------------------
 //
-CLoggingStream::CLoggingStream(const std::wstring& file) : filePath(file + L".log"),
-	byteSize(0), errorOffset(0)
+void CLoggingStream::Initialize(const std::wstring& file)
 {
+	byteSize = 0;
+	errorOffset = 0;
+	filePath = file + L".log";
 	NDirectory::GetFileName(filePath, fileName);
+}
+CLoggingStream::CLoggingStream(const std::wstring& dir, const std::wstring& file)
+{
+	Initialize(dir + file);
+}
+
+CLoggingStream::CLoggingStream(const std::wstring& file)
+{
+	Initialize(file);
 }
 
 CLoggingStream::~CLoggingStream()
