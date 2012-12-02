@@ -61,9 +61,11 @@ void ParseCommandLine(const std::wstring& commandline, // first is exe name
 	for (size_t x = 1; x < tokens.size(); x++) {
 		if (x + 1 < tokens.size()) {
 			if (tokens[x] == L"-path") {
+				NDirectory::NormalizeDirectory(tokens[x+1]);
 				if (NDirectory::IsDirectory(tokens[x+1])) dataPath = tokens[x+1];
 				x++;
 			} else if (tokens[x] == L"-mappath") {
+				NDirectory::NormalizeDirectory(tokens[x+1]);
 				if (NDirectory::IsDirectory(tokens[x+1])) mapPath = tokens[x+1];
 				x++;
 			}

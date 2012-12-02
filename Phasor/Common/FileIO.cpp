@@ -4,7 +4,7 @@
 
 namespace NDirectory
 {
-	// Attempts to create the specified directory simple directory
+	// Attempts to create the specified simple directory
 	bool CreateDirectory(const std::wstring& dir)
 	{
 		return ::CreateDirectoryW(dir.c_str(), NULL) == TRUE || 
