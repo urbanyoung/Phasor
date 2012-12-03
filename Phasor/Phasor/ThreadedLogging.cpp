@@ -31,7 +31,8 @@ CThreadedLogging::~CThreadedLogging()
 	if (id != NULL)
 	{
 		thread.RemoveAuxEvent(id);
-		Lock _(cs); // make sure aux thread is done (don't reorder)
+		id = NULL;
+		// Lock _(cs); not needed
 	}
 	
 	DeleteCriticalSection(&cs);
