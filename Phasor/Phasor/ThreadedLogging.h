@@ -11,10 +11,12 @@ private:
 	CRITICAL_SECTION cs;
 	DWORD id;
 	PhasorThread& thread;
-	std::list<std::wstring> lines;
+	typedef std::list<std::wstring> lines_t;
+	lines_t* lines;
 
 	void Initialize();
-	void LogLinesLocked();
+	void LogLinesAndCleanup(lines_t* data);
+	void AllocateLines();
 
 protected:
 	virtual bool Write(const std::wstring& str);

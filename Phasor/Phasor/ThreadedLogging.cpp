@@ -4,6 +4,7 @@ void CThreadedLogging::Initialize()
 {
 	InitializeCriticalSection(&cs);
 	id = NULL;
+	AllocateLines();
 }
 
 CThreadedLogging::CThreadedLogging(const std::wstring& file, PhasorThread& thread)
@@ -29,24 +30,30 @@ CThreadedLogging::~CThreadedLogging()
 {
 	if (id) thread.RemoveAuxEvent(id);
 	DeleteCriticalSection(&cs);
-	LogLinesLocked();
+	LogLinesAndCleanup(lines);
 }
 
-void CThreadedLogging::LogLinesLocked()
+void CThreadedLogging::AllocateLines()
+{
+	lines = new lines_t();
+}
+
+void CThreadedLogging::LogLinesAndCleanup(lines_t* data)
 {
 	// Attempt to write each line
-	auto itr = lines.begin();
-	while (itr != lines.end())
+	auto itr = data->begin();
+	while (itr != data->end())
 	{
 		CLoggingStream::Write(*itr);
-		itr = lines.erase(itr);
+		itr = data->erase(itr);
 	}
+	delete data;
 }
 
 bool CThreadedLogging::Write(const std::wstring& str)
 {
 	Lock _(cs);
-	lines.push_back(str);
+	lines->push_back(str);
 
 	if (id == NULL) {		
 		id = thread.InvokeInAux(std::unique_ptr<PhasorThreadEvent>
@@ -62,7 +69,15 @@ CLogThreadEvent::CLogThreadEvent(CThreadedLogging& owner) : owner(owner),
 
 void CLogThreadEvent::OnEventAux(PhasorThread&)
 {
-	Lock _(owner.cs);
-	owner.LogLinesLocked();
-	owner.id = NULL;
+	// copy the lines to save, then release the lock so the main thread
+	// isn't waiting for IO if it needs to log other data
+	CThreadedLogging::lines_t* lines;
+	{
+		Lock _(owner.cs);
+		lines = owner.lines;
+		owner.AllocateLines();
+		owner.id = NULL;
+	} // lock released here
+	
+	owner.LogLinesAndCleanup(lines);
 }
