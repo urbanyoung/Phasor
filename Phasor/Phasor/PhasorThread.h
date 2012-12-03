@@ -61,7 +61,7 @@ private:
 	void SetReinvoke(event_dest_t dest);
 	
 	// Adds an event to the specified list
-	void AddEvent(event_dest_t dest, std::unique_ptr<PhasorThreadEvent>& e);
+	DWORD AddEvent(event_dest_t dest, std::unique_ptr<PhasorThreadEvent>& e);
 
 	// Processes any required events in the specified thread. A lock for
 	// the lists should have been obtained before calling.
@@ -77,8 +77,12 @@ public:
 	// Process events
 	void ProcessEvents(bool block=false, bool main=true);
 
-	void InvokeInMain(std::unique_ptr<PhasorThreadEvent> e);
-	void InvokeInAux(std::unique_ptr<PhasorThreadEvent> e);
+	// Value returned is the event id (used in removing)
+	DWORD InvokeInMain(std::unique_ptr<PhasorThreadEvent> e);
+	DWORD InvokeInAux(std::unique_ptr<PhasorThreadEvent> e);
+
+	// Removes the specified timer
+	void RemoveAuxEvent(DWORD id);
 
 	// Thread entry point
 	int thread_main();

@@ -70,7 +70,7 @@ class CInFile : public CFile
 class COutFile : public CFile
 {
 private:
-	static const int kWriteSize = 1 << 15; // 32kb
+	static const int kWriteSize = 1 << 20; // 1 MB
 
 public:
 	COutFile();

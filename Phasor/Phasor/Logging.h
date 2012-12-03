@@ -15,7 +15,7 @@ private:
 	DWORD byteSize; // max size for file
 	DWORD errorOffset; // increases when moving the file fails
 
-	void Initialize(const std::wstring& file);
+	void Initialize(const std::wstring& file, bool extension=true);
 
 	// Check if the file should be moved.
 	void CheckAndMove(DWORD curSize, const SYSTEMTIME& st);
@@ -26,9 +26,8 @@ protected:
 public:
 	CLoggingStream(const std::wstring& dir, const std::wstring& file);
 	CLoggingStream(const std::wstring& file);
+	CLoggingStream(const CLoggingStream& other);
 	virtual ~CLoggingStream();
 
 	void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);	
 };
-
-

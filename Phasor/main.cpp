@@ -1,11 +1,16 @@
 #include <windows.h>
 #include <stdio.h>
 #include "Phasor/Logging.h"
+#include "Phasor/ThreadedLogging.h"
 #include "Phasor/Directory.h"
 #include "Scripting.h"
 
-std::unique_ptr<CLoggingStream> g_ScriptsLog;
-std::unique_ptr<CLoggingStream> g_PhasorLog;
+#define WAIT_AND_QUIT Sleep(10000); exit(1);
+
+// Globals through Phasor's lifetime
+std::unique_ptr<CThreadedLogging> g_ScriptsLog;
+std::unique_ptr<CThreadedLogging> g_PhasorLog;
+PhasorThread thread;
 
 // Locate and create all directories Phasor will use. If an error occurs
 // this function never returns and the process is terminated.
@@ -18,17 +23,41 @@ int main()
 	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
 	LocateDirectories();
 
+	CLoggingStream PhasorLog(g_LogsDirectory, L"PhasorLog");
+
 	try
 	{
-		g_PhasorLog.reset(new CLoggingStream(g_LogsDirectory, L"PhasorLog"));
-		//CLoggingStream g_PhasorLog(g_LogsDirectory, L"PhasorLog");
+		PhasorLog << L"Initializing Phasor ... " << endl;
+				
+		if (!thread.run()) {
+			throw std::exception("Cannot start the auxillary thread.");
+		}
+
+		PhasorLog << L"Phasor was successfully initialized." << endl;
+
+		// We want threaded logging from now on
+		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, thread));
 		*g_PhasorLog << "test" << endl;
+	}
+	catch (std::exception& e)
+	{
+		PhasorLog << "Phasor cannot be loaded because : " <<  e.what() << endl;
+		printf("Phasor cannot be loaded because : %s\n", e.what());
+		WAIT_AND_QUIT
 	}
 	catch (...)
 	{
-
+		static const std::wstring err = L"An unknown error occurred which prevented Phasor from loading";
+		PhasorLog << err << endl;
+		wprintf(L"%s\n", err.c_str());
+		WAIT_AND_QUIT
 	}
-	
+
+	thread.close();
+
+	while (!thread.has_closed()) {
+		Sleep(10);
+	}	
 }
 
 class CEarlyError : public CLoggingStream
@@ -38,8 +67,7 @@ private:
 	{
 		wprintf(L"%s\n", str.c_str());
 		CLoggingStream::Write(str);
-		Sleep(10000);
-		exit(1);
+		WAIT_AND_QUIT
 		return true; // no return
 	}
 

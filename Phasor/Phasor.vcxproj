@@ -103,6 +103,7 @@
     <ClCompile Include="Phasor\Directory.cpp" />
     <ClCompile Include="Phasor\Logging.cpp" />
     <ClCompile Include="Phasor\PhasorThread.cpp" />
+    <ClCompile Include="Phasor\ThreadedLogging.cpp" />
     <ClCompile Include="Scripting.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +124,7 @@
     <ClInclude Include="Phasor\Directory.h" />
     <ClInclude Include="Phasor\Logging.h" />
     <ClInclude Include="Phasor\PhasorThread.h" />
+    <ClInclude Include="Phasor\ThreadedLogging.h" />
     <ClInclude Include="Scripting.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

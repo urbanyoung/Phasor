@@ -1,5 +1,7 @@
 #include "PhasorThread.h"
 
+#define EVENT_ID(x) (DWORD)&*x
+
 // ------------------------------------------------------------------------
 PhasorThreadEvent::PhasorThreadEvent(DWORD dwDelay)
 {
@@ -46,8 +48,8 @@ bool PhasorThreadEvent::ready(DWORD dwCurTicks) const
 }
 
 // ------------------------------------------------------------------------
-PhasorThread::PhasorThread() : dwPhasorThreadId(NULL), dwMainThreadId(NULL),
-	reinvoke_in(DEST_NONE)	
+PhasorThread::PhasorThread() : Thread(), 
+	dwPhasorThreadId(NULL), dwMainThreadId(NULL), reinvoke_in(DEST_NONE)	
 {
 	InitializeCriticalSection(&cs);
 }
@@ -64,17 +66,20 @@ void PhasorThread::SetReinvoke(event_dest_t dest)
 }
 
 // Adds an event to the specified list
-void PhasorThread::AddEvent(event_dest_t dest, std::unique_ptr<PhasorThreadEvent>& e)
+DWORD PhasorThread::AddEvent(event_dest_t dest, std::unique_ptr<PhasorThreadEvent>& e)
 {
 	Lock _(cs);
 	eventlist_t* eventList = NULL;
 	if (dest == DEST_MAIN) eventList = &mainEvents;
 	else eventList = &auxEvents;
 
+	DWORD id = EVENT_ID(e);
 	// was going to keep list sorted based on expiry time, but no
 	// point.. will never have many events at once. plus most won't
 	// have an expiry time
 	eventList->push_back(std::move(e));	
+
+	return id;
 }		
 
 // Processes any required events in the specified thread. A lock for
@@ -119,6 +124,8 @@ void PhasorThread::ProcessEventsLocked(event_dest_t dest)
 // This will only be called from the main thread
 bool PhasorThread::run()
 {
+	auxEvents.clear();
+	mainEvents.clear();
 	dwMainThreadId = GetCurrentThreadId();
 	return Thread::run();
 }
@@ -136,14 +143,27 @@ void PhasorThread::ProcessEvents(bool block, bool main)
 	}
 }
 
-void PhasorThread::InvokeInMain(std::unique_ptr<PhasorThreadEvent> e)
+DWORD PhasorThread::InvokeInMain(std::unique_ptr<PhasorThreadEvent> e)
 {
-	AddEvent(DEST_MAIN, e);
+	return AddEvent(DEST_MAIN, e);
 }
 
-void PhasorThread::InvokeInAux(std::unique_ptr<PhasorThreadEvent> e)
+DWORD PhasorThread::InvokeInAux(std::unique_ptr<PhasorThreadEvent> e)
 {
-	AddEvent(DEST_AUX, e);
+	return AddEvent(DEST_AUX, e);
+}
+
+void PhasorThread::RemoveAuxEvent(DWORD id)
+{
+	Lock _(cs);
+	auto itr = auxEvents.begin();
+	while (itr != auxEvents.end())
+	{
+		if (EVENT_ID(*itr) == id) {
+			itr = auxEvents.erase(itr);
+			//break; // remove all events with this id
+		} else itr++;
+	}
 }
 
 // Thread entry point
@@ -166,6 +186,7 @@ int PhasorThread::thread_main()
 	{
 		ProcessEvents(true, false);
 	}
+	ProcessEvents(true, false); // make sure all events are done
 
 	return 0;
 }
