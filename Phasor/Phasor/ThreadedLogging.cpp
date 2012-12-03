@@ -28,7 +28,12 @@ CThreadedLogging::CThreadedLogging(const CLoggingStream& stream, PhasorThread& t
 
 CThreadedLogging::~CThreadedLogging()
 {
-	if (id) thread.RemoveAuxEvent(id);
+	if (id != NULL)
+	{
+		thread.RemoveAuxEvent(id);
+		Lock _(cs); // make sure aux thread is done (don't reorder)
+	}
+	
 	DeleteCriticalSection(&cs);
 	LogLinesAndCleanup(lines);
 }
@@ -55,7 +60,7 @@ bool CThreadedLogging::Write(const std::wstring& str)
 	Lock _(cs);
 	lines->push_back(str);
 
-	if (id == NULL) {		
+	if (id == NULL) { // no event running, so can't deadlock
 		id = thread.InvokeInAux(std::unique_ptr<PhasorThreadEvent>
 			(new CLogThreadEvent(*this)));
 	}
