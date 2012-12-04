@@ -5,8 +5,10 @@
 #include "Phasor/ThreadedLogging.h"
 #include "Phasor/Directory.h"
 #include "Scripting.h"
+#include "Phasor/Commands.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
+//#define WAIT_AND_QUIT Sleep(10000); return 1;
 
 // Globals through Phasor's lifetime
 PhasorThread thread; // must be above all other objects
@@ -17,6 +19,9 @@ std::unique_ptr<CPhasorLog> g_PhasorLog;
 // this function never returns and the process is terminated.
 void LocateDirectories();
 
+// Process any early Phasor commands.
+void LoadEarlyInit(COutStream& out);
+
 // Called when the dll is loaded
 //extern "C" __declspec(dllexport) void OnLoad()
 int main()
@@ -24,20 +29,30 @@ int main()
 	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
 	LocateDirectories();
 
+	// can't rename phasor log for startup errors via earlyinit
 	CLoggingStream PhasorLog(g_LogsDirectory, L"PhasorLog");
 
 	try
 	{
-		PhasorLog << L"Initializing Phasor ... " << endl;
-				
+		PhasorLog << L"Initializing Phasor ... " << endl;				
+
 		if (!thread.run()) {
-			throw std::exception("cannot start the auxillary thread.");
+			throw std::exception("cannot start the auxiliary thread.");
 		}
+
+		// Initialize the other logs
+		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, thread));
+		g_ScriptsLog.reset(new CThreadedLogging(
+			g_LogsDirectory, L"ScriptsLog", thread));
+
+		PhasorLog << L"Processing earlyinit.txt" << endl;
+
+		LoadEarlyInit(PhasorLog);
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 
 		// We want threaded logging from now on
-		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, thread));
+		//g_PhasorLog.reset(new CThreadedLogging(PhasorLog, thread));
 		*g_PhasorLog << "test" << endl;
 	}
 	catch (std::exception& e)
@@ -69,12 +84,12 @@ private:
 		wprintf(L"%s\n", str.c_str());
 		CLoggingStream::Write(str);
 		WAIT_AND_QUIT
-		return true; // no return
+			return true; // no return
 	}
 
 public:
 	CEarlyError (const std::wstring& file)
-		: CLoggingStream(file)
+		: CLoggingStream(L"", file)
 	{
 	}
 
@@ -99,6 +114,17 @@ void LocateDirectories()
 	{
 		earlyerror << "An unknown error occurred which prevented Phasor from loading" << endl;
 	}
+}
+
+void LoadEarlyInit(COutStream& out)
+{
+	CInFile file;
+	if (!file.Open(L"earlyinit.txt"))
+		return; // may not exist
+
+	char line[4096];
+	while (file.ReadLine<char>(line, NELEMS(line), NULL))
+		ProcessCommand(line, out);
 }
 
 // Windows entry point

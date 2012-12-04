@@ -54,6 +54,10 @@ public:
 	COutStream & operator<<(DWORD number);
 	COutStream & operator<<(int number);
 	COutStream & operator<<(double number);
+
+	// Print using c-style functions, flushed after each call.
+	void printf(const char* format, ...);
+	void wprintf(const wchar_t* format, ...);
 };
 
 class NoFlush

@@ -82,6 +82,27 @@ COutStream & COutStream::operator<<(double number)
 	return *this;
 }
 
+void COutStream::printf(const char* format, ...)
+{
+	va_list ArgList;
+	va_start(ArgList, format);
+	std::string str = FormatVarArgs(format, ArgList);
+	va_end(ArgList);
+	*this << str;
+	if (!no_flush) Flush();
+}
+
+void COutStream::wprintf(const wchar_t* format, ...)
+{
+	va_list ArgList;
+	va_start(ArgList, format);
+	std::wstring str = FormatVarArgsW(format, ArgList);
+	va_end(ArgList);
+	*this << str;
+	if (!no_flush) Flush();
+
+}
+
 // -----------------------------------------------------------------------
 COutFileStream::COutFileStream()
 {

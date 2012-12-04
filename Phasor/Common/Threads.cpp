@@ -99,7 +99,7 @@ bool Thread::run()
 	if (ResumeThread(h_thread) == -1) 
 		return ForceCleanup();
 
-	DWORD status = WaitForSingleObject(h_createEvent, 10000);
+	DWORD status = WaitForSingleObject(h_createEvent, 5000);
 	CleanupHandle(h_createEvent);
 
 	if (status != WAIT_OBJECT_0)

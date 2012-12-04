@@ -6,23 +6,12 @@
 
 std::string NarrowString(const std::wstring& wide);
 std::wstring WidenString(const std::string& narrow);
+void ToLowercase(std::string& str);
 
 std::string FormatVarArgs(const char* fmt, va_list marker);
 std::wstring FormatVarArgsW(const wchar_t* fmt, va_list marker);
 std::string m_sprintf(const char* _Format, ...);
 std::wstring m_swprintf(const wchar_t* _Format, ...);
-
-#define FORMATARGS(str, marker) \
-	va_list ArgList; \
-	va_start(ArgList, marker); \
-	str = FormatVarArgs(marker, ArgList); \
-	va_end(ArgList);
-
-#define FORMATARGSW(str, marker) \
-	va_list ArgList; \
-	va_start(ArgList, marker); \
-	str = FormatVarArgsW(marker, ArgList); \
-	va_end(ArgList);
 
 //
 // Tokenization functions

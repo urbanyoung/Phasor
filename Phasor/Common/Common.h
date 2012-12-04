@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <windows.h>
 #include <string>
 #include <vector>
@@ -202,9 +201,6 @@ namespace Common
 	std::vector<DWORD> FindSignature(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0);
 	DWORD FindAddress(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0, DWORD dwIndex = 0, DWORD dwOffset = 0);
 	BOOL CreateCodeCave(DWORD dwAddress, BYTE cbSize, VOID (*pFunction)());
-
-	// Format strings
-	
 		
 	// --------------------------------------------------------------------
 	//

@@ -145,15 +145,53 @@ DWORD CFile::GetFileSize()
 	return size == INVALID_FILE_SIZE ? 0 : size;
 }
 
-bool CFile::Seek(DWORD distance)
+bool CFile::Seek(long distance)
 {
 	if (!IsOpen()) return false;
 	return SetFilePointer(hFile, distance,0,FILE_CURRENT) == INVALID_SET_FILE_POINTER;
 }
 
 // ------------------------------------------------------------------------
+//
 
+CInFile::CInFile()
+{
+}
 
+CInFile::~CInFile()
+{
+}
+
+bool CInFile::Open(const std::wstring& file)
+{
+	return CFile::Open(file, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
+}
+
+bool CInFile::ReadSome(BYTE* data, DWORD size, DWORD* processedSize)
+{
+	if (!IsOpen()) return false;
+	DWORD to_read = size > kReadSize ? kReadSize : size;
+	return ReadFile(hFile, data, to_read, processedSize, NULL) == TRUE;
+}
+
+bool CInFile::Read(BYTE* data, DWORD size, DWORD* processedSize)
+{
+	*processedSize = 0;
+	while (size > 0)
+	{
+		DWORD read = 0;
+		bool result = ReadSome(data, size, &read);
+		if (read == 0) return false; // could be eof
+		size -= read;
+		*processedSize += read;
+		data += read;
+		if (!result) return false;
+	}
+	return true;
+}
+
+// ------------------------------------------------------------------------
+//
 COutFile::COutFile()
 {
 }

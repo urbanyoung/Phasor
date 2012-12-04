@@ -3,27 +3,32 @@
 
 // ----------------------------------------------------------------------
 //
-void CLoggingStream::Initialize(const std::wstring& file, bool extension)
+void CLoggingStream::SetNames(const std::wstring& directory, 
+	const std::wstring& fileName)
+{
+	this->fileDirectory = directory;
+	this->fileName = fileName;
+	this->filePath = fileDirectory + fileName + L".log";	
+}
+
+void CLoggingStream::Initialize(const std::wstring& directory,
+	const std::wstring& fileName)
 {
 	byteSize = 0;
 	errorOffset = 0;
-	filePath = file;
-	if (extension) filePath += L".log";
-	NDirectory::GetFileName(filePath, fileName);
-}
-CLoggingStream::CLoggingStream(const std::wstring& dir, const std::wstring& file)
-{
-	Initialize(dir + file);
+	SetNames(directory, fileName);
 }
 
-CLoggingStream::CLoggingStream(const std::wstring& file)
+CLoggingStream::CLoggingStream(const std::wstring& dir, const std::wstring& file)
+	: COutStream()
 {
-	Initialize(file);
+	Initialize(dir, file);
 }
 
 CLoggingStream::CLoggingStream(const CLoggingStream& other)
+	: COutStream()
 {
-	Initialize(other.filePath, false);
+	Initialize(other.fileDirectory, other.fileName);
 }
 
 CLoggingStream::~CLoggingStream()
@@ -55,6 +60,17 @@ void CLoggingStream::SetMoveInfo(const std::wstring& move_to, DWORD kbSize)
 	moveDirectory = move_to;
 	NDirectory::NormalizeDirectory(moveDirectory);
 	byteSize = kbSize * 1024;
+}
+
+void CLoggingStream::SetOutFile(const std::wstring& directory,
+	const std::wstring& fileName)
+{
+	SetNames(directory, fileName);
+}
+
+void CLoggingStream::SetOutFile(const std::wstring& fileName)
+{
+	SetNames(this->fileDirectory, fileName);
 }
 
 bool CLoggingStream::Write(const std::wstring& str)

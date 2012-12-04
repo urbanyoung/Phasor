@@ -105,6 +105,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="PhasorAPI.cpp" />
+    <ClCompile Include="Phasor\Commands.cpp" />
     <ClCompile Include="Phasor\Directory.cpp" />
     <ClCompile Include="Phasor\Logging.cpp" />
     <ClCompile Include="Phasor\PhasorThread.cpp" />
@@ -126,6 +127,7 @@
     <ClInclude Include="Manager.h" />
     <ClInclude Include="PhasorAPI.h" />
     <ClInclude Include="PhasorScript.h" />
+    <ClInclude Include="Phasor\Commands.h" />
     <ClInclude Include="Phasor\Directory.h" />
     <ClInclude Include="Phasor\Logging.h" />
     <ClInclude Include="Phasor\PhasorThread.h" />

@@ -8,12 +8,6 @@ void CThreadedLogging::Initialize()
 	AllocateLines();
 }
 
-CThreadedLogging::CThreadedLogging(const std::wstring& file, PhasorThread& thread)
-	: CLoggingStream(file), thread(thread)
-{
-	Initialize();
-}
-
 CThreadedLogging::CThreadedLogging(const std::wstring& dir, const std::wstring& file,
 	PhasorThread& thread)
 	: CLoggingStream(dir, file), thread(thread)

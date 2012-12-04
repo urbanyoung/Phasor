@@ -57,14 +57,57 @@ public:
 
 	DWORD GetFileSize();
 
-	bool Seek(DWORD distance);
+	bool Seek(long distance);
 	bool SeekBegin();
 	bool SeekEnd();	
 };
 
 class CInFile : public CFile
 {
+private:
+	static const int kReadSize = 1 << 20; // 1 MB
+public:
+	CInFile();
+	virtual ~CInFile();
 
+	bool Open(const std::wstring& file);
+
+	// Reads data until a line escape(\n or \r\n) or until maxCount - 1 is 
+	// reached, which is the maximum number of characters (of size sizeof(T)) 
+	// to be read. The output buffer should be at least sizeof(T)*maxCount
+	// bytes. The output is always null terminated. found is set to true if
+	// newline found, or false otherwise.
+	template <class T>
+	bool ReadLine(T* out, DWORD maxCount, bool* found)
+	{
+		DWORD read;
+		if (!ReadSome((BYTE*)out, sizeof(T)*(maxCount-1), &read)) return false;
+		if (read == 0) return false; // maybe eof
+		DWORD nCharRead = read / sizeof(T);
+		size_t x = 0, end = 0;
+		if (found) *found = false;
+		for (; x < nCharRead; x++)
+		{
+			if (out[x] == T('\n')) {
+				if (found) *found = true;
+				break;
+			}
+			else if (out[x] == '\r') end = x;
+		}
+		if (end + 1 == x) out[end] = T('\0');
+		else out[x] = T('\0');
+		// seek to start of the next line
+		long distance = -(long)read + (x + 1);
+		if (distance != 0) Seek(distance);
+		return true;
+	}
+
+	// Attempts to read all data until either success or an error
+	bool Read(BYTE* out, DWORD size, DWORD* processedSize);
+
+	// Attempts to read data in 1MB blocks
+	// False indicated an error, otherwise keep calling.
+	bool ReadSome(BYTE* out, DWORD size, DWORD* written);
 };
 
 class COutFile : public CFile
@@ -79,7 +122,7 @@ public:
 	// Attempts to write all data until either success or an error
 	bool Write(BYTE* data, DWORD size, DWORD* processedSize);
 
-	// Attempts to write data in 32kb blocks
+	// Attempts to write data in 1MB blocks
 	// False indicated an error, otherwise keep calling.
 	bool WriteSome(BYTE* data, DWORD size, DWORD* written);
 };

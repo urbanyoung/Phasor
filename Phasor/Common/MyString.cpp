@@ -1,5 +1,6 @@
 #include "MyString.h"
 #include <sstream>
+#include <algorithm>
 
 std::string NarrowString(const std::wstring& str)
 {
@@ -15,6 +16,11 @@ std::wstring WidenString(const std::string& str)
 	for (size_t x = 0; x < str.length(); x++)
 		ss << ss.widen(str[x]);
 	return ss.str();
+}
+
+void ToLowercase(std::string& str)
+{
+	std::transform(str.begin(), str.end(),str.begin(), tolower);
 }
 
 std::string FormatVarArgs(const char* fmt, va_list marker)
@@ -57,15 +63,19 @@ std::wstring FormatVarArgsW(const wchar_t* fmt, va_list marker)
 
 std::wstring m_swprintf(const wchar_t *fmt, ...) 
 { 
-	std::wstring str;
-	FORMATARGSW(str, fmt);
+	va_list ArgList;
+	va_start(ArgList, fmt);
+	std::wstring str = FormatVarArgsW(fmt, ArgList);
+	va_end(ArgList);
 	return str;
 }
 
 std::string m_sprintf(const char *fmt, ...) 
 { 
-	std::string str;
-	FORMATARGS(str, fmt);
+	va_list ArgList;
+	va_start(ArgList, fmt);
+	std::string str = FormatVarArgs(fmt, ArgList);
+	va_end(ArgList);
 	return str;
 }
 

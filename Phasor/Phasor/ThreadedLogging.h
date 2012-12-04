@@ -25,7 +25,6 @@ protected:
 public:
 	CThreadedLogging(const std::wstring& dir, const std::wstring& file,
 		PhasorThread& thread);
-	CThreadedLogging(const std::wstring& file, PhasorThread& thread);
 	CThreadedLogging(const CLoggingStream& stream, PhasorThread& thread);
 	virtual ~CThreadedLogging();
 
