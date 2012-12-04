@@ -8,9 +8,9 @@
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 
 // Globals through Phasor's lifetime
+PhasorThread thread;
 std::unique_ptr<CThreadedLogging> g_ScriptsLog;
 std::unique_ptr<CThreadedLogging> g_PhasorLog;
-PhasorThread thread;
 
 // Locate and create all directories Phasor will use. If an error occurs
 // this function never returns and the process is terminated.
@@ -52,7 +52,7 @@ int main()
 		wprintf(L"%s\n", err.c_str());
 		WAIT_AND_QUIT
 	}
-
+	Sleep(5000);
 	thread.close();
 
 	while (!thread.has_closed()) {

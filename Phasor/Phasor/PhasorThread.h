@@ -18,7 +18,7 @@ enum event_dest_t
 class PhasorThreadEvent
 {
 private:
-	DWORD dwExpiryTime;
+	DWORD dwExpiryTime, dwDelay;
 
 	void SetExpiry(DWORD dwDelay);
 
@@ -50,7 +50,7 @@ class PhasorThread : public Thread
 {
 private:
 	DWORD dwPhasorThreadId, dwMainThreadId;
-	typedef std::list<std::unique_ptr<PhasorThreadEvent>> eventlist_t;
+	typedef std::list<std::shared_ptr<PhasorThreadEvent>> eventlist_t;
 	eventlist_t auxEvents, mainEvents;
 	CRITICAL_SECTION cs;
 
@@ -61,11 +61,11 @@ private:
 	void SetReinvoke(event_dest_t dest);
 	
 	// Adds an event to the specified list
-	DWORD AddEvent(event_dest_t dest, std::unique_ptr<PhasorThreadEvent>& e);
+	DWORD AddEvent(event_dest_t dest, std::shared_ptr<PhasorThreadEvent>& e);
 
 	// Processes any required events in the specified thread. A lock for
 	// the lists should have been obtained before calling.
-	void ProcessEventsLocked(event_dest_t dest);
+	void ProcessEventsLocked(event_dest_t dest, bool ignoretime);
 
 public:
 	PhasorThread();
@@ -75,11 +75,11 @@ public:
 	virtual bool run();
 
 	// Process events
-	void ProcessEvents(bool block=false, bool main=true);
+	void ProcessEvents(bool block=false, bool main=true, bool ignoretime=false);
 
 	// Value returned is the event id (used in removing)
-	DWORD InvokeInMain(std::unique_ptr<PhasorThreadEvent> e);
-	DWORD InvokeInAux(std::unique_ptr<PhasorThreadEvent> e);
+	DWORD InvokeInMain(std::shared_ptr<PhasorThreadEvent> e);
+	DWORD InvokeInAux(std::shared_ptr<PhasorThreadEvent> e);
 
 	// Removes the specified timer
 	void RemoveAuxEvent(DWORD id);

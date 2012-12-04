@@ -3,7 +3,7 @@
 #define EVENT_ID(x) (DWORD)&*x
 
 // ------------------------------------------------------------------------
-PhasorThreadEvent::PhasorThreadEvent(DWORD dwDelay)
+PhasorThreadEvent::PhasorThreadEvent(DWORD dwDelay) : dwDelay(dwDelay)
 {
 	SetExpiry(dwDelay);
 }
@@ -21,7 +21,8 @@ void PhasorThreadEvent::SetExpiry(DWORD dwDelay)
 void PhasorThreadEvent::Reinvoke(DWORD dwDelay, 
 	PhasorThread& thread, event_dest_t dest)
 {
-	SetExpiry(dwDelay);
+	if (dwDelay != 0) this->dwDelay = dwDelay;
+	SetExpiry(this->dwDelay);
 	thread.SetReinvoke(dest);
 }
 
@@ -66,7 +67,7 @@ void PhasorThread::SetReinvoke(event_dest_t dest)
 }
 
 // Adds an event to the specified list
-DWORD PhasorThread::AddEvent(event_dest_t dest, std::unique_ptr<PhasorThreadEvent>& e)
+DWORD PhasorThread::AddEvent(event_dest_t dest, std::shared_ptr<PhasorThreadEvent>& e)
 {
 	Lock _(cs);
 	eventlist_t* eventList = NULL;
@@ -77,14 +78,14 @@ DWORD PhasorThread::AddEvent(event_dest_t dest, std::unique_ptr<PhasorThreadEven
 	// was going to keep list sorted based on expiry time, but no
 	// point.. will never have many events at once. plus most won't
 	// have an expiry time
-	eventList->push_back(std::move(e));	
+	eventList->push_back(e);	
 
 	return id;
 }		
 
 // Processes any required events in the specified thread. A lock for
 // the lists should have been obtained before calling.
-void PhasorThread::ProcessEventsLocked(event_dest_t dest)
+void PhasorThread::ProcessEventsLocked(event_dest_t dest, bool ignoretime)
 {
 	eventlist_t* eventList = NULL, *other = NULL;
 	if (dest == DEST_MAIN) {
@@ -102,7 +103,7 @@ void PhasorThread::ProcessEventsLocked(event_dest_t dest)
 	size_t size = eventList->size();
 	for (size_t i = 0; i < size; i++) {
 		PhasorThreadEvent& e = **itr;
-		if (e.ready(curTime)) {
+		if (ignoretime || e.ready(curTime)) {
 			reinvoke_in = DEST_NONE;
 			if (dest == DEST_MAIN)
 				e.OnEventMain(*this);
@@ -131,24 +132,24 @@ bool PhasorThread::run()
 }
 
 // Process events
-void PhasorThread::ProcessEvents(bool block, bool main)
+void PhasorThread::ProcessEvents(bool block, bool main, bool ignoretime)
 {
 	event_dest_t dest = main ? DEST_MAIN : DEST_AUX;
 	if (!block) { // don't want halo thread to block
 		TryLock lock(cs);
-		if (lock.obtained()) ProcessEventsLocked(dest);
+		if (lock.obtained()) ProcessEventsLocked(dest, ignoretime);
 	} else {
 		Lock _(cs);
-		ProcessEventsLocked(dest);
+		ProcessEventsLocked(dest, ignoretime);
 	}
 }
 
-DWORD PhasorThread::InvokeInMain(std::unique_ptr<PhasorThreadEvent> e)
+DWORD PhasorThread::InvokeInMain(std::shared_ptr<PhasorThreadEvent> e)
 {
 	return AddEvent(DEST_MAIN, e);
 }
 
-DWORD PhasorThread::InvokeInAux(std::unique_ptr<PhasorThreadEvent> e)
+DWORD PhasorThread::InvokeInAux(std::shared_ptr<PhasorThreadEvent> e)
 {
 	return AddEvent(DEST_AUX, e);
 }
@@ -186,7 +187,7 @@ int PhasorThread::thread_main()
 	{
 		ProcessEvents(true, false);
 	}
-	ProcessEvents(true, false); // make sure all events are done
+	ProcessEvents(true, false, true); // make sure all events are done
 
 	return 0;
 }

@@ -11,11 +11,12 @@ private:
 	CRITICAL_SECTION cs;
 	DWORD id;
 	PhasorThread& thread;
+	std::shared_ptr<CLogThreadEvent> threadEvent;
 	typedef std::list<std::wstring> lines_t;
-	lines_t* lines;
+	std::unique_ptr<lines_t> lines;
 
 	void Initialize();
-	void LogLinesAndCleanup(lines_t* data);
+	void LogLinesAndCleanup(std::unique_ptr<lines_t> data);
 	void AllocateLines();
 
 protected:
@@ -37,7 +38,7 @@ private:
 	friend class CThreadLogging;
 	CThreadedLogging& owner;
 
-	CLogThreadEvent(CThreadedLogging& owner);
+	CLogThreadEvent(CThreadedLogging& owner, DWORD dwDelay);
 
 public:
 	virtual void OnEventAux(PhasorThread& thread);

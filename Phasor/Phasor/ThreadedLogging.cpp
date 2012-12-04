@@ -2,8 +2,9 @@
 
 void CThreadedLogging::Initialize()
 {
+	threadEvent.reset(new CLogThreadEvent(*this, 1000));
+	id = thread.InvokeInAux(threadEvent);
 	InitializeCriticalSection(&cs);
-	id = NULL;
 	AllocateLines();
 }
 
@@ -28,23 +29,17 @@ CThreadedLogging::CThreadedLogging(const CLoggingStream& stream, PhasorThread& t
 
 CThreadedLogging::~CThreadedLogging()
 {
-	if (id != NULL)
-	{
-		thread.RemoveAuxEvent(id);
-		id = NULL;
-		// Lock _(cs); not needed
-	}
-	
+	thread.RemoveAuxEvent(id); // id never null
 	DeleteCriticalSection(&cs);
-	LogLinesAndCleanup(lines);
+	LogLinesAndCleanup(std::move(lines));
 }
 
 void CThreadedLogging::AllocateLines()
 {
-	lines = new lines_t();
+	lines.reset(new lines_t());
 }
 
-void CThreadedLogging::LogLinesAndCleanup(lines_t* data)
+void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 {
 	// Attempt to write each line
 	auto itr = data->begin();
@@ -53,37 +48,36 @@ void CThreadedLogging::LogLinesAndCleanup(lines_t* data)
 		CLoggingStream::Write(*itr);
 		itr = data->erase(itr);
 	}
-	delete data;
 }
 
 bool CThreadedLogging::Write(const std::wstring& str)
 {
 	Lock _(cs);
 	lines->push_back(str);
-
-	if (id == NULL) { // no event running, so can't deadlock
-		id = thread.InvokeInAux(std::unique_ptr<PhasorThreadEvent>
-			(new CLogThreadEvent(*this)));
-	}
 	return true; 
 }
 
-CLogThreadEvent::CLogThreadEvent(CThreadedLogging& owner) : owner(owner),
-	PhasorThreadEvent(0)
+CLogThreadEvent::CLogThreadEvent(CThreadedLogging& owner, DWORD dwDelay)
+	: owner(owner), PhasorThreadEvent(dwDelay)
 {
 }
 
-void CLogThreadEvent::OnEventAux(PhasorThread&)
+void CLogThreadEvent::OnEventAux(PhasorThread& thread)
 {
 	// copy the lines to save, then release the lock so the main thread
 	// isn't waiting for IO if it needs to log other data
-	CThreadedLogging::lines_t* lines;
+	std::unique_ptr<CThreadedLogging::lines_t> lines;
 	{
 		Lock _(owner.cs);
-		lines = owner.lines;
-		owner.AllocateLines();
-		owner.id = NULL;
+		if (owner.lines->size() > 0) {
+			lines = std::move(owner.lines);
+			owner.AllocateLines();
+		}
 	} // lock released here
-	
-	owner.LogLinesAndCleanup(lines);
+
+	if (lines != nullptr) {
+		printf("Writing\n");
+		owner.LogLinesAndCleanup(std::move(lines));
+	}
+	ReinvokeInAux(thread);
 }
