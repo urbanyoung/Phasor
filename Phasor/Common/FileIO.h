@@ -71,7 +71,7 @@ public:
 	virtual ~CInFile();
 
 	bool Open(const std::wstring& file);
-
+	
 	// Reads data until a line escape(\n or \r\n) or until maxCount - 1 is 
 	// reached, which is the maximum number of characters (of size sizeof(T)) 
 	// to be read. The output buffer should be at least sizeof(T)*maxCount
@@ -92,13 +92,15 @@ public:
 				if (found) *found = true;
 				break;
 			}
-			else if (out[x] == '\r') end = x;
+			else if (out[x] == T('\r')) end = x;
 		}
 		if (end + 1 == x) out[end] = T('\0');
 		else out[x] = T('\0');
 		// seek to start of the next line
-		long distance = -(long)read + (x + 1);
-		if (distance != 0) Seek(distance);
+		if (read != x) {
+			long distance = -(long)read + (x + 1);
+			if (distance != 0) Seek(distance);
+		}
 		return true;
 	}
 

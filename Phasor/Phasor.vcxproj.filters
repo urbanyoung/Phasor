@@ -85,6 +85,9 @@
     <Filter Include="Phasor\Commands">
       <UniqueIdentifier>{9e57d171-89b1-42fb-a3bb-cb08b679f84e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Phasor\Admin">
+      <UniqueIdentifier>{00255ac7-4c4c-4663-a343-a406fb5baf4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lua.h">
@@ -146,6 +149,9 @@
     </ClInclude>
     <ClInclude Include="Phasor\Commands.h">
       <Filter>Phasor\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Admin.h">
+      <Filter>Phasor\Admin</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

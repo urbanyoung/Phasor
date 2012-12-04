@@ -74,13 +74,13 @@ static const CommandEntry CommandList[] =
 bool ProcessCommand(const std::string& command, COutStream& out)
 {
 	std::vector<std::string> tokens = TokenizeArgs(command);
+	if (tokens.size() == 0) return false;
 
 	for (size_t x = 0; CommandList[x].name; x++) {
 		if (CommandList[x].name == tokens[0]) {
-			CommandList[x].func(tokens, out);
-			break;
+			return CommandList[x].func(tokens, out);
 		}
 	}
 
-	return true;
+	return false;
 }

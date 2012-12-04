@@ -123,8 +123,10 @@ void LoadEarlyInit(COutStream& out)
 		return; // may not exist
 
 	char line[4096];
-	while (file.ReadLine<char>(line, NELEMS(line), NULL))
+	while (file.ReadLine<char>(line, NELEMS(line), NULL)) {
 		ProcessCommand(line, out);
+		printf("%s\n", line);
+	}
 }
 
 // Windows entry point
