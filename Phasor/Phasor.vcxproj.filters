@@ -139,4 +139,7 @@
       <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="phasor_includes.props" />
+  </ItemGroup>
 </Project>
