@@ -25,8 +25,8 @@ void LocateDirectories();
 void LoadEarlyInit(COutStream& out);
 
 // Called when the dll is loaded
-//extern "C" __declspec(dllexport) void OnLoad()
-int main()
+extern "C" __declspec(dllexport) void OnLoad()
+//int main()
 {
 	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
 	LocateDirectories();
@@ -135,7 +135,7 @@ void LoadEarlyInit(COutStream& out)
 }
 
 // Windows entry point
-/*BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
+BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
 {
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
@@ -144,4 +144,4 @@ void LoadEarlyInit(COutStream& out)
 	}
 
 	return TRUE;
-}*/
+}
