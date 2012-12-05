@@ -78,11 +78,21 @@ std::string m_sprintf(const char *fmt, ...)
 	va_end(ArgList);
 	return str;
 }
+template <>
+const std::string ArgsSearchString<std::string>()
+{
+	return std::string("\"' ");
+}
 
+template <>
+const std::wstring ArgsSearchString<std::wstring>()
+{
+	return std::wstring(L"\"' ");
+}
 // Get the substring ending at the next occurrence of c.
 // start is the position (inclusive) where to start searching from.
 // end is the position after the next occurrence, or npos if none.
-template <class T, class _Tc>
+/*template <class T, class _Tc>
 T GetStringEndingAtNext(const T& input, _Tc c, size_t start, size_t& end)
 {
 	size_t found = input.find_first_of(c, start);
@@ -138,3 +148,4 @@ std::vector<std::wstring> TokenizeWArgs(const std::wstring& in)
 	}
 	return out;
 }
+*/

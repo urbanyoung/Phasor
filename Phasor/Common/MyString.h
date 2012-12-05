@@ -17,11 +17,53 @@ std::wstring m_swprintf(const wchar_t* _Format, ...);
 // Tokenization functions
 // -----------------------------------------------------------------------
 
+// Get the substring ending at the next occurrence of c.
+// start is the position (inclusive) where to start searching from.
+// end is the position after the next occurrence, or npos if none.
+template <class T, class _Tc>
+T GetStringEndingAtNext(const T& input, _Tc c, size_t start, size_t& end)
+{
+	size_t found = input.find_first_of(c, start);
+	T out = input.substr(start, found - start);
+	end = found == input.npos ? input.npos : found + 1;
+	return out;
+}
+// " ' or space
+template <class T>
+const T ArgsSearchString();
+
 // Tokenize a string into its constituent arguments, an argument
 // ends at a space unless within ' or " in which case it ends at the
 // next escaping ' or ".
-std::vector<std::string> TokenizeArgs(const std::string& in);
-std::vector<std::wstring> TokenizeWArgs(const std::wstring& in);
+template <class T, class _Tc>
+std::vector<T> TokenizeArgsT(const T& in)
+{
+	using namespace std;
+	vector<T> out;
+	const T tofind = ArgsSearchString<T>(); // " ' or space
+
+	size_t curpos = 0;
+	while (curpos != in.npos)
+	{
+		curpos = in.find_first_not_of(_Tc(' '), curpos);
+		if (curpos == in.npos) break;
+		size_t nextpos = in.find_first_of(tofind, curpos);
+		if (nextpos == in.npos) { // no more matches, copy everything.
+			out.push_back(in.substr(curpos, in.npos));
+			break;
+		}
+		_Tc c = in.at(nextpos);
+		size_t startfrom = c == _Tc(' ') ? curpos : curpos + 1;
+		T token = GetStringEndingAtNext<T, _Tc>(in, c, startfrom, curpos);	
+		if (token.size()) out.push_back(token);
+	}
+	return out;
+}
+
+typedef std::vector<std::string> (*tokargs_t)(const std::string&);
+typedef std::vector<std::wstring> (*tokargsw_t)(const std::wstring&);
+tokargs_t const TokenizeArgs = &TokenizeArgsT<std::string, char>;
+tokargsw_t const TokenizeWArgs = &TokenizeArgsT<std::wstring, wchar_t>;
 
 template <class T>
 std::vector<T> Tokenize(const T& str, const T& delim)
