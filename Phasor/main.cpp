@@ -7,7 +7,7 @@
 #include "Scripting.h"
 #include "Phasor/Commands.h"
 #include "Phasor/Admin.h"
-
+#include "Phasor/Halo/Addresses.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 //#define WAIT_AND_QUIT Sleep(10000); return 1;
@@ -36,8 +36,12 @@ extern "C" __declspec(dllexport) void OnLoad()
 
 	try
 	{
-		PhasorLog << L"Initializing Phasor ... " << endl;				
+		PhasorLog << L"Initializing Phasor ... " << endl;	
 
+		PhasorLog << L"Locating Halo addresses and structures" << endl;
+		DWORD ticks = GetTickCount();
+		Addresses::LocateAddresses();
+		PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
 		if (!thread.run()) {
 			throw std::exception("cannot start the auxiliary thread.");
 		}

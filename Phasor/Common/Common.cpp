@@ -304,50 +304,80 @@ namespace Common
 	}
 
 	// Finds all locations of a signature
-	std::vector<DWORD> FindSignature(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards)
+	std::vector<DWORD> FindSignatures(LPBYTE sigBuffer, LPBYTE sigWildCard,
+		DWORD sigSize, LPBYTE pBuffer, DWORD size)
 	{
-		std::vector<DWORD> addresses;
-		for (DWORD i = 0; i < dwBufferSize; ++i) {
-			bool bFound = true;
-			// Loop through each byte in the signature
-			for (DWORD j = 0; j < dwSignatureSize; ++j)	{
-				// Check if the index overruns the buffer
-				if (i + j >= dwBufferSize){
-					bFound = false;
+		// thanks to Drew Benton
+		std::vector<DWORD> results;
+		for(DWORD index = 0; index < size; ++index)	{
+			bool found = true;
+			for(DWORD sindex = 0; sindex < sigSize; ++sindex) {
+				// Make sure we don't overrun the buffer!
+				if(sindex + index >= size) {
+					found = false;
 					break;
 				}
 
-				if (lpWildCards) {
-					// Check if the buffer does not equal the signature and a wild card is not set
-					if (lpBuffer[i + j] != lpSignature[j] && !lpWildCards[j]){
-						bFound = false;
+				if(sigWildCard != 0) {
+					if(pBuffer[index + sindex] != sigBuffer[sindex] &&
+						sigWildCard[sindex] == 0) {
+						found = false;
 						break;
 					}
 				}
 				else {
-					if (lpBuffer[i + j] != lpSignature[j]){
-						bFound = false;
+					if(pBuffer[index + sindex] != sigBuffer[sindex]) {
+						found = false;
 						break;
 					}
 				}
 			}
 
-			if (bFound)
-				addresses.push_back(i);
+			if(found) results.push_back(index);
 		}
-
-		return addresses;
+		return results;
 	}
 
-	// Finds the location of a signature
-	DWORD FindAddress(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards, DWORD dwIndex, DWORD dwOffset)
+	bool FindSignature(LPBYTE sigBuffer, LPBYTE sigWildCard, 
+		DWORD sigSize, LPBYTE pBuffer, DWORD size, DWORD occurance,
+		DWORD& result)
 	{
-		DWORD dwAddress = 0;
-		std::vector<DWORD> addresses = FindSignature(lpBuffer, dwBufferSize, lpSignature, dwSignatureSize, lpWildCards);
-		if (addresses.size() - 1 >= dwIndex)
-			dwAddress = (DWORD)lpBuffer + addresses[dwIndex] + dwOffset;
+		bool success = false;
+		DWORD count = 0;
+		for(DWORD index = 0; index < size; ++index)	{
+			bool found = true;
+			for(DWORD sindex = 0; sindex < sigSize; ++sindex) {
+				// Make sure we don't overrun the buffer!
+				if(sindex + index >= size) {
+					found = false;
+					break;
+				}
 
-		return dwAddress;
+				if(sigWildCard != 0) {
+					if(pBuffer[index + sindex] != sigBuffer[sindex] &&
+						sigWildCard[sindex] == 0) {
+							found = false;
+							break;
+					}
+				}
+				else {
+					if(pBuffer[index + sindex] != sigBuffer[sindex]) {
+						found = false;
+						break;
+					}
+				}
+			}
+
+			if(found) {
+				if (occurance == count) {
+					result = index;
+					success = true;
+					break;
+				}
+				count++;
+			}
+		}
+		return success;
 	}
 
 	// Creates a code cave to a function at a specific address

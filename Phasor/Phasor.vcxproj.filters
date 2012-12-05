@@ -56,6 +56,9 @@
     <ClCompile Include="Phasor\Admin.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Addresses.cpp">
+      <Filter>Phasor\Halo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -84,6 +87,9 @@
     </Filter>
     <Filter Include="Phasor">
       <UniqueIdentifier>{6de8fee8-ff2e-4593-b343-5581cfec9017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo">
+      <UniqueIdentifier>{ea62687a-5294-4b86-9ca2-86666feac676}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="Phasor\Admin.h">
       <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Addresses.h">
+      <Filter>Phasor\Halo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

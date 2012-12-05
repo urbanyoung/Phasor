@@ -198,8 +198,10 @@ namespace Common
 	// Memory commands
 	BOOL WriteBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount);
 	BOOL ReadBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount);
-	std::vector<DWORD> FindSignature(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0);
-	DWORD FindAddress(LPBYTE lpBuffer, DWORD dwBufferSize, LPBYTE lpSignature, DWORD dwSignatureSize, LPBYTE lpWildCards = 0, DWORD dwIndex = 0, DWORD dwOffset = 0);
+	std::vector<DWORD> FindSignatures(LPBYTE sigBuffer, LPBYTE sigWildCard,
+		DWORD sigSize, LPBYTE pBuffer, DWORD size);
+	bool FindSignature(LPBYTE sigBuffer, LPBYTE sigWildCard, 
+		DWORD sigSize, LPBYTE pBuffer, DWORD size, DWORD occurance, DWORD& result);
 	BOOL CreateCodeCave(DWORD dwAddress, BYTE cbSize, VOID (*pFunction)());
 		
 	// --------------------------------------------------------------------
