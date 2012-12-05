@@ -51,10 +51,10 @@
       <Filter>Phasor</Filter>
     </ClCompile>
     <ClCompile Include="Phasor\Commands.cpp">
-      <Filter>Phasor\Commands</Filter>
+      <Filter>Phasor</Filter>
     </ClCompile>
     <ClCompile Include="Phasor\Admin.cpp">
-      <Filter>Phasor\Admin</Filter>
+      <Filter>Phasor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,12 +84,6 @@
     </Filter>
     <Filter Include="Phasor">
       <UniqueIdentifier>{6de8fee8-ff2e-4593-b343-5581cfec9017}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Phasor\Commands">
-      <UniqueIdentifier>{9e57d171-89b1-42fb-a3bb-cb08b679f84e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Phasor\Admin">
-      <UniqueIdentifier>{00255ac7-4c4c-4663-a343-a406fb5baf4f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -151,10 +145,10 @@
       <Filter>Phasor</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Commands.h">
-      <Filter>Phasor\Commands</Filter>
+      <Filter>Phasor</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Admin.h">
-      <Filter>Phasor\Admin</Filter>
+      <Filter>Phasor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

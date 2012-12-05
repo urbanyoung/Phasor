@@ -48,12 +48,11 @@ int main()
 			g_LogsDirectory, L"ScriptsLog", thread));
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
-
 		LoadEarlyInit(PhasorLog);
 
 		PhasorLog << L"Initializing admin system" << endl;
-
 		Admin::Initialize(&PhasorLog);
+
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 

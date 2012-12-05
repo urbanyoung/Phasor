@@ -85,6 +85,11 @@ namespace Admin
 		{
 		}
 
+		static size_t size()
+		{
+			return adminList.size();
+		}
+
 		bool IsAllowed(const std::string& command)
 		{
 			return accessLevel.IsAllowed(command);
@@ -156,6 +161,7 @@ namespace Admin
 
 	result_t CanUseCommand(const std::string& hash, const std::string& command)
 	{
+		if (CAdmin::size() == 0) return E_OK; // hash system inactive
 		CAdmin* admin = 0;
 		if (!CAdmin::GetAdmin(hash, &admin)) return E_NOT_ADMIN;
 		return admin->IsAllowed(command) ? E_OK : E_NOT_ALLOWED;
@@ -175,7 +181,7 @@ namespace Admin
 			DWORD processedCount = 0;//characters	
 			while (processedCount < count - 1)
 			{
-				char dataBuffer[4096] = {0};
+				char dataBuffer[8192] = {0};
 				int level = atoi(outBuffer + processedCount);
 
 				DWORD dataCount = GetPrivateProfileString(outBuffer + processedCount,
@@ -205,17 +211,9 @@ namespace Admin
 			if (tokens.size() == 3) {
 				int level = atoi(tokens[2].c_str());
 				result_t result = Add(tokens[1], tokens[0], level);
-				switch (result)
-				{
-				case E_LEVEL_NOT_EXIST:
-					{
-						if (out) {
-							*out << adminPath << L" : invalid access level (line "
-								<< n << L")" << endl; 
-						}
-					} break;
-				default:
-					break;
+				if (result == E_LEVEL_NOT_EXIST && out != NULL) {
+					*out << adminPath << L" : invalid access level (line "
+						<< n << L")" << endl; 
 				}
 			} else if (out) {
 				*out << adminPath << L" : line " << n << 
