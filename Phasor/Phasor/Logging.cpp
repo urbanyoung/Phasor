@@ -16,6 +16,7 @@ void CLoggingStream::Initialize(const std::wstring& directory,
 {
 	byteSize = 0;
 	errorOffset = 0;
+	bTimestamp = true;
 	SetNames(directory, fileName);
 }
 
@@ -36,11 +37,13 @@ CLoggingStream::~CLoggingStream()
 	Flush();
 }
 
-void CLoggingStream::CheckAndMove(DWORD curSize, const SYSTEMTIME& st)
+void CLoggingStream::CheckAndMove(DWORD curSize)
 {
 	if (byteSize == 0) return;
 	DWORD checkSize = byteSize + errorOffset;
 	if (curSize >= checkSize) {
+		SYSTEMTIME st = {0};		
+		GetLocalTime(&st);
 		std::wstring newfile = m_swprintf(
 			L"%s%s_%02i-%02i-%02i_%02i-%02i-%02i.log",
 			moveDirectory.c_str(), fileName.c_str(),
@@ -73,14 +76,27 @@ void CLoggingStream::SetOutFile(const std::wstring& fileName)
 	SetNames(this->fileDirectory, fileName);
 }
 
-bool CLoggingStream::Write(const std::wstring& str)
+void CLoggingStream::EnableTimestamp(bool state)
+{
+	bTimestamp = state;
+}
+
+std::wstring CLoggingStream::PrependTimestamp(const std::wstring& str)
 {
 	SYSTEMTIME st = {0};		
 	GetLocalTime(&st);
 
-	std::wstring output = m_swprintf(L"%04i/%02i/%02i %02i:%02i:%02i %s",
+	return m_swprintf(L"%04i/%02i/%02i %02i:%02i:%02i %s",
 		st.wYear, st.wMonth, st.wDay, st.wHour,st.wMinute,st.wSecond,
 		str.c_str());
+}
+
+bool CLoggingStream::Write(const std::wstring& str)
+{
+	std::wstring output;
+
+	if (bTimestamp) output = PrependTimestamp(str);
+	else output = str;
 
 	COutFile h_file;
 	if (!h_file.Open(filePath, GENERIC_READ | GENERIC_WRITE, 
@@ -98,7 +114,7 @@ bool CLoggingStream::Write(const std::wstring& str)
 	DWORD fileSize = h_file.GetFileSize();
 	h_file.Close(); // done with it now
 
-	CheckAndMove(fileSize,st);
+	CheckAndMove(fileSize);
 	return true;
 }
 

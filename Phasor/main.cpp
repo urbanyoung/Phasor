@@ -86,7 +86,7 @@ int main()
 		wprintf(L"%s\n", err.c_str());
 		WAIT_AND_QUIT
 	}
-	//Sleep(5000);
+	Sleep(35000);
 	thread.close();
 
 	while (!thread.has_closed()) {

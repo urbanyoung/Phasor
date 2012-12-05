@@ -16,13 +16,15 @@ private:
 	DWORD byteSize; // max size for file before being moved
 	DWORD errorOffset; // increases when moving the file fails
 
+	bool bTimestamp; // should timestamps be prepended? default true
+
 	void Initialize(const std::wstring& directory,
 		const std::wstring& fileName);
 	void SetNames(const std::wstring& directory,
 		const std::wstring& fileName);
 
 	// Check if the file should be moved.
-	void CheckAndMove(DWORD curSize, const SYSTEMTIME& st);
+	void CheckAndMove(DWORD curSize);
 
 protected:
 	virtual bool Write(const std::wstring& str);
@@ -36,6 +38,8 @@ public:
 	void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);
 	void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
 	void SetOutFile(const std::wstring& fileName); // use cur dir
+	void EnableTimestamp(bool state); // true by default
+	std::wstring PrependTimestamp(const std::wstring& str);
 };
 
 typedef CLoggingStream CPhasorLog;

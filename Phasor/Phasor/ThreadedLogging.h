@@ -36,6 +36,8 @@ public:
 	void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);
 	void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
 	void SetOutFile(const std::wstring& fileName); // use cur dir
+	void EnableTimestamp(bool state);
+	std::wstring PrependTimestamp(const std::wstring& str);
 
 	friend class CLogThreadEvent;
 };

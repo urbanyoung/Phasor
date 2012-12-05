@@ -5,7 +5,7 @@
 enum glog_type
 {
 	kGameEnd = 1 << 6,
-	kGameStart = kGameEnd + 1,
+	kGameStart,
 	kPlayerJoin = (1 << 7) + 2,
 	kPlayerLeave,
 	kPlayerChange,

@@ -73,6 +73,18 @@ void CThreadedLogging::SetOutFile(const std::wstring& fileName)
 	CLoggingStream::SetOutFile(fileName);
 }
 
+void CThreadedLogging::EnableTimestamp(bool state)
+{
+	Lock _(loggingStreamCS);
+	CLoggingStream::EnableTimestamp(state);
+}
+
+std::wstring CThreadedLogging::PrependTimestamp(const std::wstring& str)
+{
+	Lock _(loggingStreamCS);
+	return CLoggingStream::PrependTimestamp(str);
+}
+
 CLogThreadEvent::CLogThreadEvent(CThreadedLogging& owner, DWORD dwDelay)
 	: owner(owner), PhasorThreadEvent(dwDelay)
 {

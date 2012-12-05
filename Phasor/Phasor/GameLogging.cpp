@@ -27,6 +27,9 @@ CGameLog::CGameLog(const std::wstring& dir, const std::wstring& file,
 	PhasorThread& thread)
 	: logstream(new CThreadedLogging(dir, file, thread, kSaveDelay))
 {
+	// we'll handle timestamps otherwise blocks of events will
+	// all get the same timestamp
+	logstream->EnableTimestamp(false);
 }
 
 void CGameLog::WriteLog(glog_type type, wchar_t* format, ...)
@@ -42,5 +45,8 @@ void CGameLog::WriteLog(glog_type type, wchar_t* format, ...)
 	const wchar_t* type_name = type_names[type_name_index];
 	const wchar_t* event_name = event_names[type & 0x3F];
 
-	*logstream << type_name << event_name << str << endl;
+	SYSTEMTIME st = {0};		
+	GetLocalTime(&st);
+
+	*logstream << logstream->PrependTimestamp(L"") << type_name << event_name << str << endl;
 }
