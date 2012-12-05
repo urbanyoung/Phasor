@@ -4,6 +4,7 @@ void CThreadedLogging::Initialize(DWORD dwDelay)
 {
 	InitializeCriticalSection(&cs);
 	InitializeCriticalSection(&loggingStreamCS);
+	EnableTimestamp(false); // we'll deal with it
 	threadEvent.reset(new CLogThreadEvent(*this, dwDelay));
 	id = thread.InvokeInAux(threadEvent);
 	AllocateLines();
@@ -26,8 +27,8 @@ CThreadedLogging::CThreadedLogging(const CLoggingStream& stream, PhasorThread& t
 CThreadedLogging::~CThreadedLogging()
 {
 	thread.RemoveAuxEvent(id); // id never null
-	DeleteCriticalSection(&cs);
 	LogLinesAndCleanup(std::move(lines));
+	DeleteCriticalSection(&cs);
 	DeleteCriticalSection(&loggingStreamCS);
 }
 
@@ -39,19 +40,34 @@ void CThreadedLogging::AllocateLines()
 void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 {
 	Lock _(loggingStreamCS);
-	// Attempt to write each line
+	if (data->size() == 1) // no point copying for one entry
+	{
+		CLoggingStream::Write(*data->begin());
+		data->clear();
+		return;
+	}
+	std::wstring out;
+	out.reserve(1 << 15); // 32kb should always be enough
+
 	auto itr = data->begin();
 	while (itr != data->end())
 	{
-		CLoggingStream::Write(*itr);
+		size_t capacity = out.capacity()/sizeof(wchar_t);
+		if (out.size() + itr->size() > capacity) {
+			CLoggingStream::Write(out);
+			out.clear();
+			if (itr->size() < capacity) out += *itr;
+			else CLoggingStream::Write(*itr);
+		} else out += *itr;
 		itr = data->erase(itr);
 	}
+	CLoggingStream::Write(out);
 }
 
 bool CThreadedLogging::Write(const std::wstring& str)
 {
 	Lock _(cs);
-	lines->push_back(str);
+	lines->push_back(PrependTimestamp(str));
 	return true; 
 }
 
