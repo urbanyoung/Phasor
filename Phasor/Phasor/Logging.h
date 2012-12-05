@@ -39,7 +39,7 @@ public:
 	void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
 	void SetOutFile(const std::wstring& fileName); // use cur dir
 	void EnableTimestamp(bool state); // true by default
-	std::wstring PrependTimestamp(const std::wstring& str);
+	static std::wstring PrependTimestamp(const std::wstring& str);
 };
 
 typedef CLoggingStream CPhasorLog;

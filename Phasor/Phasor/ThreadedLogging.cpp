@@ -81,7 +81,7 @@ void CThreadedLogging::EnableTimestamp(bool state)
 
 std::wstring CThreadedLogging::PrependTimestamp(const std::wstring& str)
 {
-	Lock _(loggingStreamCS);
+//	Lock _(loggingStreamCS);
 	return CLoggingStream::PrependTimestamp(str);
 }
 
