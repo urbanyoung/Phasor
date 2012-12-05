@@ -1,6 +1,8 @@
 #include <windows.h>
 #include <stdio.h>
+#ifdef BUILD_DEBUG
 #include <vld.h>
+#endif
 #include "Phasor/Logging.h"
 #include "Phasor/ThreadedLogging.h"
 #include "Phasor/Directory.h"
@@ -42,6 +44,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		DWORD ticks = GetTickCount();
 		Addresses::LocateAddresses();
 		PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
+
 		if (!thread.run()) {
 			throw std::exception("cannot start the auxiliary thread.");
 		}
