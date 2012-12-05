@@ -1,24 +1,26 @@
 #include "ThreadedLogging.h"
 
-void CThreadedLogging::Initialize()
+void CThreadedLogging::Initialize(DWORD dwDelay)
 {
-	threadEvent.reset(new CLogThreadEvent(*this, 1000));
-	id = thread.InvokeInAux(threadEvent);
 	InitializeCriticalSection(&cs);
+	InitializeCriticalSection(&loggingStreamCS);
+	threadEvent.reset(new CLogThreadEvent(*this, dwDelay));
+	id = thread.InvokeInAux(threadEvent);
 	AllocateLines();
 }
 
 CThreadedLogging::CThreadedLogging(const std::wstring& dir, const std::wstring& file,
-	PhasorThread& thread)
+	PhasorThread& thread, DWORD dwDelay)
 	: CLoggingStream(dir, file), thread(thread)
 {
-	Initialize();
+	Initialize(dwDelay);
 }
 
-CThreadedLogging::CThreadedLogging(const CLoggingStream& stream, PhasorThread& thread)
+CThreadedLogging::CThreadedLogging(const CLoggingStream& stream, PhasorThread& thread,
+	DWORD dwDelay)
 	: CLoggingStream(stream), thread(thread)
 {
-	Initialize();
+	Initialize(dwDelay);
 }
 
 CThreadedLogging::~CThreadedLogging()
@@ -26,6 +28,7 @@ CThreadedLogging::~CThreadedLogging()
 	thread.RemoveAuxEvent(id); // id never null
 	DeleteCriticalSection(&cs);
 	LogLinesAndCleanup(std::move(lines));
+	DeleteCriticalSection(&loggingStreamCS);
 }
 
 void CThreadedLogging::AllocateLines()
@@ -35,6 +38,7 @@ void CThreadedLogging::AllocateLines()
 
 void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 {
+	Lock _(loggingStreamCS);
 	// Attempt to write each line
 	auto itr = data->begin();
 	while (itr != data->end())
@@ -49,6 +53,24 @@ bool CThreadedLogging::Write(const std::wstring& str)
 	Lock _(cs);
 	lines->push_back(str);
 	return true; 
+}
+
+void CThreadedLogging::SetMoveInfo(const std::wstring& move_to, DWORD kbSize)
+{
+	Lock _(loggingStreamCS);
+	CLoggingStream::SetMoveInfo(move_to, kbSize);
+}
+
+void CThreadedLogging::SetOutFile(const std::wstring& directory,const std::wstring& fileName)
+{
+	Lock _(loggingStreamCS);
+	CLoggingStream::SetOutFile(directory, fileName);
+}
+
+void CThreadedLogging::SetOutFile(const std::wstring& fileName)
+{
+	Lock _(loggingStreamCS);
+	CLoggingStream::SetOutFile(fileName);
 }
 
 CLogThreadEvent::CLogThreadEvent(CThreadedLogging& owner, DWORD dwDelay)

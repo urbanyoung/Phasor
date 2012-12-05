@@ -41,13 +41,7 @@
     <ClCompile Include="Phasor\PhasorThread.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Logging.cpp">
-      <Filter>Phasor</Filter>
-    </ClCompile>
     <ClCompile Include="Phasor\Directory.cpp">
-      <Filter>Phasor</Filter>
-    </ClCompile>
-    <ClCompile Include="Phasor\ThreadedLogging.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
     <ClCompile Include="Phasor\Commands.cpp">
@@ -58,6 +52,15 @@
     </ClCompile>
     <ClCompile Include="Phasor\Halo\Addresses.cpp">
       <Filter>Phasor\Halo</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\ThreadedLogging.cpp">
+      <Filter>Phasor\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Logging.cpp">
+      <Filter>Phasor\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\GameLogging.cpp">
+      <Filter>Phasor\Logging</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +93,9 @@
     </Filter>
     <Filter Include="Phasor\Halo">
       <UniqueIdentifier>{ea62687a-5294-4b86-9ca2-86666feac676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Logging">
+      <UniqueIdentifier>{cdfbb3a9-9c9d-4223-8809-ef666c4c59e2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -141,13 +147,7 @@
     <ClInclude Include="Phasor\PhasorThread.h">
       <Filter>Phasor</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor\Logging.h">
-      <Filter>Phasor</Filter>
-    </ClInclude>
     <ClInclude Include="Phasor\Directory.h">
-      <Filter>Phasor</Filter>
-    </ClInclude>
-    <ClInclude Include="Phasor\ThreadedLogging.h">
       <Filter>Phasor</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Commands.h">
@@ -158,6 +158,15 @@
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Addresses.h">
       <Filter>Phasor\Halo</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\ThreadedLogging.h">
+      <Filter>Phasor\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Logging.h">
+      <Filter>Phasor\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\GameLogging.h">
+      <Filter>Phasor\Logging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

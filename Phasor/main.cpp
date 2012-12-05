@@ -5,6 +5,7 @@
 #endif
 #include "Phasor/Logging.h"
 #include "Phasor/ThreadedLogging.h"
+#include "Phasor/GameLogging.h"
 #include "Phasor/Directory.h"
 #include "Scripting.h"
 #include "Phasor/Commands.h"
@@ -18,6 +19,7 @@
 PhasorThread thread; // must be above all other objects
 std::unique_ptr<CScriptsLog> g_ScriptsLog;
 std::unique_ptr<CPhasorLog> g_PhasorLog;
+std::unique_ptr<CGameLog> g_GameLog;
 
 // Locate and create all directories Phasor will use. If an error occurs
 // this function never returns and the process is terminated.
@@ -27,8 +29,8 @@ void LocateDirectories();
 void LoadEarlyInit(COutStream& out);
 
 // Called when the dll is loaded
-extern "C" __declspec(dllexport) void OnLoad()
-//int main()
+//extern "C" __declspec(dllexport) void OnLoad()
+int main()
 {
 	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
 	LocateDirectories();
@@ -41,9 +43,9 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Initializing Phasor ... " << endl;	
 
 		PhasorLog << L"Locating Halo addresses and structures" << endl;
-		DWORD ticks = GetTickCount();
-		Addresses::LocateAddresses();
-		PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
+	//	DWORD ticks = GetTickCount();
+	//	Addresses::LocateAddresses();
+	//	PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
 
 		if (!thread.run()) {
 			throw std::exception("cannot start the auxiliary thread.");
@@ -53,6 +55,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, thread));
 		g_ScriptsLog.reset(new CThreadedLogging(
 			g_LogsDirectory, L"ScriptsLog", thread));
+		g_GameLog.reset(new CGameLog(g_LogsDirectory, L"GameLog", thread));
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
 		LoadEarlyInit(PhasorLog);
@@ -60,6 +63,9 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Initializing admin system" << endl;
 		Admin::Initialize(&PhasorLog);
 
+		g_GameLog->WriteLog(kGameStart, L"A new game has started on map bloodgulch");
+		g_GameLog->WriteLog(kPlayerJoin, L"Oxide (83745296192011208e4900f62b92cabd IP: 127.0.0.1)");
+		g_GameLog->WriteLog(kServerClose, L"The server is closing.");
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 
@@ -142,7 +148,7 @@ void LoadEarlyInit(COutStream& out)
 }
 
 // Windows entry point
-BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
+/*BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
 {
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
@@ -151,4 +157,4 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
 	}
 
 	return TRUE;
-}
+}*/

@@ -16,7 +16,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -110,6 +110,7 @@
     <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />
     <ClCompile Include="Phasor\Directory.cpp" />
+    <ClCompile Include="Phasor\GameLogging.cpp" />
     <ClCompile Include="Phasor\Halo\Addresses.cpp" />
     <ClCompile Include="Phasor\Logging.cpp" />
     <ClCompile Include="Phasor\PhasorThread.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />
     <ClInclude Include="Phasor\Directory.h" />
+    <ClInclude Include="Phasor\GameLogging.h" />
     <ClInclude Include="Phasor\Halo\Addresses.h" />
     <ClInclude Include="Phasor\Logging.h" />
     <ClInclude Include="Phasor\PhasorThread.h" />

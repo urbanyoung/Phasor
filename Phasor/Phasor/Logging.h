@@ -41,13 +41,5 @@ public:
 typedef CLoggingStream CPhasorLog;
 typedef CLoggingStream CScriptsLog;
 
-/*class CGameLog : public CLoggingStream
-{
-public:
-	CGameLog(const std::wstring& dir, const std::wstring& file);
-	CLoggingStream(const std::wstring& file);
-	CLoggingStream(const CLoggingStream& other);
-};*/
-
 extern std::unique_ptr<CScriptsLog> g_ScriptsLog;
 extern std::unique_ptr<CPhasorLog> g_PhasorLog;

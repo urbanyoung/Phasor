@@ -101,3 +101,4 @@ bool CLoggingStream::Write(const std::wstring& str)
 	CheckAndMove(fileSize,st);
 	return true;
 }
+
