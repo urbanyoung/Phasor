@@ -53,6 +53,9 @@
     <ClCompile Include="Phasor\Commands.cpp">
       <Filter>Phasor\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Admin.cpp">
+      <Filter>Phasor\Admin</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">

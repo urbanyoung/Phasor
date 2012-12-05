@@ -6,6 +6,8 @@
 #include "Phasor/Directory.h"
 #include "Scripting.h"
 #include "Phasor/Commands.h"
+#include "Phasor/Admin.h"
+
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 //#define WAIT_AND_QUIT Sleep(10000); return 1;
@@ -48,6 +50,10 @@ int main()
 		PhasorLog << L"Processing earlyinit.txt" << endl;
 
 		LoadEarlyInit(PhasorLog);
+
+		PhasorLog << L"Initializing admin system" << endl;
+
+		Admin::Initialize(&PhasorLog);
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 

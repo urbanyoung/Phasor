@@ -105,6 +105,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="PhasorAPI.cpp" />
+    <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />
     <ClCompile Include="Phasor\Directory.cpp" />
     <ClCompile Include="Phasor\Logging.cpp" />
