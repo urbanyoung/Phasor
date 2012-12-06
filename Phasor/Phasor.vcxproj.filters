@@ -50,9 +50,6 @@
     <ClCompile Include="Phasor\Admin.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Halo\Addresses.cpp">
-      <Filter>Phasor\Halo</Filter>
-    </ClCompile>
     <ClCompile Include="Phasor\ThreadedLogging.cpp">
       <Filter>Phasor\Logging</Filter>
     </ClCompile>
@@ -67,6 +64,12 @@
     </ClCompile>
     <ClCompile Include="Libraries\StackWalker.cpp">
       <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Addresses.cpp">
+      <Filter>Phasor\Halo\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Hooks.cpp">
+      <Filter>Phasor\Halo\Hooks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,6 +105,18 @@
     </Filter>
     <Filter Include="Phasor\Logging">
       <UniqueIdentifier>{cdfbb3a9-9c9d-4223-8809-ef666c4c59e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo\Hooks">
+      <UniqueIdentifier>{5eb0009b-23ca-4edb-b0c5-2a22a9dd60ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo\Game">
+      <UniqueIdentifier>{e6bf1418-302f-4c3f-a0e4-1b14ceb5ed57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo\Player">
+      <UniqueIdentifier>{6b77bf64-17d4-456b-a2fa-31683f1c5952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo\Server">
+      <UniqueIdentifier>{2c4ce1ef-ef16-43a7-a9e0-74925365f012}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -162,9 +177,6 @@
     <ClInclude Include="Phasor\Admin.h">
       <Filter>Phasor</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor\Halo\Addresses.h">
-      <Filter>Phasor\Halo</Filter>
-    </ClInclude>
     <ClInclude Include="Phasor\ThreadedLogging.h">
       <Filter>Phasor\Logging</Filter>
     </ClInclude>
@@ -179,6 +191,42 @@
     </ClInclude>
     <ClInclude Include="Libraries\StackWalker.h">
       <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Addresses.h">
+      <Filter>Phasor\Halo\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Hooks.h">
+      <Filter>Phasor\Halo\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Player.h">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Chat.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Maps.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\MapVote.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Game.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Objects.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\MapLoader.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\AFKDetection.h">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Alias.h">
+      <Filter>Phasor\Halo\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

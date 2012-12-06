@@ -56,13 +56,6 @@ namespace CrashHandler
 		// Hook Halo's exception handler
 		CreateCodeCave(CC_EXCEPTION_HANDLER, 6, HaloExceptionHandler);
 	}
-	
-	// Notifies that exception hooks should be rerouted to a hard-exit
-	// this is to avoid recursion if an exception occurs in main.cpp:OnClose()
-	void OnClose()
-	{
-		bPassOn = false;
-	}
 
 	LONG WINAPI OnUnhandledException(PEXCEPTION_POINTERS pExceptionInfo)
 	{
