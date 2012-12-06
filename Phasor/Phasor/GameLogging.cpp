@@ -42,8 +42,5 @@ void CGameLog::WriteLog(glog_type type, wchar_t* format, ...)
 	const wchar_t* type_name = type_names[type_name_index];
 	const wchar_t* event_name = event_names[type & 0x3F];
 
-	SYSTEMTIME st = {0};		
-	GetLocalTime(&st);
-
-	*logstream /*<< logstream->PrependTimestamp(L"")*/ << type_name << event_name << str << endl;
+	*logstream << type_name << event_name << str << endl;
 }

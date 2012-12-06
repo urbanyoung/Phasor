@@ -31,7 +31,11 @@ public:
 class COutStream
 {
 private:
-	std::wstringstream ss;
+	//std::wstringstream ss;
+	std::wstring str;
+	static const size_t kDefaultBufferSize = 1 << 13; // 8kb
+
+	void Reserve(size_t size);
 protected:
 	virtual bool Write(const std::wstring& str) = 0;
 
@@ -56,8 +60,8 @@ public:
 	COutStream & operator<<(double number);
 
 	// Print using c-style functions, flushed after each call.
-	void printf(const char* format, ...);
-	void wprintf(const wchar_t* format, ...);
+	void print(const char* format, ...);
+	void wprint(const wchar_t* format, ...);
 };
 
 class NoFlush

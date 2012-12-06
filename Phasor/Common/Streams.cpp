@@ -4,6 +4,7 @@
 
 COutStream::COutStream() : no_flush(false)
 {
+	str.reserve(kDefaultBufferSize); // start with 8kb
 }
 
 COutStream::~COutStream()
@@ -12,13 +13,18 @@ COutStream::~COutStream()
 	//Flush();
 }
 
+void COutStream::Reserve(size_t size)
+{
+	str.clear();
+	str.reserve(size); // start with 8kb
+}
+
 void COutStream::Flush()
 {
-	std::wstring line = ss.str();
-	if (!line.size()) return;
-	if (Write(line) || line.size() > (1 << 16)) {
-		// clear the stringstream on success or if it's > 64kb
-		ss.str(std::wstring());
+	if (!str.size()) return;
+	if (Write(str) || str.size() > (1 << 16)) {
+		// clear the string on success or if it's > 64kb
+		Reserve(kDefaultBufferSize);
 	}
 }
 
@@ -31,13 +37,13 @@ COutStream& COutStream::operator<<(const endl_tag&)
 
 COutStream & COutStream::operator<<(const std::string& string)
 {
-	ss << WidenString(string);
+	str += WidenString(string);
 	return *this;
 }
 
 COutStream & COutStream::operator<<(const std::wstring& string)
 {
-	ss << string;
+	str += string;
 	return *this;
 }
 
@@ -48,13 +54,13 @@ COutStream & COutStream::operator<<(const char *string)
 
 COutStream & COutStream::operator<<(const wchar_t *string)
 {
-	ss << string;
+	str += string;
 	return *this;
 }
 
 COutStream & COutStream::operator<<(wchar_t c)
 {
-	ss << c;
+	str += c;
 	return *this;
 }
 
@@ -62,7 +68,7 @@ COutStream & COutStream::operator<<(int number)
 {
 	wchar_t str[32];
 	swprintf_s(str, NELEMS(str), L"%i", number);
-	ss << str;
+	this->str += str;
 	return *this;
 }
 
@@ -70,7 +76,7 @@ COutStream & COutStream::operator<<(DWORD number)
 {
 	wchar_t str[32] = {0};
 	swprintf_s(str, NELEMS(str), L"%u", number);
-	ss << str;
+	this->str += str;
 	return *this;
 }
 
@@ -78,11 +84,11 @@ COutStream & COutStream::operator<<(double number)
 {
 	wchar_t str[32];
 	swprintf_s(str, NELEMS(str), L"%.4d", number);
-	ss << str;
+	this->str += str;
 	return *this;
 }
 
-void COutStream::printf(const char* format, ...)
+void COutStream::print(const char* format, ...)
 {
 	va_list ArgList;
 	va_start(ArgList, format);
@@ -92,7 +98,7 @@ void COutStream::printf(const char* format, ...)
 	if (!no_flush) Flush();
 }
 
-void COutStream::wprintf(const wchar_t* format, ...)
+void COutStream::wprint(const wchar_t* format, ...)
 {
 	va_list ArgList;
 	va_start(ArgList, format);
@@ -100,7 +106,6 @@ void COutStream::wprintf(const wchar_t* format, ...)
 	va_end(ArgList);
 	*this << str;
 	if (!no_flush) Flush();
-
 }
 
 // -----------------------------------------------------------------------

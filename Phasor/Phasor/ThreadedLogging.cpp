@@ -40,23 +40,27 @@ void CThreadedLogging::AllocateLines()
 void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 {
 	Lock _(loggingStreamCS);
-	if (data->size() == 1) // no point copying for one entry
+	size_t size = data->size();
+	if (size == 0) return;
+	if (size == 1) // no point copying for one entry
 	{
 		CLoggingStream::Write(*data->begin());
 		data->clear();
 		return;
 	}
+	DWORD writeSize = 0;
+	DWORD start = GetTickCount();
 	std::wstring out;
 	out.reserve(1 << 15); // 32kb should always be enough
-
+	// todo: handle write failures
 	auto itr = data->begin();
 	while (itr != data->end())
 	{
-		size_t capacity = out.capacity()/sizeof(wchar_t);
-		if (out.size() + itr->size() > capacity) {
+		writeSize += itr->size();
+		if (out.size() + itr->size() > out.capacity()) {
 			CLoggingStream::Write(out);
 			out.clear();
-			if (itr->size() < capacity) out += *itr;
+			if (itr->size() < out.capacity()) out += *itr;
 			else CLoggingStream::Write(*itr);
 		} else out += *itr;
 		itr = data->erase(itr);
@@ -97,8 +101,7 @@ void CThreadedLogging::EnableTimestamp(bool state)
 
 std::wstring CThreadedLogging::PrependTimestamp(const std::wstring& str)
 {
-//	Lock _(loggingStreamCS);
-	return CLoggingStream::PrependTimestamp(str);
+	return CLoggingStream::PrependTimestamp(str); // no lock needed
 }
 
 CLogThreadEvent::CLogThreadEvent(CThreadedLogging& owner, DWORD dwDelay)

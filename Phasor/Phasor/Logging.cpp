@@ -93,6 +93,7 @@ std::wstring CLoggingStream::PrependTimestamp(const std::wstring& str)
 
 bool CLoggingStream::Write(const std::wstring& str)
 {
+	if (str.size() == 0) return true; // always successful to do nothing
 	std::wstring output;
 
 	if (bTimestamp) output = PrependTimestamp(str);
@@ -107,7 +108,7 @@ bool CLoggingStream::Write(const std::wstring& str)
 	const wchar_t* c_str = output.c_str();
 	static DWORD written;
 
-	if (!h_file.Write((BYTE*)output.c_str(), 
+	if (!h_file.Write((BYTE*)c_str, 
 		sizeof(c_str[0])*output.size(), &written))
 		return false; // can't write data
 

@@ -18,7 +18,7 @@ class CGameLog
 {
 private:
 	std::unique_ptr<CThreadedLogging> logstream;
-	static const unsigned int kSaveDelay = 30000; // 30 seconds
+	static const unsigned int kSaveDelay = 15000; // 15 seconds
 
 public:
 	CGameLog(const std::wstring& dir, const std::wstring& file,

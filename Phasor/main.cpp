@@ -63,9 +63,14 @@ int main()
 		PhasorLog << L"Initializing admin system" << endl;
 		Admin::Initialize(&PhasorLog);
 
-		g_GameLog->WriteLog(kGameStart, L"A new game has started on map bloodgulch");
-		g_GameLog->WriteLog(kPlayerJoin, L"Oxide (83745296192011208e4900f62b92cabd IP: 127.0.0.1)");
-		g_GameLog->WriteLog(kServerClose, L"The server is closing.");
+		DWORD start = GetTickCount();
+		for (int i = 0; i < 10000; i++) {
+			g_GameLog->WriteLog(kGameStart, L"A new game has started on map bloodgulch");
+			g_GameLog->WriteLog(kPlayerJoin, L"Oxide (83745296192011208e4900f62b92cabd IP: 127.0.0.1)");
+			g_GameLog->WriteLog(kServerClose, L"The server is closing.");
+		}
+		::printf("Written to stream in %i ticks\n", GetTickCount() - start);
+		return 1;
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 
