@@ -51,7 +51,7 @@ void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 
 	DWORD start = GetTickCount();
 	std::wstring out;
-	out.reserve(1 << 20); // 32kb should always be enough for our purposes
+	out.reserve(1 << 15); // 32kb should always be enough for our purposes
 	// increasing this can improve performance tho (if there's a lot of data
 	// to write at a time)
 	

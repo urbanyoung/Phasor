@@ -62,6 +62,12 @@
     <ClCompile Include="Phasor\GameLogging.cpp">
       <Filter>Phasor\Logging</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\CrashHandler.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\StackWalker.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -167,6 +173,12 @@
     </ClInclude>
     <ClInclude Include="Phasor\GameLogging.h">
       <Filter>Phasor\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\CrashHandler.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\StackWalker.h">
+      <Filter>Libraries</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

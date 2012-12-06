@@ -16,7 +16,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -103,12 +103,14 @@
     <ClCompile Include="Common\Timers.cpp" />
     <ClCompile Include="Libraries\Curl.cpp" />
     <ClCompile Include="Libraries\sqlitepp.cpp" />
+    <ClCompile Include="Libraries\StackWalker.cpp" />
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="PhasorAPI.cpp" />
     <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />
+    <ClCompile Include="Phasor\CrashHandler.cpp" />
     <ClCompile Include="Phasor\Directory.cpp" />
     <ClCompile Include="Phasor\GameLogging.cpp" />
     <ClCompile Include="Phasor\Halo\Addresses.cpp" />
@@ -128,12 +130,14 @@
     <ClInclude Include="Common\Types.h" />
     <ClInclude Include="Libraries\Curl.h" />
     <ClInclude Include="Libraries\sqlitepp.h" />
+    <ClInclude Include="Libraries\StackWalker.h" />
     <ClInclude Include="Lua.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="PhasorAPI.h" />
     <ClInclude Include="PhasorScript.h" />
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />
+    <ClInclude Include="Phasor\CrashHandler.h" />
     <ClInclude Include="Phasor\Directory.h" />
     <ClInclude Include="Phasor\GameLogging.h" />
     <ClInclude Include="Phasor\Halo\Addresses.h" />

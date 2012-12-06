@@ -11,6 +11,7 @@
 #include "Phasor/Commands.h"
 #include "Phasor/Admin.h"
 #include "Phasor/Halo/Addresses.h"
+#include "Phasor/CrashHandler.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 //#define WAIT_AND_QUIT Sleep(10000); return 1;
@@ -29,8 +30,8 @@ void LocateDirectories();
 void LoadEarlyInit(COutStream& out);
 
 // Called when the dll is loaded
-//extern "C" __declspec(dllexport) void OnLoad()
-int main()
+extern "C" __declspec(dllexport) void OnLoad()
+//int main()
 {
 	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
 	LocateDirectories();
@@ -43,9 +44,9 @@ int main()
 		PhasorLog << L"Initializing Phasor ... " << endl;	
 
 		PhasorLog << L"Locating Halo addresses and structures" << endl;
-	//	DWORD ticks = GetTickCount();
-	//	Addresses::LocateAddresses();
-	//	PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
+		DWORD ticks = GetTickCount();
+		Addresses::LocateAddresses();
+		PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
 
 		if (!thread.run()) {
 			throw std::exception("cannot start the auxiliary thread.");
@@ -63,14 +64,8 @@ int main()
 		PhasorLog << L"Initializing admin system" << endl;
 		Admin::Initialize(&PhasorLog);
 
-		DWORD start = GetTickCount();
-		for (int i = 0; i < 10000; i++) {
-			g_GameLog->WriteLog(kGameStart, L"A new game has started on map bloodgulch");
-			g_GameLog->WriteLog(kPlayerJoin, L"Oxide (83745296192011208e4900f62b92cabd IP: 127.0.0.1)");
-			g_GameLog->WriteLog(kServerClose, L"The server is closing.");
-		}
-		::printf("Written to stream in %i ticks\n", GetTickCount() - start);
-		//return 1;
+		PhasorLog << L"Installing crash handler.." << endl;
+		CrashHandler::InstallCatchers();
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 
@@ -153,7 +148,7 @@ void LoadEarlyInit(COutStream& out)
 }
 
 // Windows entry point
-/*BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
+BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID)
 {
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
@@ -162,4 +157,4 @@ void LoadEarlyInit(COutStream& out)
 	}
 
 	return TRUE;
-}*/
+}
