@@ -70,7 +70,7 @@ int main()
 			g_GameLog->WriteLog(kServerClose, L"The server is closing.");
 		}
 		::printf("Written to stream in %i ticks\n", GetTickCount() - start);
-		return 1;
+		//return 1;
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 

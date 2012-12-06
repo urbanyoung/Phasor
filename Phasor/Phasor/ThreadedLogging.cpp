@@ -48,24 +48,29 @@ void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 		data->clear();
 		return;
 	}
-	DWORD writeSize = 0;
+
 	DWORD start = GetTickCount();
 	std::wstring out;
-	out.reserve(1 << 15); // 32kb should always be enough
+	out.reserve(1 << 20); // 32kb should always be enough for our purposes
+	// increasing this can improve performance tho (if there's a lot of data
+	// to write at a time)
+	
 	// todo: handle write failures
 	auto itr = data->begin();
 	while (itr != data->end())
 	{
-		writeSize += itr->size();
+		// don't want to need to expand the buffer
 		if (out.size() + itr->size() > out.capacity()) {
 			CLoggingStream::Write(out);
 			out.clear();
 			if (itr->size() < out.capacity()) out += *itr;
 			else CLoggingStream::Write(*itr);
 		} else out += *itr;
-		itr = data->erase(itr);
+		itr++;// = data->erase(itr);
 	}
 	CLoggingStream::Write(out);
+	data->clear();
+	::printf("Written in %i ticks\n", GetTickCount() - start);
 }
 
 bool CThreadedLogging::Write(const std::wstring& str)
