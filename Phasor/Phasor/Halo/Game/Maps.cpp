@@ -2,10 +2,12 @@
 #include "../../Directory.h"
 #include "../../../Common/FileIO.h"
 #include "../../../Common/MyString.h"
+#include "../Addresses.h"
+#include "MapLoader.h"
 #include <map>
 
-namespace halo { namespace game {
-	std::string current_map;
+namespace halo { namespace game { namespace maps{
+	std::string current_map_base;
 	std::map<std::wstring, std::wstring> gametypes;
 
 	bool LoadGametypes()
@@ -53,9 +55,9 @@ namespace halo { namespace game {
 		return file.Read(out, outSize-4, &read);		
 	}
 
-	const char* GetCurrentMap()
+	const char* GetCurrentMapBaseName()
 	{
-		return current_map.c_str();
+		return current_map_base.c_str();
 	}
 
 	bool IsValidGametype(const std::wstring& gametype)
@@ -63,6 +65,26 @@ namespace halo { namespace game {
 		return gametypes.find(gametype) != gametypes.end();
 	}
 
+	// Codecaves
+	// --------------------------------------------------------------------
+	//
+
+	// Called when a map is being loaded
+	bool OnMapLoad(BYTE* mapData)
+	{
+		bool bMapUnchanged = true;
+		int curmap = *(DWORD*)ADDR_MAPCYCLEINDEX;
+		char* map = (char*)*(DWORD*)mapData;
+		char* gametype = (char*)*(DWORD*)(mapData + 4);
 
 
-}}
+#ifdef PHASOR_PC		
+		maploader::OnMapLoad(map);
+#endif
+
+		current_map_base = map;
+		return bMapUnchanged;
+	}
+
+
+}}}

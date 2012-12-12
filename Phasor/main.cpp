@@ -55,10 +55,10 @@ extern "C" __declspec(dllexport) void OnLoad()
 		CrashHandler::InstallCatchers();
 
 #ifdef PHASOR_PC
-		halo::game::BuildMapList(PhasorLog);
+		halo::game::maploader::BuildMapList(PhasorLog);
 #endif
 		PhasorLog << L"Building gametype list..." << endl;
-		if (!halo::game::LoadGametypes())
+		if (!halo::game::maps::LoadGametypes())
 			PhasorLog << L"    No gametypes were found!" << endl;
 		//system("PAUSE");
 		//exit(1);

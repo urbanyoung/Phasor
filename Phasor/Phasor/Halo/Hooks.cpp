@@ -82,7 +82,7 @@ PROCESSED:
 		mov eax, 1
 		ret
 	}
-}
+}*/
 
 // Codecave for loading maps into the cyc;e
 DWORD mapload_ret = 0;
@@ -130,7 +130,7 @@ RELOAD_MAP_DATA:
 		ret
 	}
 }
-
+/*
 // Game function codecaves
 // ------------------------------------------------------------------------
 // Codecave for detecting game ending
@@ -152,7 +152,7 @@ __declspec(naked) void OnGameEnd_CC()
 		push edx
 		ret
 	}
-}
+}*/
 
 DWORD newGame_ret = 0;
 
@@ -184,7 +184,7 @@ NOT_NEW_MAP:
 	}
 }
 
-DWORD playerjoin_ret = 0;
+/*DWORD playerjoin_ret = 0;
 
 // Codecave for people joining
 __declspec(naked) void OnPlayerWelcome_CC()
@@ -1007,20 +1007,20 @@ namespace halo
 		BYTE mapPatch[] = {0xB0, 0x01, 0xC3};
 		//WriteBytes(PATCH_NOMAPPROCESS, &mapPatch, sizeof(mapPatch));
 
-		#ifdef PHASOR_PC
+#ifdef PHASOR_PC
 		// Make Phasor control the loading of a map
-		DWORD addr = (DWORD)UlongToPtr(game::GetLoadingMapBuffer());
+		DWORD addr = (DWORD)UlongToPtr(game::maploader::GetLoadingMapBuffer());
 		WriteBytes(PATCH_MAPLOADING, &addr, 4);
 
 		// Set the map table
-		DWORD table = game::GetMapTable();
+		DWORD table = game::maploader::GetMapTable();
 		WriteBytes(PATCH_MAPTABLE, &table, 4);
 
 		// Remove where the map table is allocated/reallocated by the server
 		BYTE nopPatch[0x3E];
 		memset(nopPatch, 0x90, sizeof(nopPatch));
 		WriteBytes(PATCH_MAPTABLEALLOCATION, &nopPatch, sizeof(nopPatch));	
-		#endif
+#endif
 
 
 		// Server hooks
@@ -1033,7 +1033,7 @@ namespace halo
 		CreateCodeCave(CC_CONSOLEHANDLER, 5, ConsoleHandler_CC);
 
 		// Codecave to intercept server commands
-		CreateCodeCave(CC_SERVERCMD, 8, OnServerCommand);
+		CreateCodeCave(CC_SERVERCMD, 8, OnServerCommand);*/
 
 		// Codecave used to load non-default maps
 		CreateCodeCave(CC_MAPLOADING, 5, OnMapLoading_CC);
@@ -1042,13 +1042,13 @@ namespace halo
 		// ----------------------------------------------------------------
 		//
 		// Codecave for detecting game ending
-		CreateCodeCave(CC_GAMEEND, 5, OnGameEnd_CC);
+		//CreateCodeCave(CC_GAMEEND, 5, OnGameEnd_CC);
 
 		// Codecave used to detect a new game
 		CreateCodeCave(CC_NEWGAME, 5, OnNewGame_CC);
 
 		// Codecave called when a player joins
-		CreateCodeCave(CC_PLAYERWELCOME, 8, OnPlayerWelcome_CC);
+		/*CreateCodeCave(CC_PLAYERWELCOME, 8, OnPlayerWelcome_CC);
 
 		// Codecave used to detect people leaving
 		CreateCodeCave(CC_PLAYERQUIT, 9, OnPlayerQuit_CC);

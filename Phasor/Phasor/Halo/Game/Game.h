@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Common/Types.h"
+#include "../../../Common/Types.h"
 #include "Objects.h"
 
 namespace halo { namespace game {
@@ -23,7 +23,7 @@ namespace halo { namespace game {
 	void __stdcall OnGameEnd(DWORD mode);
 
 	// Called when a new game starts
-	void __stdcall OnNewGame(char* map);
+	void __stdcall OnNewGame(const char* map);
 
 	// Called when a player joins (after verification).
 	void __stdcall OnPlayerWelcome(DWORD playerId);

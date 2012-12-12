@@ -36,7 +36,7 @@
  * and re-reverse it. Unfortunately I didn't comment it very well when I made
  * it so I decided to add the information above to help you make sense of it.
 */
-namespace halo { namespace game
+namespace halo { namespace game { namespace maploader
 {
 	// ----------------------------------------------------------------
 	// Structures used for map processing
@@ -102,28 +102,6 @@ namespace halo { namespace game
 	DWORD GetMapTable()
 	{
 		return (DWORD)mapTable;
-	}
-
-	// Called to fix the loaded map name (called when game begins)
-	void FixMapName()
-	{
-		// Fix the map name
-		strcpy_s(m_fixMap, sizeof(map_being_loaded_buffer), map_being_loaded_buffer);
-	}
-
-	// Updates the data in 'map' to the maps base data (ie original map)
-	void UpdateLoadingMap(char* map)
-	{
-		// Save the map name ptr for fixing
-		m_fixMap = map;
-		
-		// the name should be lowercase
-		CStrToLower(map);
-		strcpy_s(map_being_loaded_buffer, sizeof(map_being_loaded_buffer), map);
-
-		// Change the passed parameter to the unmodded name to avoid loading issues
-		char* baseMap = (char*)fileMap[map].c_str();
-		strcpy_s(map, sizeof(map_being_loaded_buffer), baseMap);
 	}
 
 	// This function checks if a map exists
@@ -241,4 +219,27 @@ namespace halo { namespace game
 			}
 		}
 	}
-}}
+
+	// Called when a map is being loaded to fix name issues
+	void OnMapLoad(char* map)
+	{
+		// Save the map name ptr for fixing
+		m_fixMap = map;
+
+		// the name should be lowercase
+		CStrToLower(map);
+		strcpy_s(map_being_loaded_buffer, sizeof(map_being_loaded_buffer), map);
+
+		// Change the passed parameter to the unmodded name to avoid loading issues
+		char* baseMap = (char*)fileMap[map].c_str();
+		strcpy_s(map, sizeof(map_being_loaded_buffer), baseMap);
+	}
+
+	// Called to fix the loaded map name to its actual (not base) name.
+	void OnNewGame()
+	{
+		// Fix the map name
+		strcpy_s(m_fixMap, sizeof(map_being_loaded_buffer), map_being_loaded_buffer);
+
+	}
+}}}

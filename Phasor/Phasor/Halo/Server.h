@@ -15,7 +15,7 @@ namespace halo { namespace server
 	bool __stdcall ProcessCommand(char* command);
 
 	// Called when a map is being loaded
-	bool __stdcall OnMapLoad(LPBYTE mapData);
+	bool __stdcall OnMapLoad(BYTE* mapData);
 
 	// Called when the server (not Phasor) wants to print a message.
 	void __stdcall OnHaloPrint(char* msg);
