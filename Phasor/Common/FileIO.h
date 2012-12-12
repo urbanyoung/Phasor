@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <string>
+#include <vector>
 
 namespace NDirectory
 {
@@ -26,6 +27,11 @@ namespace NDirectory
 
 	// Gets if the specified path points to a valid directory
 	bool IsDirectory(const std::wstring& path);
+
+	// Gets the files (not any directories) within a directory matching
+	// the specified pattern
+	void FindFiles(const std::wstring& searchExp, 
+		std::vector<std::wstring>& files);
 
 #ifdef _WIN32
 	bool GetMyDocuments(std::wstring& path);

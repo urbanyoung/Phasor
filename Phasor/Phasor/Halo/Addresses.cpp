@@ -137,6 +137,7 @@ namespace Addresses
 			std::string err = m_sprintf("FindAddress - Signature not found for local function %s", desc);
 			throw std::exception(err.c_str());
 		}
+		printf("%-25s : %-25s %08X\n", __FUNCTION__, desc, dwAddress);
 		return dwAddress;
 	}
 
@@ -144,9 +145,10 @@ namespace Addresses
 	// Note: If the address is not found, an exception is thrown.
 	DWORD FindPtrAddress(const char* desc, LPBYTE data, DWORD size, LPBYTE sig, DWORD sig_len, DWORD occ, int offset)
 	{
-		DWORD result = FindAddress(desc, data, size, sig, sig_len, occ, offset);
-		DWORD dwAddress = (DWORD)data + result + offset;
+		DWORD dwAddress = FindAddress(desc, data, size, sig, sig_len, occ, offset);
+		//DWORD dwAddress = (DWORD)data + result + offset;
 		ReadBytes(dwAddress, &dwAddress, 4);
+		printf("%-25s : %-25s %08X\n", __FUNCTION__, desc, dwAddress);
 		return dwAddress;
 	}
 

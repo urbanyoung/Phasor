@@ -86,7 +86,7 @@ std::wstring CLoggingStream::PrependTimestamp(const std::wstring& str)
 	SYSTEMTIME st = {0};		
 	GetLocalTime(&st);
 
-	return m_swprintf(L"%04i/%02i/%02i %02i:%02i:%02i %s",
+	return m_swprintf(L"%04i/%02i/%02i %02i:%02i:%02i  %s",
 		st.wYear, st.wMonth, st.wDay, st.wHour,st.wMinute,st.wSecond,
 		str.c_str());
 }

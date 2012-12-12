@@ -68,8 +68,8 @@
     <ClCompile Include="Phasor\Halo\Addresses.cpp">
       <Filter>Phasor\Halo\Hooks</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Halo\Hooks.cpp">
-      <Filter>Phasor\Halo\Hooks</Filter>
+    <ClCompile Include="Phasor\Halo\Game\MapLoader.cpp">
+      <Filter>Phasor\Halo\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

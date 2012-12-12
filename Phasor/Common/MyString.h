@@ -7,6 +7,8 @@
 std::string NarrowString(const std::wstring& wide);
 std::wstring WidenString(const std::string& narrow);
 void ToLowercase(std::string& str);
+void ToLowercase(std::wstring& str);
+void CStrToLower(char* str);
 
 std::string FormatVarArgs(const char* fmt, va_list marker);
 std::wstring FormatVarArgsW(const wchar_t* fmt, va_list marker);

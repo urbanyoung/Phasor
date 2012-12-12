@@ -65,6 +65,30 @@ namespace NDirectory
 			dwAttributes & FILE_ATTRIBUTE_DIRECTORY;
 	}
 
+	// Gets the files (not any directories) within a directory matching
+	// the specified pattern
+	void FindFiles(const std::wstring& searchExp, 
+		std::vector<std::wstring>& files)
+	{
+		WIN32_FIND_DATAW data;
+		HANDLE hFind = FindFirstFileW(searchExp.c_str(), &data);
+
+		try {
+			do {
+				// Make sure it's a file
+				if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+					files.push_back(data.cFileName);
+				}
+			} while (FindNextFileW(hFind, &data) != 0);
+		}
+		catch (...)
+		{
+			FindClose(hFind);
+			throw;
+		}
+		FindClose(hFind);
+	}
+
 #ifdef _WIN32
 	bool GetMyDocuments(std::wstring& path)
 	{

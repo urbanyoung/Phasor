@@ -51,6 +51,7 @@ namespace halo
 		std::string hash;
 		int memoryId;
 		PlayerStructure* mem;
+		// AFKDetection afk;
 
 		// ----------------------------------------------------------------
 		Player(int memoryId);

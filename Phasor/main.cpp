@@ -11,6 +11,8 @@
 #include "Phasor/Commands.h"
 #include "Phasor/Admin.h"
 #include "Phasor/Halo/Addresses.h"
+#include "Phasor/Halo/Hooks.h"
+#include "Phasor/Halo/Game/MapLoader.h"
 #include "Phasor/CrashHandler.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
@@ -46,7 +48,17 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Locating Halo addresses and structures" << endl;
 		DWORD ticks = GetTickCount();
 		Addresses::LocateAddresses();
-		PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
+		//PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
+		
+		PhasorLog << L"Installing crash handler.." << endl;
+		CrashHandler::InstallCatchers();
+
+#ifdef PHASOR_PC
+		halo::game::BuildMapList(PhasorLog);
+#endif
+		exit(1);
+		
+		//halo::InstallHooks();
 
 		if (!thread.run()) {
 			throw std::exception("cannot start the auxiliary thread.");
@@ -63,9 +75,6 @@ extern "C" __declspec(dllexport) void OnLoad()
 
 		PhasorLog << L"Initializing admin system" << endl;
 		Admin::Initialize(&PhasorLog);
-
-		PhasorLog << L"Installing crash handler.." << endl;
-		CrashHandler::InstallCatchers();
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 

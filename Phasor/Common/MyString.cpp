@@ -23,6 +23,19 @@ void ToLowercase(std::string& str)
 	std::transform(str.begin(), str.end(),str.begin(), tolower);
 }
 
+void ToLowercase(std::wstring& str)
+{
+	std::transform(str.begin(), str.end(),str.begin(), tolower);
+}
+
+void CStrToLower(char* str)
+{
+	for (int x = 0; str[x] != 0; x++) {
+		if (str[x] >= 'A' && str[x] <= 'Z')
+			str[x] += 32; // see asci table A - a
+	}
+}
+
 std::string FormatVarArgs(const char* fmt, va_list marker)
 {
 	// http://www.codeproject.com/Articles/15115/How-to-Format-a-String
