@@ -15,9 +15,9 @@
  * 2.
  * All map commands are hooked, specifically sv_mapcycle_add and sv_map.
  * Phasor implements all of the logic and expands the map info struct so that
- * it has room to accomodate scripts. When a map is being loaded the scripts
+ * it has room to accommodate scripts. When a map is being loaded the scripts
  * for this entry are saved so they can be loaded later (game::OnNew).
- * Phasor needs to manage the mapcycle list. When a game is being started the
+ * Phasor needs to manage the map cycle list. When a game is being started the
  * data needs to be transferred into the memory that the server uses. 
  * 
  * 3.
@@ -26,7 +26,7 @@
  * rebuilt. 
  * If the map being loaded is one that isn't default (ie bloodgulch1) then
  * a bit of swapping needs to be done regarding the name of the map to load.
- * If the data is changed the codecave is notified so that the data Halo
+ * If the data is changed the code cave is notified so that the data Halo
  * processes is reloaded. 
  * The map name is later overwritten (once loaded) so it can be determined
  * exactly what map is loaded. 
@@ -219,7 +219,7 @@ namespace halo { namespace game
 						// Default map, let halo add it.
 						if (base_map == map_name)
 							continue;
-
+						printf("Adding map %s\n", map_name.c_str());
 						// Add the data into the map table
 						size_t alloc_size = map_name.size() + 1;
 						char* map_alloc = (char*)GlobalAlloc(GMEM_FIXED, alloc_size);

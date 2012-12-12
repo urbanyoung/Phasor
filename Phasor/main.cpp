@@ -13,6 +13,7 @@
 #include "Phasor/Halo/Addresses.h"
 #include "Phasor/Halo/Hooks.h"
 #include "Phasor/Halo/Game/MapLoader.h"
+#include "Phasor/Halo/Game/Maps.h"
 #include "Phasor/CrashHandler.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
@@ -50,15 +51,19 @@ extern "C" __declspec(dllexport) void OnLoad()
 		Addresses::LocateAddresses();
 		//PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
 		
-		PhasorLog << L"Installing crash handler.." << endl;
+		PhasorLog << L"Installing crash handler..." << endl;
 		CrashHandler::InstallCatchers();
 
 #ifdef PHASOR_PC
 		halo::game::BuildMapList(PhasorLog);
 #endif
-		exit(1);
+		PhasorLog << L"Building gametype list..." << endl;
+		if (!halo::game::LoadGametypes())
+			PhasorLog << L"    No gametypes were found!" << endl;
+		//system("PAUSE");
+		//exit(1);
 		
-		//halo::InstallHooks();
+		halo::InstallHooks();
 
 		if (!thread.run()) {
 			throw std::exception("cannot start the auxiliary thread.");

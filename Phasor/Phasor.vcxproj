@@ -115,6 +115,8 @@
     <ClCompile Include="Phasor\GameLogging.cpp" />
     <ClCompile Include="Phasor\Halo\Addresses.cpp" />
     <ClCompile Include="Phasor\Halo\Game\MapLoader.cpp" />
+    <ClCompile Include="Phasor\Halo\Game\Maps.cpp" />
+    <ClCompile Include="Phasor\Halo\Hooks.cpp" />
     <ClCompile Include="Phasor\Logging.cpp" />
     <ClCompile Include="Phasor\PhasorThread.cpp" />
     <ClCompile Include="Phasor\ThreadedLogging.cpp" />

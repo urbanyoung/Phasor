@@ -69,6 +69,8 @@ namespace CrashHandler
 		ei.ThreadId = GetCurrentThreadId();
 		ei.ClientPointers = FALSE;
 
+		// todo: fork child process to do crash log and log it into 
+		// crash folder (in same place as logs etc)
 		HANDLE hFile = CreateFile("crashdump.dmp", GENERIC_READ | GENERIC_WRITE,
 			NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, 

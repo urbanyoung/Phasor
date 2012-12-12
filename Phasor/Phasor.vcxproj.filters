@@ -71,6 +71,12 @@
     <ClCompile Include="Phasor\Halo\Game\MapLoader.cpp">
       <Filter>Phasor\Halo\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Game\Maps.cpp">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Hooks.cpp">
+      <Filter>Phasor\Halo\Hooks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">

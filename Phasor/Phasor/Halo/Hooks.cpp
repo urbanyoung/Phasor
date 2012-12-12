@@ -12,7 +12,7 @@ using namespace halo;
 
 
 // Codecave for timers, safer than creating threads (hooking console chceking routine)
-DWORD consoleProc_ret = 0;
+/*DWORD consoleProc_ret = 0;
 __declspec(naked) void OnConsoleProcessing_CC()
 {	
 	__asm
@@ -929,7 +929,7 @@ do_broadcast:
 
 void __stdcall OnJoinCheck(LPBYTE lList, LPBYTE mem)
 {
-	/*if (game::GetPlayerList().size() == 16)
+	if (game::GetPlayerList().size() == 16)
 	{
 		DWORD mask = player->mem->playerJoinCount << 0x10, funccall = 0x494780;
 		__asm
@@ -962,8 +962,6 @@ void __stdcall OnJoinCheck(LPBYTE lList, LPBYTE mem)
 			0051247C      90            NOP
 			0051247D      90            NOP
 			0051247E      90            NOP
-
-	*/
 }
 
 DWORD joinCheck_ret = 0;
@@ -991,7 +989,7 @@ __declspec(naked) void OnJoinCheck_CC()
 		ret
 	}
 }
-
+*/
 namespace halo
 {
 	using namespace Common;
@@ -1003,11 +1001,11 @@ namespace halo
 		// 
 		// Ensure we always decide the team
 		BYTE nopSkipSelection[2] = {0x90, 0x90};
-		WriteBytes(PATCH_TEAMSELECTION, &nopSkipSelection, 2);
+		//WriteBytes(PATCH_TEAMSELECTION, &nopSkipSelection, 2);
 
 		// Stop the server from processing map additions (sv_map, sv_mapcycle_begin)
 		BYTE mapPatch[] = {0xB0, 0x01, 0xC3};
-		WriteBytes(PATCH_NOMAPPROCESS, &mapPatch, sizeof(mapPatch));
+		//WriteBytes(PATCH_NOMAPPROCESS, &mapPatch, sizeof(mapPatch));
 
 		#ifdef PHASOR_PC
 		// Make Phasor control the loading of a map
@@ -1024,11 +1022,12 @@ namespace halo
 		WriteBytes(PATCH_MAPTABLEALLOCATION, &nopPatch, sizeof(nopPatch));	
 		#endif
 
+
 		// Server hooks
 		// ----------------------------------------------------------------
 		// 
 		// Codecave for timers, safer than creating threads (hooking console checking routine)
-		CreateCodeCave(CC_CONSOLEPROC, 5, OnConsoleProcessing_CC);
+		/*CreateCodeCave(CC_CONSOLEPROC, 5, OnConsoleProcessing_CC);
 
 		// Codecave for hooking console events (closing etc)
 		CreateCodeCave(CC_CONSOLEHANDLER, 5, ConsoleHandler_CC);
@@ -1111,17 +1110,17 @@ namespace halo
 		CreateCodeCave(CC_HALOBANCHECK, 6, OnHaloBanCheck_CC);
 		CreateCodeCave(CC_VERSIONBROADCAST, 6, OnVersionBroadcast_CC);
 
-		/*CreateCodeCave(0x005112d4, 5, OnJoinCheck_CC);
+		//CreateCodeCave(0x005112d4, 5, OnJoinCheck_CC);
+		//
+		//BYTE maxCmp[] = {0x12};
+		//WriteBytes(0x5112A9, &maxCmp, sizeof(maxCmp));
+		//
+		//BYTE maxCmp1[] = {0x83, 0xC4, 0x0C, 0xC3, 0x90, 0x90, 0x90, 0x90};
+		//WriteBytes(0x005152FD , &maxCmp1, sizeof(maxCmp1));
+		//
+		//BYTE curCmp[] = {0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
+		//WriteBytes(0x00512479 , &curCmp, sizeof(curCmp));
 
-		BYTE maxCmp[] = {0x12};
-		WriteBytes(0x5112A9, &maxCmp, sizeof(maxCmp));
-
-		BYTE maxCmp1[] = {0x83, 0xC4, 0x0C, 0xC3, 0x90, 0x90, 0x90, 0x90};
-		WriteBytes(0x005152FD , &maxCmp1, sizeof(maxCmp1));
-
-		BYTE curCmp[] = {0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
-		WriteBytes(0x00512479 , &curCmp, sizeof(curCmp));
-*/
 
 		// I want to remove haloded's seh chain so that I can get extra exception
 		// information (passed to the unhandled exception filter)
@@ -1163,6 +1162,6 @@ namespace halo
 				last = exceptionChain;			
 				exceptionChain = exceptionChain->next;
 			}
-		}		
+		}*/	
 	}
 }
