@@ -1,6 +1,5 @@
 #pragma once
-#ifndef _SCRIPTING_H
-#define _SCRIPTING_H
+
 #include "Manager.h"
 #include "Common/Streams.h"
 
@@ -33,6 +32,7 @@ namespace Scripting
 	class Scripts
 	{
 	private:
+		typedef std::map<std::string, std::unique_ptr<ScriptState>> scripts_t; 
 		std::string scriptsDir;
 		std::map<std::string, std::unique_ptr<ScriptState>> scripts;
 		COutStream& errstream;
@@ -43,6 +43,8 @@ namespace Scripting
 		// Called when an error is raised by a script.
 		void HandleError(ScriptState& state, const std::string& desc);
 
+		scripts_t::iterator CloseScript(scripts_t::iterator itr);
+
 	public:
 		Scripts(COutStream& errstream, const std::string& scriptsDir);
 
@@ -51,6 +53,7 @@ namespace Scripting
 
 		// Closes the specified script, if it exists.
 		void CloseScript(const char* script);
+		void CloseAllScripts();
 
 		friend class PhasorCaller;
 	};
@@ -68,5 +71,3 @@ namespace Scripting
 	};
 
 }
-
-#endif

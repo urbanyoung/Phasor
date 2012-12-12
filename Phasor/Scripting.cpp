@@ -83,24 +83,32 @@ namespace Scripting
 		}
 	}
 
+	Scripts::scripts_t::iterator Scripts::CloseScript(scripts_t::iterator itr)
+	{
+		if (itr == scripts.end()) return itr;
+		std::unique_ptr<ScriptState> state(std::move(itr->second));
+		itr = scripts.erase(itr);
+
+		try {
+			Manager::Caller caller;
+			caller.Call(*state, "OnScriptUnload", DEFAULT_TIMEOUT);
+		} catch (std::exception & e) {
+			HandleError(*state, e.what());
+		}
+		return itr;
+	}
+
 	void Scripts::CloseScript(const char* script) 
 	{
 		auto itr = scripts.find(script);
+		CloseScript(itr);
+	}
 
-		if (itr != scripts.end()) {
-			std::unique_ptr<ScriptState> state(std::move(itr->second));
-			scripts.erase(itr);
-			
-			try 
-			{
-				Manager::Caller caller;
-				caller.Call(*state, "OnScriptUnload", DEFAULT_TIMEOUT);
-			} catch (std::exception & e) {
-				HandleError(*state, e.what());
-			}
-			//Manager::CloseScript(state);		
-			// script closed when state goes out of scope
-		}
+	void Scripts::CloseAllScripts()
+	{
+		auto itr = scripts.begin();
+		while (itr != scripts.end())
+			itr = CloseScript(itr);
 	}
 
 	void Scripts::CheckScriptCompatibility(ScriptState& state, const char* script) 
