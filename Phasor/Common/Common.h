@@ -20,16 +20,6 @@ namespace Common
 		TYPE_BLOB
 	};
 
-	// String descriptions matching types in obj_type
-	static const char* obj_desc[] = 
-	{
-		"nil",
-		"bool",
-		"number",
-		"string",
-		"table"
-	};
-
 	// --------------------------------------------------------------------
 	// Class: Object
 	// Provides an interface between Lua and Phasor objects. The derived
@@ -203,10 +193,4 @@ namespace Common
 	bool FindSignature(LPBYTE sigBuffer, LPBYTE sigWildCard, 
 		DWORD sigSize, LPBYTE pBuffer, DWORD size, DWORD occurance, DWORD& result);
 	BOOL CreateCodeCave(DWORD dwAddress, BYTE cbSize, VOID (*pFunction)());
-		
-	// --------------------------------------------------------------------
-	//
-	// Windows error stuff
-	// Formats the return value of GetLastError into a string
-	void GetLastErrorAsText(std::string& out);
 }

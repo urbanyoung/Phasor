@@ -402,24 +402,4 @@ namespace Common
 
 		return bResult;
 	}
-
-	// --------------------------------------------------------------------
-	//
-	// Windows error stuff
-	// Formats the return value of GetLastError into a string
-	void GetLastErrorAsText(std::string& out)
-	{
-		// FormatMessage will allocate this buffer with LocalAlloc
-		LPVOID lpMsgBuf = 0;
-		DWORD dw = GetLastError(); 
-
-		DWORD dwFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |FORMAT_MESSAGE_IGNORE_INSERTS;
-		FormatMessage(dwFlags, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),	(LPTSTR)&lpMsgBuf, 0, NULL);
-
-		if (lpMsgBuf) {
-			out.assign((char*)lpMsgBuf);
-			LocalFree(lpMsgBuf);
-		} 
-		else out.assign("No error");
-	}
 }
