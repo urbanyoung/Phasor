@@ -15,6 +15,7 @@
 #include "Phasor/Halo/Game/MapLoader.h"
 #include "Phasor/Halo/Game/Maps.h"
 #include "Phasor/CrashHandler.h"
+#include "Phasor/Halo/Server/Common.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 //#define WAIT_AND_QUIT Sleep(10000); return 1;
@@ -36,7 +37,7 @@ void LoadEarlyInit(COutStream& out);
 extern "C" __declspec(dllexport) void OnLoad()
 //int main()
 {
-	printf("44656469636174656420746f206d756d2e2049206d69737320796f752e\n");
+	g_PrintStream << L"44656469636174656420746f206d756d2e2049206d69737320796f752e" << endl;
 	LocateDirectories();
 
 	// can't rename phasor log for startup errors via earlyinit
@@ -90,14 +91,14 @@ extern "C" __declspec(dllexport) void OnLoad()
 	catch (std::exception& e)
 	{
 		PhasorLog << "Phasor cannot be loaded because : " <<  e.what() << endl;
-		printf("Phasor cannot be loaded because : %s\n", e.what());
+		g_PrintStream << "Phasor cannot be loaded because : " <<  e.what() << endl;
 		WAIT_AND_QUIT
 	}
 	catch (...)
 	{
 		static const std::wstring err = L"An unknown error occurred which prevented Phasor from loading";
 		PhasorLog << err << endl;
-		wprintf(L"%s\n", err.c_str());
+		g_PrintStream << err << endl;
 		WAIT_AND_QUIT
 	}
 
@@ -113,10 +114,10 @@ class CEarlyError : public CLoggingStream
 private:
 	virtual bool Write(const std::wstring& str)
 	{
-		wprintf(L"%s\n", str.c_str());
+		g_PrintStream << str << endl;
 		CLoggingStream::Write(str);
 		WAIT_AND_QUIT
-			return true; // no return
+		return true; // no return
 	}
 
 public:
@@ -157,7 +158,7 @@ void LoadEarlyInit(COutStream& out)
 	char line[4096];
 	while (file.ReadLine<char>(line, NELEMS(line), NULL)) {
 		ProcessCommand(line, out);
-		printf("%s\n", line);
+		g_PrintStream << line << endl;
 	}
 }
 

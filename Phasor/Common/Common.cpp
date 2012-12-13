@@ -392,7 +392,8 @@ namespace Common
 		DWORD dwOffset = PtrToUlong(pFunction) - dwAddress - 5;
 
 		// Construct the call instruction to the offset
-		BYTE patch[0xFF] = {0x90};
+		BYTE patch[0xFF];
+		memset(patch + 5, 0x90, sizeof(patch) - 5);
 		patch[0] = 0xE8;
 		memcpy(patch + 1, &dwOffset, sizeof(dwAddress));
 

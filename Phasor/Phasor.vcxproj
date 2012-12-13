@@ -48,6 +48,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS; PHASOR_PC; BUILD_DEBUG</PreprocessorDefinitions>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -118,7 +119,13 @@
     <ClCompile Include="Phasor\Halo\Game\MapLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Game\Maps.cpp" />
     <ClCompile Include="Phasor\Halo\Hooks.cpp" />
-    <ClCompile Include="Phasor\Halo\Server.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\Common.cpp">
+      <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)/ServerCommon</ObjectFileName>
+      <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Server.cpp" />
     <ClCompile Include="Phasor\Logging.cpp" />
     <ClCompile Include="Phasor\PhasorThread.cpp" />
     <ClCompile Include="Phasor\ThreadedLogging.cpp" />
@@ -156,7 +163,8 @@
     <ClInclude Include="Phasor\Halo\Game\Objects.h" />
     <ClInclude Include="Phasor\Halo\Hooks.h" />
     <ClInclude Include="Phasor\Halo\Player.h" />
-    <ClInclude Include="Phasor\Halo\Server.h" />
+    <ClInclude Include="Phasor\Halo\Server\Common.h" />
+    <ClInclude Include="Phasor\Halo\Server\Server.h" />
     <ClInclude Include="Phasor\Logging.h" />
     <ClInclude Include="Phasor\PhasorThread.h" />
     <ClInclude Include="Phasor\ThreadedLogging.h" />

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Common/Types.h"
+#include "../../../Common/Types.h"
 
 namespace halo { namespace server
 {
@@ -12,6 +12,8 @@ namespace halo { namespace server
 	void __stdcall OnConsoleProcessing();
 
 	// Called when a console command is to be executed
+	// true : Event has been handled, don't pass to server
+	// false: Not handled, pass to server.
 	bool __stdcall ProcessCommand(char* command);
 
 	// Called when a map is being loaded

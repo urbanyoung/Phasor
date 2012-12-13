@@ -77,11 +77,14 @@
     <ClCompile Include="Phasor\Halo\Hooks.cpp">
       <Filter>Phasor\Halo\Hooks</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Halo\Server.cpp">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClCompile>
     <ClCompile Include="Phasor\Halo\Game\Game.cpp">
       <Filter>Phasor\Halo\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Server.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Common.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -213,9 +216,6 @@
     <ClInclude Include="Phasor\Halo\Player.h">
       <Filter>Phasor\Halo\Player</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor\Halo\Server.h">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClInclude>
     <ClInclude Include="Phasor\Halo\Game\Chat.h">
       <Filter>Phasor\Halo\Game</Filter>
     </ClInclude>
@@ -239,6 +239,12 @@
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Alias.h">
       <Filter>Phasor\Halo\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Server.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Common.h">
+      <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

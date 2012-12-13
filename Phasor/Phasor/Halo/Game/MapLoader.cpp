@@ -2,6 +2,7 @@
 #include "../../Directory.h"
 #include "../../../Common/MyString.h"
 #include "../Addresses.h"
+#include "../Server/Common.h"
 #include <map>
 
 /* The reasoning behind this whole system is actually quite complex. The basic
@@ -197,7 +198,7 @@ namespace halo { namespace game { namespace maploader
 						// Default map, let halo add it.
 						if (base_map == map_name)
 							continue;
-						printf("Adding map %s\n", map_name.c_str());
+						g_PrintStream << "Adding map " << map_name << endl;
 						// Add the data into the map table
 						size_t alloc_size = map_name.size() + 1;
 						char* map_alloc = (char*)GlobalAlloc(GMEM_FIXED, alloc_size);

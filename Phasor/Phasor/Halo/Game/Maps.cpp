@@ -77,7 +77,6 @@ namespace halo { namespace game { namespace maps{
 		char* map = (char*)*(DWORD*)mapData;
 		char* gametype = (char*)*(DWORD*)(mapData + 4);
 
-
 #ifdef PHASOR_PC		
 		maploader::OnMapLoad(map);
 #endif

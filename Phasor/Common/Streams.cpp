@@ -94,8 +94,7 @@ void COutStream::print(const char* format, ...)
 	va_start(ArgList, format);
 	std::string str = FormatVarArgs(format, ArgList);
 	va_end(ArgList);
-	*this << str;
-	if (!no_flush) Flush();
+	*this << str << endl;
 }
 
 void COutStream::wprint(const wchar_t* format, ...)
@@ -104,8 +103,7 @@ void COutStream::wprint(const wchar_t* format, ...)
 	va_start(ArgList, format);
 	std::wstring str = FormatVarArgsW(format, ArgList);
 	va_end(ArgList);
-	*this << str;
-	if (!no_flush) Flush();
+	*this << str << endl;
 }
 
 // -----------------------------------------------------------------------

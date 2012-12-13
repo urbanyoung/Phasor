@@ -59,7 +59,8 @@ public:
 	COutStream & operator<<(int number);
 	COutStream & operator<<(double number);
 
-	// Print using c-style functions, flushed after each call.
+	// Print using c-style functions. endl is appended to each message and
+	// as such the stream is flushed after each call.
 	void print(const char* format, ...);
 	void wprint(const wchar_t* format, ...);
 };

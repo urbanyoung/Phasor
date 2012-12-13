@@ -6,7 +6,7 @@ namespace halo { namespace game {
 	// Called when a game stage ends
 	//void __stdcall OnGameEnd(DWORD mode)
 	//{
-//
+	//
 	//}
 
 	// Called when a new game starts
