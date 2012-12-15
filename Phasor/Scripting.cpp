@@ -24,8 +24,7 @@ namespace Scripting
 	{
 		const int n = sizeof(versions)/sizeof(versions[0]);
 		bool compatible = false;
-		for (int i = 0; i < n; i++)
-		{
+		for (int i = 0; i < n; i++) {
 			if (versions[i] == required) {
 				compatible = true;
 				break;

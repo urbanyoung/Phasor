@@ -69,7 +69,7 @@ namespace halo { namespace server { namespace maploader
 	void ClearMapcycle();
 
 	// Loads a map into the current mapcycle
-	bool LoadCurrentMap(const std::string& map, const std::wstring&, 
+	bool AddMapToCycle(const std::string& map, const std::wstring&, 
 		std::vector<std::string>& scripts,
 		COutStream& stream);
 }}}

@@ -52,20 +52,17 @@ namespace halo { namespace server
 	{
 		if (*(DWORD*)ADDR_GAMEREADY != 2) {
 			// start the server not just game
-			DWORD dwInitGame1 = FUNC_PREPAREGAME_ONE;
-			DWORD dwInitGame2 = FUNC_PREPAREGAME_TWO;
 			__asm
 			{
 				pushad
 				MOV EDI,map
-				CALL dword ptr ds:[dwInitGame1]
-
+				CALL dword ptr ds:[FUNC_PREPAREGAME_ONE]
 				push 0
 				push esi // we need a register for a bit
 				mov esi, dword ptr DS:[ADDR_PREPAREGAME_FLAG]
 				mov byte PTR ds:[esi], 1
 				pop esi
-				call dword ptr ds:[dwInitGame2]
+				call dword ptr ds:[FUNC_PREPAREGAME_TWO]
 				add esp, 4
 				popad
 			}
@@ -78,12 +75,10 @@ namespace halo { namespace server
 			//0051784C  |.  6A 00         PUSH 0
 			//	0051784E  |.  C605 28456900>MOV BYTE PTR DS:[694528],1
 			//	00517855  |.  E8 961B0000   CALL haloded.005193F0                                     ;  start server
-			DWORD dwStartGame = FUNC_EXECUTEGAME;
-
 			__asm
 			{
 				pushad
-				call dword ptr ds:[dwStartGame]
+				call dword ptr ds:[FUNC_EXECUTEGAME]
 				popad
 			}
 		}

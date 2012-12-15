@@ -15,4 +15,9 @@ namespace halo { namespace server { namespace scriptloader
 			}			
 		}
 	}
+
+	bool IsValidScript(const std::string& script)
+	{
+
+	}
 }}}

@@ -305,7 +305,7 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	// Loads a map into the currently loaded cycle
-	bool LoadCurrentMap(const std::string& map, const std::wstring& gametype,
+	bool AddMapToCycle(const std::string& map, const std::wstring& gametype,
 		std::vector<std::string>& scripts, COutStream& stream)
 	{
 		if (!IsValidMap(map.c_str()))	{
