@@ -5,7 +5,7 @@
 #include "../Addresses.h"
 #include <map>
 
-namespace halo { namespace game { namespace gametypes {
+namespace halo { namespace server { namespace gametypes {
 	std::map<std::wstring, std::wstring> gametypes;
 
 	bool BuildGametypeList()

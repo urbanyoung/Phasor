@@ -13,7 +13,7 @@
 #include "Phasor/Halo/Addresses.h"
 #include "Phasor/Halo/Hooks.h"
 #include "Phasor/Halo/Server/MapLoader.h"
-#include "Phasor/Halo/Game/Gametypes.h"
+#include "Phasor/Halo/Server/Gametypes.h"
 #include "Phasor/CrashHandler.h"
 #include "Phasor/Halo/Server/Common.h"
 
@@ -59,7 +59,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		halo::server::maploader::BuildMapList(PhasorLog);
 #endif
 		PhasorLog << L"Building gametype list..." << endl;
-		if (!halo::game::gametypes::BuildGametypeList())
+		if (!halo::server::gametypes::BuildGametypeList())
 			PhasorLog << L"    No gametypes were found!" << endl;
 		//system("PAUSE");
 		//exit(1);

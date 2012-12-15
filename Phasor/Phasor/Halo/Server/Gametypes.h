@@ -3,7 +3,7 @@
 #include <string>
 #include "../../../Common/Types.h"
 
-namespace halo { namespace game { namespace gametypes {
+namespace halo { namespace server { namespace gametypes {
 
 	bool IsValidGametype(const std::wstring& gametype);
 	bool BuildGametypeList();

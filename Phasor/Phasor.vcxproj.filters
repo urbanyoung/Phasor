@@ -80,10 +80,10 @@
     <ClCompile Include="Phasor\Halo\Server\Common.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Halo\Game\Gametypes.cpp">
-      <Filter>Phasor\Halo\Game</Filter>
-    </ClCompile>
     <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Gametypes.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
   </ItemGroup>
@@ -237,13 +237,13 @@
     <ClInclude Include="Phasor\Halo\Server\Common.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor\Halo\Game\Gametypes.h">
-      <Filter>Phasor\Halo\Game</Filter>
-    </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\MapLoader.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\MapVote.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Gametypes.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>
