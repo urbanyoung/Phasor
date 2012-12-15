@@ -68,12 +68,6 @@
     <ClCompile Include="Phasor\Halo\Addresses.cpp">
       <Filter>Phasor\Halo\Hooks</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Halo\Game\MapLoader.cpp">
-      <Filter>Phasor\Halo\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Phasor\Halo\Game\Maps.cpp">
-      <Filter>Phasor\Halo\Game</Filter>
-    </ClCompile>
     <ClCompile Include="Phasor\Halo\Hooks.cpp">
       <Filter>Phasor\Halo\Hooks</Filter>
     </ClCompile>
@@ -84,6 +78,12 @@
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
     <ClCompile Include="Phasor\Halo\Server\Common.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Game\Gametypes.cpp">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
   </ItemGroup>
@@ -219,19 +219,10 @@
     <ClInclude Include="Phasor\Halo\Game\Chat.h">
       <Filter>Phasor\Halo\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor\Halo\Game\Maps.h">
-      <Filter>Phasor\Halo\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Phasor\Halo\Game\MapVote.h">
-      <Filter>Phasor\Halo\Game</Filter>
-    </ClInclude>
     <ClInclude Include="Phasor\Halo\Game\Game.h">
       <Filter>Phasor\Halo\Game</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Game\Objects.h">
-      <Filter>Phasor\Halo\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Phasor\Halo\Game\MapLoader.h">
       <Filter>Phasor\Halo\Game</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Halo\AFKDetection.h">
@@ -244,6 +235,15 @@
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\Common.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Gametypes.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\MapLoader.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\MapVote.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>

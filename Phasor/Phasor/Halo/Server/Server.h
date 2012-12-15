@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../../../Common/Types.h"
+#include "MapLoader.h"
 
 namespace halo { namespace server
 {
-	
 	// Called for console events (exit etc)
 	void __stdcall ConsoleHandler(DWORD fdwCtrlType);
 
@@ -17,7 +17,7 @@ namespace halo { namespace server
 	bool __stdcall ProcessCommand(char* command);
 
 	// Called when a map is being loaded
-	bool __stdcall OnMapLoad(BYTE* mapData);
+	bool __stdcall OnMapLoad(maploader::s_mapcycle_entry* loading_map);
 
 	// Called when the server (not Phasor) wants to print a message.
 	void __stdcall OnHaloPrint(char* msg);

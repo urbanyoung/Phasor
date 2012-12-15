@@ -12,8 +12,8 @@
 #include "Phasor/Admin.h"
 #include "Phasor/Halo/Addresses.h"
 #include "Phasor/Halo/Hooks.h"
-#include "Phasor/Halo/Game/MapLoader.h"
-#include "Phasor/Halo/Game/Maps.h"
+#include "Phasor/Halo/Server/MapLoader.h"
+#include "Phasor/Halo/Game/Gametypes.h"
 #include "Phasor/CrashHandler.h"
 #include "Phasor/Halo/Server/Common.h"
 
@@ -56,10 +56,10 @@ extern "C" __declspec(dllexport) void OnLoad()
 		CrashHandler::InstallCatchers();
 
 #ifdef PHASOR_PC
-		halo::game::maploader::BuildMapList(PhasorLog);
+		halo::server::maploader::BuildMapList(PhasorLog);
 #endif
 		PhasorLog << L"Building gametype list..." << endl;
-		if (!halo::game::maps::LoadGametypes())
+		if (!halo::game::gametypes::BuildGametypeList())
 			PhasorLog << L"    No gametypes were found!" << endl;
 		//system("PAUSE");
 		//exit(1);

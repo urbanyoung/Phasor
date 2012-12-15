@@ -3,7 +3,7 @@
 #include "../../Common/Common.h"
 #include "Server/Server.h"
 #include "Game/Game.h"
-#include "Game/MapLoader.h"
+#include "Server/MapLoader.h"
 
 using namespace halo;
 
@@ -1009,11 +1009,11 @@ namespace halo
 
 #ifdef PHASOR_PC
 		// Make Phasor control the loading of a map
-		DWORD addr = (DWORD)UlongToPtr(game::maploader::GetLoadingMapBuffer());
+		DWORD addr = (DWORD)UlongToPtr(server::maploader::GetLoadingMapBuffer());
 		WriteBytes(PATCH_MAPLOADING, &addr, 4);
 
 		// Set the map table
-		DWORD table = game::maploader::GetMapTable();
+		DWORD table = server::maploader::GetMapTable();
 		WriteBytes(PATCH_MAPTABLE, &table, 4);
 
 		// Remove where the map table is allocated/reallocated by the server

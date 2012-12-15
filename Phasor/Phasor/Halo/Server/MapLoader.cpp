@@ -37,7 +37,7 @@
  * and re-reverse it. Unfortunately I didn't comment it very well when I made
  * it so I decided to add the information above to help you make sense of it.
 */
-namespace halo { namespace game { namespace maploader
+namespace halo { namespace server { namespace maploader
 {
 	// ----------------------------------------------------------------
 	// Structures used for map processing
@@ -241,6 +241,14 @@ namespace halo { namespace game { namespace maploader
 	{
 		// Fix the map name
 		strcpy_s(m_fixMap, sizeof(map_being_loaded_buffer), map_being_loaded_buffer);
+	}
 
+	// Returns the base name for a map (ie bloodgulch1 -> bloodgulch)
+	bool GetBaseMapName(const char* actual_map, const char** out)
+	{
+		auto itr = fileMap.find(actual_map);
+		if (itr == fileMap.end()) return false;
+		*out = itr->second.c_str();
+		return true;
 	}
 }}}

@@ -1,16 +1,14 @@
-#include "Maps.h"
+#include "Gametypes.h"
 #include "../../Directory.h"
 #include "../../../Common/FileIO.h"
 #include "../../../Common/MyString.h"
 #include "../Addresses.h"
-#include "MapLoader.h"
 #include <map>
 
-namespace halo { namespace game { namespace maps{
-	std::string current_map_base;
+namespace halo { namespace game { namespace gametypes {
 	std::map<std::wstring, std::wstring> gametypes;
 
-	bool LoadGametypes()
+	bool BuildGametypeList()
 	{
 		std::wstring hdmuPath = g_ProfileDirectory + L"saved\\hdmu.map";
 		CInFile file;
@@ -35,10 +33,10 @@ namespace halo { namespace game { namespace maps{
 
 			std::string filePath = (char*)(listing + n);
 			std::wstring gametype = (wchar_t*)(listing + n + 0x100);
-			
+
 			ToLowercase(gametype);
 			std::wstring wFilePath = WidenString(filePath);
-		//	wprintf(L"Found gametype %s\n", gametype.c_str());
+			//	wprintf(L"Found gametype %s\n", gametype.c_str());
 			gametypes.insert(
 				std::pair<std::wstring, std::wstring>(gametype, wFilePath)
 				);
@@ -46,7 +44,7 @@ namespace halo { namespace game { namespace maps{
 		return true;
 	}
 
-	static bool ReadGametypeData(const std::wstring& gametypePath, BYTE* out,
+	bool ReadGametypeData(const std::wstring& gametypePath, BYTE* out,
 		DWORD outSize)
 	{
 		CInFile file;
@@ -55,35 +53,9 @@ namespace halo { namespace game { namespace maps{
 		return file.Read(out, outSize-4, &read);		
 	}
 
-	const char* GetCurrentMapBaseName()
-	{
-		return current_map_base.c_str();
-	}
-
 	bool IsValidGametype(const std::wstring& gametype)
 	{
 		return gametypes.find(gametype) != gametypes.end();
 	}
-
-	// Codecaves
-	// --------------------------------------------------------------------
-	//
-
-	// Called when a map is being loaded
-	bool OnMapLoad(BYTE* mapData)
-	{
-		bool bMapUnchanged = true;
-		int curmap = *(DWORD*)ADDR_MAPCYCLEINDEX;
-		char* map = (char*)*(DWORD*)mapData;
-		char* gametype = (char*)*(DWORD*)(mapData + 4);
-
-#ifdef PHASOR_PC		
-		maploader::OnMapLoad(map);
-#endif
-
-		current_map_base = map;
-		return bMapUnchanged;
-	}
-
 
 }}}

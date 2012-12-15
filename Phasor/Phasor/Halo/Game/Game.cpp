@@ -1,6 +1,6 @@
 #include "Game.h"
-#include "Maps.h"
-#include "MapLoader.h"
+#include "../Server/Common.h"
+#include "../Server/MapLoader.h"
 
 namespace halo { namespace game {
 	// Called when a game stage ends
@@ -14,8 +14,7 @@ namespace halo { namespace game {
 	{
 #ifdef PHASOR_PC
 		// Fix the map name
-		maploader::OnNewGame();
-		map = maps::GetCurrentMapBaseName();
+		server::maploader::OnNewGame();
 #endif
 	}
 }}
