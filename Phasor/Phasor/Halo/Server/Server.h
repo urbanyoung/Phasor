@@ -5,6 +5,8 @@
 
 namespace halo { namespace server
 {
+	void StartGame(const char* map);
+
 	// Called for console events (exit etc)
 	void __stdcall ConsoleHandler(DWORD fdwCtrlType);
 

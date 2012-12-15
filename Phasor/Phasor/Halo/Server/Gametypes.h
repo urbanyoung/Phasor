@@ -7,7 +7,7 @@ namespace halo { namespace server { namespace gametypes {
 
 	bool IsValidGametype(const std::wstring& gametype);
 	bool BuildGametypeList();
-	bool ReadGametypeData(const std::wstring& gametypePath, BYTE* out,
+	bool ReadGametypeData(const std::wstring& gametype, BYTE* out,
 		DWORD outSize);
 
 }}}

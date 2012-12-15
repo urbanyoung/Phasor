@@ -86,6 +86,9 @@
     <ClCompile Include="Phasor\Halo\Server\Gametypes.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\ScriptLoader.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -244,6 +247,9 @@
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\Gametypes.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\ScriptLoader.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>

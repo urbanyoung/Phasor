@@ -7,6 +7,7 @@
 	#define CONST_MENTRY_SIZE				0x0E4
 	#define GAMET_BUFFER_SIZE				0x0D8	
 #endif
+static_assert(GAMET_BUFFER_SIZE + 0x0C == CONST_MENTRY_SIZE, "incorrect mapcycle sizes");
 
 // Offsets
 #define OFFSET_CONSOLETEXT					0x0B4
@@ -20,8 +21,8 @@
 #elif PHASOR_CE
 	#define OFFSET_MAXPLAYERS				0x1E5
 	#define OFFSET_PLAYERTABLE				0x1EA
-	#define OFFSET_HASHBASE			0x404
-	#define OFFSET_HASHRESOLVE			0x3F8
+	#define OFFSET_HASHBASE					0x404
+	#define OFFSET_HASHRESOLVE				0x3F8
 	#define OFFSET_HASHLOOKUPLEN			0x0EC
 #endif
 
@@ -37,8 +38,8 @@ extern unsigned long ADDR_PLAYERINFOBASE;
 extern unsigned long ADDR_OBJECTBASE;
 extern unsigned long ADDR_PLAYERBASE;
 extern unsigned long ADDR_MAPCYCLEINDEX;
-extern unsigned long ADDR_CURRENTMAPDATA;
-extern unsigned long ADDR_CURRENTMAPDATACOUNT;
+extern unsigned long ADDR_MAPCYCLELIST;
+extern unsigned long ADDR_MAPCYCLECOUNT;
 extern unsigned long ADDR_NEWGAMEMAP;
 extern unsigned long ADDR_CURMAPCOUNT;
 extern unsigned long ADDR_MAXMAPCOUNT;

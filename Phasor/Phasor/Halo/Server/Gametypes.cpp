@@ -44,9 +44,12 @@ namespace halo { namespace server { namespace gametypes {
 		return true;
 	}
 
-	bool ReadGametypeData(const std::wstring& gametypePath, BYTE* out,
+	bool ReadGametypeData(const std::wstring& gametype, BYTE* out,
 		DWORD outSize)
 	{
+		auto itr = gametypes.find(gametype);
+		if (itr == gametypes.end()) return false;
+		std::wstring& gametypePath = itr->second;
 		CInFile file;
 		if (!file.Open(gametypePath)) return false;
 		DWORD read;

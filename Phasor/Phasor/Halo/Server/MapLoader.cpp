@@ -2,7 +2,8 @@
 #include "../../Directory.h"
 #include "../../../Common/MyString.h"
 #include "../Addresses.h"
-#include "../Server/Common.h"
+#include "Common.h"
+#include "Gametypes.h"
 #include <map>
 
 /* The reasoning behind this whole system is actually quite complex. The basic
@@ -106,7 +107,7 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	// This function checks if a map exists
-	bool ValidateMap(char* map)
+	bool IsValidMap(const std::string& map)
 	{
 		return fileMap.find(map) != fileMap.end();
 	}
@@ -249,6 +250,128 @@ namespace halo { namespace server { namespace maploader
 		auto itr = fileMap.find(actual_map);
 		if (itr == fileMap.end()) return false;
 		*out = itr->second.c_str();
+		return true;
+	}
+
+	// --------------------------------------------------------------------
+	// Script loading
+	// 
+	s_mapcycle_entry* GetMapcycleStart()
+	{
+		return (s_mapcycle_entry*)*(DWORD*)ADDR_MAPCYCLELIST;
+	}
+
+	s_mapcycle_entry* GetCurrentMapcycleEntry()
+	{
+		DWORD index = *(DWORD*)ADDR_MAPCYCLEINDEX;
+		return index >= 0 && index < *(DWORD*)ADDR_MAPCYCLECOUNT
+			? GetMapcycleStart() + index*sizeof(s_mapcycle_entry) : NULL;
+	}
+
+	void SetMapcycleStart(s_mapcycle_entry* new_map)
+	{
+		*(DWORD*)ADDR_MAPCYCLELIST = (DWORD)new_map;
+	}
+
+	DWORD GetMapcycleCount()
+	{
+		return *(DWORD*)ADDR_MAPCYCLECOUNT;
+	}
+
+	void SetMapcycleCount(DWORD new_count)
+	{
+		*(DWORD*)ADDR_MAPCYCLECOUNT = new_count;
+	}
+
+	void ClearMapcycle()
+	{
+		s_mapcycle_entry* mapcycle = GetMapcycleStart();
+		if (mapcycle) {
+			DWORD count = GetMapcycleCount();
+			s_mapcycle_entry* entry = mapcycle;
+			for (DWORD i = 0; i < count; i++, entry += sizeof(s_mapcycle_entry)) {
+				if (entry->map) GlobalFree(entry->map);
+				if (entry->gametype) GlobalFree(entry->gametype);
+				if (entry->scripts) {
+					for (DWORD x = 0; x < entry->scripts->count; x++)
+						GlobalFree(entry->scripts->script_names[x]);
+					GlobalFree(entry->scripts);
+				}
+			}
+			GlobalFree(mapcycle);
+		}
+		SetMapcycleStart(NULL);
+		SetMapcycleCount(0);
+	}
+
+	// Loads a map into the currently loaded cycle
+	bool LoadCurrentMap(const std::string& map, const std::wstring& gametype,
+		std::vector<std::string>& scripts, COutStream& stream)
+	{
+		if (!IsValidMap(map.c_str()))	{
+			stream << L"'" << map << L"' isn't a valid map." << endl;
+			return false; 
+		}
+
+		if (gametypes::IsValidGametype(gametype)) {
+			stream << L"'" << gametype << L"' isn't a valid gametype." << endl;
+			return false; 
+		}
+
+		s_mapcycle_entry entry;
+
+		// Get the gametype data
+		if (!gametypes::ReadGametypeData(gametype, entry.gametype_data, 
+			sizeof(entry.gametype_data)))
+		{ 
+			stream << L"Cannot read gametype data for '" << gametype << L"'" << endl;
+			return false; 
+		}
+
+		// Allocate memory for the map
+		DWORD len = map.size() + 1;
+		entry.map = (char*)GlobalAlloc(GMEM_FIXED, len);
+		strcpy_s(entry.map, len, map.c_str());
+
+		// Allocate memory for the gametype
+		{
+			std::string n_gametype = NarrowString(gametype);
+			len = n_gametype.size() + 1;
+			entry.gametype = (char*)GlobalAlloc(GMEM_FIXED, len);
+			strcpy_s(entry.gametype, len, n_gametype.c_str());
+		}
+
+		// Allocate memory for the scripts
+		entry.scripts = (s_script_list*)GlobalAlloc(GMEM_FIXED, 
+			sizeof(s_script_list) 
+			+ ((scripts.size() - 1) * sizeof(entry.scripts->script_names[0])));
+		entry.scripts->count = scripts.size();
+
+		// Populate the script data
+		for (size_t x = 0; x < scripts.size(); x++)
+		{
+			entry.scripts->script_names[x] = (char*)
+				GlobalAlloc(GMEM_FIXED, scripts[x].size() + 1);
+			strcpy_s(entry.scripts->script_names[x], 
+				scripts[x].size() + 1, scripts[x].c_str());
+		}
+
+		// now add the new entry to the current cycle
+		s_mapcycle_entry* new_entry_pos = GetMapcycleStart();
+		if (new_entry_pos) { // already map cycle, need to expand
+			DWORD count = GetMapcycleCount();
+			s_mapcycle_entry* new_mapcycle = (s_mapcycle_entry*)
+				GlobalAlloc(GMEM_FIXED, sizeof(s_mapcycle_entry) * (count + 1));
+			memcpy(new_mapcycle, new_entry_pos, count * sizeof(s_mapcycle_entry));
+			new_entry_pos = new_mapcycle + (count * sizeof(s_mapcycle_entry));
+		} else { // no allocation
+			new_entry_pos = (s_mapcycle_entry*)GlobalAlloc(GMEM_FIXED, 
+				sizeof(s_mapcycle_entry));
+			SetMapcycleStart(new_entry_pos);
+			SetMapcycleCount(1);
+		}
+
+		memcpy(new_entry_pos, &entry, sizeof(entry));
 		return true;
 	}
 }}}

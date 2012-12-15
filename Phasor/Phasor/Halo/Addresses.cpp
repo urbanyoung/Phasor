@@ -14,8 +14,8 @@ unsigned long ADDR_PLAYERINFOBASE = 0x0069B91C;
 unsigned long ADDR_OBJECTBASE = 0x00744C18;
 unsigned long ADDR_PLAYERBASE = 0x0075ECE4;
 unsigned long ADDR_MAPCYCLEINDEX = 0x00614B58;
-unsigned long ADDR_CURRENTMAPDATA = 0x00614B4C;
-unsigned long ADDR_CURRENTMAPDATACOUNT = 0x00614B50;
+unsigned long ADDR_MAPCYCLELIST = 0x00614B4C;
+unsigned long ADDR_MAPCYCLECOUNT = 0x00614B50;
 unsigned long ADDR_NEWGAMEMAP = 0x006713D8;
 unsigned long ADDR_CURMAPCOUNT = 0x00692480;
 unsigned long ADDR_MAXMAPCOUNT = 0x00692484;
@@ -184,8 +184,8 @@ namespace Addresses
 
 		BYTE sig6[] = {0x57, 0x33, 0xFF, 0x3B, 0xC7};
 		ADDR_MAPCYCLEINDEX = FindPtrAddress("ADDR_MAPCYCLEINDEX", codeSection, codeSize, sig6, sizeof(sig6), 0, 0x60);
-		ADDR_CURRENTMAPDATA = FindPtrAddress("ADDR_CURRENTMAPDATA", codeSection, codeSize, sig6, sizeof(sig6), 0, 0x1C);
-		ADDR_CURRENTMAPDATACOUNT = FindPtrAddress("ADDR_CURRENTMAPDATACOUNT", codeSection, codeSize, sig6, sizeof(sig6), 0, 9);
+		ADDR_MAPCYCLELIST = FindPtrAddress("ADDR_CURRENTMAPDATA", codeSection, codeSize, sig6, sizeof(sig6), 0, 0x1C);
+		ADDR_MAPCYCLECOUNT = FindPtrAddress("ADDR_CURRENTMAPDATACOUNT", codeSection, codeSize, sig6, sizeof(sig6), 0, 9);
 
 		//BYTE sig7[] = {0x8B, 0x0C, 0xF0, 0x8D, 0x3C, 0xF0};
 		//ADDR_MAPCYCLECOUNT = FindPtrAddress("ADDR_MAPCYCLECOUNT", codeSection, codeSize, sig7, sizeof(sig7), 0, -24);

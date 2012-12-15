@@ -118,7 +118,7 @@ RELOAD_MAP_DATA:
 		mov esi, 0 // value of ADDR_MAPCYCLEINDEX, which we just set to 0
 
 		// get data for current map
-		mov eax, dword ptr ds:[ADDR_CURRENTMAPDATA]
+		mov eax, dword ptr ds:[ADDR_MAPCYCLELIST]
 		mov eax, [eax]
 		
 		//MOV ESI,DWORD PTR DS:[ADDR_MAPCYCLEINDEX]
