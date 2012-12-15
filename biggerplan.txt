@@ -31,14 +31,4 @@ Script features:
 	
 Could use shared_ptrs for script state, if a script is being closed but its use_count is > 1
 then call OnScriptUnload and set the unload global, but don't actually unload. 
-This means the actual script unloading should happen in the state's destructor.
-
-Threading:
-    t1 --> event --> t2 --> process --> optional: [callback --> t1 --> process callback]
-  - Each thread should be able to invoke events in the other.
-  - Implement with classes. The implementing class can store state that way
-    - Have two callback functions in the class, like EventMain, EventAux.
-	- Clean up memory when processed and there is no new callback.
-	- So the callbacks should return a boolean indicating if its finished.
- 
-	
+This means the actual script unloading should happen in the state's destructor	
