@@ -3,16 +3,12 @@
 #include "Common.h"
 #include "../../Logging.h"
 #include "ScriptLoader.h"
+#include "MapLoader.h"
+#include "../../Commands.h"
 
 namespace halo { namespace server
 {
 	std::string current_map_base;
-
-	struct PhasorCommands
-	{
-		(bool)(*fn)(void*, std::vector<std::string>&);
-		const char* key;
-	};
 
 	// Called when a map is being loaded
 	bool __stdcall OnMapLoad(maploader::s_mapcycle_entry* loading_map)
@@ -36,15 +32,23 @@ namespace halo { namespace server
 	}
 
 	// Called when a console command is to be executed
-	// true: Event has been handled, don't pass to server
-	// false: Not handled, pass to server.
-	bool __stdcall ProcessCommand(char* command)
+	// kProcessed: Event has been handled, don't pass to server
+	// kGiveToHalo: Not handled, pass to server.
+	e_command_result __stdcall ProcessCommand(char* command)
 	{
-		std::vector<std::string> args = TokenizeArgs(command);
-		if (args.size() == 0) return true; // nothing to process
-		/*g_PrintStream << L"Executing command '" << args[0] << "' from '" <<
-			command << "'" << endl;*/
-		return false;
+		// do admin checks here
+		// call scripts etc
+		return commands::ProcessCommand(std::string(command), g_PrintStream);
+		/*std::vector<std::string> args = TokenizeArgs(command);
+		if (args.size() == 0) return e_command_result::kProcessed; // nothing to process
+		
+		for (size_t x = 0; cmd_tbl[x].key != NULL; x++) {
+			if (cmd_tbl[x].key == args[0]) {
+				return cmd_tbl[x].fn(NULL, args, g_PrintStream);
+			}
+		}
+
+		return e_command_result::kGiveToHalo;*/
 	}
 
 	// This function is effectively sv_map_next

@@ -61,9 +61,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Building gametype list..." << endl;
 		if (!halo::server::gametypes::BuildGametypeList())
 			PhasorLog << L"    No gametypes were found!" << endl;
-		//system("PAUSE");
-		//exit(1);
-		
+
 		halo::InstallHooks();
 
 		if (!thread.run()) {
@@ -157,7 +155,7 @@ void LoadEarlyInit(COutStream& out)
 
 	char line[4096];
 	while (file.ReadLine<char>(line, NELEMS(line), NULL)) {
-		ProcessCommand(line, out);
+		commands::ProcessCommand(line, out);
 		g_PrintStream << line << endl;
 	}
 }

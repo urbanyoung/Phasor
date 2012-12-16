@@ -2,6 +2,7 @@
 
 #include "../../../Common/Types.h"
 #include "MapLoader.h"
+
 // stupid enum warning
 #pragma warning( disable : 4482)
 enum e_command_result
@@ -23,7 +24,7 @@ namespace halo { namespace server
 	// Called when a console command is to be executed
 	// true : Event has been handled, don't pass to server
 	// false: Not handled, pass to server.
-	bool __stdcall ProcessCommand(char* command);
+	e_command_result __stdcall ProcessCommand(char* command);
 
 	// Called when a map is being loaded
 	bool __stdcall OnMapLoad(maploader::s_mapcycle_entry* loading_map);

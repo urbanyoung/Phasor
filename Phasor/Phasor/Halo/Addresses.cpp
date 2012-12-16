@@ -300,7 +300,7 @@ namespace Addresses
 #endif
 		DWORD call_offset = *(DWORD*)(call_addr + 1);
 		FUNC_EXECUTEGAME = call_addr + 5 + call_offset;
-		//halo::hprintf("extern unsigned long FUNC_EXECUTEGAME = 0x%08X", FUNC_EXECUTEGAME);
+		//printf("extern unsigned long FUNC_EXECUTEGAME = 0x%08X", FUNC_EXECUTEGAME);
 			
 		BYTE sig33[] = {0x56, 0x68, 0xFF, 0x00, 0x00, 0x00, 0x57};
 		FUNC_PREPAREGAME_ONE = FindAddress("FUNC_PREPAREGAME_ONE", codeSection, codeSize, sig33, sizeof(sig33), 0, 0);

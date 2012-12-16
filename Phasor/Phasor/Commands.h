@@ -4,5 +4,10 @@
 #include <vector>
 #include "../Common/Streams.h"
 
-// Returns successs or failure
-bool ProcessCommand(const std::string& command, COutStream& out);
+enum e_command_result; // Server/Server.h
+
+namespace commands 
+{
+	e_command_result ProcessCommand(const std::string& command, COutStream& out,
+		void* exec_player=NULL);
+}

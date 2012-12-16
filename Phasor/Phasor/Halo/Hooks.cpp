@@ -54,6 +54,7 @@ __declspec(naked) void ConsoleHandler_CC()
 */
 // Codecave for intercepting server commands
 DWORD cmd_ret = 0;
+static const BYTE COMMAND_PROCESSED = e_command_result::kProcessed;
 __declspec(naked) void OnServerCommand()
 {
 	__asm
@@ -66,7 +67,7 @@ __declspec(naked) void OnServerCommand()
 		push edi
 		call server::ProcessCommand
 
-		cmp al, 1
+		cmp al, COMMAND_PROCESSED
 		je PROCESSED
 
 		popad
