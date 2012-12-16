@@ -367,12 +367,10 @@ namespace halo { namespace server { namespace maploader
 	// be valid.
 	// Returned: The new cycle or NULL on error.
 	s_mapcycle_entry* AddMapsToCycle(const std::vector<s_phasor_mapcycle_entry>& maps, 
-		COutStream& stream, s_mapcycle_entry* mapcycle=GetMapcycleStart(),
-		DWORD old_count = GetMapcycleCount(),
+		COutStream& stream, s_mapcycle_entry* mapcycle,
+		DWORD old_count,
 		DWORD* out_new_count = NULL)
 	{
-		if (mapcycle == NULL) old_count = 0;
-
 		// Allocate the memory for the mapcycle
 		s_mapcycle_entry* insert_pos = NULL;
 		DWORD new_count = old_count + maps.size();
