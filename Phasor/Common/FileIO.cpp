@@ -65,6 +65,14 @@ namespace NDirectory
 			dwAttributes & FILE_ATTRIBUTE_DIRECTORY;
 	}
 
+	// Checks if the specified file exists
+	bool IsValidFile(const std::wstring& path)
+	{
+		DWORD dwAttributes = GetFileAttributesW(path.c_str());
+		return dwAttributes != INVALID_FILE_ATTRIBUTES && 
+			!(dwAttributes & FILE_ATTRIBUTE_DIRECTORY);
+	}
+
 	// Gets the files (not any directories) within a directory matching
 	// the specified pattern
 	void FindFiles(const std::wstring& searchExp, 

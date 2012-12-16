@@ -1,9 +1,11 @@
 #include "MapLoader.h"
+#include "ScriptLoader.h"
 #include "../../Directory.h"
 #include "../../../Common/MyString.h"
 #include "../Addresses.h"
 #include "Common.h"
 #include "Gametypes.h"
+#include "Server.h"
 #include <map>
 
 /* The reasoning behind this whole system is actually quite complex. The basic
@@ -256,6 +258,13 @@ namespace halo { namespace server { namespace maploader
 	// --------------------------------------------------------------------
 	// Script loading
 	// 
+	struct s_phasor_mapcycle_entry
+	{
+		std::string map;
+		std::wstring gametype;
+		std::vector<std::string> scripts;
+	};
+
 	s_mapcycle_entry* GetMapcycleStart()
 	{
 		return (s_mapcycle_entry*)*(DWORD*)ADDR_MAPCYCLELIST;
@@ -283,43 +292,39 @@ namespace halo { namespace server { namespace maploader
 		*(DWORD*)ADDR_MAPCYCLECOUNT = new_count;
 	}
 
+	// Cleanup the memory associated with the specified mapcycle
+	void ClearMapcycle(s_mapcycle_entry* mapcycle, DWORD count) 
+	{
+		s_mapcycle_entry* entry = mapcycle;
+		for (DWORD i = 0; i < count; i++, entry += sizeof(s_mapcycle_entry)) {
+			if (entry->map) GlobalFree(entry->map);
+			if (entry->gametype) GlobalFree(entry->gametype);
+			if (entry->scripts) {
+				for (DWORD x = 0; x < entry->scripts->count; x++)
+					GlobalFree(entry->scripts->script_names[x]);
+				GlobalFree(entry->scripts);
+			}
+		}
+		GlobalFree(mapcycle);
+	}
+
+	// Clear the mapcycle Halo uses
 	void ClearMapcycle()
 	{
 		s_mapcycle_entry* mapcycle = GetMapcycleStart();
 		if (mapcycle) {
 			DWORD count = GetMapcycleCount();
-			s_mapcycle_entry* entry = mapcycle;
-			for (DWORD i = 0; i < count; i++, entry += sizeof(s_mapcycle_entry)) {
-				if (entry->map) GlobalFree(entry->map);
-				if (entry->gametype) GlobalFree(entry->gametype);
-				if (entry->scripts) {
-					for (DWORD x = 0; x < entry->scripts->count; x++)
-						GlobalFree(entry->scripts->script_names[x]);
-					GlobalFree(entry->scripts);
-				}
-			}
-			GlobalFree(mapcycle);
+			ClearMapcycle(mapcycle, count);
 		}
 		SetMapcycleStart(NULL);
 		SetMapcycleCount(0);
 	}
 
-	// Loads a map into the currently loaded cycle
-	bool AddMapToCycle(const std::string& map, const std::wstring& gametype,
-		std::vector<std::string>& scripts, COutStream& stream)
+	// Builds a new mapcycle entry into 'entry' (does memory allocation and copying)
+	bool BuildNewMapcycleEntry(const std::string& map,
+		const std::wstring& gametype, const std::vector<std::string>& scripts,
+		s_mapcycle_entry& entry, COutStream& stream)
 	{
-		if (!IsValidMap(map.c_str()))	{
-			stream << L"'" << map << L"' isn't a valid map." << endl;
-			return false; 
-		}
-
-		if (gametypes::IsValidGametype(gametype)) {
-			stream << L"'" << gametype << L"' isn't a valid gametype." << endl;
-			return false; 
-		}
-
-		s_mapcycle_entry entry;
-
 		// Get the gametype data
 		if (!gametypes::ReadGametypeData(gametype, entry.gametype_data, 
 			sizeof(entry.gametype_data)))
@@ -355,23 +360,290 @@ namespace halo { namespace server { namespace maploader
 			strcpy_s(entry.scripts->script_names[x], 
 				scripts[x].size() + 1, scripts[x].c_str());
 		}
-
-		// now add the new entry to the current cycle
-		s_mapcycle_entry* new_entry_pos = GetMapcycleStart();
-		if (new_entry_pos) { // already map cycle, need to expand
-			DWORD count = GetMapcycleCount();
-			s_mapcycle_entry* new_mapcycle = (s_mapcycle_entry*)
-				GlobalAlloc(GMEM_FIXED, sizeof(s_mapcycle_entry) * (count + 1));
-			memcpy(new_mapcycle, new_entry_pos, count * sizeof(s_mapcycle_entry));
-			new_entry_pos = new_mapcycle + (count * sizeof(s_mapcycle_entry));
-		} else { // no allocation
-			new_entry_pos = (s_mapcycle_entry*)GlobalAlloc(GMEM_FIXED, 
-				sizeof(s_mapcycle_entry));
-			SetMapcycleStart(new_entry_pos);
-			SetMapcycleCount(1);
-		}
-
-		memcpy(new_entry_pos, &entry, sizeof(entry));
 		return true;
 	}
+	
+	// Add maps to Halo's mapcycle. All maps, gametypes and scripts should
+	// be valid.
+	// Returned: The new cycle or NULL on error.
+	s_mapcycle_entry* AddMapsToCycle(const std::vector<s_phasor_mapcycle_entry>& maps, 
+		COutStream& stream, s_mapcycle_entry* mapcycle=GetMapcycleStart(),
+		DWORD* out_new_count = NULL)
+	{
+		// Allocate the memory for the mapcycle
+		s_mapcycle_entry* insert_pos = NULL;
+		DWORD new_count = 0, old_count = 0;
+		if (mapcycle) { // already data in mapcycle
+			old_count = GetMapcycleCount();
+		}
+		new_count = old_count + maps.size();
+		s_mapcycle_entry* new_mapcycle = (s_mapcycle_entry*)
+			GlobalAlloc(GMEM_FIXED, sizeof(s_mapcycle_entry) * new_count);
+		if (old_count > 0)
+			memcpy(new_mapcycle, mapcycle, old_count * sizeof(s_mapcycle_entry));
+		insert_pos = new_mapcycle + (old_count * sizeof(s_mapcycle_entry));
+		
+		for (size_t x = 0; x < maps.size(); x++) {
+			if (!BuildNewMapcycleEntry(maps[x].map, maps[x].gametype, maps[x].scripts,
+				*insert_pos, stream))
+			{
+				ClearMapcycle(new_mapcycle, x);
+				return NULL;
+			}
+			insert_pos += sizeof(s_mapcycle_entry);
+		}
+		if (out_new_count) *out_new_count = new_count;
+		return new_mapcycle;
+	}
+
+	// Adds a map to the currently executing Halo mapcycle
+	bool AddMapToCurrentCycle(const s_phasor_mapcycle_entry& map, 
+		COutStream& stream)
+	{
+		std::vector<s_phasor_mapcycle_entry> entry;
+		entry.push_back(map);
+		DWORD new_count = 0;
+		s_mapcycle_entry* new_cycle = AddMapsToCycle(entry, stream, 
+			GetCurrentMapcycleEntry(), &new_count);
+		if (new_cycle == NULL) return false;
+
+		ClearMapcycle();
+		SetMapcycleStart(new_cycle);
+		SetMapcycleCount(new_count);
+	}
+
+	// --------------------------------------------------------------------
+	// Mapcycle controlling functions
+	std::vector<s_phasor_mapcycle_entry> mapcycleList;
+	bool in_mapcycle = false;
+
+	e_command_result sv_mapcycle_begin(void*, 
+		std::vector<std::string>& tokens, COutStream& out)
+	{
+		// Check if there is any cycle data
+		if (!mapcycleList.size()) {
+			out << L"The mapcycle is empty.";
+			return e_command_result::kProcessed;
+		}
+
+		DWORD new_count = 0;
+		s_mapcycle_entry* new_cycle = AddMapsToCycle(mapcycleList, out, NULL,
+			&new_count);
+		if (new_cycle == NULL) {
+			out << "Unable to write the new cycle." << endl;
+			return e_command_result::kProcessed;
+		}
+
+		// Activate the new mapcycle
+		ClearMapcycle();
+		SetMapcycleStart(new_cycle);
+		SetMapcycleCount(new_count);
+
+		// start of map cycle
+		*(DWORD*)ADDR_MAPCYCLEINDEX	= -1;
+		server::StartGame(mapcycleList[0].map.c_str());
+		in_mapcycle = true;
+
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_mapcycle_add(void*, 
+		std::vector<std::string>& tokens, COutStream& out)
+	{
+		if (tokens.size() < 3) {
+			out << L"Syntax: sv_mapcycle_add <map> <gametype> opt: <script1> <script2> ..."
+				<< endl;
+			return e_command_result::kProcessed;
+		}
+		s_phasor_mapcycle_entry entry;
+
+		if (!IsValidMap(tokens[1]))	{
+			out << tokens[1] << L" isn't a valid map." << endl;
+			return e_command_result::kProcessed;
+		}
+		std::wstring gametype = WidenString(tokens[2]);
+		if (!gametypes::IsValidGametype(gametype)) {
+			out << gametype << L" isn't a valid gametype." << endl;
+			return e_command_result::kProcessed;
+		}
+
+		// store scripts if there are any
+		if (tokens.size() > 3) {
+			for (size_t x = 3; x < tokens.size(); x++) {
+				// Check the script exists
+				if (scriptloader::IsValidScript(tokens[x]))
+					entry.scripts.push_back(tokens[x]);
+				else {
+					out << tokens[x] << L" isn't a valid script."
+						<< endl;
+					return e_command_result::kProcessed;
+				}
+			}
+		}
+
+		// If we're in the mapcycle add the data to the current playlist
+		if (in_mapcycle) {
+			if (!AddMapToCurrentCycle(entry, out)) {
+				out << L"Unable to write mapcycle data. Map addition ignored." 
+					<< endl;
+				return e_command_result::kProcessed;
+			}
+		}
+
+		// Add to list
+		mapcycleList.push_back(entry);
+
+		out << entry.map << " (game: " << entry.gametype << ") has been added to the mapcycle."
+			<< endl;				
+
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_mapcycle_del(void* exec_player, 
+		std::vector<std::string>& tokens, COutStream& out)
+	{
+		if (tokens.size() != 2) {
+			out << L"Syntax: sv_mapcycle_del <index>" << endl;
+			return e_command_result::kProcessed;
+		}
+
+		DWORD index = atoi(tokens[1].c_str());
+		if (index < 0 || index >= mapcycleList.size()) {
+			out << L"You entered an invalid index, see sv_mapcycle." << endl;
+			return e_command_result::kProcessed;
+		}
+		std::vector<s_phasor_mapcycle_entry> newMapCycle = mapcycleList;
+		newMapCycle.erase(mapcycleList.begin() + index);
+
+		DWORD new_count = 0;
+		s_mapcycle_entry* new_cycle = AddMapsToCycle(newMapCycle, out, NULL,
+			&new_count);
+		if (new_cycle == NULL) {
+			out << "Unable to create the new mapcycle. Deletion ignored." << endl;
+			return e_command_result::kProcessed;
+		}
+		mapcycleList = newMapCycle;
+
+		// Make sure the index Halo's using is still valid
+		DWORD cur = *(DWORD*)ADDR_MAPCYCLEINDEX;
+		if (cur	>= mapcycleList.size())
+			*(DWORD*)ADDR_MAPCYCLEINDEX = -1; // restart the cycle
+		else if (index <= cur && cur > -1)
+			*(DWORD*)ADDR_MAPCYCLEINDEX = cur - 1;
+
+		// Display cycle as it is now
+		//sv_mapcycle(exec_player, tokens, out);
+		return e_command_result::kProcessed;
+	}
+
+	/*bool sv_mapcycle(void*, 
+		std::vector<std::string>& tokens, COutStream& out)
+	{
+		halo::hprintf("   Map                  Variant         Script(s)");
+
+		std::vector<s_phasor_mapcycle_entry*>::iterator itr = mapcycleList.begin();
+
+		int x = 0;
+		while (itr != mapcycleList.end())
+		{
+			std::string szEntry =  m_sprintf_s("%i  %s", x, (*itr)->map.c_str());
+
+			int tabCount = 3 - (szEntry.size() / 8);
+
+			for (int i = 0; i < tabCount; i++)
+				szEntry += "\t";
+
+			szEntry += (*itr)->gametype;
+			int len = (*itr)->gametype.size();
+			tabCount = 2 - (len / 8);
+
+			for (int i = 0; i < tabCount; i++)
+				szEntry += "\t";
+
+			// Loop through and add scripts (if any)
+			for (size_t i = 0; i < (*itr)->scripts.size(); i++)
+			{
+				if (i != 0)
+					szEntry += ",";
+				szEntry += (*itr)->scripts[i];
+			}
+
+			if (!(*itr)->scripts.size())
+				szEntry += "<no scripts>";
+
+			std::string output = ExpandTabsToSpace(szEntry.c_str());
+			halo::hprintf("%s", output.c_str());
+
+			itr++; x++;
+		}
+
+		return true;
+	}
+
+	bool sv_map(halo::h_player* exec, std::vector<std::string>& tokens)
+	{
+		if (tokens.size() >= 3)
+		{
+			std::vector<std::string> scripts;
+
+			if (tokens.size() > 3)
+			{
+				for (size_t x = 3; x < tokens.size(); x++)
+				{
+					// Check the script exists
+					if (Lua::CheckScriptVailidity(tokens[x]))
+						scripts.push_back(tokens[x]);
+					else
+					{
+						logging::LogData(LOGGING_PHASOR, "sv_map: %s isn't a valid script and therefore can't be used.", tokens[x].c_str());
+						halo::hprintf("sv_map: %s isn't a valid script and therefore can't be used.", tokens[x].c_str());
+					}
+				}
+			}
+
+			// Clear all currently loaded maps
+			ClearCurrentMapData();
+
+			// Load this map
+			if (LoadCurrentMap(tokens[1].c_str(), tokens[2].c_str(), scripts))
+			{
+				if (vote::IsEnabled())
+				{
+					halo::hprintf("Map voting has been disabled.");
+					vote::SetMapVote(false);
+				}
+
+				*(DWORD*)ADDR_MAPCYCLEINDEX	= -1;
+
+				// Start the game
+				StartGame(tokens[1].c_str());
+
+				// Stop map voting from calling sv_mapcycle_begin if its set to
+				//mapvote::DisableMapcycle();
+
+				mapcycle = false;
+
+				halo::hprintf("%s is being loaded with game type %s", tokens[1].c_str(), tokens[2].c_str());
+			}			
+		}
+		else
+			halo::hprintf("Syntax: sv_map <map> <gametype> opt: <script1> <script2> ...");
+
+		return true;
+	}
+
+	bool sv_end_game(halo::h_player* exec, std::vector<std::string>& tokens)
+	{
+		mapcycle = false;
+		return false;
+	}
+
+	// Custom functions
+	bool sv_reloadscripts(halo::h_player* exec, std::vector<std::string>& tokens)
+	{
+		Lua::ReloadScripts();
+		halo::hprintf("All currently loaded scripts have been reloaded.");
+
+		return true;
+	}*/
 }}}

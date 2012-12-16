@@ -52,8 +52,9 @@ namespace halo { namespace server { namespace maploader
 		"sizeof(s_mapcycle_entry) != CONST_MENTRY_SIZE");
 	#pragma pack(pop)
 
-	// Get a pointer to the start of the server's mapcycle data
-	s_mapcycle_entry* GetMapcycleStart();
+	// Get a pointer to the current map in the playlist
+	s_mapcycle_entry* GetCurrentMapcycleEntry();
+/*	s_mapcycle_entry* GetMapcycleStart();
 	s_mapcycle_entry* GetCurrentMapcycleEntry();
 
 	// Set the pointer to the server's mapcycle
@@ -71,5 +72,5 @@ namespace halo { namespace server { namespace maploader
 	// Loads a map into the current mapcycle
 	bool AddMapToCycle(const std::string& map, const std::wstring&, 
 		std::vector<std::string>& scripts,
-		COutStream& stream);
+		COutStream& stream);*/
 }}}

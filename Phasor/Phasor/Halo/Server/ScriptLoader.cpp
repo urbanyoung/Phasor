@@ -1,5 +1,8 @@
 #include "ScriptLoader.h"
 #include "../../../Scripting.h"
+#include "../../../Common/FileIO.h"
+#include "../../../Common/MyString.h"
+#include "../../Directory.h"
 #include "MapLoader.h"
 
 namespace halo { namespace server { namespace scriptloader
@@ -18,6 +21,7 @@ namespace halo { namespace server { namespace scriptloader
 
 	bool IsValidScript(const std::string& script)
 	{
-
+		std::wstring path = g_ScriptsDirectory + WidenString(script);
+		return NDirectory::IsValidFile(path);		
 	}
 }}}
