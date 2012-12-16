@@ -368,15 +368,14 @@ namespace halo { namespace server { namespace maploader
 	// Returned: The new cycle or NULL on error.
 	s_mapcycle_entry* AddMapsToCycle(const std::vector<s_phasor_mapcycle_entry>& maps, 
 		COutStream& stream, s_mapcycle_entry* mapcycle=GetMapcycleStart(),
+		DWORD old_count = GetMapcycleCount(),
 		DWORD* out_new_count = NULL)
 	{
+		if (mapcycle == NULL) old_count = 0;
+
 		// Allocate the memory for the mapcycle
 		s_mapcycle_entry* insert_pos = NULL;
-		DWORD new_count = 0, old_count = 0;
-		if (mapcycle) { // already data in mapcycle
-			old_count = GetMapcycleCount();
-		}
-		new_count = old_count + maps.size();
+		DWORD new_count = old_count + maps.size();
 		s_mapcycle_entry* new_mapcycle = (s_mapcycle_entry*)
 			GlobalAlloc(GMEM_FIXED, sizeof(s_mapcycle_entry) * new_count);
 		if (old_count > 0)
@@ -404,12 +403,13 @@ namespace halo { namespace server { namespace maploader
 		entry.push_back(map);
 		DWORD new_count = 0;
 		s_mapcycle_entry* new_cycle = AddMapsToCycle(entry, stream, 
-			GetCurrentMapcycleEntry(), &new_count);
+			GetMapcycleStart(), GetMapcycleCount(), &new_count);
 		if (new_cycle == NULL) return false;
 
 		ClearMapcycle();
 		SetMapcycleStart(new_cycle);
 		SetMapcycleCount(new_count);
+		return true;
 	}
 
 	// --------------------------------------------------------------------
@@ -428,7 +428,7 @@ namespace halo { namespace server { namespace maploader
 
 		DWORD new_count = 0;
 		s_mapcycle_entry* new_cycle = AddMapsToCycle(mapcycleList, out, NULL,
-			&new_count);
+			0, &new_count);
 		if (new_cycle == NULL) {
 			out << "Unable to write the new cycle." << endl;
 			return e_command_result::kProcessed;
@@ -490,9 +490,7 @@ namespace halo { namespace server { namespace maploader
 			}
 		}
 
-		// Add to list
 		mapcycleList.push_back(entry);
-
 		out << entry.map << " (game: " << entry.gametype << ") has been added to the mapcycle."
 			<< endl;				
 
@@ -517,7 +515,7 @@ namespace halo { namespace server { namespace maploader
 
 		DWORD new_count = 0;
 		s_mapcycle_entry* new_cycle = AddMapsToCycle(newMapCycle, out, NULL,
-			&new_count);
+			0, &new_count);
 		if (new_cycle == NULL) {
 			out << "Unable to create the new mapcycle. Deletion ignored." << endl;
 			return e_command_result::kProcessed;
