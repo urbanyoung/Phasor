@@ -26,6 +26,8 @@ namespace halo { namespace server
 #endif
 
 		current_map_base = map;
+		g_PrintStream << "Loading new map" << endl;
+		g_PrintStream << map << endl;
 		return bMapUnchanged;
 
 //		return game::maps::OnMapLoad(mapData);

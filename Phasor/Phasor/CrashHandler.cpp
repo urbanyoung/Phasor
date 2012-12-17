@@ -59,6 +59,7 @@ namespace CrashHandler
 
 	LONG WINAPI OnUnhandledException(PEXCEPTION_POINTERS pExceptionInfo)
 	{
+		system("PAUSE");
 		if (!bPassOn) // exception occurred while closing, force kill the server
 			ExitProcess(1);
 

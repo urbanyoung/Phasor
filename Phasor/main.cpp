@@ -55,9 +55,10 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Installing crash handler..." << endl;
 		CrashHandler::InstallCatchers();
 
-#ifdef PHASOR_PC
-		halo::server::maploader::BuildMapList(PhasorLog);
-#endif
+//#ifdef PHASOR_PC
+//		halo::server::maploader::BuildMapList(PhasorLog);
+//#endif
+		halo::server::maploader::Initialize(PhasorLog);
 		PhasorLog << L"Building gametype list..." << endl;
 		if (!halo::server::gametypes::BuildGametypeList())
 			PhasorLog << L"    No gametypes were found!" << endl;

@@ -12,7 +12,7 @@ namespace halo { namespace server { namespace scriptloader
 		g_Scripts->CloseAllScripts();
 		maploader::s_mapcycle_entry* entry = maploader::GetCurrentMapcycleEntry();
 
-		if (entry) {
+		if (entry && entry->scripts) {
 			for (size_t x = 0; x < entry->scripts->count; x++) {
 				g_Scripts->OpenScript(entry->scripts->script_names[x]);
 			}			

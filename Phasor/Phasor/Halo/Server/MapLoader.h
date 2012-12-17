@@ -8,6 +8,8 @@ enum e_command_result;
 
 namespace halo { namespace server { namespace maploader 
 {
+	void Initialize(COutStream& out);
+
 	//Non-default map loading
 	// --------------------------------------------------------------------
 #ifdef PHASOR_PC
@@ -52,6 +54,14 @@ namespace halo { namespace server { namespace maploader
 	};
 	static_assert(sizeof(s_mapcycle_entry) == CONST_MENTRY_SIZE, 
 		"sizeof(s_mapcycle_entry) != CONST_MENTRY_SIZE");
+
+	struct s_mapcycle_header
+	{
+		s_mapcycle_entry* games;
+		DWORD cur_count;
+		DWORD allocated_count;
+		DWORD current; // index of game being executed
+	};
 	#pragma pack(pop)
 
 	// Get a pointer to the current map in the playlist

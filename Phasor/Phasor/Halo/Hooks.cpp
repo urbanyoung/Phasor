@@ -1002,11 +1002,11 @@ namespace halo
 		// 
 		// Ensure we always decide the team
 		BYTE nopSkipSelection[2] = {0x90, 0x90};
-		//WriteBytes(PATCH_TEAMSELECTION, &nopSkipSelection, 2);
+		WriteBytes(PATCH_TEAMSELECTION, &nopSkipSelection, 2);
 
 		// Stop the server from processing map additions (sv_map, sv_mapcycle_begin)
 		BYTE mapPatch[] = {0xB0, 0x01, 0xC3};
-		//WriteBytes(PATCH_NOMAPPROCESS, &mapPatch, sizeof(mapPatch));
+		WriteBytes(PATCH_NOMAPPROCESS, &mapPatch, sizeof(mapPatch));
 
 #ifdef PHASOR_PC
 		// Make Phasor control the loading of a map
