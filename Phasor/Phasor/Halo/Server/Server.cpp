@@ -16,6 +16,8 @@ namespace halo { namespace server
 		bool bMapUnchanged = true;
 		char* map = loading_map->map;
 		char* gametype = loading_map->gametype;
+		g_PrintStream.print("%08X", map);
+		g_PrintStream << L"Loading map (before change) " << map << endl;
 
 #ifdef PHASOR_PC		
 		maploader::OnMapLoad(map);

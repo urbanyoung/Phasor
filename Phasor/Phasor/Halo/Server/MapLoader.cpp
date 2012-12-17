@@ -72,6 +72,8 @@ namespace halo { namespace server { namespace maploader
 
 	#pragma pack(pop)
 
+	static const size_t kMaxMapLength = 0x20;
+
 #ifdef PHASOR_PC
 	// ----------------------------------------------------------------
 	// MAP CODE, THIS INCLUDES NON-DEFAULT MAP LOADING AND VARIOUS MAP
@@ -85,7 +87,7 @@ namespace halo { namespace server { namespace maploader
 	std::map<std::string, std::string> fileMap;
 
 	// Stores the map which is being loaded
-	char map_being_loaded_buffer[64] = {0};
+	char map_being_loaded_buffer[kMaxMapLength] = {0};
 
 	// Used for rerouting the map table
 	mapTableInfo* mapTable = 0;
@@ -348,15 +350,15 @@ namespace halo { namespace server { namespace maploader
 			}
 
 			// Allocate memory for the map
-			DWORD len = map.size() + 1;
-			entry.map = (char*)GlobalAlloc(GMEM_FIXED, len);
+			//DWORD len = map.size() + 1;
+			entry.map = (char*)GlobalAlloc(GMEM_FIXED, kMaxMapLength);
 			g_PrintStream.print("allocated map memory %08X", entry.map);
-			strcpy_s(entry.map, len, map.c_str());
+			strcpy_s(entry.map, kMaxMapLength, map.c_str());
 
 			// Allocate memory for the gametype
 			{
 				std::string n_gametype = NarrowString(gametype);
-				len = n_gametype.size() + 1;
+				DWORD len = n_gametype.size() + 1;
 				entry.gametype = (char*)GlobalAlloc(GMEM_FIXED, len);
 				strcpy_s(entry.gametype, len, n_gametype.c_str());
 			}

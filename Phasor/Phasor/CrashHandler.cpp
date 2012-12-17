@@ -59,7 +59,6 @@ namespace CrashHandler
 
 	LONG WINAPI OnUnhandledException(PEXCEPTION_POINTERS pExceptionInfo)
 	{
-		system("PAUSE");
 		if (!bPassOn) // exception occurred while closing, force kill the server
 			ExitProcess(1);
 
@@ -72,15 +71,15 @@ namespace CrashHandler
 
 		// todo: fork child process to do crash log and log it into 
 		// crash folder (in same place as logs etc)
-		HANDLE hFile = CreateFile("crashdump.dmp", GENERIC_READ | GENERIC_WRITE,
+		HANDLE hFile = CreateFile("D:\\Development\\C++\\Phasor\\Debug\\crashdump.dmp", GENERIC_READ | GENERIC_WRITE,
 			NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, 
-			MiniDumpScanMemory, &ei, NULL, NULL);
+			/*MiniDumpScanMemory |*/ MiniDumpWithFullMemory, &ei, NULL, NULL);
 		CloseHandle(hFile);
 		// this might be better suited for halo crashes
 		MyStackWalker walker(GetCurrentProcessId(), GetCurrentProcess());
 		walker.ShowCallstack(GetCurrentThread(), pExceptionInfo->ContextRecord);
-
+		system("PAUSE");
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
 }
