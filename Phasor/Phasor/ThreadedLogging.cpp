@@ -4,7 +4,8 @@ void CThreadedLogging::Initialize(DWORD dwDelay)
 {
 	InitializeCriticalSection(&cs);
 	InitializeCriticalSection(&loggingStreamCS);
-	EnableTimestamp(false); // we'll deal with it
+	CLoggingStream::EnableTimestamp(false); // we'll deal with it
+	bDoTimestamp = true; // timestamp by default
 	threadEvent.reset(new CLogThreadEvent(*this, dwDelay));
 	id = thread.InvokeInAux(threadEvent);
 	AllocateLines();
@@ -70,13 +71,13 @@ void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 	}
 	CLoggingStream::Write(out);
 	data->clear();
-	::printf("Written in %i ticks\n", GetTickCount() - start);
+	//::printf("Written in %i ticks\n", GetTickCount() - start);
 }
 
 bool CThreadedLogging::Write(const std::wstring& str)
 {
 	Lock _(cs);
-	if (DoTimestamp())
+	if (bDoTimestamp)
 		lines->push_back(PrependTimestamp(str));
 	else
 		lines->push_back(str);
@@ -104,6 +105,7 @@ void CThreadedLogging::SetOutFile(const std::wstring& fileName)
 void CThreadedLogging::EnableTimestamp(bool state)
 {
 	Lock _(loggingStreamCS);
+	bDoTimestamp = state;
 	CLoggingStream::EnableTimestamp(state);
 }
 

@@ -35,11 +35,11 @@ public:
 	CLoggingStream(const CLoggingStream& other);
 	virtual ~CLoggingStream();
 
-	void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);
-	void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
-	void SetOutFile(const std::wstring& fileName); // use cur dir
-	void EnableTimestamp(bool state); // true by default
-	bool DoTimestamp() { return bTimestamp; }
+	virtual void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);
+	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
+	virtual void SetOutFile(const std::wstring& fileName); // use cur dir
+	virtual void EnableTimestamp(bool state); // true by default
+	virtual bool DoTimestamp() { return bTimestamp; }
 	static std::wstring PrependTimestamp(const std::wstring& str);
 };
 

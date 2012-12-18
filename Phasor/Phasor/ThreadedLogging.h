@@ -16,6 +16,7 @@ private:
 	std::shared_ptr<CLogThreadEvent> threadEvent;
 	typedef std::list<std::wstring> lines_t;
 	std::unique_ptr<lines_t> lines;
+	bool bDoTimestamp;
 
 	void Initialize(DWORD dwDelay);
 	void LogLinesAndCleanup(std::unique_ptr<lines_t> data);
@@ -33,11 +34,11 @@ public:
 	virtual ~CThreadedLogging();
 
 	// CLoggingStream isn't threadsafe, so we're responsible for thread safety.
-	void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);
-	void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
-	void SetOutFile(const std::wstring& fileName); // use cur dir
-	void EnableTimestamp(bool state);
-	std::wstring PrependTimestamp(const std::wstring& str);
+	virtual void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);
+	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
+	virtual void SetOutFile(const std::wstring& fileName); // use cur dir
+	virtual void EnableTimestamp(bool state);
+	virtual std::wstring PrependTimestamp(const std::wstring& str);
 
 	friend class CLogThreadEvent;
 };
