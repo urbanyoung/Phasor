@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "../Server/Common.h"
+#include "../Server/ServerStreams.h"
 #include "../Server/MapLoader.h"
 
 namespace halo { namespace game {
@@ -10,11 +10,7 @@ namespace halo { namespace game {
 	//}
 
 	// Called when a new game starts
-	void __stdcall OnNewGame(const char* map)
+	void OnNewGame(const char* map)
 	{
-#ifdef PHASOR_PC
-		// Fix the map name
-		server::maploader::OnNewGame();
-#endif
 	}
 }}

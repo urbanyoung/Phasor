@@ -76,7 +76,10 @@ void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 bool CThreadedLogging::Write(const std::wstring& str)
 {
 	Lock _(cs);
-	lines->push_back(PrependTimestamp(str));
+	if (DoTimestamp())
+		lines->push_back(PrependTimestamp(str));
+	else
+		lines->push_back(str);
 	return true; 
 }
 
@@ -127,9 +130,7 @@ void CLogThreadEvent::OnEventAux(PhasorThread& thread)
 		}
 	} // lock released here
 
-	if (lines != nullptr) {
-		printf("Writing\n");
-		owner.LogLinesAndCleanup(std::move(lines));
-	}
+	if (lines != nullptr) owner.LogLinesAndCleanup(std::move(lines));
+	
 	ReinvokeInAux(thread);
 }

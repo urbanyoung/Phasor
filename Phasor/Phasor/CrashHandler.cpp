@@ -74,11 +74,11 @@ namespace CrashHandler
 		HANDLE hFile = CreateFile("D:\\Development\\C++\\Phasor\\Debug\\crashdump.dmp", GENERIC_READ | GENERIC_WRITE,
 			NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, 
-			/*MiniDumpScanMemory |*/ MiniDumpWithFullMemory, &ei, NULL, NULL);
+			MiniDumpScanMemory, &ei, NULL, NULL);
 		CloseHandle(hFile);
 		// this might be better suited for halo crashes
-		MyStackWalker walker(GetCurrentProcessId(), GetCurrentProcess());
-		walker.ShowCallstack(GetCurrentThread(), pExceptionInfo->ContextRecord);
+		/*MyStackWalker walker(GetCurrentProcessId(), GetCurrentProcess());
+		walker.ShowCallstack(GetCurrentThread(), pExceptionInfo->ContextRecord);*/
 		system("PAUSE");
 		return EXCEPTION_EXECUTE_HANDLER;
 	}

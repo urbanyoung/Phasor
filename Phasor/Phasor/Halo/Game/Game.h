@@ -23,7 +23,7 @@ namespace halo { namespace game {
 	void __stdcall OnGameEnd(DWORD mode);
 
 	// Called when a new game starts
-	void __stdcall OnNewGame(const char* map);
+	void OnNewGame(const char* map); // called from Server.cpp
 
 	// Called when a player joins (after verification).
 	void __stdcall OnPlayerWelcome(DWORD playerId);

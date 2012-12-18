@@ -77,9 +77,6 @@
     <ClCompile Include="Phasor\Halo\Server\Server.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Halo\Server\Common.cpp">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClCompile>
     <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
@@ -87,6 +84,9 @@
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
     <ClCompile Include="Phasor\Halo\Server\ScriptLoader.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\ServerStreams.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
   </ItemGroup>
@@ -237,9 +237,6 @@
     <ClInclude Include="Phasor\Halo\Server\Server.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor\Halo\Server\Common.h">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\MapLoader.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
@@ -250,6 +247,9 @@
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\ScriptLoader.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\ServerStreams.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>

@@ -174,7 +174,7 @@ __declspec(naked) void OnNewGame_CC()
 		lea eax, dword ptr ds:[esp + 0x24]
 		mov eax, [eax]
 		push eax
-		call game::OnNewGame
+		call server::OnNewGame
 
 		popad
 

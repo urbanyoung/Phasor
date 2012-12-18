@@ -1,10 +1,11 @@
 #include "Server.h"
 #include "../../../Common/MyString.h"
-#include "Common.h"
+#include "ServerStreams.h"
 #include "../../Logging.h"
 #include "ScriptLoader.h"
 #include "MapLoader.h"
 #include "../../Commands.h"
+#include "../Game/Game.h"
 
 namespace halo { namespace server
 {
@@ -16,8 +17,6 @@ namespace halo { namespace server
 		bool bMapUnchanged = true;
 		char* map = loading_map->map;
 		char* gametype = loading_map->gametype;
-		g_PrintStream.print("%08X", map);
-		g_PrintStream << L"Loading map (before change) " << map << endl;
 
 #ifdef PHASOR_PC		
 		maploader::OnMapLoad(map);
@@ -28,11 +27,20 @@ namespace halo { namespace server
 #endif
 
 		current_map_base = map;
-		g_PrintStream << "Loading new map" << endl;
-		g_PrintStream << map << endl;
 		return bMapUnchanged;
 
 //		return game::maps::OnMapLoad(mapData);
+	}
+
+	// Called when a new game starts
+	void __stdcall OnNewGame(const char* map)
+	{
+#ifdef PHASOR_PC
+		// Fix the map name
+		maploader::OnNewGame();
+#endif
+		game::OnNewGame(map);
+		scriptloader::LoadScripts();
 	}
 
 	// Called when a console command is to be executed

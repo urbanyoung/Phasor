@@ -46,7 +46,7 @@ namespace Scripting
 		scripts_t::iterator CloseScript(scripts_t::iterator itr);
 
 	public:
-		Scripts(COutStream& errstream, const std::string& scriptsDir);
+		Scripts(COutStream& errstream, const std::wstring& scriptsDir);
 
 		// Opens the script specified, relative to the scripts directory
 		void OpenScript(const char* script);

@@ -3,7 +3,7 @@
 #include "../../Directory.h"
 #include "../../../Common/MyString.h"
 #include "../Addresses.h"
-#include "Common.h"
+#include "ServerStreams.h"
 #include "Gametypes.h"
 #include "Server.h"
 #include <map>
@@ -278,6 +278,7 @@ namespace halo { namespace server { namespace maploader
 
 		// called when this cycle is no longer in use by halo
 		void NoLongerActive() {	active = false;	}
+
 		// called when this cycle is in use by halo
 		void Active() { active = true; }
 
@@ -285,27 +286,20 @@ namespace halo { namespace server { namespace maploader
 		// free_start doesn't need to be the start of the cycle
 		void Free(s_mapcycle_entry* free_start, DWORD count)
 		{
-			g_PrintStream.print("Clearing with count %i", cur_count);
 			s_mapcycle_entry* entry = free_start;
 			for (DWORD i = 0; i < count; i++, entry++) {
-				g_PrintStream.print("%08X map %08X", entry, entry->map);
-				if (entry->map) {
-					GlobalFree(entry->map);
-					g_PrintStream << entry->map << endl;
-				}
+				if (entry->map)	GlobalFree(entry->map);
 				if (entry->gametype) GlobalFree(entry->gametype);
 				if (entry->scripts) {
 					for (DWORD x = 0; x < entry->scripts->count; x++)
 						GlobalFree(entry->scripts->script_names[x]);
 					GlobalFree(entry->scripts);
 				}
-				g_PrintStream.print("success on %i", i);
 			}
 		}
 		// free the current cycle
 		void Free()
 		{
-			g_PrintStream << "Freeing whole cycle" << endl;
 			Free(start, cur_count);
 			GlobalFree(start);
 			start = NULL;
@@ -323,8 +317,6 @@ namespace halo { namespace server { namespace maploader
 			size_t new_count = allocated_count + n;
 			s_mapcycle_entry* new_cycle = (s_mapcycle_entry*)
 				GlobalAlloc(GMEM_FIXED, sizeof(s_mapcycle_entry) * new_count);
-			g_PrintStream.print("new alloc %08X (old %08X)", new_cycle, start);
-			g_PrintStream.print("copying %i entries", cur_count);
 			if (!new_cycle) return false;
 			memcpy(new_cycle, start, sizeof(s_mapcycle_entry) * cur_count);
 			GlobalFree(start); // just the containing block, not each entry
@@ -350,9 +342,7 @@ namespace halo { namespace server { namespace maploader
 			}
 
 			// Allocate memory for the map
-			//DWORD len = map.size() + 1;
 			entry.map = (char*)GlobalAlloc(GMEM_FIXED, kMaxMapLength);
-			g_PrintStream.print("allocated map memory %08X", entry.map);
 			strcpy_s(entry.map, kMaxMapLength, map.c_str());
 
 			// Allocate memory for the gametype
@@ -364,11 +354,14 @@ namespace halo { namespace server { namespace maploader
 			}
 
 			if (scripts.size() > 0) {
+				DWORD size = sizeof(s_script_list);
+				g_PrintStream.print("Allocating %i bytes of memory for scripts", size);
 				// Allocate memory for the scripts
 				entry.scripts = (s_script_list*)GlobalAlloc(GMEM_FIXED, 
-					sizeof(s_script_list) 
-					+ ((scripts.size() - 1) * sizeof(entry.scripts->script_names[0])));
+					size);
 				entry.scripts->count = scripts.size();
+				entry.scripts->script_names = (char**)GlobalAlloc(GMEM_FIXED,
+					sizeof(entry.scripts->script_names[0])*scripts.size());
 
 				// Populate the script data
 				for (size_t x = 0; x < scripts.size(); x++)
@@ -392,10 +385,7 @@ namespace halo { namespace server { namespace maploader
 		}
 		~CHaloMapcycle()
 		{
-			g_PrintStream << "Cleaning up cycle with " << (DWORD)cur_count << " entires"
-				<< endl;
 			Free();
-			g_PrintStream << "Done" << endl;
 		}
 
 		// load the specified game into this cycle, expanding if necessary.
@@ -404,14 +394,17 @@ namespace halo { namespace server { namespace maploader
 			if (cur_count >= allocated_count) {
 				if (!Expand(3)) return false;
 			}
-			g_PrintStream.print("adding game into %08X", start + cur_count);
 			bool success = BuildNewEntry(game.map, game.gametype, game.scripts,
 				*(start + cur_count), out);
 			if (!success) return false;
 			cur_count++;
+			if (active)	{
+				g_mapcycle_header->cur_count = cur_count;
+			}
 			return true;
 		}
 
+		// Add a list of games to the mapcycle
 		bool AddGames(std::vector<s_phasor_mapcycle_entry>& games, COutStream& out)
 		{
 			size_t old_size = cur_count;
@@ -426,34 +419,33 @@ namespace halo { namespace server { namespace maploader
 			}
 			return true;
 		}
-		void debug_print()
-		{
-			s_mapcycle_entry* entry = start;
-			for (DWORD i = 0; i < cur_count; i++, entry++) {
-				g_PrintStream.print("%08X map %08X", entry, entry->map);
-			}
-		}
 
+		// Remove a game from the current cycle
 		bool DeleteGame(size_t index)
 		{
 			if (index < 0 || index >= cur_count) return false;
 			s_mapcycle_entry* to_remove = start + index;
 			Free(to_remove, 1);
-			memcpy(to_remove, to_remove + 1, cur_count - index - 1);
+			DWORD copy_count = cur_count - index - 1;
+			memcpy(to_remove, to_remove + 1, copy_count * sizeof(to_remove[0]));
 			cur_count--;
 
 			if (active) {
+				g_mapcycle_header->cur_count = cur_count;
+
 				// Make sure the index Halo's using is still valid
 				if (g_mapcycle_header->current >= cur_count)
 					g_mapcycle_header->current = -1; // restart cycle
-				else
-					g_mapcycle_header->current -= 1;
+				else if (g_mapcycle_header->current == index)
+					g_mapcycle_header->current--;
 			}
 
 			return true;
 		}
 
+		// Return number of entries in the cycle
 		size_t size() { return cur_count; }
+
 		// Ensures there is space for at least n ADDITIONAL items
 		bool Reserve(int n)
 		{
@@ -479,8 +471,10 @@ namespace halo { namespace server { namespace maploader
 		{
 		}
 
+		// Changes the active mapcycle and restarts the game
 		void SetActiveCycle(std::unique_ptr<CHaloMapcycle> new_cycle)
 		{
+			if (new_cycle->size() == 0) return;
 			if (active) active->NoLongerActive();
 			active = std::move(new_cycle);
 			active->Active();
@@ -488,6 +482,7 @@ namespace halo { namespace server { namespace maploader
 			mapcycle_header.cur_count = active->cur_count;
 			mapcycle_header.allocated_count = active->allocated_count;
 			mapcycle_header.current = -1;
+			server::StartGame(active->start->map);
 		}
 
 		bool is_empty() { return !active; }
@@ -498,14 +493,16 @@ namespace halo { namespace server { namespace maploader
 
 	std::unique_ptr<CHaloMapcycleLoader> cycle_loader;
 
-	void InitilizeMapcycle()
+	void InitializeMapcycle()
 	{
-		s_mapcycle_header* header = (s_mapcycle_header*)ADDR_MAPCYCLELIST;
-		cycle_loader = std::unique_ptr<CHaloMapcycleLoader>(new CHaloMapcycleLoader(*header));
+		g_mapcycle_header = (s_mapcycle_header*)ADDR_MAPCYCLELIST;
+		cycle_loader = std::unique_ptr<CHaloMapcycleLoader>(new CHaloMapcycleLoader(*g_mapcycle_header));
 	}
 
 	s_mapcycle_entry* GetCurrentMapcycleEntry()
 	{
+		// will break (give wrong data) if current map removed from cycle.
+		// only used in one place so don't really care
 		DWORD index = g_mapcycle_header->current;
 		return index >= 0 && index < g_mapcycle_header->cur_count
 			? g_mapcycle_header->games + index : NULL;
@@ -561,14 +558,6 @@ namespace halo { namespace server { namespace maploader
 		}
 
 		cycle_loader->SetActiveCycle(std::move(new_cycle));
-		g_PrintStream.print("before");
-		cycle_loader->GetActive().debug_print();
-		server::StartGame(mapcycleList[0].map.c_str());
-		g_PrintStream.print("after");
-		cycle_loader->GetActive().debug_print();
-		// getting changed by StartGame.. why?
-		// ps. count + 4 is allocated size
-		//g_PrintStream << "map count " << GetMapcycleCount() << endl;
 		in_mapcycle = true;
 
 		return e_command_result::kProcessed;
@@ -635,8 +624,8 @@ namespace halo { namespace server { namespace maploader
 	e_command_result sv_mapcycle(void*, 
 		std::vector<std::string>& tokens, COutStream& out)
 	{
-		out.wprint(L"    %-20s%-20s%s", L"Map", L"Variant", L"Script(s)");
-		const wchar_t* fmt = L"%-4i%-20s%-20s%s";
+		out.wprint(L"   %-20s%-20s%s", L"Map", L"Variant", L"Script(s)");
+		const wchar_t* fmt = L"%-3i%-20s%-20s%s";
 
 		for (size_t x = 0; x < mapcycleList.size(); x++)
 		{
@@ -679,14 +668,15 @@ namespace halo { namespace server { namespace maploader
 		if (!new_cycle->AddGame(entry, out)) {
 			out << L"Previous errors prevent the game from being started." << endl;
 			return e_command_result::kProcessed;
-		}
-		cycle_loader->SetActiveCycle(std::move(new_cycle));
+		}		
 		
-		// todo: disable next map vote
-		// 
+		// todo: disable next map vote (from server.cpp).
+		// todo: change this function to non sv_ command, give sv_map
+		// to Server which calls this (returning bool for success)
+		// and it can deal with map voting.
 		
 		// start the new game
-		server::StartGame(entry.map.c_str());
+		cycle_loader->SetActiveCycle(std::move(new_cycle));
 		in_mapcycle = false;
 
 		return e_command_result::kProcessed;
@@ -705,7 +695,7 @@ namespace halo { namespace server { namespace maploader
 #ifdef PHASOR_PC
 		BuildMapList(out);
 #endif
-		InitilizeMapcycle();
+		InitializeMapcycle();
 
 	}
 }}}

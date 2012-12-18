@@ -1,14 +1,13 @@
 #include "Scripting.h"
 #include "Manager.h"
 #include "Common/Common.h"
+#include "Common/MyString.h"
 #include "PhasorAPI.h"
 #include "PhasorScript.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()
 #include <array>
-
-std::unique_ptr<Scripting::Scripts> g_Scripts;
 
 namespace Scripting
 {
@@ -36,13 +35,13 @@ namespace Scripting
 
 	// --------------------------------------------------------------------
 	//
-	Scripts::Scripts(COutStream& errstream, const std::string& scriptsDir)
-		: errstream(errstream), scriptsDir(scriptsDir)
+	Scripts::Scripts(COutStream& errstream, const std::wstring& scriptsDir)
+		: errstream(errstream), scriptsDir(NarrowString(scriptsDir))
 	{
 	}
 
 	void Scripts::OpenScript(const char* script)
-	{
+	{		
 		// Make sure the script isn't already loaded
 		if (scripts.find(script) != scripts.end()) {
 			errstream << script << " is already loaded." << endl;
@@ -77,7 +76,7 @@ namespace Scripting
 		catch (std::exception& e)
 		{
 			NoFlush _(errstream);
-			errstream << script << " cannot be loaded. Why? " <<
+			errstream << L"script '" << script << "' cannot be loaded. Why? " <<
 				endl << log_prefix << e.what() << endl;
 		}
 	}

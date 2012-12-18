@@ -15,7 +15,7 @@
 #include "Phasor/Halo/Server/MapLoader.h"
 #include "Phasor/Halo/Server/Gametypes.h"
 #include "Phasor/CrashHandler.h"
-#include "Phasor/Halo/Server/Common.h"
+#include "Phasor/Halo/Server/ServerStreams.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 //#define WAIT_AND_QUIT Sleep(10000); return 1;
@@ -25,6 +25,7 @@ PhasorThread thread; // must be above all other objects
 std::unique_ptr<CScriptsLog> g_ScriptsLog;
 std::unique_ptr<CPhasorLog> g_PhasorLog;
 std::unique_ptr<CGameLog> g_GameLog;
+std::unique_ptr<Scripting::Scripts> g_Scripts;
 
 // Locate and create all directories Phasor will use. If an error occurs
 // this function never returns and the process is terminated.
@@ -73,7 +74,9 @@ extern "C" __declspec(dllexport) void OnLoad()
 		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, thread));
 		g_ScriptsLog.reset(new CThreadedLogging(
 			g_LogsDirectory, L"ScriptsLog", thread));
+		g_ScriptsLog->EnableTimestamp(false);
 		g_GameLog.reset(new CGameLog(g_LogsDirectory, L"GameLog", thread));
+		g_Scripts.reset(new Scripting::Scripts(*g_ScriptsLog,g_ScriptsDirectory));
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
 		LoadEarlyInit(PhasorLog);
@@ -84,7 +87,6 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 
 		// We want threaded logging from now on
-		//g_PhasorLog.reset(new CThreadedLogging(PhasorLog, thread));
 		*g_PhasorLog << "test" << endl;
 	}
 	catch (std::exception& e)
@@ -101,11 +103,11 @@ extern "C" __declspec(dllexport) void OnLoad()
 		WAIT_AND_QUIT
 	}
 
-	thread.close();
+	/*thread.close();
 
 	while (!thread.has_closed()) {
 		Sleep(10);
-	}	
+	}	*/
 }
 
 class CEarlyError : public CLoggingStream
