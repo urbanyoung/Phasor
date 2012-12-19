@@ -62,9 +62,6 @@
     <ClCompile Include="Phasor\CrashHandler.cpp">
       <Filter>Phasor</Filter>
     </ClCompile>
-    <ClCompile Include="Libraries\StackWalker.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
     <ClCompile Include="Phasor\Halo\Addresses.cpp">
       <Filter>Phasor\Halo\Hooks</Filter>
     </ClCompile>
@@ -206,9 +203,6 @@
     </ClInclude>
     <ClInclude Include="Phasor\CrashHandler.h">
       <Filter>Phasor</Filter>
-    </ClInclude>
-    <ClInclude Include="Libraries\StackWalker.h">
-      <Filter>Libraries</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Addresses.h">
       <Filter>Phasor\Halo\Hooks</Filter>

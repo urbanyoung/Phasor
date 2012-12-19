@@ -104,7 +104,6 @@
     <ClCompile Include="Common\Timers.cpp" />
     <ClCompile Include="Libraries\Curl.cpp" />
     <ClCompile Include="Libraries\sqlitepp.cpp" />
-    <ClCompile Include="Libraries\StackWalker.cpp" />
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
@@ -143,7 +142,6 @@
     <ClInclude Include="Common\Types.h" />
     <ClInclude Include="Libraries\Curl.h" />
     <ClInclude Include="Libraries\sqlitepp.h" />
-    <ClInclude Include="Libraries\StackWalker.h" />
     <ClInclude Include="Lua.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="PhasorAPI.h" />

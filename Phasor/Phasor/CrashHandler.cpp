@@ -1,5 +1,4 @@
 #include "CrashHandler.h"
-#include "../Libraries/StackWalker.h"
 #include "../Common/Common.h"
 #include "../Common/Types.h"
 #include "../Common/MyString.h"
@@ -14,17 +13,6 @@
 namespace CrashHandler
 {
 	using namespace Common;
-
-	class MyStackWalker : public StackWalker
-	{
-	public:
-		MyStackWalker() : StackWalker() {}
-		MyStackWalker(DWORD dwProcessId, HANDLE hProcess) : StackWalker(dwProcessId, hProcess) {}
-		virtual void OnOutput(LPCSTR szText) { 
-			printf(szText); 
-			StackWalker::OnOutput(szText);
-		}
-	};
 
 	// Handler for all unhandled exceptions
 	LONG WINAPI OnUnhandledException(PEXCEPTION_POINTERS pExceptionInfo);
@@ -89,9 +77,6 @@ namespace CrashHandler
 		MiniDumpWriteDump(GetCurrentProcess(), dwProcessId, hFile, 
 			MiniDumpScanMemory, &ei, NULL, NULL);
 		CloseHandle(hFile);
-		// this might be better suited for halo crashes
-		/*MyStackWalker walker(GetCurrentProcessId(), GetCurrentProcess());
-		walker.ShowCallstack(GetCurrentThread(), pExceptionInfo->ContextRecord);*/
 
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
