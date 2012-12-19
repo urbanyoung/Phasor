@@ -86,6 +86,15 @@
     <ClCompile Include="Phasor\Halo\Server\ServerStreams.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\AFKDetection.cpp">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Player.cpp">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Game\Objects.cpp">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -245,6 +254,15 @@
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\ServerStreams.h">
       <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Version.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Globals.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\vect3d.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

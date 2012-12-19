@@ -14,7 +14,11 @@ enum e_command_result
 namespace halo { namespace server
 {
 	void StartGame(const char* map);
+	void MessageAllPlayers(const wchar_t* fmt, ...);
 
+	// --------------------------------------------------------------------
+	// Events
+	
 	// Called for console events (exit etc)
 	void __stdcall ConsoleHandler(DWORD fdwCtrlType);
 

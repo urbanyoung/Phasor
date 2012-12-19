@@ -4,6 +4,7 @@
 #include "../Common/MyString.h"
 #include "Directory.h"
 #include "Halo/Addresses.h"
+#include "Version.h"
 #include <windows.h>
 #include <stdio.h>
 #include <DbgHelp.h>
@@ -61,17 +62,16 @@ namespace CrashHandler
 		ei.ClientPointers = FALSE;
 
 		DWORD dwProcessId = GetCurrentProcessId();
-
 		SYSTEMTIME stLocalTime;
 		GetLocalTime(&stLocalTime);
 		wchar_t CrashDumpW[1024];
 		swprintf_s(CrashDumpW, NELEMS(CrashDumpW), 
-				L"%s\\%s-%s-%04d%02d%02d-%02d%02d%02d-%ld-%ld.dmp", 
-				g_CrashDirectory.c_str(), L"Phasor", L"Pre-release", 
-				stLocalTime.wYear, stLocalTime.wMonth, stLocalTime.wDay, 
-				stLocalTime.wHour, stLocalTime.wMinute, stLocalTime.wSecond, 
-				dwProcessId, ei.ThreadId);
-		// CreateFileW can write into CrashDumpW so can't be const memory
+				L"%s\\%s-%s-%04X-%04d%02d%02d-%02d%02d%02d-%ld-%ld.dmp", 
+				g_CrashDirectory.c_str(), L"Phasor", PHASOR_MAJOR_VERSION_STR, 
+				PHASOR_INTERNAL_VERSION, stLocalTime.wYear, stLocalTime.wMonth,
+				stLocalTime.wDay, stLocalTime.wHour, stLocalTime.wMinute, 
+				stLocalTime.wSecond, dwProcessId, ei.ThreadId);
+
 		HANDLE hFile = CreateFileW(CrashDumpW, GENERIC_READ | GENERIC_WRITE,
 			NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		MiniDumpWriteDump(GetCurrentProcess(), dwProcessId, hFile, 

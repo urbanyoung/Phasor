@@ -38,7 +38,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Development\C++\boost_1_52_0;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
@@ -114,8 +114,11 @@
     <ClCompile Include="Phasor\Directory.cpp" />
     <ClCompile Include="Phasor\GameLogging.cpp" />
     <ClCompile Include="Phasor\Halo\Addresses.cpp" />
+    <ClCompile Include="Phasor\Halo\AFKDetection.cpp" />
     <ClCompile Include="Phasor\Halo\Game\Game.cpp" />
+    <ClCompile Include="Phasor\Halo\Game\Objects.cpp" />
     <ClCompile Include="Phasor\Halo\Hooks.cpp" />
+    <ClCompile Include="Phasor\Halo\Player.cpp" />
     <ClCompile Include="Phasor\Halo\Server\ServerStreams.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)</ObjectFileName>
@@ -140,6 +143,7 @@
     <ClInclude Include="Common\Threads.h" />
     <ClInclude Include="Common\Timers.h" />
     <ClInclude Include="Common\Types.h" />
+    <ClInclude Include="Common\vect3d.h" />
     <ClInclude Include="Libraries\Curl.h" />
     <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="Lua.h" />
@@ -151,6 +155,7 @@
     <ClInclude Include="Phasor\CrashHandler.h" />
     <ClInclude Include="Phasor\Directory.h" />
     <ClInclude Include="Phasor\GameLogging.h" />
+    <ClInclude Include="Phasor\Globals.h" />
     <ClInclude Include="Phasor\Halo\Addresses.h" />
     <ClInclude Include="Phasor\Halo\AFKDetection.h" />
     <ClInclude Include="Phasor\Halo\Alias.h" />
@@ -168,6 +173,7 @@
     <ClInclude Include="Phasor\Logging.h" />
     <ClInclude Include="Phasor\PhasorThread.h" />
     <ClInclude Include="Phasor\ThreadedLogging.h" />
+    <ClInclude Include="Phasor\Version.h" />
     <ClInclude Include="Scripting.h" />
   </ItemGroup>
   <ItemGroup>

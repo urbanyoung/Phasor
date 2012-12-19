@@ -4,7 +4,7 @@
 #include "../../../Common/MyString.h"
 #include "../../Directory.h"
 #include "MapLoader.h"
-#include "ServerStreams.h"
+#include "../../Globals.h"
 
 namespace halo { namespace server { namespace scriptloader
 {

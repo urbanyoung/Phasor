@@ -1,21 +1,14 @@
 #pragma once
 
 #include "../../../Common/Types.h"
+#include "../../../Common/vect3d.h"
 
 namespace halo { namespace objects
 {
 	#pragma pack(push, 1)
-
-	struct vect3d
-	{
-		float x;
-		float y;
-		float z;
-	};
-
 	// Some structure issues were clarified thanks to the code at:
 	// http://code.google.com/p/halo-devkit/source/browse/trunk/halo_sdk/Engine/objects.h
-	struct G_Object // generic object header
+	struct s_halo_object_header // generic object header
 	{
 		DWORD mapId; // 0x0000
 		long unk[3]; // 0x0004
@@ -54,7 +47,7 @@ namespace halo { namespace objects
 		long unkChunk4[0x2f]; // 0x0138
 	};
 
-	struct hBiped
+	struct s_halo_biped
 	{
 		char unkChunk[0x10]; // 0x1F4
 		long invisible; // 0x204 (0x41 inactive, 0x51 active. probably bitfield but never seen anything else referenced)
@@ -76,9 +69,10 @@ namespace halo { namespace objects
 			char unk4 : 1; // 16
 		} actionFlags;
 		char unkChunk1[0x26]; // 0x020A
-		unsigned long cameraX; // 0x0230
+		_vect3d cameraView;
+		/*unsigned long cameraX; // 0x0230
 		unsigned long cameraY; // 0x0234
-		unsigned long cameraZ; // 0x0238
+		unsigned long cameraZ; // 0x0238*/
 		char unkChunk2[0x6c]; // 0x23C
 		BYTE bodyState; // 0x2A7 (2 = standing, 3 = crouching, 0xff = invalid, like in vehicle)
 		char unkChunk3[0x50]; // 0x2A8
@@ -94,17 +88,17 @@ namespace halo { namespace objects
 	};
 
 
-	struct HObject // structure for objects
+	struct s_halo_object // structure for objects
 	{
-		G_Object base;
+		s_halo_object_header base;
 		union
 		{
-			hBiped biped;
+			s_halo_biped biped;
 		};
 	};
 
 	// Structure of tag index table
-	struct hTagIndexTableHeader
+	struct s_tag_index_table_header
 	{
 		DWORD next_ptr;
 		DWORD starting_index; // ??
@@ -118,7 +112,7 @@ namespace halo { namespace objects
 	};
 
 	// Structure of the tag header (entry in tag table)
-	struct hTagHeader
+	struct s_tag_header
 	{
 		DWORD tagType; // ie weap
 		DWORD unk[2]; // I don't know
@@ -129,7 +123,7 @@ namespace halo { namespace objects
 	};
 
 	// Stripped down hTagHeader
-	struct objInfo
+	struct s_object_info
 	{
 		DWORD tagType;
 		char* tagName;
@@ -138,6 +132,8 @@ namespace halo { namespace objects
 	};
 
 	#pragma pack(pop)
+
+	s_halo_object* GetObjectAddress(DWORD objectId);
 
 	// --------------------------------------------------------------------\
 	// Events

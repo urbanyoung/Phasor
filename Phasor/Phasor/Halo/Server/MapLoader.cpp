@@ -3,7 +3,7 @@
 #include "../../Directory.h"
 #include "../../../Common/MyString.h"
 #include "../Addresses.h"
-#include "ServerStreams.h"
+#include "../../Globals.h"
 #include "Gametypes.h"
 #include "Server.h"
 #include <map>
@@ -355,7 +355,6 @@ namespace halo { namespace server { namespace maploader
 
 			if (scripts.size() > 0) {
 				DWORD size = sizeof(s_script_list);
-				g_PrintStream.print("Allocating %i bytes of memory for scripts", size);
 				// Allocate memory for the scripts
 				entry.scripts = (s_script_list*)GlobalAlloc(GMEM_FIXED, 
 					size);

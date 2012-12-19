@@ -1,11 +1,11 @@
 #include "Server.h"
 #include "../../../Common/MyString.h"
-#include "ServerStreams.h"
 #include "../../Logging.h"
 #include "ScriptLoader.h"
 #include "MapLoader.h"
 #include "../../Commands.h"
 #include "../Game/Game.h"
+#include "../../Globals.h"
 
 namespace halo { namespace server
 {
@@ -35,8 +35,6 @@ namespace halo { namespace server
 	// Called when a new game starts
 	void __stdcall OnNewGame(const char* map)
 	{
-		int x = 4, y = 0;
-		int b = x/y;
 #ifdef PHASOR_PC
 		// Fix the map name
 		maploader::OnNewGame();
@@ -50,8 +48,12 @@ namespace halo { namespace server
 	// kGiveToHalo: Not handled, pass to server.
 	e_command_result __stdcall ProcessCommand(char* command)
 	{
+		CHaloEchoStream echo(*g_RconLog);
+		//echo
+		//Admin::result_t result = Admin::CanUseCommand()
 		// do admin checks here
 		// call scripts etc
+		// if executing from console use g_PrintStream else g_RconLog
 		return commands::ProcessCommand(std::string(command), g_PrintStream);
 		/*std::vector<std::string> args = TokenizeArgs(command);
 		if (args.size() == 0) return e_command_result::kProcessed; // nothing to process
@@ -85,8 +87,7 @@ namespace halo { namespace server
 				popad
 			}
 		}
-		else
-		{
+		else {
 			// Halo 1.09 addresses
 			// 00517845  |.  BF 90446900   MOV EDI,haloded.00694490                                  ;  UNICODE "ctf1"
 			//0051784A  |.  F3:A5         REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS:[ESI]
@@ -100,5 +101,15 @@ namespace halo { namespace server
 				popad
 			}
 		}
+	}
+
+	void MessageAllPlayers(const wchar_t* fmt, ...)
+	{
+		va_list ArgList;
+		va_start(ArgList, fmt);
+		std::wstring str = FormatVarArgsW(fmt, ArgList);
+		va_end(ArgList);
+
+		g_PrintStream << "todo: make this message all players - " << str << endl;
 	}
 }}

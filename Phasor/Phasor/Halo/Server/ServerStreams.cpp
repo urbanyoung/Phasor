@@ -59,4 +59,12 @@ namespace halo { namespace server
 		}
 		return true;
 	}
+
+	bool CHaloEchoStream::Write(const std::wstring& str)
+	{
+		printStream.Write(str);
+		logStream << str;
+		logStream.Flush();
+		return true;
+	}
 }}

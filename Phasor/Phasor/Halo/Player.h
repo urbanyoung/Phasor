@@ -1,6 +1,9 @@
 #pragma once
 
 #include "../../Common/Types.h"
+#include "Game/Objects.h"
+#include <string>
+#include <memory>
 
 namespace halo
 {
@@ -17,8 +20,8 @@ namespace halo
 		WORD interactionSpecifier; // 0x002A which seat of car etc
 		DWORD respawnTimer; // 0x002c
 		DWORD unk2; // 0x0030 only seen empty
-		DWORD m_playerObjectid; // 0x0034
-		DWORD m_oldObjectid; // 0x0038
+		DWORD object_id; // 0x0034
+		DWORD old_object_id; // 0x0038
 		DWORD unkCounter; // 0x003C sometimes changes as you move, fuck idk
 		DWORD empty; // 0x0040 always FF FF FF FF, never accessed
 		DWORD bulletUnk; // 0x0044 changes when the player shoots
@@ -46,14 +49,24 @@ namespace halo
 	};
 	#pragma pack(pop)
 
-	struct Player
+	class CAFKDetection;
+
+	struct s_player
 	{
 		std::string hash;
-		int memoryId;
+		int memory_id;
 		PlayerStructure* mem;
-		// AFKDetection afk;
+		CAFKDetection* afk;
 
 		// ----------------------------------------------------------------
-		Player(int memoryId);
+		s_player(int memory_id);
+		~s_player();
+
+		objects::s_halo_object* get_object();
+		bool IsAdmin();
+		void Message(const wchar_t* fmt, ...);
+		void Kick();
+	private: // just for testing
+		objects::s_halo_object* m_object;
 	};
 }

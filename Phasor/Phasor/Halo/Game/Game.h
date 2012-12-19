@@ -48,13 +48,13 @@ namespace halo { namespace game {
 
 	// Called when a weapon is assigned to an object
 	DWORD __stdcall OnWeaponAssignment(DWORD playerId, DWORD owningObjectId,
-		objects::objInfo* curWeapon, DWORD order);
+		objects::s_object_info* curWeapon, DWORD order);
 
 	// Called when a player can interact with an object
 	bool __stdcall OnObjectInteraction(DWORD playerId, DWORD m_ObjId);
 
 	// Called when a player's position is updated
-	void __stdcall OnClientUpdate(objects::HObject* m_object);
+	void __stdcall OnClientUpdate(objects::s_halo_object* m_object);
 
 	// Called when an object's damage is being looked up
 	void __stdcall OnDamageLookup(DWORD receivingObj, DWORD causingObj, LPBYTE tagEntry);
@@ -66,7 +66,7 @@ namespace halo { namespace game {
 	bool __stdcall OnVehicleEntry(DWORD playerId);
 
 	// Called when a player is being ejected from a vehicle
-	bool __stdcall OnVehicleEject(objects::HObject* m_playerObject, bool forceEjected);
+	bool __stdcall OnVehicleEject(objects::s_halo_object* m_playerObject, bool forceEjected);
 
 	// Called when a player dies
 	void __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode);

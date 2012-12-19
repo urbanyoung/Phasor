@@ -1,6 +1,6 @@
 #include "../../Common/Common.h"
 #include "../../Common/MyString.h"
-#include "Server/ServerStreams.h"
+#include "../Globals.h"
 
 // This file is used to store all memory addresses Phasor uses
 // ------------------------------------------------------------------------

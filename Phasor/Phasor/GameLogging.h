@@ -27,5 +27,3 @@ public:
 	// linebreak is automatically added
 	void WriteLog(glog_type type, wchar_t* format, ...);
 };
-
-extern std::unique_ptr<CGameLog> g_GameLog;

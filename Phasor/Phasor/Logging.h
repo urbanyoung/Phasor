@@ -45,6 +45,4 @@ public:
 
 typedef CLoggingStream CPhasorLog;
 typedef CLoggingStream CScriptsLog;
-
-extern std::unique_ptr<CScriptsLog> g_ScriptsLog;
-extern std::unique_ptr<CPhasorLog> g_PhasorLog;
+typedef CLoggingStream CRconLog;
