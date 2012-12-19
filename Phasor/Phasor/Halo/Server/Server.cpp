@@ -43,18 +43,31 @@ namespace halo { namespace server
 		scriptloader::LoadScripts();
 	}
 
+	s_player* GetExecutingPlayer()
+	{
+		int playerNum = *(int*)UlongToPtr(ADDR_RCONPLAYER);
+		return game::GetPlayerFromRconId(playerNum);
+	}
+
 	// Called when a console command is to be executed
 	// kProcessed: Event has been handled, don't pass to server
 	// kGiveToHalo: Not handled, pass to server.
 	e_command_result __stdcall ProcessCommand(char* command)
 	{
 		CHaloEchoStream echo(*g_RconLog);
+
+		s_player* exec_player = GetExecutingPlayer();
+		if (exec_player) {
+			if (!exec_player->IsAdmin()) {
+				g_PrintStream << "Not admin" << endl;
+			}
+		}
 		//echo
 		//Admin::result_t result = Admin::CanUseCommand()
 		// do admin checks here
 		// call scripts etc
 		// if executing from console use g_PrintStream else g_RconLog
-		return commands::ProcessCommand(std::string(command), g_PrintStream);
+		return commands::ProcessCommand(command, g_PrintStream, exec_player);
 		/*std::vector<std::string> args = TokenizeArgs(command);
 		if (args.size() == 0) return e_command_result::kProcessed; // nothing to process
 		
@@ -111,5 +124,67 @@ namespace halo { namespace server
 		va_end(ArgList);
 
 		g_PrintStream << "todo: make this message all players - " << str << endl;
+	}
+
+	#pragma pack(push, 1)
+	struct s_player_ip
+	{
+		BYTE ip[4];
+		WORD port;
+	};
+	#pragma pack(pop)
+
+	bool GetPlayerIP(s_player& player, std::string* ip, WORD* port)
+	{
+		LPBYTE serverBase = (LPBYTE)*(DWORD*)*(DWORD*)ADDR_PLAYERINFOBASE;
+		LPBYTE machineTable = serverBase + 0xAA0;
+		LPBYTE machine = (LPBYTE)*(DWORD*)(machineTable + 4*player.mem->playerNum);
+
+		if (!machine) false;
+		LPBYTE pMachine = (LPBYTE)*(DWORD*)machine;
+		if (!pMachine) false;
+		
+		s_player_ip* network = (s_player_ip*)*(DWORD*)pMachine;
+		if (!network) return false;
+
+		if (ip) {
+			*ip = m_sprintf("%d.%d.%d.%d", network->ip[0], network->ip[1],
+				network->ip[2], network->ip[3]);
+		}
+		if (port) *port = network->port;
+		return true;
+	}
+
+	// todo: change how i get the hash
+	int GetHashOffset(s_player& player)
+	{
+		LPBYTE origin = (LPBYTE)ADDR_PLAYERINFOBASE;
+		LPBYTE lpBase = (LPBYTE)UlongToPtr(OFFSET_HASHBASE + *(DWORD*)origin);
+
+		for (int i = 0; i < 16; i++)
+		{
+			WORD check = *(WORD*)lpBase;
+
+			if (check == player.mem->playerNum)
+				return *(int*)(lpBase + 0x50);
+
+			lpBase += OFFSET_HASHLOOKUPLEN;
+		}
+
+		return -1;
+	}
+
+	bool GetPlayerHash(s_player& player, std::string& hash)
+	{
+		int offset = GetHashOffset(player);
+		if (offset == -1) return false;
+		typedef char* (__cdecl *_HaloGetHash)(DWORD type, DWORD offset);
+		_HaloGetHash Halo_GetHash = (_HaloGetHash)(FUNC_HALOGETHASH);
+		char* str_hash = Halo_GetHash(0x319, offset);
+		if (str_hash) {
+			hash = str_hash;
+			if (hash.size() != 32) hash.clear();
+		}
+		return hash.size() == 32;
 	}
 }}

@@ -518,7 +518,6 @@ namespace Lua
 
 		// Pop the results off the stack
 		int n = lua_gettop(state->L);
-		printf("%i results\n", n);
 		for (int i = 0; i < n; i++)
 			results.push_front(state->PopMObject());
 

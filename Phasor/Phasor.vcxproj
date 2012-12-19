@@ -117,6 +117,7 @@
     <ClCompile Include="Phasor\Halo\AFKDetection.cpp" />
     <ClCompile Include="Phasor\Halo\Game\Game.cpp" />
     <ClCompile Include="Phasor\Halo\Game\Objects.cpp" />
+    <ClCompile Include="Phasor\Halo\Halo.cpp" />
     <ClCompile Include="Phasor\Halo\Hooks.cpp" />
     <ClCompile Include="Phasor\Halo\Player.cpp" />
     <ClCompile Include="Phasor\Halo\Server\ServerStreams.cpp">
@@ -162,6 +163,7 @@
     <ClInclude Include="Phasor\Halo\Game\Chat.h" />
     <ClInclude Include="Phasor\Halo\Game\Game.h" />
     <ClInclude Include="Phasor\Halo\Game\Objects.h" />
+    <ClInclude Include="Phasor\Halo\Halo.h" />
     <ClInclude Include="Phasor\Halo\Hooks.h" />
     <ClInclude Include="Phasor\Halo\Player.h" />
     <ClInclude Include="Phasor\Halo\Server\ServerStreams.h" />

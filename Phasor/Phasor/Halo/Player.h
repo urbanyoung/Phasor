@@ -8,7 +8,7 @@
 namespace halo
 {
 	#pragma pack(push, 1)
-	struct PlayerStructure
+	struct s_player_structure
 	{
 		WORD playerJoinCount; // 0x0000
 		WORD localClient; // 0x0002 always FF FF on a dedi in Halo is 00 00 if its your player
@@ -53,9 +53,10 @@ namespace halo
 
 	struct s_player
 	{
-		std::string hash;
+		std::string hash, ip;
+		WORD port;
 		int memory_id;
-		PlayerStructure* mem;
+		s_player_structure* mem;
 		CAFKDetection* afk;
 
 		// ----------------------------------------------------------------
@@ -69,4 +70,6 @@ namespace halo
 	private: // just for testing
 		objects::s_halo_object* m_object;
 	};
+
+	s_player_structure* GetPlayerMemory(int index);
 }

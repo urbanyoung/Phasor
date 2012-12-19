@@ -2,6 +2,7 @@
 
 #include "../../../Common/Types.h"
 #include "Objects.h"
+#include "../Player.h"
 
 namespace halo { namespace game {
 
@@ -15,6 +16,9 @@ namespace halo { namespace game {
 		wchar_t* msg;
 	};
 	#pragma pack(pop)
+
+	s_player* GetPlayer(int index);
+	s_player* GetPlayerFromRconId(int playerNum);
 
 	// --------------------------------------------------------------------
 	// Events

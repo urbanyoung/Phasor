@@ -11,10 +11,14 @@ enum e_command_result
 	kProcessed
 };
 
-namespace halo { namespace server
+namespace halo { 
+	struct s_player;
+namespace server
 {
 	void StartGame(const char* map);
 	void MessageAllPlayers(const wchar_t* fmt, ...);
+	bool GetPlayerIP(s_player& player, std::string* ip, WORD* port);
+	bool GetPlayerHash(s_player& player, std::string& hash);
 
 	// --------------------------------------------------------------------
 	// Events

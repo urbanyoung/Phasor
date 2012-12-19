@@ -1,1 +1,0 @@
-freezing after some games end. caused by something overwriting some game data (map name etc). not sure wtf.

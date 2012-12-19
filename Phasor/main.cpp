@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
 #ifdef BUILD_DEBUG
-#include <vld.h>
+//#include <vld.h>
 #endif
 #include "Phasor/Logging.h"
 #include "Phasor/ThreadedLogging.h"
@@ -76,7 +76,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, g_Thread));
 		g_ScriptsLog.reset(new CThreadedLogging(
 			g_LogsDirectory, L"ScriptsLog", g_Thread));
-		g_ScriptsLog->EnableTimestamp(false);
+	//	g_ScriptsLog->EnableTimestamp(false);
 		g_GameLog.reset(new CGameLog(g_LogsDirectory, L"GameLog", g_Thread));
 		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_Thread));
 		g_Scripts.reset(new Scripting::Scripts(*g_ScriptsLog,g_ScriptsDirectory));

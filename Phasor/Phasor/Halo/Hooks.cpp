@@ -185,7 +185,7 @@ NOT_NEW_MAP:
 	}
 }
 
-/*DWORD playerjoin_ret = 0;
+DWORD playerjoin_ret = 0;
 
 // Codecave for people joining
 __declspec(naked) void OnPlayerWelcome_CC()
@@ -244,7 +244,7 @@ __declspec(naked) void OnPlayerQuit_CC()
 		ret
 	}
 }
-
+/*
 DWORD teamsel_ret = 0, selection = 0;
 
 // Codecave for team selection
@@ -1049,13 +1049,13 @@ namespace halo
 		CreateCodeCave(CC_NEWGAME, 5, OnNewGame_CC);
 
 		// Codecave called when a player joins
-		/*CreateCodeCave(CC_PLAYERWELCOME, 8, OnPlayerWelcome_CC);
+		CreateCodeCave(CC_PLAYERWELCOME, 8, OnPlayerWelcome_CC);
 
 		// Codecave used to detect people leaving
 		CreateCodeCave(CC_PLAYERQUIT, 9, OnPlayerQuit_CC);
 
 		// Codecave used to decide the player's team
-		CreateCodeCave(CC_TEAMSELECTION, 5, OnTeamSelection_CC);
+		/*CreateCodeCave(CC_TEAMSELECTION, 5, OnTeamSelection_CC);
 
 		// Codecave for handling team changes
 		#ifdef PHASOR_PC

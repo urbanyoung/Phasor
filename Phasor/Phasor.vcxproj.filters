@@ -95,6 +95,9 @@
     <ClCompile Include="Phasor\Halo\Game\Objects.cpp">
       <Filter>Phasor\Halo\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Halo.cpp">
+      <Filter>Phasor\Halo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -263,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="Common\vect3d.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Halo.h">
+      <Filter>Phasor\Halo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

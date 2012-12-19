@@ -52,11 +52,13 @@ namespace commands
 	};
 
 	// Returns success or failure
-	e_command_result ProcessCommand(const std::string& command, COutStream& out,
-		void* exec_player)
+	e_command_result ProcessCommand(const std::string& command, 
+		COutStream& out, halo::s_player* exec_player)
 	{
 		std::vector<std::string> tokens = TokenizeArgs(command);
 		if (tokens.size() == 0) return e_command_result::kProcessed;
+
+		// pass to scripts here
 
 		for (size_t x = 0; CommandList[x].name; x++) {
 			if (CommandList[x].name == tokens[0]) {

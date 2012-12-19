@@ -12,11 +12,11 @@
 namespace Scripting
 {
 	using namespace Common;
-	const std::wstring log_prefix = L" ---> ";
+	const std::wstring log_prefix = L"                     ---> ";
 
 	#define DEFAULT_TIMEOUT 2000
 
-	static const DWORD versions[] = {1234};
+	static const DWORD versions[] = {10059};
 
 	// Checks if the specified version is compatible
 	bool CompatibleVersion(DWORD required) 
@@ -49,7 +49,7 @@ namespace Scripting
 		}
 
 		std::stringstream abs_file;
-		abs_file << scriptsDir << "\\" << script << ".lua";
+		abs_file << scriptsDir << script << ".lua";
 
 		try
 		{
@@ -67,8 +67,7 @@ namespace Scripting
 			caller.Call(*state, "OnScriptLoad", &fexists, DEFAULT_TIMEOUT);
 
 			if (!fexists) {
-				HandleError(*state, "OnScriptLoad undefined.");
-				return;
+				throw std::exception("function 'OnScriptLoad' undefined.");
 			}
 
 			scripts[script] = std::move(state);
@@ -76,7 +75,7 @@ namespace Scripting
 		catch (std::exception& e)
 		{
 			NoFlush _(errstream);
-			errstream << L"script '" << script << "' cannot be loaded. Why? " <<
+			errstream << L"script '" << script << "' cannot be loaded." <<
 				endl << log_prefix << e.what() << endl;
 		}
 	}
@@ -116,7 +115,7 @@ namespace Scripting
 		Result result = caller.Call(state, "GetRequiredVersion", &funcExists, DEFAULT_TIMEOUT);
 
 		if (!funcExists) {
-			throw std::exception("GetRequiredVersion undefined.");
+			throw std::exception("function 'GetRequiredVersion' undefined.");
 		}
 
 		// Make sure the requested version is compatible
