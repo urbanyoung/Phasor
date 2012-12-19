@@ -1,6 +1,9 @@
 #include "CrashHandler.h"
 #include "../Libraries/StackWalker.h"
 #include "../Common/Common.h"
+#include "../Common/Types.h"
+#include "../Common/MyString.h"
+#include "Directory.h"
 #include "Halo/Addresses.h"
 #include <windows.h>
 #include <stdio.h>
@@ -69,17 +72,27 @@ namespace CrashHandler
 		ei.ThreadId = GetCurrentThreadId();
 		ei.ClientPointers = FALSE;
 
-		// todo: fork child process to do crash log and log it into 
-		// crash folder (in same place as logs etc)
-		HANDLE hFile = CreateFile("D:\\Development\\C++\\Phasor\\Debug\\crashdump.dmp", GENERIC_READ | GENERIC_WRITE,
+		DWORD dwProcessId = GetCurrentProcessId();
+
+		SYSTEMTIME stLocalTime;
+		GetLocalTime(&stLocalTime);
+		wchar_t CrashDumpW[1024];
+		swprintf_s(CrashDumpW, NELEMS(CrashDumpW), 
+				L"%s\\%s-%s-%04d%02d%02d-%02d%02d%02d-%ld-%ld.dmp", 
+				g_CrashDirectory.c_str(), L"Phasor", L"Pre-release", 
+				stLocalTime.wYear, stLocalTime.wMonth, stLocalTime.wDay, 
+				stLocalTime.wHour, stLocalTime.wMinute, stLocalTime.wSecond, 
+				dwProcessId, ei.ThreadId);
+		// CreateFileW can write into CrashDumpW so can't be const memory
+		HANDLE hFile = CreateFileW(CrashDumpW, GENERIC_READ | GENERIC_WRITE,
 			NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, 
+		MiniDumpWriteDump(GetCurrentProcess(), dwProcessId, hFile, 
 			MiniDumpScanMemory, &ei, NULL, NULL);
 		CloseHandle(hFile);
 		// this might be better suited for halo crashes
 		/*MyStackWalker walker(GetCurrentProcessId(), GetCurrentProcess());
 		walker.ShowCallstack(GetCurrentThread(), pExceptionInfo->ContextRecord);*/
-		system("PAUSE");
+
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
 }

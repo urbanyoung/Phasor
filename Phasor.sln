@@ -21,8 +21,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sql_test", "sql_test\sql_te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phasor_test", "phasor_test\phasor_test.vcxproj", "{F1B5508F-52B4-4107-BFAB-8E82021B12E1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phasor_crash_handler", "phasor_crash_handler\phasor_crash_handler.vcxproj", "{A930AA37-5D58-48C1-AD6E-A46540D4B8F8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -69,10 +67,6 @@ Global
 		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Debug|Win32.Build.0 = Debug|Win32
 		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Release|Win32.ActiveCfg = Release|Win32
 		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Release|Win32.Build.0 = Release|Win32
-		{A930AA37-5D58-48C1-AD6E-A46540D4B8F8}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A930AA37-5D58-48C1-AD6E-A46540D4B8F8}.Debug|Win32.Build.0 = Debug|Win32
-		{A930AA37-5D58-48C1-AD6E-A46540D4B8F8}.Release|Win32.ActiveCfg = Release|Win32
-		{A930AA37-5D58-48C1-AD6E-A46540D4B8F8}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
