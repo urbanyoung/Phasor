@@ -1,3 +1,7 @@
+// ThreadedLogging.h
+// Provides an interface for logging messages to disk from another thread.
+// Phasor uses this to reduce lag caused by logging messages (disk io is 
+// really slow).
 #pragma once
 
 #include "Logging.h"
@@ -38,11 +42,11 @@ public:
 	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
 	virtual void SetOutFile(const std::wstring& fileName); // use cur dir
 	virtual void EnableTimestamp(bool state);
-	virtual std::wstring PrependTimestamp(const std::wstring& str);
 
 	friend class CLogThreadEvent;
 };
 
+// Helper class which is invoked by PhasorThread when data can be saved.
 class CLogThreadEvent : public PhasorThreadEvent
 {
 private:

@@ -50,7 +50,6 @@ void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 		return;
 	}
 
-	DWORD start = GetTickCount();
 	std::wstring out;
 	out.reserve(1 << 15); // 32kb should always be enough for our purposes
 	// increasing this can improve performance tho (if there's a lot of data
@@ -71,7 +70,6 @@ void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 	}
 	CLoggingStream::Write(out);
 	data->clear();
-	//::printf("Written in %i ticks\n", GetTickCount() - start);
 }
 
 bool CThreadedLogging::Write(const std::wstring& str)
@@ -107,11 +105,6 @@ void CThreadedLogging::EnableTimestamp(bool state)
 	Lock _(loggingStreamCS);
 	bDoTimestamp = state;
 	CLoggingStream::EnableTimestamp(state);
-}
-
-std::wstring CThreadedLogging::PrependTimestamp(const std::wstring& str)
-{
-	return CLoggingStream::PrependTimestamp(str); // no lock needed
 }
 
 CLogThreadEvent::CLogThreadEvent(CThreadedLogging& owner, DWORD dwDelay)

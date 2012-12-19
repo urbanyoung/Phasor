@@ -88,6 +88,8 @@ extern "C" __declspec(dllexport) void OnLoad()
 
 		// We want threaded logging from now on
 		*g_PhasorLog << "test" << endl;
+
+		
 	}
 	catch (std::exception& e)
 	{
@@ -102,7 +104,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		g_PrintStream << err << endl;
 		WAIT_AND_QUIT
 	}
-
+	
 	/*thread.close();
 
 	while (!thread.has_closed()) {

@@ -35,6 +35,8 @@ namespace halo { namespace server
 	// Called when a new game starts
 	void __stdcall OnNewGame(const char* map)
 	{
+		int x = 4, y = 0;
+		int b = x/y;
 #ifdef PHASOR_PC
 		// Fix the map name
 		maploader::OnNewGame();

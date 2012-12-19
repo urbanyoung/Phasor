@@ -6,6 +6,7 @@
 
 std::wstring g_ProfileDirectory;
 std::wstring g_DataDirectory;
+std::wstring g_CrashDirectory;
 std::wstring g_ScriptsDirectory;
 std::wstring g_LogsDirectory;
 std::wstring g_MapDirectory;
@@ -49,6 +50,7 @@ void SetupDirectories()
 	CreateSubDirectory(L"data", g_DataDirectory);
 	CreateSubDirectory(L"scripts", g_ScriptsDirectory);
 	CreateSubDirectory(L"logs", g_LogsDirectory);
+	CreateSubDirectory(L"crash", g_CrashDirectory);
 }
 
 void ParseCommandLine(const std::wstring& commandline, // first is exe name
