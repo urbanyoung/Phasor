@@ -6,6 +6,7 @@
 #include "../../Commands.h"
 #include "../Game/Game.h"
 #include "../../Globals.h"
+#include "../../Admin.h"
 
 namespace halo { namespace server
 {
@@ -57,17 +58,53 @@ namespace halo { namespace server
 		CHaloEchoStream echo(*g_RconLog);
 
 		s_player* exec_player = GetExecutingPlayer();
-		if (exec_player) {
+		bool can_execute = exec_player == NULL;
+
+		if (!can_execute) {
+			std::string authName;
+			Admin::result_t result = Admin::CanUseCommand(exec_player->hash,
+				command, &authName);
+
+			e_command_result do_process = e_command_result::kProcessed;
+			switch (result)
+			{
+			case Admin::E_NOT_ADMIN:
+				{
+					echo << L"An unauthorized player is attempting to use RCON:" << endl;
+					echo << L"Name: '" << exec_player->mem->playerName <<
+						L"' Hash: " << exec_player->hash << endl;
+				} break;
+			case Admin::E_NOT_ALLOWED:
+				{
+					echo << L"An authorized player is attempting to use an unauthorized command:" << endl;
+					echo << L"Name: '" << exec_player->mem->playerName <<
+						L"' Hash: " << exec_player->hash << endl;
+				} break;
+			case Admin::E_OK:
+				{
+					can_execute = true;
+					echo << L"Executing ' " << command << L" ' from " <<
+						exec_player->mem->playerName;
+					if (authName.size())
+						echo << L" (authed as '" <<	authName << L"').";
+					echo << endl;									
+					
+				} break;
+			}
+		}
+		return can_execute ? commands::ProcessCommand(command, g_PrintStream, exec_player)
+			: e_command_result::kProcessed;
+		/*if (exec_player) {
 			if (!exec_player->IsAdmin()) {
 				g_PrintStream << "Not admin" << endl;
 			}
-		}
+		}*/
 		//echo
 		//Admin::result_t result = Admin::CanUseCommand()
 		// do admin checks here
 		// call scripts etc
 		// if executing from console use g_PrintStream else g_RconLog
-		return commands::ProcessCommand(command, g_PrintStream, exec_player);
+		//return commands::ProcessCommand(command, g_PrintStream, exec_player);
 		/*std::vector<std::string> args = TokenizeArgs(command);
 		if (args.size() == 0) return e_command_result::kProcessed; // nothing to process
 		

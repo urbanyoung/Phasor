@@ -95,6 +95,8 @@ namespace Admin
 			return accessLevel.IsAllowed(command);
 		}
 
+		std::string GetName() { return name; }
+
 		static void Add(CAdmin admin)
 		{
 			adminList.insert(pair_t(admin.hash, admin));
@@ -159,11 +161,13 @@ namespace Admin
 		return CAdmin::GetAdmin(hash, NULL);
 	}
 
-	result_t CanUseCommand(const std::string& hash, const std::string& command)
+	result_t CanUseCommand(const std::string& hash, const std::string& command,
+		std::string* authName)
 	{
 		if (CAdmin::size() == 0) return E_OK; // hash system inactive
 		CAdmin* admin = 0;
 		if (!CAdmin::GetAdmin(hash, &admin)) return E_NOT_ADMIN;
+		if (authName) *authName = admin->GetName();
 		return admin->IsAllowed(command) ? E_OK : E_NOT_ALLOWED;
 	}
 

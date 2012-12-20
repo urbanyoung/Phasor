@@ -31,6 +31,7 @@ namespace halo
 		return object;
 	}
 
+	// todo: store a bool indicating if admin
 	bool s_player::IsAdmin()
 	{
 		return Admin::IsAdmin(hash);

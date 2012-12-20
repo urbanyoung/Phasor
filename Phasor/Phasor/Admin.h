@@ -26,7 +26,8 @@ namespace Admin
 
 	// Checks if a player can execute the specified command
 	// Returns E_OK if there are no admins (the system is inactive)
-	result_t CanUseCommand(const std::string& hash, const std::string& command);
+	result_t CanUseCommand(const std::string& hash, const std::string& command,
+		std::string* authName=NULL);
 
 	// Initialize the admin system, outputting errors to 'out'.
 	// Errors aren't output if 'out' is NULL.
