@@ -16,6 +16,7 @@ namespace halo {
 namespace server
 {
 	void StartGame(const char* map);
+	void MessagePlayer(s_player& player, const std::wstring& str);
 	void MessageAllPlayers(const wchar_t* fmt, ...);
 	bool GetPlayerIP(s_player& player, std::string* ip, WORD* port);
 	bool GetPlayerHash(s_player& player, std::string& hash);

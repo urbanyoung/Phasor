@@ -27,10 +27,7 @@ struct vect3d
 
 	vect3d& operator=(const vect3d& rhs)
 	{
-		vect.x = rhs.vect.x;
-		vect.y = rhs.vect.y;
-		vect.z = rhs.vect.z;
-		return *this;
+		return this->operator=(rhs.vect);
 	}
 };
 

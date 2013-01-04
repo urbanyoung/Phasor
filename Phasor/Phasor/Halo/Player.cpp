@@ -12,8 +12,9 @@ namespace halo
 	s_player::s_player(int memory_id) : memory_id(memory_id)
 	{
 		g_PrintStream << "New player " << memory_id << endl;
-		afk = new CAFKDetection(*this, g_Timers);
 		mem = GetPlayerMemory(memory_id);
+		afk = new CAFKDetection(*this, g_Timers);
+		stream = new CPlayerStream(*this);	
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
 	}
@@ -63,5 +64,12 @@ namespace halo
 		}
 
 		return mem;
+	}
+
+	// -------------------------------------------------------------------
+	bool CPlayerStream::Write(const std::wstring& str)
+	{
+		server::MessagePlayer(player, str);
+		return true;
 	}
 }

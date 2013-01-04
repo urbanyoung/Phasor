@@ -3,6 +3,7 @@
 #include "../../../Common/Types.h"
 #include "../../../Common/Streams.h"
 #include "../Addresses.h"
+#include <vector>
 
 enum e_command_result;
 

@@ -13,20 +13,19 @@ namespace halo { namespace server
 	public:
 		CHaloPrintStream() {}
 		virtual ~CHaloPrintStream() {}
-		friend class CHaloEchoStream;
 	};
 
-	class CHaloEchoStream : public COutStream
+	class CEchoStream : public COutStream
 	{
 	private:
-		CHaloPrintStream printStream;	
-		COutStream& logStream;
+		COutStream &first, &second;
 	protected:		   
 		virtual bool Write(const std::wstring& str);
 
 	public:
-		CHaloEchoStream(COutStream& logStream) : logStream(logStream) {}
-		virtual ~CHaloEchoStream() {}
+		CEchoStream(COutStream& first, COutStream& second)
+			: first(first), second(second) {}
+		virtual ~CEchoStream() {}
 	};
 }}
 

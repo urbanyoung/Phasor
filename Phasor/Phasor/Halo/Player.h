@@ -1,12 +1,30 @@
 #pragma once
 
 #include "../../Common/Types.h"
+#include "../../Common/Streams.h"
 #include "Game/Objects.h"
 #include <string>
 #include <memory>
 
 namespace halo
 {
+	struct s_player;
+
+	// -----------------------------------------------------------------
+	class CPlayerStream : public COutStream
+	{
+	private:
+		s_player& player;
+	protected:		   
+		virtual bool Write(const std::wstring& str);
+
+	public:
+		CPlayerStream(s_player& player)
+			: player(player) {}
+		virtual ~CPlayerStream() {}
+	};
+	// ------------------------------------------------------------------
+
 	#pragma pack(push, 1)
 	struct s_player_structure
 	{
@@ -50,6 +68,7 @@ namespace halo
 	#pragma pack(pop)
 
 	class CAFKDetection;
+	class CPlayerStream;
 
 	struct s_player
 	{
@@ -58,6 +77,7 @@ namespace halo
 		int memory_id;
 		s_player_structure* mem;
 		CAFKDetection* afk;
+		CPlayerStream* stream;
 
 		// ----------------------------------------------------------------
 		s_player(int memory_id);
@@ -67,9 +87,11 @@ namespace halo
 		bool IsAdmin();
 		void Message(const wchar_t* fmt, ...);
 		void Kick();
-	private: // just for testing
-		objects::s_halo_object* m_object;
+	private: // just for testing get_object
+		objects::s_halo_object* m_object;		
 	};
 
 	s_player_structure* GetPlayerMemory(int index);
+
+	
 }

@@ -3,7 +3,6 @@
 #include <string>
 #include <sstream>
 #include "Types.h"
-#include "FileIO.h"
 
 #define _WINDOWS_LINE_END
 #ifndef _WINDOWS_LINE_END
@@ -36,7 +35,7 @@ private:
 	static const size_t kDefaultBufferSize = 1 << 13; // 8kb
 
 	void Reserve(size_t size);
-protected:
+public:
 	virtual bool Write(const std::wstring& str) = 0;
 
 public: // stream modifiers
@@ -85,7 +84,7 @@ public:
 };
 
 // Output to a file which is kept open for the duration of the stream
-class COutFileStream : public COutStream
+/*class COutFileStream : public COutStream
 {
 protected:
 	COutFile file;
@@ -98,4 +97,4 @@ public:
 	bool Open(const std::wstring& file);
 
 	virtual bool Write(const std::wstring& str);
-};
+};*/

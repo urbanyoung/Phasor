@@ -23,10 +23,8 @@ namespace halo { namespace game {
 	s_player* GetPlayerFromRconId(int playerNum)
 	{
 		for (int i = 0; i < 16; i++) {
-			if (PlayerList[i]) {
-				if (PlayerList[i]->mem->playerNum == playerNum)
-					return PlayerList[i].get();
-			}
+			if (PlayerList[i] && PlayerList[i]->mem->playerNum == playerNum)
+				return PlayerList[i].get();
 		}
 		return NULL;
 	}

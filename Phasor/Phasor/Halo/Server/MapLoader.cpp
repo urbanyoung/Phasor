@@ -2,6 +2,7 @@
 #include "ScriptLoader.h"
 #include "../../Directory.h"
 #include "../../../Common/MyString.h"
+#include "../../../Common/FileIO.h"
 #include "../Addresses.h"
 #include "../../Globals.h"
 #include "Gametypes.h"

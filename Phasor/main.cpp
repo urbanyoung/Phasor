@@ -16,6 +16,7 @@
 #include "Phasor/Halo/Server/Gametypes.h"
 #include "Phasor/CrashHandler.h"
 #include "Phasor/Globals.h"
+#include "Common/FileIO.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 //#define WAIT_AND_QUIT Sleep(10000); return 1;

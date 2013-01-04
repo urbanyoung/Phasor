@@ -55,12 +55,20 @@ namespace halo { namespace server
 	// kGiveToHalo: Not handled, pass to server.
 	e_command_result __stdcall ProcessCommand(char* command)
 	{
-		CHaloEchoStream echo(*g_RconLog);
+		std::unique_ptr<COutStream> echo_ptr;
 
 		s_player* exec_player = GetExecutingPlayer();
 		bool can_execute = exec_player == NULL;
+		// create the output stream
+		if (can_execute) { // server console executing
+			echo_ptr.reset(new CHaloPrintStream());
+		} else {
+			echo_ptr.reset(new CEchoStream(*exec_player->stream, *g_RconLog));
+		}
 
 		if (!can_execute) {
+			// don't want the person executing it to see this output
+			CEchoStream echo(g_PrintStream, *g_RconLog);
 			std::string authName;
 			Admin::result_t result = Admin::CanUseCommand(exec_player->hash,
 				command, &authName);
@@ -87,12 +95,15 @@ namespace halo { namespace server
 						exec_player->mem->playerName;
 					if (authName.size())
 						echo << L" (authed as '" <<	authName << L"').";
-					echo << endl;									
+					echo << endl;							
 					
 				} break;
 			}
+
+			if (!can_execute) *exec_player->stream << L"Access denied." << endl;
 		}
-		return can_execute ? commands::ProcessCommand(command, g_PrintStream, exec_player)
+
+		return can_execute ? commands::ProcessCommand(command, *echo_ptr, exec_player)
 			: e_command_result::kProcessed;
 		/*if (exec_player) {
 			if (!exec_player->IsAdmin()) {
@@ -153,6 +164,11 @@ namespace halo { namespace server
 		}
 	}
 
+	void MessagePlayer(s_player& player, const std::wstring& str)
+	{
+		g_PrintStream << "todo: make this message the player - " << str << endl;
+	}
+
 	void MessageAllPlayers(const wchar_t* fmt, ...)
 	{
 		va_list ArgList;
@@ -160,7 +176,10 @@ namespace halo { namespace server
 		std::wstring str = FormatVarArgsW(fmt, ArgList);
 		va_end(ArgList);
 
-		g_PrintStream << "todo: make this message all players - " << str << endl;
+		for (int i = 0; i < 16; i++) {
+			s_player* player = game::GetPlayer(i);
+			if (player) MessagePlayer(*player, str);
+		}		
 	}
 
 	#pragma pack(push, 1)

@@ -1,5 +1,6 @@
 #include "Logging.h"
 #include "../Common/MyString.h"
+#include "../Common/FileIO.h"
 
 // ----------------------------------------------------------------------
 //

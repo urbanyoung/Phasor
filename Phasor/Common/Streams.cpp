@@ -107,7 +107,7 @@ void COutStream::wprint(const wchar_t* format, ...)
 }
 
 // -----------------------------------------------------------------------
-COutFileStream::COutFileStream()
+/*COutFileStream::COutFileStream()
 {
 }
 
@@ -129,3 +129,4 @@ bool COutFileStream::Write(const std::wstring& str)
 	static DWORD written;
 	return file.Write((BYTE*)str.c_str(), sizeof(c_str[0])*str.size(), &written);
 }
+*/

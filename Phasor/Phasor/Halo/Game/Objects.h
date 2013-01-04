@@ -21,8 +21,8 @@ namespace halo { namespace objects
 		char empty[0x44]; // 0x0018
 		vect3d location; // 0x005c
 		vect3d velocity; // 0x0068
-		vect3d rotation; // 0x0074 (not sure why this is used, doesn't yaw do orientation?)
-		vect3d axial; // 0x0080 (yaw, pitch, roll)
+		vect3d rotation; // 0x0074
+		vect3d unkVector11; // 0x0080 dunno
 		vect3d unkVector; // 0x008C (not sure, i let server deal with it)
 		char unkChunk[0x28]; // 0x0098
 		unsigned long ownerPlayer; // 0x00c0 (index of owner (if has one))
