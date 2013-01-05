@@ -48,7 +48,27 @@ inline bool operator==(const _vect3d& lhs, const vect3d& rhs)
 
 inline bool operator==(const vect3d& lhs, const _vect3d& rhs)
 {
-	return rhs == lhs.vect;
+	return !(lhs == rhs);
+}
+
+inline bool operator!=(const _vect3d& lhs, const _vect3d& rhs)
+{
+	return !(lhs == rhs);
+}
+
+inline bool operator!=(const vect3d& lhs, const vect3d& rhs)
+{
+	return !(lhs == rhs);
+}
+
+inline bool operator!=(const _vect3d& lhs, const vect3d& rhs)
+{
+	return !(lhs == rhs);
+}
+
+inline bool operator!=(const vect3d& lhs, const _vect3d& rhs)
+{
+	return !(lhs == rhs);
 }
 
 #pragma pack(pop)

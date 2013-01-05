@@ -23,11 +23,11 @@ namespace halo { namespace game {
 	// --------------------------------------------------------------------
 	// Events
 
-	// Called when a game stage ends
-	void __stdcall OnGameEnd(DWORD mode);
-
 	// Called when a new game starts
 	void OnNewGame(const char* map); // called from Server.cpp
+
+	// Called when a game stage ends
+	void OnGameEnd(DWORD mode); // called form Server.cpp
 
 	// Called when a player joins (after verification).
 	void __stdcall OnPlayerWelcome(DWORD playerId);

@@ -13,19 +13,9 @@ static_assert(GAMET_BUFFER_SIZE + 0x0C == CONST_MENTRY_SIZE, "incorrect mapcycle
 #define OFFSET_CONSOLETEXT					0x0B4
 #define OFFSET_RESPAWNTICKS					0x068
 #ifdef PHASOR_PC
-	#define OFFSET_MAXPLAYERS				0x1A5
-	#define OFFSET_PLAYERTABLE				0x1AA
-	#define OFFSET_HASHBASE					0x3C4
-	#define OFFSET_HASHRESOLVE				0x3B8
-	#define OFFSET_HASHLOOKUPLEN			0x060
-#define MACHINE_ENTRY_SIZE					0x060
+	#define MACHINE_ENTRY_SIZE				0x060
 #elif PHASOR_CE
-	#define OFFSET_MAXPLAYERS				0x1E5
-	#define OFFSET_PLAYERTABLE				0x1EA
-	#define OFFSET_HASHBASE					0x404
-	#define OFFSET_HASHRESOLVE				0x3F8
-	#define OFFSET_HASHLOOKUPLEN			0x0EC
-#define MACHINE_ENTRY_SIZE					0x0EC
+	#define MACHINE_ENTRY_SIZE				0x0EC
 #endif
 
 // This file is used to store all memory addresses Phasor uses

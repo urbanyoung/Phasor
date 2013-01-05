@@ -101,6 +101,7 @@ namespace server
 	e_command_result __stdcall ProcessCommand(char* command);
 
 	void __stdcall OnNewGame(const char* map);
+	void __stdcall OnGameEnd(DWORD mode);
 
 	// Called when a map is being loaded
 	bool __stdcall OnMapLoad(maploader::s_mapcycle_entry* loading_map);

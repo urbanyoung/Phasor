@@ -51,8 +51,7 @@ namespace halo
 			vect3d new_camera = object->biped.cameraView;
 
 			// check if the camera has moved
-			if (new_camera == camera)
-				move_count++;
+			if (new_camera != camera) move_count++;
 
 			camera = new_camera;
 
@@ -72,6 +71,7 @@ namespace halo
 
 	void CAFKDetection::CheckInactivity()
 	{
+		g_PrintStream << "Check inactivity " << endl;
 		if (max_duration == 0 || bDisable || player.IsAdmin()) return;
 		if (move_count <= kMoveCountThreshold) {
 			afk_duration++;

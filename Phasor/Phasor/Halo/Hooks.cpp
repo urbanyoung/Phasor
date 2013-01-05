@@ -12,7 +12,7 @@ using namespace halo;
 
 
 // Codecave for timers, safer than creating threads (hooking console chceking routine)
-/*DWORD consoleProc_ret = 0;
+DWORD consoleProc_ret = 0;
 __declspec(naked) void OnConsoleProcessing_CC()
 {	
 	__asm
@@ -32,7 +32,7 @@ __declspec(naked) void OnConsoleProcessing_CC()
 }
 
 // Codecave for hooking console events (closing etc)
-DWORD conHandler_ret = 0;
+/*DWORD conHandler_ret = 0;
 __declspec(naked) void ConsoleHandler_CC()
 {	
 	__asm
@@ -131,7 +131,7 @@ RELOAD_MAP_DATA:
 		ret
 	}
 }
-/*
+
 // Game function codecaves
 // ------------------------------------------------------------------------
 // Codecave for detecting game ending
@@ -144,7 +144,7 @@ __declspec(naked) void OnGameEnd_CC()
 		pushad
 
 		push eax
-		call game::OnGameEnd
+		call server::OnGameEnd
 
 		popad
 
@@ -153,7 +153,7 @@ __declspec(naked) void OnGameEnd_CC()
 		push edx
 		ret
 	}
-}*/
+}
 
 DWORD newGame_ret = 0;
 
@@ -1026,10 +1026,10 @@ namespace halo
 		// ----------------------------------------------------------------
 		// 
 		// Codecave for timers, safer than creating threads (hooking console checking routine)
-		/*CreateCodeCave(CC_CONSOLEPROC, 5, OnConsoleProcessing_CC);
+		CreateCodeCave(CC_CONSOLEPROC, 5, OnConsoleProcessing_CC);
 
 		// Codecave for hooking console events (closing etc)
-		CreateCodeCave(CC_CONSOLEHANDLER, 5, ConsoleHandler_CC);*/
+		/*CreateCodeCave(CC_CONSOLEHANDLER, 5, ConsoleHandler_CC);*/
 
 		// Codecave to intercept server commands
 		CreateCodeCave(CC_SERVERCMD, 8, OnServerCommand);

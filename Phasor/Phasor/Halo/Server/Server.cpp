@@ -26,6 +26,14 @@ namespace halo { namespace server
 		s_hash_list* prev; 
 	};
 	static_assert(sizeof(s_hash_list) == 0x0C, "incorrect s_hash_list");
+
+	struct s_command_cache
+	{
+		char commands[8][0xFF];
+		WORD unk;
+		WORD count;
+		WORD cur;
+	};
 	#pragma pack(pop)
 	std::string current_map_base;
 
@@ -42,6 +50,12 @@ namespace halo { namespace server
 				return &server->machine_table[i];
 		}
 		return NULL;
+	}
+
+	// Called periodically by Halo to check for console input, I use for timers
+	void __stdcall OnConsoleProcessing()
+	{
+		g_Timers.Process();
 	}
 
 	// Called when a map is being loaded
@@ -61,8 +75,6 @@ namespace halo { namespace server
 
 		current_map_base = map;
 		return bMapUnchanged;
-
-//		return game::maps::OnMapLoad(mapData);
 	}
 
 	// Called when a new game starts
@@ -74,6 +86,12 @@ namespace halo { namespace server
 #endif
 		game::OnNewGame(map);
 		scriptloader::LoadScripts();
+	}
+
+	// Called when a game stage ends
+	void __stdcall OnGameEnd(DWORD mode)
+	{
+		game::OnGameEnd(mode);
 	}
 
 	s_player* GetExecutingPlayer()
@@ -94,6 +112,12 @@ namespace halo { namespace server
 		// create the output stream
 		if (can_execute) { // server console executing
 			echo_ptr.reset(new CHaloPrintStream());
+			// save the command for memory (arrow keys)
+			s_command_cache* cache = (s_command_cache*)ADDR_CMDCACHE;
+			cache->count = (cache->count + 1) % 8;
+			strcpy_s(cache->commands[cache->count], sizeof(cache->commands[cache->count]),
+				command);
+			cache->cur = 0xFFFF;
 		} else {
 			echo_ptr.reset(new CEchoStream(*exec_player->stream, *g_RconLog));
 		}
@@ -132,32 +156,11 @@ namespace halo { namespace server
 				} break;
 			}
 
-			if (!can_execute) *exec_player->stream << L"Access denied." << endl;
+			if (!can_execute) *exec_player->stream << L" ** Access denied **" << endl;
 		}
 
 		return can_execute ? commands::ProcessCommand(command, *echo_ptr, exec_player)
 			: e_command_result::kProcessed;
-		/*if (exec_player) {
-			if (!exec_player->IsAdmin()) {
-				g_PrintStream << "Not admin" << endl;
-			}
-		}*/
-		//echo
-		//Admin::result_t result = Admin::CanUseCommand()
-		// do admin checks here
-		// call scripts etc
-		// if executing from console use g_PrintStream else g_RconLog
-		//return commands::ProcessCommand(command, g_PrintStream, exec_player);
-		/*std::vector<std::string> args = TokenizeArgs(command);
-		if (args.size() == 0) return e_command_result::kProcessed; // nothing to process
-		
-		for (size_t x = 0; cmd_tbl[x].key != NULL; x++) {
-			if (cmd_tbl[x].key == args[0]) {
-				return cmd_tbl[x].fn(NULL, args, g_PrintStream);
-			}
-		}
-
-		return e_command_result::kGiveToHalo;*/
 	}
 
 	// This function is effectively sv_map_next
