@@ -18,12 +18,14 @@ static_assert(GAMET_BUFFER_SIZE + 0x0C == CONST_MENTRY_SIZE, "incorrect mapcycle
 	#define OFFSET_HASHBASE					0x3C4
 	#define OFFSET_HASHRESOLVE				0x3B8
 	#define OFFSET_HASHLOOKUPLEN			0x060
+#define MACHINE_ENTRY_SIZE					0x060
 #elif PHASOR_CE
 	#define OFFSET_MAXPLAYERS				0x1E5
 	#define OFFSET_PLAYERTABLE				0x1EA
 	#define OFFSET_HASHBASE					0x404
 	#define OFFSET_HASHRESOLVE				0x3F8
 	#define OFFSET_HASHLOOKUPLEN			0x0EC
+#define MACHINE_ENTRY_SIZE					0x0EC
 #endif
 
 // This file is used to store all memory addresses Phasor uses
@@ -34,7 +36,7 @@ static_assert(GAMET_BUFFER_SIZE + 0x0C == CONST_MENTRY_SIZE, "incorrect mapcycle
 extern unsigned long ADDR_CONSOLEINFO;
 extern unsigned long ADDR_RCONPLAYER;
 extern unsigned long ADDR_TAGTABLE;
-extern unsigned long ADDR_PLAYERINFOBASE;
+//extern unsigned long ADDR_PLAYERINFOBASE;
 extern unsigned long ADDR_OBJECTBASE;
 extern unsigned long ADDR_PLAYERBASE;
 extern unsigned long ADDR_MAPCYCLEINDEX;
@@ -53,6 +55,7 @@ extern unsigned long ADDR_GAMETYPE;
 extern unsigned long ADDR_PORT;
 extern unsigned long ADDR_SERVERNAME;
 extern unsigned long ADDR_CONSOLEREADY;
+
 
 // ------------------------------------------------------------------------
 //
@@ -142,7 +145,8 @@ extern unsigned long CC_VERSIONBROADCAST;
 extern unsigned long FUNC_INITVERSIONBROADCAST;
 extern unsigned long ADDR_BROADCASTVERSION;
 extern unsigned long FUNC_HALOEXCEPTIONHANDLER;
-
+extern unsigned long ADDR_HASHLIST;
+extern unsigned long ADDR_SERVERSTRUCT;
 namespace Addresses
 {
 	// Called to find all the above addresses

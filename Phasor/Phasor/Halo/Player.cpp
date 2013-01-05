@@ -22,6 +22,7 @@ namespace halo
 	{
 		g_PrintStream << "Player " << memory_id << " left" << endl;
 		delete afk;
+		delete stream;
 	}
 
 	objects::s_halo_object* s_player::get_object()

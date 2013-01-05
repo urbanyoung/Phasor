@@ -80,7 +80,7 @@ namespace halo
 		CPlayerStream* stream;
 
 		// ----------------------------------------------------------------
-		s_player(int memory_id);
+		explicit s_player(int memory_id);
 		~s_player();
 
 		objects::s_halo_object* get_object();

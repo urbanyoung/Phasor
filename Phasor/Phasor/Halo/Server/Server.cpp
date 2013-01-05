@@ -10,7 +10,39 @@
 
 namespace halo { namespace server
 {
+	#pragma pack(push, 1)
+	struct s_hash_data
+	{
+		DWORD id;
+		char hash[0x20];
+		BYTE unk[0x2c];
+	};
+	static_assert(sizeof(s_hash_data) == 0x50, "incorrect s_hash_data");
+
+	struct s_hash_list
+	{
+		s_hash_data* data; // 0 for head of list
+		s_hash_list* next;
+		s_hash_list* prev; 
+	};
+	static_assert(sizeof(s_hash_list) == 0x0C, "incorrect s_hash_list");
+	#pragma pack(pop)
 	std::string current_map_base;
+
+	s_server_info* GetServerStruct()
+	{
+		return (s_server_info*)ADDR_SERVERSTRUCT; 
+	}
+
+	s_machine_info* GetMachineData(const s_player& player)
+	{		
+		s_server_info* server = GetServerStruct();
+		for (int i = 0;i < 16; i++) {
+			if (server->machine_table[i].playerNum == player.mem->playerNum)
+				return &server->machine_table[i];
+		}
+		return NULL;
+	}
 
 	// Called when a map is being loaded
 	bool __stdcall OnMapLoad(maploader::s_mapcycle_entry* loading_map)
@@ -182,65 +214,35 @@ namespace halo { namespace server
 		}		
 	}
 
-	#pragma pack(push, 1)
-	struct s_player_ip
+	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port)
 	{
-		BYTE ip[4];
-		WORD port;
-	};
-	#pragma pack(pop)
-
-	bool GetPlayerIP(s_player& player, std::string* ip, WORD* port)
-	{
-		LPBYTE serverBase = (LPBYTE)*(DWORD*)*(DWORD*)ADDR_PLAYERINFOBASE;
-		LPBYTE machineTable = serverBase + 0xAA0;
-		LPBYTE machine = (LPBYTE)*(DWORD*)(machineTable + 4*player.mem->playerNum);
-
-		if (!machine) false;
-		LPBYTE pMachine = (LPBYTE)*(DWORD*)machine;
-		if (!pMachine) false;
-		
-		s_player_ip* network = (s_player_ip*)*(DWORD*)pMachine;
-		if (!network) return false;
-
+		s_machine_info* machine = GetMachineData(player);
+		if (!machine) return false;
 		if (ip) {
-			*ip = m_sprintf("%d.%d.%d.%d", network->ip[0], network->ip[1],
-				network->ip[2], network->ip[3]);
+			BYTE* ip_data = machine->get_con_info()->ip;
+			*ip = m_sprintf("%d.%d.%d.%d", ip_data[0], ip_data[1],
+				ip_data[2], ip_data[3]);
 		}
-		if (port) *port = network->port;
+		if (port) *port = machine->get_con_info()->port;
+
 		return true;
 	}
 
-	// todo: change how i get the hash
-	int GetHashOffset(s_player& player)
+	bool GetPlayerHash(const s_player& player, std::string& hash)
 	{
-		LPBYTE origin = (LPBYTE)ADDR_PLAYERINFOBASE;
-		LPBYTE lpBase = (LPBYTE)UlongToPtr(OFFSET_HASHBASE + *(DWORD*)origin);
-
-		for (int i = 0; i < 16; i++)
-		{
-			WORD check = *(WORD*)lpBase;
-
-			if (check == player.mem->playerNum)
-				return *(int*)(lpBase + 0x50);
-
-			lpBase += OFFSET_HASHLOOKUPLEN;
+		s_machine_info* machine = GetMachineData(player);
+		if (!machine) return false;
+		s_hash_list* hash_list = (s_hash_list*)ADDR_HASHLIST;
+		hash_list = hash_list->next;
+		bool found = false;
+		while (hash_list && hash_list->data) {	
+			if (hash_list->data->id == machine->id_hash) {
+				hash = hash_list->data->hash;
+				found = true;
+				break;
+			}
+			hash_list = hash_list->next;
 		}
-
-		return -1;
-	}
-
-	bool GetPlayerHash(s_player& player, std::string& hash)
-	{
-		int offset = GetHashOffset(player);
-		if (offset == -1) return false;
-		typedef char* (__cdecl *_HaloGetHash)(DWORD type, DWORD offset);
-		_HaloGetHash Halo_GetHash = (_HaloGetHash)(FUNC_HALOGETHASH);
-		char* str_hash = Halo_GetHash(0x319, offset);
-		if (str_hash) {
-			hash = str_hash;
-			if (hash.size() != 32) hash.clear();
-		}
-		return hash.size() == 32;
+		return found;
 	}
 }}

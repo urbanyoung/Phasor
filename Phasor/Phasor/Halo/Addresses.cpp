@@ -118,7 +118,8 @@ unsigned long PATCH_TEAMSELECTION = 0x00513BAE;
 unsigned long CC_VERSIONBROADCAST = 0x00598d90;
 unsigned long FUNC_INITVERSIONBROADCAST = CC_VERSIONBROADCAST + 6;
 unsigned long ADDR_BROADCASTVERSION = 0x005df840;
-
+extern unsigned long ADDR_HASHLIST = 0x006A2AE4;
+extern unsigned long ADDR_SERVERSTRUCT = 0x00745BA0;
 namespace Addresses
 {
 	using namespace Common;

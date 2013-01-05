@@ -1022,8 +1022,6 @@ namespace halo
 		memset(nopPatch, 0x90, sizeof(nopPatch));
 		WriteBytes(PATCH_MAPTABLEALLOCATION, &nopPatch, sizeof(nopPatch));	
 #endif
-
-
 		// Server hooks
 		// ----------------------------------------------------------------
 		// 
