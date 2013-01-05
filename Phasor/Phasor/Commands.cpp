@@ -4,6 +4,7 @@
 #include "Logging.h"
 #include "Halo/Server/Server.h"
 #include "Halo/Server/Maploader.h"
+#include "Halo/AFKDetection.h"
 
 namespace commands
 {
@@ -48,6 +49,7 @@ namespace commands
 		{&server::maploader::sv_mapcycle, "sv_mapcycle"},
 		{&server::maploader::sv_map, "sv_map"},
 		{&server::maploader::sv_end_game, "sv_end_game"},
+		{&afk_detection::sv_kickafk, "sv_kickafk"},
 		{NULL, NULL}
 	};
 

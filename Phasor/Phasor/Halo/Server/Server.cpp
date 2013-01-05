@@ -58,6 +58,16 @@ namespace halo { namespace server
 		g_Timers.Process();
 	}
 
+	void __stdcall OnClientUpdate(s_player_structure* m_player)
+	{
+		s_player* player = game::GetPlayerFromAddress(m_player);
+
+		if (player)	{
+			game::OnClientUpdate(player);
+			//player->afk->CheckPlayerActivity();
+		}
+	}
+
 	// Called when a map is being loaded
 	bool __stdcall OnMapLoad(maploader::s_mapcycle_entry* loading_map)
 	{

@@ -32,6 +32,16 @@ namespace halo { namespace game {
 		}
 		return NULL;
 	}
+
+	s_player* GetPlayerFromAddress(s_player_structure* player)
+	{
+		for (int i = 0; i < 16; i++) {
+			if (PlayerList[i] && PlayerList[i]->mem == player)
+				return PlayerList[i].get();
+		}
+		return NULL;
+	}
+
 	// Called when a game stage ends
 	void OnGameEnd(DWORD mode)
 	{
@@ -39,7 +49,7 @@ namespace halo { namespace game {
 		{
 		case 1: // just ended (in game scorecard is shown)
 			{
-				CAFKDetection::Disable();
+				afk_detection::Disable();
 				g_GameLog->WriteLog(kGameEnd, L"The game has ended.");
 				g_PrintStream << "The game is ending..." << endl;
 
@@ -60,6 +70,7 @@ namespace halo { namespace game {
 	// Called when a new game starts
 	void OnNewGame(const char* map)
 	{
+		afk_detection::Enable();
 		for (int i = 0; i < 16; i++) PlayerList[i].reset();
 	}
 
@@ -95,5 +106,10 @@ namespace halo { namespace game {
 
 			PlayerList[playerId].reset();
 		}
+	}
+
+	void OnClientUpdate(s_player* player)
+	{
+		player->afk->CheckPlayerActivity();
 	}
 }}

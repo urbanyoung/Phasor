@@ -19,6 +19,7 @@ namespace halo { namespace game {
 
 	s_player* GetPlayer(int index);
 	s_player* GetPlayerFromRconId(int playerNum);
+	s_player* GetPlayerFromAddress(s_player_structure* player);
 
 	// --------------------------------------------------------------------
 	// Events
@@ -58,7 +59,7 @@ namespace halo { namespace game {
 	bool __stdcall OnObjectInteraction(DWORD playerId, DWORD m_ObjId);
 
 	// Called when a player's position is updated
-	void __stdcall OnClientUpdate(objects::s_halo_object* m_object);
+	void OnClientUpdate(s_player* player);
 
 	// Called when an object's damage is being looked up
 	void __stdcall OnDamageLookup(DWORD receivingObj, DWORD causingObj, LPBYTE tagEntry);

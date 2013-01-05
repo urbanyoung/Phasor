@@ -13,10 +13,11 @@ namespace halo
 	{
 		g_PrintStream << "New player " << memory_id << endl;
 		mem = GetPlayerMemory(memory_id);
-		afk = new CAFKDetection(*this, g_Timers);
+		afk = new afk_detection::CAFKDetection(*this, g_Timers);
 		stream = new CPlayerStream(*this);	
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
+		m_object = 0;
 	}
 	s_player::~s_player()
 	{
@@ -28,7 +29,7 @@ namespace halo
 	objects::s_halo_object* s_player::get_object()
 	{
 		objects::s_halo_object* object = objects::GetObjectAddress(mem->object_id);
-		assert(object == m_object);
+		assert(m_object == 0 || object == m_object);
 		m_object = object;
 		return object;
 	}

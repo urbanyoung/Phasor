@@ -3,7 +3,7 @@
 #include "Server/Server.h"
 #include "../Globals.h"
 
-namespace halo
+namespace halo { namespace afk_detection
 {
 	DWORD CAFKDetection::max_duration = 0;
 	bool CAFKDetection::bDisable = false;
@@ -71,7 +71,6 @@ namespace halo
 
 	void CAFKDetection::CheckInactivity()
 	{
-		g_PrintStream << "Check inactivity " << endl;
 		if (max_duration == 0 || bDisable || player.IsAdmin()) return;
 		if (move_count <= kMoveCountThreshold) {
 			afk_duration++;
@@ -85,10 +84,33 @@ namespace halo
 				player.Message(L"You don't appear to be playing. You will be kicked in %i minute(s), if you remain inactive.", 
 					max_duration - afk_duration);
 			}
+		} else {
+			move_count = 0;
+			afk_duration = 0;
 		}
 	}
 
-	void CAFKDetection::Disable() {	bDisable = true; }
-	void CAFKDetection::Enable()  {	bDisable = false; }
+	void Disable() { CAFKDetection::bDisable = true; }
+	void Enable()  { CAFKDetection::bDisable = false; }
 
-}
+	e_command_result sv_kickafk(void*, 
+		std::vector<std::string>& tokens, COutStream& out)
+	{
+		if (tokens.size() == 2)
+		{
+			CAFKDetection::max_duration = atoi(tokens[1].c_str());
+
+			if (CAFKDetection::max_duration)
+				out << "Inactive players will be kicked after " << 
+				CAFKDetection::max_duration << " minutes(s)" << endl;
+			else
+				out << "Inactive players will no longer be kicked." << endl;
+		}
+		else
+			out << "Correct usage: sv_kickafk <duration> (to disable set duration to 0)."
+			<< endl;
+
+		return e_command_result::kProcessed;
+	}
+
+}}

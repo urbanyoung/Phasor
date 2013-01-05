@@ -13,6 +13,7 @@ enum e_command_result
 
 namespace halo { 
 	struct s_player;
+	struct s_player_structure;
 namespace server
 {
 	#pragma pack(push, 1)
@@ -94,6 +95,8 @@ namespace server
 
 	// Called periodically by Halo to check for console input, I use for timers
 	void __stdcall OnConsoleProcessing();
+
+	void __stdcall OnClientUpdate(s_player_structure* m_player);
 
 	// Called when a console command is to be executed
 	// true : Event has been handled, don't pass to server

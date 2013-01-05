@@ -8,6 +8,7 @@
 
 namespace halo
 {
+	namespace afk_detection { class CAFKDetection; }
 	struct s_player;
 
 	// -----------------------------------------------------------------
@@ -67,7 +68,6 @@ namespace halo
 	};
 	#pragma pack(pop)
 
-	class CAFKDetection;
 	class CPlayerStream;
 
 	struct s_player
@@ -76,7 +76,7 @@ namespace halo
 		WORD port;
 		int memory_id;
 		s_player_structure* mem;
-		CAFKDetection* afk;
+		afk_detection::CAFKDetection* afk;
 		CPlayerStream* stream;
 
 		// ----------------------------------------------------------------

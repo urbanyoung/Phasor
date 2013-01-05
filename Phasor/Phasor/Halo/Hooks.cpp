@@ -508,7 +508,7 @@ __declspec(naked) void OnChat_CC()
 		ret
 	}
 }
-
+*/
 // Codecave for player position updates
 __declspec(naked) void OnClientUpdate_CC()
 {
@@ -527,9 +527,9 @@ L008:
 START_PROCESSING:
 
 		pushad
-
+		mov eax, [esp + 0x20]
 		push eax // player's object
-		call game::OnClientUpdate
+		call server::OnClientUpdate
 
 		popad
 
@@ -541,7 +541,7 @@ START_PROCESSING:
 	}
 }
 
-DWORD dmglookup_ret = 0;
+/*DWORD dmglookup_ret = 0;
 
 // Codecaves for handling weapon damage
 __declspec(naked) void OnDamageLookup_CC()
@@ -1074,12 +1074,12 @@ namespace halo
 
 		// Codecave for interations with pickable objects
 		CreateCodeCave(CC_OBJECTINTERACTION, 5, OnObjectInteraction_CC);
-
+		*/
 		// Codecave for position updates
 		CreateCodeCave(CC_CLIENTUPDATE, 6, OnClientUpdate_CC);
 
 		// Codecave for handling damage being done
-		CreateCodeCave(CC_DAMAGELOOKUP, 6, OnDamageLookup_CC);
+	/*	CreateCodeCave(CC_DAMAGELOOKUP, 6, OnDamageLookup_CC);
 
 		// Codecave for server chat
 		CreateCodeCave(CC_CHAT, 7, OnChat_CC);

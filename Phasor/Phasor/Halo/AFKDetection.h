@@ -3,8 +3,9 @@
 #include "Player.h"
 #include "../../Common/Timers.h"
 #include "../../Common/vect3d.h"
+#include "Server/Server.h"
 
-namespace halo
+namespace halo { namespace afk_detection
 {
 	class CAFKDetection
 	{
@@ -22,12 +23,14 @@ namespace halo
 
 		// Called when the timer expires (check if they're afk)
 		void CheckInactivity();
-
-		static void Disable();
-		static void Enable();
-
+		
 		static DWORD max_duration; // max number of minutes inactive
 		static const DWORD kMoveCountThreshold;
 		static bool bDisable;
 	};
-}
+
+	void Enable();
+	void Disable();
+	e_command_result sv_kickafk(void*, 
+		std::vector<std::string>& tokens, COutStream& out);
+}}
