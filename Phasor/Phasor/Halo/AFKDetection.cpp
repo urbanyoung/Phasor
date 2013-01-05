@@ -84,10 +84,9 @@ namespace halo { namespace afk_detection
 				player.Message(L"You don't appear to be playing. You will be kicked in %i minute(s), if you remain inactive.", 
 					max_duration - afk_duration);
 			}
-		} else {
-			move_count = 0;
-			afk_duration = 0;
-		}
+		} else afk_duration = 0;
+	
+		move_count = 0;
 	}
 
 	void Disable() { CAFKDetection::bDisable = true; }
