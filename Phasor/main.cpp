@@ -74,9 +74,9 @@ extern "C" __declspec(dllexport) void OnLoad()
 		}
 
 		// Initialize the other logs
-		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, g_Thread));
+		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, g_Thread, 0));
 		g_ScriptsLog.reset(new CThreadedLogging(
-			g_LogsDirectory, L"ScriptsLog", g_Thread));
+			g_LogsDirectory, L"ScriptsLog", g_Thread, 0));
 	//	g_ScriptsLog->EnableTimestamp(false);
 		g_GameLog.reset(new CGameLog(g_LogsDirectory, L"GameLog", g_Thread));
 		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_Thread));
@@ -91,7 +91,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 
 		// We want threaded logging from now on
-		//*g_PhasorLog << "test" << endl;		
+		*g_PhasorLog << "test" << endl;		
 	}
 	catch (std::exception& e)
 	{

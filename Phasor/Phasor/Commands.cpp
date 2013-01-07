@@ -7,36 +7,17 @@
 #include "Halo/Server/Maploader.h"
 #include "Halo/AFKDetection.h"
 #include "../Scripting.h"
+#include "LogHandler.h"
 #include <map>
 #include <assert.h>
 #include "Globals.h"
+
 namespace commands
 {
 	using namespace halo;
 
 	// ------------------------------------------------------------------------
 	// Command handlers
-
-	// sv_logname <type: {Phasor|Script|Game|Rcon}> <new name>
-	e_command_result sv_logname(void*, std::vector<std::string>& args, COutStream& out)
-	{
-		/*if (args.size() != 3) return show_help(SV_LOGNAME, out);
-
-		std::string& log_type = args[1];
-		std::string& log_newname = args[2];
-
-		ToLowercase(log_type);
-
-		CLoggingStream* log = NULL;
-		if (log_type == "phasor") log = &*g_PhasorLog;
-		else if (log_type == "script") log = &*g_ScriptsLog;
-
-		if (!log) return show_help_invalid(SV_LOGNAME, 1, log_type, out);
-		log->SetOutFile(WidenString(log_newname));
-
-		return true;*/
-		return e_command_result::kProcessed;
-	}
 
 	typedef e_command_result (*cmd_func)(void*, CArgParser&, COutStream&);
 	static const std::map<std::string, cmd_func> CommandList = []() -> std::map<std::string, cmd_func>
@@ -50,6 +31,7 @@ namespace commands
 		cmd["sv_map"]				= &server::maploader::sv_map;
 		cmd["sv_end_game"]			= &server::maploader::sv_end_game;
 		cmd["sv_kickafk"]			= &afk_detection::sv_kickafk;
+		cmd["sv_logname"]			= &logging::sv_logname;
 		return cmd;
 	}();
 
@@ -63,7 +45,8 @@ namespace commands
 		usage["sv_mapcycle"]		= "";
 		usage["sv_map"]				= usage["sv_mapcycle_add"];
 		usage["sv_end_game"]		= "";
-		usage["sv_kickafk"]			= "sv_kickafk";
+		usage["sv_kickafk"]			= "<time in minutes>";
+		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
 		return usage;
 	}();
 
@@ -93,11 +76,12 @@ namespace commands
 		caller.AddArg(command);
 		Scripting::results_t types = {Common::TYPE_BOOL};
 		Scripting::Result result = caller.Call("OnServerCommand", types);
-		
 
 		if (result.size() && result.ReadBool().GetValue() == false) 
 			return e_command_result::kProcessed;
 				
+		// Attempt to execute the command, catching any errors resulting
+		// from user input.
 		auto itr = CommandList.find(tokens[0]);
 		if (itr != CommandList.end()) {
 			try {				
@@ -114,7 +98,7 @@ namespace commands
 	}
 
 	// --------------------------------------------------------------------
-	const char* CArgParser::k_arg_names[] = {"none", "string", "integer", "number", "player"};
+	const char* CArgParser::k_arg_names[] = {"none", "string", "stringoneof", "integer", "number", "player"};
 
 	CArgParser::CArgParser(const std::vector<std::string>& args,
 		const std::string& function, size_t start_index) 
@@ -125,8 +109,8 @@ namespace commands
 	std::string CArgParser::ReadString(size_t len)
 	{
 		HasData();
-		// also support fixed length strings, so check here
-		if (len != -1 && len != args[index].size()) RaiseError(kString, len);
+		// i also support fixed length strings, so check here
+		if (len != -1 && len != args[index].size()) RaiseError(kString, 1, len);
 		return args[index++];
 	}
 
@@ -135,25 +119,28 @@ namespace commands
 		return WidenString(ReadString(len));
 	}	
 
-	int CArgParser::ReadInt()
+	std::string CArgParser::ReadStringOneOf(const std::vector<std::string>& opts,
+		bool ignorecase)
 	{
-		return ReadNumber<int>(kInteger);
+		std::string str = ReadString();
+		if (ignorecase) ToLowercase(str);
+		if (!InVector<std::string>(opts, str)) {
+			index--; // incremented on success in ReadString
+			RaiseError(kStringOneOf, 0, 0, &opts);
+		}
+		return str;
 	}
 
-	unsigned int CArgParser::ReadUInt()
+	std::wstring CArgParser::ReadWideStringOneOf(const std::vector<std::string>& opts,
+		bool ignorecase)
 	{
-		return ReadNumber<unsigned int>(kInteger);
+		return WidenString(ReadStringOneOf(opts, ignorecase));
 	}
 
-	double CArgParser::ReadDouble()
-	{
-		return ReadNumber<double>(kDouble);
-	}
-
-	float CArgParser::ReadFloat()
-	{
-		return (float)ReadDouble();
-	}
+	int CArgParser::ReadInt() {	return ReadNumber<int>(kInteger); }
+	unsigned int CArgParser::ReadUInt() { return ReadNumber<unsigned int>(kInteger); }
+	double CArgParser::ReadDouble()	{ return ReadNumber<double>(kDouble); }
+	float CArgParser::ReadFloat() {	return (float)ReadDouble(); }
 
 	halo::s_player& CArgParser::ReadPlayer()
 	{
@@ -170,26 +157,50 @@ namespace commands
 	}
 
 	// Describes and raises an error
-	void CArgParser::RaiseError(e_arg_types expected, int size)
+	void CArgParser::RaiseError(e_arg_types expected,  double min, double max,
+		const std::vector<std::string>* opts)
 	{
 		if (expected == kNone) throw CArgParserException();
 
-		std::string desc;
+		// default message
+		std::string desc = m_sprintf("should be of type '%s'", k_arg_names[expected]);
 		switch (expected)
 		{
+		case kString:
+			{
+				if (min != 0 && max == 0)
+					desc = m_sprintf("expected string with minimum length %i", min);
+				else if (min != 0 && max != 0)
+					desc = m_sprintf("expected string with length between %i and %i characters.", min, max);
+				else if (min == 0 && max != 0)
+					desc = m_sprintf("expected string with maximum length %i", max);
+			} break;
+		case kStringOneOf:
+			{
+				desc.reserve(100);
+				desc = "should be one of: ";
+				for (size_t x = 0; x < opts->size(); x++) {
+					if (x != 0) desc += ",";
+					desc += "'" + (*opts)[x] + "'";
+				}
+			} break;
+		case kInteger:
+			{
+				if (min != 0 || max != 0)
+					desc = m_sprintf("expected integer between %i and %i", (int)min, (int)max);
+			} break;
+		case kDouble:
+			{
+				if (min != 0 || max != 0)
+					desc = m_sprintf("expected number between %.2f and %.2f", min, max);
+			} break;
 		case kPlayer:
 			{
-				desc = m_sprintf("%s : argument #%i invalid player.", 
-					function.c_str(), index);
-			} break;
-		default:
-			{
-				desc = m_sprintf("%s : argument #%i should be of type '%s'",
-					function.c_str(), index, k_arg_names[expected]);
-				if (size != -1) desc = m_sprintf("%s and length '%i'", desc.c_str(), size);
+				desc = "invalid player"; 
 			} break;
 		}
-		throw CArgParserException(desc);
+		std::string final_msg = m_sprintf("%s : argument #%i %s", function.c_str(), index,
+			desc.c_str());
+		throw CArgParserException(final_msg);
 	}
-
 }

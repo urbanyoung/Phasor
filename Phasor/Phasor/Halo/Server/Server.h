@@ -3,13 +3,8 @@
 #include "../../../Common/Types.h"
 #include "MapLoader.h"
 
-// stupid enum warning
-#pragma warning( disable : 4482)
-enum e_command_result
-{
-	kGiveToHalo = 0,
-	kProcessed
-};
+// declared in ../../Commands.h
+enum e_command_result;
 
 namespace halo { 
 	struct s_player;

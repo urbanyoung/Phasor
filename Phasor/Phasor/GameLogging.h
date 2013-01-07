@@ -18,7 +18,7 @@ class CGameLog
 {
 private:
 	std::unique_ptr<CThreadedLogging> logstream;
-	static const unsigned int kSaveDelay = 15000; // 15 seconds
+	static const unsigned int kSaveDelay = 10000; // 10 seconds
 
 public:
 	CGameLog(const std::wstring& dir, const std::wstring& file,
@@ -26,4 +26,6 @@ public:
 
 	// linebreak is automatically added
 	void WriteLog(glog_type type, wchar_t* format, ...);
+
+	CLoggingStream& GetLogStream() { return *logstream; }
 };

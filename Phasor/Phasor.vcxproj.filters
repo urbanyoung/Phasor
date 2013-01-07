@@ -98,6 +98,9 @@
     <ClCompile Include="Phasor\Halo\Halo.cpp">
       <Filter>Phasor\Halo</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\LogHandler.cpp">
+      <Filter>Phasor\Logging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -269,6 +272,9 @@
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Halo.h">
       <Filter>Phasor\Halo</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\LogHandler.h">
+      <Filter>Phasor\Logging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
