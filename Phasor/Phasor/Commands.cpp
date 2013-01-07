@@ -113,7 +113,7 @@ namespace commands
 	}
 
 	// --------------------------------------------------------------------
-	const char* CArgParser::k_arg_names[] = {"string", "string", "integer", "number", "player"};
+	const char* CArgParser::k_arg_names[] = {"none", "string", "integer", "number", "player"};
 
 	CArgParser::CArgParser(const std::vector<std::string>& args,
 		const std::string& function, size_t start_index) 
@@ -124,6 +124,7 @@ namespace commands
 	std::string CArgParser::ReadString(size_t len)
 	{
 		HasData();
+		// also support fixed length strings, so check here
 		if (len != -1 && len != args[index].size()) RaiseError(kString, len);
 		return args[index++];
 	}
@@ -139,7 +140,7 @@ namespace commands
 		const char* start = args[index++].c_str();
 		char* end;
 		int value = strtol(start, &end, 10);
-		if (start == end) RaiseError(kInteger); // TEST THIS
+		if (start == end) RaiseError(kInteger); // todo: TEST THIS
 		return value;
 	}
 
