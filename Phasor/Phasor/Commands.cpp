@@ -106,17 +106,20 @@ namespace commands
 	{
 	}
 
-	std::string CArgParser::ReadString(size_t len)
+	std::string CArgParser::ReadString(size_t min, size_t max)
 	{
 		HasData();
 		// i also support fixed length strings, so check here
-		if (len != -1 && len != args[index].size()) RaiseError(kString, 1, len);
+		size_t len = args[index].size();
+		bool valid = len >= min;
+		if (max > 0) valid &= len <= max;
+		if (!valid) RaiseError(kString, min, max);
 		return args[index++];
 	}
 
-	std::wstring CArgParser::ReadWideString(size_t len)
+	std::wstring CArgParser::ReadWideString(size_t min, size_t max)
 	{
-		return WidenString(ReadString(len));
+		return WidenString(ReadString(min,max));
 	}	
 
 	std::string CArgParser::ReadStringOneOf(const std::vector<std::string>& opts,
