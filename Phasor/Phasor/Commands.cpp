@@ -94,12 +94,13 @@ namespace commands
 		Scripting::results_t types = {Common::TYPE_BOOL};
 		Scripting::Result result = caller.Call("OnServerCommand", types);
 		
+
 		if (result.size() && result.ReadBool().GetValue() == false) 
 			return e_command_result::kProcessed;
 				
 		auto itr = CommandList.find(tokens[0]);
 		if (itr != CommandList.end()) {
-			try {
+			try {				
 				CArgParser args(tokens, tokens[0], 1);
 				return itr->second(exec_player, args, out);
 			} catch (CArgParserException& e) {
@@ -137,30 +138,33 @@ namespace commands
 	int CArgParser::ReadInt()
 	{
 		HasData();
-		const char* start = args[index++].c_str();
+		std::string& arg = args[index++];
+		const char* start = arg.c_str(), *expected_end = start + arg.size();
 		char* end;
 		int value = strtol(start, &end, 10);
-		if (start == end) RaiseError(kInteger); // todo: TEST THIS
+		if (end != expected_end) RaiseError(kInteger); // todo: TEST THIS
 		return value;
 	}
 
 	unsigned int CArgParser::ReadUInt()
 	{
 		HasData();
-		const char* start = args[index++].c_str();
+		std::string& arg = args[index++];
+		const char* start = arg.c_str(), *expected_end = start + arg.size();
 		char* end;
 		unsigned int value = strtoul(start, &end, 10);
-		if (start == end) RaiseError(kInteger); // TEST THIS
+		if (end != expected_end) RaiseError(kInteger); // TEST THIS
 		return value;
 	}
 
 	double CArgParser::ReadDouble()
 	{
 		HasData();
-		const char* start = args[index++].c_str();
+		std::string& arg = args[index++];
+		const char* start = arg.c_str(), *expected_end = start + arg.size();
 		char* end;
 		double value = strtod(start, &end);
-		if (start == end) RaiseError(kDouble); // TEST THIS
+		if (end != expected_end) RaiseError(kDouble); // TEST THIS
 		return value;
 	}
 
@@ -171,7 +175,7 @@ namespace commands
 
 	halo::s_player& CArgParser::ReadPlayer()
 	{
-		int playerIndex = ReadInt();
+		int playerIndex = ReadInt()-1;
 		halo::s_player* player = halo::game::GetPlayerFromRconId(playerIndex);
 		if (!player) RaiseError(kPlayer);
 		return *player;
@@ -194,12 +198,12 @@ namespace commands
 		case kPlayer:
 			{
 				desc = m_sprintf("%s : argument #%i invalid player.", 
-					function.c_str(), index + 1);
+					function.c_str(), index);
 			} break;
 		default:
 			{
 				desc = m_sprintf("%s : argument #%i should be of type '%s'",
-					function.c_str(), index + 1, k_arg_names[expected]);
+					function.c_str(), index, k_arg_names[expected]);
 				if (size != -1) desc = m_sprintf("%s and length '%i'", desc.c_str(), size);
 			} break;
 		}
