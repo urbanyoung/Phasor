@@ -31,6 +31,7 @@ protected:
 
 public:
 	CThreadedLogging(const std::wstring& dir, const std::wstring& file,
+		const std::wstring& movedir,
 		PhasorThread& thread, 
 		DWORD dwDelay=DEFAULT_SAVE_DELAY);
 	CThreadedLogging(const CLoggingStream& stream, PhasorThread& thread,
@@ -38,7 +39,8 @@ public:
 	virtual ~CThreadedLogging();
 
 	// CLoggingStream isn't threadsafe, so we're responsible for thread safety.
-	virtual void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);
+	virtual void SetMoveSize(DWORD kbSize);
+	virtual void SetMoveDirectory(const std::wstring& move_to);
 	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
 	virtual void SetOutFile(const std::wstring& fileName); // use cur dir
 	virtual void EnableTimestamp(bool state);

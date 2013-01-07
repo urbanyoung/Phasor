@@ -32,6 +32,8 @@ namespace commands
 		cmd["sv_end_game"]			= &server::maploader::sv_end_game;
 		cmd["sv_kickafk"]			= &afk_detection::sv_kickafk;
 		cmd["sv_logname"]			= &logging::sv_logname;
+		cmd["sv_loglimit"]			= &logging::sv_loglimit;
+		cmd["sv_logmovedir"]		= &logging::sv_logmovedir;
 		return cmd;
 	}();
 
@@ -47,6 +49,8 @@ namespace commands
 		usage["sv_end_game"]		= "";
 		usage["sv_kickafk"]			= "<time in minutes>";
 		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
+		usage["sv_loglimit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";
+		usage["sv_logmovedir"]		= "<directory>";
 		return usage;
 	}();
 
@@ -111,9 +115,7 @@ namespace commands
 		HasData();
 		// i also support fixed length strings, so check here
 		size_t len = args[index].size();
-		bool valid = len >= min;
-		if (max > 0) valid &= len <= max;
-		if (!valid) RaiseError(kString, min, max);
+		if (len < min || (len > max && max != 0)) RaiseError(kString, min, max);
 		return args[index++];
 	}
 
@@ -140,10 +142,10 @@ namespace commands
 		return WidenString(ReadStringOneOf(opts, ignorecase));
 	}
 
-	int CArgParser::ReadInt() {	return ReadNumber<int>(kInteger); }
-	unsigned int CArgParser::ReadUInt() { return ReadNumber<unsigned int>(kInteger); }
-	double CArgParser::ReadDouble()	{ return ReadNumber<double>(kDouble); }
-	float CArgParser::ReadFloat() {	return (float)ReadDouble(); }
+	int CArgParser::ReadInt(int min, int max) {	return ReadNumber<int>(kInteger, min,max); }
+	unsigned int CArgParser::ReadUInt(unsigned int min, unsigned int max) { return ReadNumber<unsigned int>(kInteger,min,max); }
+	double CArgParser::ReadDouble(double min, double max) { return ReadNumber<double>(kDouble,min,max); }
+	float CArgParser::ReadFloat(float min, float max) {	return (float)ReadDouble(min,max); }
 
 	halo::s_player& CArgParser::ReadPlayer()
 	{

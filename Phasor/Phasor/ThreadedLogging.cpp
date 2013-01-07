@@ -12,8 +12,9 @@ void CThreadedLogging::Initialize(DWORD dwDelay)
 }
 
 CThreadedLogging::CThreadedLogging(const std::wstring& dir, const std::wstring& file,
+	const std::wstring& movedir,
 	PhasorThread& thread, DWORD dwDelay)
-	: CLoggingStream(dir, file), thread(thread)
+	: CLoggingStream(dir, file, movedir), thread(thread)
 {
 	Initialize(dwDelay);
 }
@@ -82,10 +83,16 @@ bool CThreadedLogging::Write(const std::wstring& str)
 	return true; 
 }
 
-void CThreadedLogging::SetMoveInfo(const std::wstring& move_to, DWORD kbSize)
+void CThreadedLogging::SetMoveSize(DWORD kbSize)
 {
 	Lock _(loggingStreamCS);
-	CLoggingStream::SetMoveInfo(move_to, kbSize);
+	CLoggingStream::SetMoveSize(kbSize);
+}
+
+void CThreadedLogging::SetMoveDirectory(const std::wstring& move_to)
+{
+	Lock _(loggingStreamCS);
+	CLoggingStream::SetMoveDirectory(move_to);
 }
 
 void CThreadedLogging::SetOutFile(const std::wstring& directory,const std::wstring& fileName)

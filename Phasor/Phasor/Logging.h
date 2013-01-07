@@ -19,9 +19,9 @@ private:
 	bool bTimestamp; // should timestamps be prepended? default true
 
 	void Initialize(const std::wstring& directory,
-		const std::wstring& fileName);
+		const std::wstring& fileName, const std::wstring& moveDirectory);
 	void SetNames(const std::wstring& directory,
-		const std::wstring& fileName);
+		const std::wstring& fileName, const std::wstring& moveDirectory);
 
 	// Check if the file should be moved.
 	void CheckAndMove(DWORD curSize);
@@ -31,11 +31,13 @@ protected:
 
 public:
 	// directory should be normalized (finish with a single \\)
-	CLoggingStream(const std::wstring& dir, const std::wstring& file);
+	CLoggingStream(const std::wstring& dir, const std::wstring& file,
+		const std::wstring& move_dir);
 	CLoggingStream(const CLoggingStream& other);
 	virtual ~CLoggingStream();
 
-	virtual void SetMoveInfo(const std::wstring& move_to, DWORD kbSize);
+	virtual void SetMoveSize(DWORD kbSize);
+	virtual void SetMoveDirectory(const std::wstring& move_to);
 	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
 	virtual void SetOutFile(const std::wstring& fileName); // use cur dir
 	virtual void EnableTimestamp(bool state); // true by default

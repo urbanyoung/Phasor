@@ -45,7 +45,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 	LocateDirectories();
 
 	// can't rename phasor log for startup errors via earlyinit
-	CLoggingStream PhasorLog(g_LogsDirectory, L"PhasorLog");
+	CLoggingStream PhasorLog(g_LogsDirectory, L"PhasorLog", g_OldLogsDirectory);
 
 	try
 	{
@@ -66,7 +66,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Building gametype list..." << endl;
 		if (!halo::server::gametypes::BuildGametypeList())
 			PhasorLog << L"    No gametypes were found!" << endl;
-
+		PhasorLog.print("%i", (int)0x80000000);
 		halo::InstallHooks();
 
 		if (!g_Thread.run()) {
@@ -76,10 +76,10 @@ extern "C" __declspec(dllexport) void OnLoad()
 		// Initialize the other logs
 		g_PhasorLog.reset(new CThreadedLogging(PhasorLog, g_Thread, 0));
 		g_ScriptsLog.reset(new CThreadedLogging(
-			g_LogsDirectory, L"ScriptsLog", g_Thread, 0));
+			g_LogsDirectory, L"ScriptsLog", g_OldLogsDirectory, g_Thread, 0));
 	//	g_ScriptsLog->EnableTimestamp(false);
 		g_GameLog.reset(new CGameLog(g_LogsDirectory, L"GameLog", g_Thread));
-		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_Thread));
+		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_OldLogsDirectory, g_Thread));
 		g_Scripts.reset(new Scripting::Scripts(*g_ScriptsLog,g_ScriptsDirectory));
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
@@ -114,44 +114,20 @@ extern "C" __declspec(dllexport) void OnLoad()
 	}	*/
 }
 
-class CEarlyError : public CLoggingStream
-{
-private:
-	virtual bool Write(const std::wstring& str)
-	{
-		g_PrintStream << str << endl;
-		CLoggingStream::Write(str);
-		WAIT_AND_QUIT
-		return true; // no return
-	}
-
-public:
-	CEarlyError (const std::wstring& file)
-		: CLoggingStream(L"", file)
-	{
-	}
-
-	virtual ~CEarlyError() {}
-};
-
 // Locate and create all directories Phasor will use. If an error occurs
 // this function never returns and the process is terminated.
 void LocateDirectories()
 {
-	CEarlyError earlyerror(L"earlyerror");
 	try 
 	{
 		SetupDirectories();
 	}
 	catch (std::exception & e)
 	{
-		earlyerror << L"An error occurred which prevented Phasor from loading : "
+		g_PrintStream << L"An error occurred which prevented Phasor from loading : "
 			<< e.what() << endl;
+		WAIT_AND_QUIT
 	}	
-	catch (...)
-	{
-		earlyerror << "An unknown error occurred which prevented Phasor from loading" << endl;
-	}
 }
 
 void LoadEarlyInit(COutStream& out)

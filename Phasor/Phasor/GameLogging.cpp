@@ -1,5 +1,6 @@
 #include "GameLogging.h"
 #include "../Common/MyString.h"
+#include "Directory.h"
 
 // ------------------------------------------------------------------------
 // CGameLog
@@ -25,7 +26,7 @@ static const wchar_t* event_names[] =
 
 CGameLog::CGameLog(const std::wstring& dir, const std::wstring& file,
 	PhasorThread& thread)
-	: logstream(new CThreadedLogging(dir, file, thread, kSaveDelay))
+	: logstream(new CThreadedLogging(dir, file, g_OldLogsDirectory, thread, kSaveDelay))
 {
 }
 

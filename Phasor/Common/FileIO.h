@@ -14,6 +14,7 @@ namespace NDirectory
 	const wchar_t kExtensionSeparator = L'.';
 
 	// Attempts to create the specified simple directory
+	// ie its immediate parent must exist
 	bool CreateDirectory(const std::wstring& dir);
 
 	// Ensure the directory ends with a single kDirSeparator character.

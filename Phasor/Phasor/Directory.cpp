@@ -9,14 +9,16 @@ std::wstring g_DataDirectory;
 std::wstring g_CrashDirectory;
 std::wstring g_ScriptsDirectory;
 std::wstring g_LogsDirectory;
+std::wstring g_OldLogsDirectory;
 std::wstring g_MapDirectory;
 
 void ParseCommandLine(const std::wstring& commandline, // first is exe name
 	std::wstring& dataPath, std::wstring& mapPath);
 
-void CreateSubDirectory(const std::wstring& name, std::wstring& out)
+void CreateSubDirectory(const std::wstring& name, std::wstring& out, 
+	const std::wstring& relative = g_ProfileDirectory)
 {
-	out = g_ProfileDirectory + name;
+	out = relative + name;
 	if (!NDirectory::CreateDirectory(out)) {
 		std::string err = "The " + NarrowString(name) + " directory (" + 
 			NarrowString(out) +	") couldn't be created.";
@@ -50,6 +52,7 @@ void SetupDirectories()
 	CreateSubDirectory(L"data", g_DataDirectory);
 	CreateSubDirectory(L"scripts", g_ScriptsDirectory);
 	CreateSubDirectory(L"logs", g_LogsDirectory);
+	CreateSubDirectory(L"old", g_OldLogsDirectory, g_LogsDirectory);
 	CreateSubDirectory(L"crash", g_CrashDirectory);
 }
 

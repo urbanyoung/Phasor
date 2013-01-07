@@ -49,7 +49,7 @@ namespace commands
 		double StringToNumber<double>(const char* start, char** end) { return strtod(start, end);}
 	
 		template <class T>
-		T ReadNumber(e_arg_types type)
+		T ReadNumber(e_arg_types type, T min, T max)
 		{
 			HasData();
 			std::string& arg = args[index++];
@@ -57,6 +57,7 @@ namespace commands
 			char* end;
 			T value = StringToNumber<T>(start, &end);
 			if (end != expected_end) RaiseError(type);
+			if (value < min || value > max) RaiseError(type, min, max);
 			return value;
 		}
 
@@ -77,16 +78,16 @@ namespace commands
 			const std::string& function, size_t start_index);
 		size_t size() const { return args.size() - start_index;}
 
-		std::string ReadString(size_t len = -1);
-		std::wstring ReadWideString(size_t len = -1);
+		std::string ReadString(size_t min=0, size_t max=0);
+		std::wstring ReadWideString(size_t min=0, size_t max=0);
 		// if ignore case == true, all opts should be lowercase (not enforced)
 		std::string ReadStringOneOf(const std::vector<std::string>& opts, bool ignorecase=false);
 		std::wstring ReadWideStringOneOf(const std::vector<std::string>& opts, bool ignorecase=false);
 
-		int ReadInt();
-		unsigned int ReadUInt();
-		double ReadDouble();
-		float ReadFloat();
+		int ReadInt(int min=INT_MIN, int max=INT_MAX);
+		unsigned int ReadUInt(unsigned int min=0, unsigned int max=UINT_MAX);
+		double ReadDouble(double min=-DBL_MAX, double max=DBL_MAX);
+		float ReadFloat(float min=-FLT_MAX, float max=FLT_MAX);
 		halo::s_player& ReadPlayer();
 		const std::string& ReadPlayerHash();
 	};

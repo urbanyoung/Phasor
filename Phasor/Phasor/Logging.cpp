@@ -5,32 +5,34 @@
 // ----------------------------------------------------------------------
 //
 void CLoggingStream::SetNames(const std::wstring& directory, 
-	const std::wstring& fileName)
+	const std::wstring& fileName, const std::wstring& moveDirectory)
 {
 	this->fileDirectory = directory;
+	this->moveDirectory = moveDirectory;
 	this->fileName = fileName;
 	this->filePath = fileDirectory + fileName + L".log";	
 }
 
 void CLoggingStream::Initialize(const std::wstring& directory,
-	const std::wstring& fileName)
+	const std::wstring& fileName, const std::wstring& moveDirectory)
 {
 	byteSize = 0;
 	errorOffset = 0;
 	bTimestamp = true;
-	SetNames(directory, fileName);
+	SetNames(directory, fileName, moveDirectory);
 }
 
-CLoggingStream::CLoggingStream(const std::wstring& dir, const std::wstring& file)
+CLoggingStream::CLoggingStream(const std::wstring& dir, const std::wstring& file,
+	const std::wstring& move_dir)
 	: COutStream()
 {
-	Initialize(dir, file);
+	Initialize(dir, file, move_dir);
 }
 
 CLoggingStream::CLoggingStream(const CLoggingStream& other)
 	: COutStream()
 {
-	Initialize(other.fileDirectory, other.fileName);
+	Initialize(other.fileDirectory, other.fileName, other.moveDirectory);
 }
 
 CLoggingStream::~CLoggingStream()
@@ -59,22 +61,26 @@ void CLoggingStream::CheckAndMove(DWORD curSize)
 	}
 }
 
-void CLoggingStream::SetMoveInfo(const std::wstring& move_to, DWORD kbSize)
+void CLoggingStream::SetMoveSize(DWORD kbSize)
+{
+	byteSize = kbSize * 1024;
+}
+
+void CLoggingStream::SetMoveDirectory(const std::wstring& move_to)
 {
 	moveDirectory = move_to;
 	NDirectory::NormalizeDirectory(moveDirectory);
-	byteSize = kbSize * 1024;
 }
 
 void CLoggingStream::SetOutFile(const std::wstring& directory,
 	const std::wstring& fileName)
 {
-	SetNames(directory, fileName);
+	SetNames(directory, fileName, moveDirectory);
 }
 
 void CLoggingStream::SetOutFile(const std::wstring& fileName)
 {
-	SetNames(this->fileDirectory, fileName);
+	SetNames(this->fileDirectory, fileName, moveDirectory);
 }
 
 void CLoggingStream::EnableTimestamp(bool state)
