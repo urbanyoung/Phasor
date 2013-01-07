@@ -133,39 +133,21 @@ namespace commands
 	std::wstring CArgParser::ReadWideString(size_t len)
 	{
 		return WidenString(ReadString(len));
-	}
+	}	
 
 	int CArgParser::ReadInt()
 	{
-		HasData();
-		std::string& arg = args[index++];
-		const char* start = arg.c_str(), *expected_end = start + arg.size();
-		char* end;
-		int value = strtol(start, &end, 10);
-		if (end != expected_end) RaiseError(kInteger); // todo: TEST THIS
-		return value;
+		return ReadNumber<int>(kInteger);
 	}
 
 	unsigned int CArgParser::ReadUInt()
 	{
-		HasData();
-		std::string& arg = args[index++];
-		const char* start = arg.c_str(), *expected_end = start + arg.size();
-		char* end;
-		unsigned int value = strtoul(start, &end, 10);
-		if (end != expected_end) RaiseError(kInteger); // TEST THIS
-		return value;
+		return ReadNumber<unsigned int>(kInteger);
 	}
 
 	double CArgParser::ReadDouble()
 	{
-		HasData();
-		std::string& arg = args[index++];
-		const char* start = arg.c_str(), *expected_end = start + arg.size();
-		char* end;
-		double value = strtod(start, &end);
-		if (end != expected_end) RaiseError(kDouble); // TEST THIS
-		return value;
+		return ReadNumber<double>(kDouble);
 	}
 
 	float CArgParser::ReadFloat()

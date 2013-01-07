@@ -22,7 +22,6 @@ private:
 	size_t start_index, index;
 	std::string function; // command being executed (ie sv_players)
 
-
 	enum e_arg_types
 	{
 		kNone,
@@ -31,8 +30,28 @@ private:
 		kDouble,
 		kPlayer
 	};
-
 	static const char* k_arg_names[];
+
+	template <class T>
+	T StringToNumber(const char* start, char** end);
+	template <>
+	int StringToNumber<int>(const char* start, char** end) { return strtol(start, end, 10);	}
+	template <>
+	unsigned int StringToNumber<unsigned int>(const char* start, char** end) { return strtoul(start, end, 10); }
+	template <>
+	double StringToNumber<double>(const char* start, char** end) { return strtod(start, end);}
+	
+	template <class T>
+	T ReadNumber(e_arg_types type)
+	{
+		HasData();
+		std::string& arg = args[index++];
+		const char* start = arg.c_str(), *expected_end = start + arg.size();
+		char* end;
+		T value = StringToNumber<T>(start, &end);
+		if (end != expected_end) RaiseError(type);
+		return value;
+	}
 
 	void RaiseError(e_arg_types expected, int size=-1);
 	void HasData() { if (args.size() <= index) RaiseError(kNone); }
