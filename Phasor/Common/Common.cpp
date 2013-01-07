@@ -2,6 +2,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <iterator>
+#include "MyString.h"
 
 namespace Common
 {
@@ -25,6 +26,13 @@ namespace Common
 	std::unique_ptr<Object> Object::NewCopy() const
 	{
 		return std::unique_ptr<Object>(new Object(TYPE_NIL));
+	}
+
+	// Converts the object to the specified type, if possible.
+	// If no conversion is possible false is returned.
+	bool Object::ConvertTo(obj_type type, std::unique_ptr<Object>* out) const
+	{
+		return false;
 	}
 
 	obj_type Object::GetType() const
@@ -58,6 +66,27 @@ namespace Common
 	std::unique_ptr<Object> ObjBool::NewCopy() const
 	{
 		return std::unique_ptr<Object>(new ObjBool(*this));
+	}
+
+	bool ObjBool::ConvertTo(obj_type type, std::unique_ptr<Object>* out) const
+	{
+		bool success = true;
+		switch (type)
+		{
+		case TYPE_STRING:
+			{
+				out->reset(new ObjString(this->b ? "true" : "false"));
+			} break;
+		case TYPE_NUMBER:
+			{
+				out->reset(new ObjNumber(b));
+			} break;
+		default:
+			{
+				success = false;
+			} break;
+		}
+		return success;
 	}
 
 	bool ObjBool::GetValue() const
@@ -107,6 +136,27 @@ namespace Common
 	std::unique_ptr<Object> ObjNumber::NewCopy() const
 	{
 		return std::unique_ptr<Object>(new ObjNumber(*this));
+	}
+
+	bool ObjNumber::ConvertTo(obj_type type, std::unique_ptr<Object>* out) const
+	{
+		bool success = true;
+		switch (type)
+		{
+		case TYPE_STRING:
+			{
+				out->reset(new ObjString(m_sprintf("%.6f", value)));
+			} break;
+		case TYPE_BOOL:
+			{
+				out->reset(new ObjBool(value == 1));
+			} break;
+		default:
+			{
+				success = false;
+			} break;
+		}
+		return success;
 	}
 
 	double ObjNumber::GetValue() const

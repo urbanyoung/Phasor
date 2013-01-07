@@ -38,7 +38,7 @@ namespace Manager
 		void (*func)(Common::Object::unique_deque&,	Common::Object::unique_list&);
 		const char* name;
 		int minargs;
-		std::tr1::array<Common::obj_type, 5> fmt; // change max args as needed
+		std::array<Common::obj_type, 5> fmt; // change max args as needed
 	};
 
 	typedef Common::Object MObject;
@@ -103,6 +103,9 @@ namespace Manager
 	// Provides an interface for retrieving values from scripts
 	class Result
 	{
+	private:
+		size_t index;
+
 	protected:
 		
 		Common::Object::unique_deque result;
@@ -122,8 +125,18 @@ namespace Manager
 		// Returns number of items stored
 		size_t size() const;
 
-		// Gets item at specified position (may throw exception)
-		const Common::Object& operator [] (size_t index);
+		// Read the next result
+		template <class T>
+		T& ReadResult() { return (T&)*result[index++];}
+
+		MObject& ReadObject() { return ReadResult<MObject>(); }
+		MObjBool& ReadBool() { return ReadResult<MObjBool>(); }
+		MObjNumber& ReadNumber() { return ReadResult<MObjNumber>(); }
+		MObjString& ReadString() { return ReadResult<MObjString>(); }
+		MObjTable& ReadTable() { return ReadResult<MObjTable>(); }
+
+		obj_type GetType(size_t index);
+		void Replace(size_t index, std::unique_ptr<Common::Object> obj);
 
 		friend class Caller;
 	};
@@ -147,7 +160,7 @@ namespace Manager
 
 		// Adds an argument to the list, which is passed to the next function called
 		void AddArg(bool b);
-		void AddArg(const char* str);
+		void AddArg(const std::string& str);
 		void AddArg(int value);
 		void AddArg(DWORD value);
 		void AddArg(float value);

@@ -120,8 +120,8 @@ namespace Scripting
 
 		// Make sure the requested version is compatible
 		bool is_compatible = false;
-		if (result.size() == 1 && result[0].GetType() == TYPE_NUMBER) {
-			const ObjNumber& ver = (const ObjNumber&)result[0];
+		if (result.size() == 1 && result.GetType(0) == TYPE_NUMBER) {
+			const ObjNumber& ver = result.ReadNumber();
 			if (CompatibleVersion((DWORD)ver.GetValue())) {
 				is_compatible = true;
 			}
@@ -169,7 +169,8 @@ namespace Scripting
 
 	// --------------------------------------------------------------------
 	// 
-	Result PhasorCaller::Call(const std::string& function, Scripts& s)
+	Result PhasorCaller::Call(const std::string& function, 
+		std::array<Common::obj_type, 5> expected_types, Scripts& s)
 	{
 		// This is the argument which indicates if a scripts' return value is used.
 		this->AddArg(true);
@@ -190,18 +191,27 @@ namespace Scripting
 				bool found = false;
 				Result r = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
 
-				// The first result with any non-nil values is used
+				// The first result matching the expected types is used
 				if (found && !result_set) {
-					for (size_t i = 0; i < r.size(); i++) {
-						if (r[i].GetType() != TYPE_NIL) {
-							result = r;
-							result_set = true;
-
-							// Change the 'using' argument so other scripts know
-							// they won't be considered
-							using_param = false;
-							break;
+					size_t nloop = expected_types.size() < r.size() ?
+						expected_types.size() : r.size();
+					bool use_result = true;
+					Manager::MObject& obj = r.ReadObject();
+					for (size_t i = 0; i < nloop; i++) {
+						if (expected_types[i] != obj.GetType()) {
+							std::unique_ptr<Manager::MObject> converted;
+							if (!obj.ConvertTo(expected_types[i], &converted)) {
+								use_result = false;
+								break;
+							} else r.Replace(i, std::move(converted));
 						}
+					}
+					if (use_result) {
+						result = r;
+						result_set = true;
+						// Change the 'using' argument so other scripts know
+						// they won't be considered
+						using_param = false;
 					}
 				}
 			} 

@@ -3,6 +3,7 @@
 #include "../../../Common/Types.h"
 #include "../../../Common/Streams.h"
 #include "../Addresses.h"
+#include "../../Commands.h"
 #include <vector>
 
 enum e_command_result;
@@ -88,15 +89,15 @@ namespace halo { namespace server { namespace maploader
 		COutStream& stream);*/
 
 	e_command_result sv_mapcycle_begin(void*, 
-		std::vector<std::string>& tokens, COutStream& out);
+		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_mapcycle_add(void*, 
-		std::vector<std::string>& tokens, COutStream& out);
+		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_mapcycle_del(void* exec_player, 
-		std::vector<std::string>& tokens, COutStream& out);
+		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_mapcycle(void*, 
-		std::vector<std::string>& tokens, COutStream& out);
+		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_map(void*, 
-		std::vector<std::string>& tokens, COutStream& out);
+		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_end_game(void*,
-		std::vector<std::string>&, COutStream&);
+		commands::CArgParser& args, COutStream&);
 }}}

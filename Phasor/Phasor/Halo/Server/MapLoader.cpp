@@ -509,22 +509,21 @@ namespace halo { namespace server { namespace maploader
 	}
 	
 	// Checks if the map, gametype and all scripts are valid.
-	bool ValidateUserInput(const std::string& map, const std::string& gametype,
-		const std::vector<std::string>& scripts, COutStream& out)
+	bool ValidateUserInput(const s_phasor_mapcycle_entry& entry, COutStream& out)
 	{
-		if (!IsValidMap(map))	{
-			out << map << L" isn't a valid map." << endl;
+		if (!IsValidMap(entry.map))	{
+			out << entry.map << L" isn't a valid map." << endl;
 			return false;
 		}
-		if (!gametypes::IsValidGametype(WidenString(gametype))) {
-			out << gametype << L" isn't a valid gametype." << endl;
+		if (!gametypes::IsValidGametype(entry.gametype)) {
+			out << entry.gametype << L" isn't a valid gametype." << endl;
 			return false;
 		}
 
 		bool success = true;
-		for (size_t x = 0; x < scripts.size(); x++) {
-			if (!scriptloader::IsValidScript(scripts[x])) {
-				out << scripts[x] << L" isn't a valid script." << endl;
+		for (size_t x = 0; x < entry.scripts.size(); x++) {
+			if (!scriptloader::IsValidScript(entry.scripts[x])) {
+				out << entry.scripts[x] << L" isn't a valid script." << endl;
 				success = false;
 			}
 		}
@@ -537,8 +536,18 @@ namespace halo { namespace server { namespace maploader
 	std::vector<s_phasor_mapcycle_entry> mapcycleList;
 	bool in_mapcycle = false;
 
+	bool ReadGameDataFromUser(s_phasor_mapcycle_entry& entry,
+		commands::CArgParser& args, COutStream& out)
+	{
+		entry.map = args.ReadString();
+		entry.gametype = args.ReadWideString();
+		for (size_t x = 2; x < args.size(); x++)
+			entry.scripts.push_back(args.ReadString());
+		return ValidateUserInput(entry, out);
+	}
+
 	e_command_result sv_mapcycle_begin(void*, 
-		std::vector<std::string>& tokens, COutStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
 		// Check if there is any cycle data
 		if (!mapcycleList.size()) {
@@ -564,23 +573,10 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	e_command_result sv_mapcycle_add(void*, 
-		std::vector<std::string>& tokens, COutStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
-		if (tokens.size() < 3) {
-			out << L"Syntax: sv_mapcycle_add <map> <gametype> opt: <script1> <script2> ..."
-				<< endl;
-			return e_command_result::kProcessed;
-		}
-
-		s_phasor_mapcycle_entry entry;			
-		if (tokens.size() > 3)
-			entry.scripts.assign(tokens.begin() + 3, tokens.end());
-
-		if (!ValidateUserInput(tokens[1], tokens[2], entry.scripts, out))
-			return e_command_result::kProcessed;
-
-		entry.map = tokens[1];
-		entry.gametype = WidenString(tokens[2]);
+		s_phasor_mapcycle_entry entry;
+		if (!ReadGameDataFromUser(entry, args, out)) return e_command_result::kProcessed;
 
 		// If we're in the mapcycle add the data to the current playlist
 		if (in_mapcycle) {
@@ -599,14 +595,9 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	e_command_result sv_mapcycle_del(void* exec_player, 
-		std::vector<std::string>& tokens, COutStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
-		if (tokens.size() != 2) {
-			out << L"Syntax: sv_mapcycle_del <index>" << endl;
-			return e_command_result::kProcessed;
-		}
-
-		DWORD index = atoi(tokens[1].c_str());
+		unsigned int index = args.ReadUInt();
 		if (index < 0 || index >= mapcycleList.size()) {
 			out << L"You entered an invalid index, see sv_mapcycle." << endl;
 			return e_command_result::kProcessed;
@@ -617,12 +608,12 @@ namespace halo { namespace server { namespace maploader
 			cycle_loader->GetActive().DeleteGame(index);
 
 		// Display cycle as it is now
-		sv_mapcycle(exec_player, tokens, out);
+		sv_mapcycle(exec_player, args, out);
 		return e_command_result::kProcessed;
 	}
 
 	e_command_result sv_mapcycle(void*, 
-		std::vector<std::string>& tokens, COutStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
 		out.wprint(L"   %-20s%-20s%s", L"Map", L"Variant", L"Script(s)");
 		const wchar_t* fmt = L"%-3i%-20s%-20s%s";
@@ -646,22 +637,11 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	e_command_result sv_map(void*, 
-		std::vector<std::string>& tokens, COutStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
-		if (tokens.size() < 3) {
-			out << L"Syntax: sv_map <map> <gametype> opt: <script1> <script2> ..."
-				<< endl;
-			return e_command_result::kProcessed;
-		}
 		s_phasor_mapcycle_entry entry;
-		if (tokens.size() > 3)
-			entry.scripts.assign(tokens.begin() + 3, tokens.end());
-
-		if (!ValidateUserInput(tokens[1], tokens[2], entry.scripts, out))
-			return e_command_result::kProcessed;
-		entry.map = tokens[1];
-		entry.gametype = WidenString(tokens[2]);
-
+		if (!ReadGameDataFromUser(entry, args, out)) return e_command_result::kProcessed;
+	
 		std::unique_ptr<CHaloMapcycle> new_cycle = 
 			std::unique_ptr<CHaloMapcycle>(new CHaloMapcycle());
 		
@@ -682,7 +662,7 @@ namespace halo { namespace server { namespace maploader
 		return e_command_result::kProcessed;
 	}
 
-	e_command_result sv_end_game(void*, std::vector<std::string>&, COutStream&)
+	e_command_result sv_end_game(void*, commands::CArgParser&, COutStream&)
 	{
 		in_mapcycle = false;
 		return e_command_result::kGiveToHalo;

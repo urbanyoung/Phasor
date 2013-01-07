@@ -6,6 +6,7 @@
 #include <map>
 #include <list>
 #include <deque>
+#include <memory>
 
 namespace Common
 {
@@ -20,6 +21,7 @@ namespace Common
 		TYPE_BLOB
 	};
 
+
 	// --------------------------------------------------------------------
 	// Class: Object
 	// Provides an interface between Lua and Phasor objects. The derived
@@ -32,9 +34,7 @@ namespace Common
 	protected:
 
 		// Should be called by derived classes to set the object type.
-		Object(obj_type type);
-
-		Object& operator=(const Object &rhs); 
+		Object(obj_type type);		
 		Object(const Object& other);
 
 	public:
@@ -46,9 +46,15 @@ namespace Common
 		Object();
 		virtual ~Object();
 
+		//virtual Object& operator=(const Object &rhs); 
+
 		// Create a new, independent copy of this object.
 		virtual std::unique_ptr<Object> NewCopy() const;
 
+		// Converts the object to the specified type, if possible.
+		// If no conversion is possible false is returned.
+		virtual bool ConvertTo(obj_type type, std::unique_ptr<Object>* out) const;
+		
 		// Returns the type of this object
 		obj_type GetType() const;
 	};
@@ -70,6 +76,10 @@ namespace Common
 
 		// Create a new, independent copy of this object.
 		virtual std::unique_ptr<Object> NewCopy() const;
+
+		// Converts the object to the specified type, if possible.
+		// If no conversion is possible false is returned.
+		virtual bool ConvertTo(obj_type type, std::unique_ptr<Object>* out) const;
 
 		// Return the value stored in this object.
 		bool GetValue() const;
@@ -96,6 +106,10 @@ namespace Common
 		// Create a new, independent copy of this object.
 		virtual std::unique_ptr<Object> NewCopy() const;
 
+		// Converts the object to the specified type, if possible.
+		// If no conversion is possible false is returned.
+		virtual bool ConvertTo(obj_type type, std::unique_ptr<Object>* out) const;
+
 		// Return the value stored in this object
 		double GetValue() const;
 	};
@@ -108,6 +122,29 @@ namespace Common
 	{
 	private:
 		T str;
+
+		template <class StrType>
+		const bool ToNumber(double& out) const;
+
+		template <>
+		const bool ToNumber<std::string>(double& out) const
+		{
+			char* end;
+			double value = strtod(str.c_str(), &end);
+			if (end == str.c_str()) return false;
+			out = value;
+			return true;
+		}
+
+		template <>
+		const bool ToNumber<std::wstring>(double& out) const
+		{
+			wchar_t* end;
+			double value = wcstod(str.c_str(), &end);
+			if (end == str.c_str()) return false;
+			out = value;
+			return true;
+		}
 
 	public:
 		ObjStr(const T& str) : Object(TYPE_STRING), str(str)
@@ -123,6 +160,37 @@ namespace Common
 		virtual std::unique_ptr<Object> NewCopy() const
 		{
 			return std::unique_ptr<Object>(new ObjStr<T, _Tc>(*this));
+		}
+
+		
+		// Converts the object to the specified type, if possible.
+		// If no conversion is possible false is returned.
+		virtual bool ConvertTo(obj_type type, std::unique_ptr<Object>* out) const
+		{
+			bool success = true;
+			switch (type)
+			{
+			case TYPE_NUMBER:
+				{
+					double val;
+					success = ToNumber<T>(val);
+					if (success) out->reset(new ObjNumber(val));
+				} break;
+			case TYPE_BOOL:
+				{
+					double val;
+					success = ToNumber<T>(val);
+					if (success) {
+						if (val == 0 || val == 1) out->reset(new ObjBool(val == 1));
+						else success = false;
+					}
+				} break;
+			default:
+				{
+					success = false;
+				} break;
+			}
+			return success;
 		}
 
 		// Return the value stored in this object

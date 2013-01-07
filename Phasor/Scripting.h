@@ -2,7 +2,7 @@
 
 #include "Manager.h"
 #include "Common/Streams.h"
-
+#include <array>
 typedef unsigned long DWORD;
 
 /*
@@ -62,11 +62,14 @@ namespace Scripting
 	// Class: PhasorCaller
 	// Interface for invoking function calls on all loaded scripts.
 	// 
+	typedef std::array<Common::obj_type, 5> results_t;
 	class PhasorCaller : public Manager::Caller
 	{
 	public:
+		
 		// Calls the specified function on all loaded scripts.
-		Result Call(const std::string& function,
+		Result Call(const std::string& function, 
+			results_t expected_types = results_t(),
 			Scripts& s=*g_Scripts);
 	};
 

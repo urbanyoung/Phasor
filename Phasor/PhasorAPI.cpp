@@ -4,6 +4,7 @@
 
 using namespace Common;
 
+std::array<Common::obj_type, 5> expected_types = {TYPE_BOOL};
 namespace PhasorAPI
 {
 	void testf(Object::unique_deque& args, Object::unique_list& results)

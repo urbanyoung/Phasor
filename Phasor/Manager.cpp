@@ -52,8 +52,13 @@ namespace Manager
 	// Class: Result
 	// Provides an interface for retrieving values from scripts
 	//
-	Result::Result()
+	Result::Result() : index(0)
 	{
+	}
+
+	Result::Result(const Result& other) : index(0)
+	{
+		SetData(other);
 	}
 
 	void Result::SetData(const Result& other)
@@ -65,11 +70,6 @@ namespace Manager
 			result.push_back((*itr)->NewCopy());
 			itr++;
 		}
-	}
-
-	Result::Result(const Result& other)
-	{
-		SetData(other);
 	}
 
 	void Result::Clear()
@@ -89,14 +89,14 @@ namespace Manager
 		return *this;
 	}
 
-	const Object& Result::operator[](size_t index)
+	void Result::Replace(size_t index, std::unique_ptr<Common::Object> obj)
 	{
-		if (index < 0 || index >= result.size()) {
-			std::stringstream err;
-			err << "script: attempt to access out of bounds result.";
-			throw std::exception(err.str().c_str());
-		}
-		return *result[index];
+		result[index] = std::move(obj);
+	}
+
+	obj_type Result::GetType(size_t index)
+	{
+		return result[index]->GetType();
 	}
 
 	size_t Result::size() const
@@ -151,7 +151,7 @@ namespace Manager
 		args.push_back(std::move(arg));
 	}
 
-	void Caller::AddArg(const char* str)
+	void Caller::AddArg(const std::string& str)
 	{
 		std::unique_ptr<Common::Object> arg(new ObjString(str));
 		args.push_back(std::move(arg));

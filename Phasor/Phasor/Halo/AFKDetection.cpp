@@ -93,21 +93,15 @@ namespace halo { namespace afk_detection
 	void Enable()  { CAFKDetection::bDisable = false; }
 
 	e_command_result sv_kickafk(void*, 
-		std::vector<std::string>& tokens, COutStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
-		if (tokens.size() == 2)
-		{
-			CAFKDetection::max_duration = atoi(tokens[1].c_str());
+		CAFKDetection::max_duration = args.ReadUInt();
 
-			if (CAFKDetection::max_duration)
-				out << "Inactive players will be kicked after " << 
-				CAFKDetection::max_duration << " minutes(s)" << endl;
-			else
-				out << "Inactive players will no longer be kicked." << endl;
-		}
+		if (CAFKDetection::max_duration)
+			out << "Inactive players will be kicked after " << 
+			CAFKDetection::max_duration << " minutes(s)" << endl;
 		else
-			out << "Correct usage: sv_kickafk <duration> (to disable set duration to 0)."
-			<< endl;
+			out << "Inactive players will no longer be kicked." << endl;
 
 		return e_command_result::kProcessed;
 	}
