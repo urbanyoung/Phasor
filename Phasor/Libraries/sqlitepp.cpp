@@ -52,7 +52,7 @@ namespace sqlite
 		return sqlhandle;
 	}
 
-	std::unique_ptr<SQLiteQuery> SQLite::NewQuery(const char* query)
+	std::unique_ptr<SQLiteQuery> SQLite::NewQuery(const std::wstring& query)
 	{
 		return std::unique_ptr<SQLiteQuery>(new SQLiteQuery(*this, query));
 	}
@@ -78,32 +78,21 @@ namespace sqlite
 	// Class: SQLiteQuery
 	// Purpose: Provide an interface for executing prepared queries
 	// 
-	SQLiteQuery::SQLiteQuery(SQLite& parent, const char* query)
-		: SQLiteObject(parent), query(NULL), stmt(NULL)
+	SQLiteQuery::SQLiteQuery(SQLite& parent, const std::wstring& query)
+		: SQLiteObject(parent), query(query), stmt(NULL)
 	{
-		copy_query(query);
 		prepare_statement();
 	}
 
 	SQLiteQuery::~SQLiteQuery()
 	{
-		if (query) delete[] query;
 		if (stmt) sqlite3_finalize(stmt);	
-	}
-
-	void SQLiteQuery::copy_query(const char* new_query)
-	{
-		int len = strlen(new_query);
-		char* m_new_query = new char[len + 1];
-		strcpy_s(m_new_query, len + 1, new_query);
-		delete[] query;
-		query = m_new_query;
 	}
 
 	void SQLiteQuery::prepare_statement()
 	{
 		// Get a statement handle, on failure abort.
-		if (sqlite3_prepare_v2(parent.GetSQLite(), query, -1,
+		if (sqlite3_prepare16_v2(parent.GetSQLite(), query.c_str(), -1,
 			&stmt, NULL) != SQLITE_OK) 
 		{
 			throw SQLiteError(parent.LastError());
@@ -113,7 +102,6 @@ namespace sqlite
 	std::unique_ptr<SQLiteResult> SQLiteQuery::Execute() 
 	{		
 		std::unique_ptr<SQLiteResult> out_result(new SQLiteResult());
-		char* err_info = query;
 
 		while (1)
 		{
@@ -167,9 +155,9 @@ namespace sqlite
 		return out_result;
 	}
 
-	void SQLiteQuery::Reset(const char* query)
+	void SQLiteQuery::Reset(const std::wstring& query)
 	{
-		copy_query(query);
+		this->query = query;
 		if (stmt) {
 			sqlite3_finalize(stmt);
 			stmt = NULL;
@@ -179,7 +167,6 @@ namespace sqlite
 
 	void SQLiteQuery::BindValue(const char* name, const SQLiteValue& value) 
 	{
-		if (!stmt) throw SQLiteError("invalid query state");
 		BindValue(sqlite3_bind_parameter_index(stmt, name), value);	
 	}
 
@@ -238,6 +225,16 @@ namespace sqlite
 	}
 
 	// --------------------------------------------------------------------
+	SQLiteValue::SQLiteValue(const std::string& val)
+		: object(new ObjString(val)), type(TYPE_STRING)
+	{
+	}
+
+	SQLiteValue::SQLiteValue(const std::wstring& val)
+		: object(new ObjWString(val)), type(TYPE_WSTRING)
+	{
+	}
+
 	SQLiteValue::SQLiteValue(const char* val)
 		: object(new ObjString(val)), type(TYPE_STRING)
 	{
@@ -247,6 +244,7 @@ namespace sqlite
 		: object(new ObjWString(val)), type(TYPE_WSTRING)
 	{
 	}
+
 
 	SQLiteValue::SQLiteValue(int val)
 		: object(new ObjNumber(val)), type(TYPE_INT)

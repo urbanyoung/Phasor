@@ -101,6 +101,9 @@
     <ClCompile Include="Phasor\LogHandler.cpp">
       <Filter>Phasor\Logging</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Alias.cpp">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">

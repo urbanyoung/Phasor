@@ -10,14 +10,14 @@ int main()
 	{
 		SQLite sql("test45.sqlite");
 		std::unique_ptr<SQLiteQuery> query =
-			sql.NewQuery("CREATE TABLE IF NOT EXISTS admins("
+			sql.NewQuery(L"CREATE TABLE IF NOT EXISTS admins("
 			//"id INTEGER PRIMARY KEY,"
-			"id int,"
-			"username varchar(16),"
-			"password char(32), b BLOB)");
+			L"id int,"
+			L"username varchar(16),"
+			L"password char(32), b BLOB)");
 
 		query->Execute();
-		query->Reset("INSERT INTO admins (id, username, password, b) VALUES(:id, :username, :password, :b)");
+		query->Reset(L"INSERT INTO admins (id, username, password, b) VALUES(:id, :username, :password, :b)");
 		query->BindValue(":id", 1);
 		query->BindValue(":username", "dfgiujf");
 		query->BindValue(":password", "pass2");
@@ -25,7 +25,7 @@ int main()
 		query->BindValue(":b", SQLiteValue(ptr, sizeof(ptr)));
 		query->Execute();
 
-		query->Reset("SELECT * FROM admins");
+		query->Reset(L"SELECT * FROM admins WHERE id=185");
 		printf("Executing SELECT\n");
 		std::unique_ptr<SQLiteResult> result = query->Execute();
 

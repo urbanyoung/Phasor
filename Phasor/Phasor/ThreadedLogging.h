@@ -39,11 +39,11 @@ public:
 	virtual ~CThreadedLogging();
 
 	// CLoggingStream isn't threadsafe, so we're responsible for thread safety.
-	virtual void SetMoveSize(DWORD kbSize);
-	virtual void SetMoveDirectory(const std::wstring& move_to);
-	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName);
-	virtual void SetOutFile(const std::wstring& fileName); // use cur dir
-	virtual void EnableTimestamp(bool state);
+	virtual void SetMoveSize(DWORD kbSize) override;
+	virtual void SetMoveDirectory(const std::wstring& move_to) override;
+	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName) override;
+	virtual void SetOutFile(const std::wstring& fileName) override; // use cur dir
+	virtual void EnableTimestamp(bool state) override;
 
 	friend class CLogThreadEvent;
 };

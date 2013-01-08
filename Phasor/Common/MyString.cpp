@@ -32,7 +32,7 @@ void CStrToLower(char* str)
 {
 	for (int x = 0; str[x] != 0; x++) {
 		if (str[x] >= 'A' && str[x] <= 'Z')
-			str[x] += 32; // see asci table A - a
+			str[x] += 'a'-'A';
 	}
 }
 

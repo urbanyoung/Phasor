@@ -12,6 +12,7 @@
 #include "Phasor/Admin.h"
 #include "Phasor/Halo/Addresses.h"
 #include "Phasor/Halo/Hooks.h"
+#include "Phasor/Halo/Alias.h"
 #include "Phasor/Halo/Server/MapLoader.h"
 #include "Phasor/Halo/Server/Gametypes.h"
 #include "Phasor/CrashHandler.h"
@@ -87,6 +88,9 @@ extern "C" __declspec(dllexport) void OnLoad()
 
 		PhasorLog << L"Initializing admin system" << endl;
 		Admin::Initialize(&PhasorLog);
+
+		PhasorLog << L"Initializing alias system" << endl;
+		halo::alias::Initialize();
 
 		PhasorLog << L"Phasor was successfully initialized." << endl;
 

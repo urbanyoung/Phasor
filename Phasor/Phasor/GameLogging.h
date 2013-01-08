@@ -26,6 +26,7 @@ public:
 
 	// linebreak is automatically added
 	void WriteLog(glog_type type, wchar_t* format, ...);
+	void WriteLog(glog_type type, char* format, ...);
 
 	CLoggingStream& GetLogStream() { return *logstream; }
 };

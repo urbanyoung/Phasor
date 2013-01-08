@@ -3,6 +3,7 @@
 #include "../Server/MapLoader.h"
 #include "../Player.h"
 #include "../AFKDetection.h"
+#include "../Alias.h"
 #include "../../Globals.h"
 #include "../../../Common/MyString.h"
 #include <vector>
@@ -72,6 +73,7 @@ namespace halo { namespace game {
 	{
 		afk_detection::Enable();
 		for (int i = 0; i < 16; i++) PlayerList[i].reset();
+		g_GameLog->WriteLog(kGameStart, "A new game has started on map %s", map);
 	}
 
 	// Called when a player joins (after verification).
@@ -86,7 +88,7 @@ namespace halo { namespace game {
 		g_GameLog->WriteLog(kPlayerJoin, L"%s (%s ip: %s:%i)", 
 			player->mem->playerName, WidenString(player->hash).c_str(),
 			WidenString(player->ip).c_str(), player->port);
-
+		alias::OnPlayerJoin(*player);
 	}
 
 	// Called when a player quits
@@ -98,12 +100,10 @@ namespace halo { namespace game {
 		}
 		s_player* player = GetPlayer(playerId);
 
-		if (player) {
-			
+		if (player) {			
 			g_GameLog->WriteLog(kPlayerLeave, L"%s (%s)", 
 				player->mem->playerName, WidenString(player->hash).c_str()
 				);
-
 			PlayerList[playerId].reset();
 		}
 	}

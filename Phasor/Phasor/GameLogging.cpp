@@ -30,6 +30,15 @@ CGameLog::CGameLog(const std::wstring& dir, const std::wstring& file,
 {
 }
 
+void CGameLog::WriteLog(glog_type type, char* format, ...)
+{
+	va_list ArgList;
+	va_start(ArgList, format);
+	std::string str = FormatVarArgs(format, ArgList);
+	va_end(ArgList);
+	return WriteLog(type, L"%s", WidenString(str).c_str());
+}
+
 void CGameLog::WriteLog(glog_type type, wchar_t* format, ...)
 {
 	va_list ArgList;

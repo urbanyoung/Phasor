@@ -56,6 +56,7 @@ namespace halo { namespace server
 	void __stdcall OnConsoleProcessing()
 	{
 		g_Timers.Process();
+		g_Thread.ProcessEvents();
 	}
 
 	void __stdcall OnClientUpdate(s_player_structure* m_player)
@@ -115,13 +116,11 @@ namespace halo { namespace server
 	// kGiveToHalo: Not handled, pass to server.
 	e_command_result __stdcall ProcessCommand(char* command)
 	{
-		std::unique_ptr<COutStream> echo_ptr;
-
 		s_player* exec_player = GetExecutingPlayer();
 		bool can_execute = exec_player == NULL;
+
 		// create the output stream
 		if (can_execute) { // server console executing
-			echo_ptr.reset(new CHaloPrintStream());
 			// save the command for memory (arrow keys)
 			s_command_cache* cache = (s_command_cache*)ADDR_CMDCACHE;
 			cache->count = (cache->count + 1) % 8;
@@ -129,10 +128,6 @@ namespace halo { namespace server
 				command);
 			cache->cur = 0xFFFF;
 		} else {
-			echo_ptr.reset(new CEchoStream(*exec_player->stream, *g_RconLog));
-		}
-
-		if (!can_execute) {
 			// don't want the person executing it to see this output
 			CEchoStream echo(g_PrintStream, *g_RconLog);
 			std::string authName;
@@ -168,8 +163,15 @@ namespace halo { namespace server
 
 			if (!can_execute) *exec_player->stream << L" ** Access denied **" << endl;
 		}
-
-		return can_execute ? commands::ProcessCommand(command, *echo_ptr, exec_player)
+		// !IMPORTANT!
+		// todo: fix the stream situation.. if player executing command quits
+		// quickly after executing and the stream is stored somewhere.. 
+		// crash. Need to think of a better system.
+		COutStream* stream;
+		if (exec_player != NULL) stream = exec_player->stream;
+		else stream = &g_PrintStream;
+		return can_execute ? commands::ProcessCommand(command,
+			*stream, exec_player)
 			: e_command_result::kProcessed;
 	}
 

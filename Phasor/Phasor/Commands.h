@@ -36,7 +36,9 @@ namespace commands
 			kInteger,
 			kUnsignedInteger,
 			kDouble,
-			kPlayer
+			kBoolean,
+			kPlayer,
+			kPlayerOrHash
 		};
 		static const char* k_arg_names[];
 
@@ -66,7 +68,9 @@ namespace commands
 		unsigned int ReadUInt(unsigned int min=0, unsigned int max=UINT_MAX);
 		double ReadDouble(double min=-DBL_MAX, double max=DBL_MAX);
 		float ReadFloat(float min=-FLT_MAX, float max=FLT_MAX);
+		bool ReadBool(); // accepts true/false, 1/0
 		halo::s_player& ReadPlayer();
-		const std::string& ReadPlayerHash();
+		std::string ReadPlayerHash();
+		std::string ReadPlayerOrHash();
 	};
 }

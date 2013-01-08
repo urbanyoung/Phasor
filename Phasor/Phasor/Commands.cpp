@@ -6,6 +6,7 @@
 #include "Halo/Game/Game.h"
 #include "Halo/Server/Maploader.h"
 #include "Halo/AFKDetection.h"
+#include "Halo/Alias.h"
 #include "../Scripting.h"
 #include "LogHandler.h"
 #include <map>
@@ -34,6 +35,7 @@ namespace commands
 		cmd["sv_logname"]			= &logging::sv_logname;
 		cmd["sv_loglimit"]			= &logging::sv_loglimit;
 		cmd["sv_logmovedir"]		= &logging::sv_logmovedir;
+		cmd["sv_alias_hash"]		= &alias::sv_alias_hash;
 		return cmd;
 	}();
 
@@ -51,6 +53,7 @@ namespace commands
 		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
 		usage["sv_loglimit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";
 		usage["sv_logmovedir"]		= "<directory>";
+		usage["sv_alias_hash"]		= "<hash or player index>";
 		return usage;
 	}();
 
@@ -103,7 +106,8 @@ namespace commands
 	}
 
 	// --------------------------------------------------------------------
-	const char* CArgParser::k_arg_names[] = {"none", "string", "stringoneof", "integer", "unsigned integer", "number", "player"};
+	const char* CArgParser::k_arg_names[] = {"none", "string", "stringoneof", 
+		"integer", "unsigned integer", "number", "boolean", "player", "player or hash"};
 
 	CArgParser::CArgParser(const std::vector<std::string>& args,
 		const std::string& function, size_t start_index) 
@@ -166,6 +170,18 @@ namespace commands
 	double CArgParser::ReadDouble(double min, double max) { return ReadNumber<double>(kDouble,min,max); }
 	float CArgParser::ReadFloat(float min, float max) {	return (float)ReadDouble(min,max); }
 
+	bool CArgParser::ReadBool()
+	{
+		HasData();
+		bool b = false;
+		if (args[index] == "true" || args[index] == "1")
+			b = true;
+		else if (args[index] == "false" || args[index] == "0")
+			b = false;
+		else
+			RaiseError(kBoolean);
+		return b;
+	}
 	halo::s_player& CArgParser::ReadPlayer()
 	{
 		unsigned int playerIndex = ReadUInt()-1;
@@ -177,10 +193,23 @@ namespace commands
 		return *player;
 	}
 
-	const std::string& CArgParser::ReadPlayerHash()
+	std::string CArgParser::ReadPlayerHash()
 	{
 		halo::s_player& player = ReadPlayer();
 		return player.hash;
+	}
+
+	// returns true if player was read
+	std::string CArgParser::ReadPlayerOrHash()
+	{
+		HasData();
+		const std::string& str = args[index++];
+		if (str.size() == 32) return str; // they entered the hash
+		unsigned int playerIndex;
+		if (!::StringToNumber<unsigned int>(str, playerIndex)) RaiseError(kPlayerOrHash);
+		halo::s_player* player = halo::game::GetPlayerFromRconId(playerIndex);
+		if (!player) RaiseError(kPlayerOrHash);
+		return player->hash;
 	}
 
 	// Describes and raises an error
@@ -242,6 +271,10 @@ namespace commands
 		case kPlayer:
 			{
 				desc = "invalid player"; 
+			} break;
+		case kPlayerOrHash:
+			{
+				desc = "expected player or hash";
 			} break;
 		}
 		std::string final_msg = m_sprintf("%s : argument #%u %s", function.c_str(), 

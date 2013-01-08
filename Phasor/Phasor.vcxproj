@@ -115,6 +115,7 @@
     <ClCompile Include="Phasor\GameLogging.cpp" />
     <ClCompile Include="Phasor\Halo\Addresses.cpp" />
     <ClCompile Include="Phasor\Halo\AFKDetection.cpp" />
+    <ClCompile Include="Phasor\Halo\Alias.cpp" />
     <ClCompile Include="Phasor\Halo\Game\Game.cpp" />
     <ClCompile Include="Phasor\Halo\Game\Objects.cpp" />
     <ClCompile Include="Phasor\Halo\Halo.cpp" />

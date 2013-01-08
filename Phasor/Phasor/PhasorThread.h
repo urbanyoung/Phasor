@@ -89,36 +89,3 @@ public:
 
 	friend class PhasorThreadEvent;
 };
-
-class TestEvent : public PhasorThreadEvent
-{
-private:
-	int count;
-	TestEvent(DWORD dwDelayMilliseconds) : 
-	   PhasorThreadEvent(dwDelayMilliseconds)
-	{
-		count = 0;
-	}
-
-public:
-	static std::unique_ptr<PhasorThreadEvent> Create(DWORD dwDelayMilliseconds) {
-		return std::unique_ptr<PhasorThreadEvent>(
-			new TestEvent(dwDelayMilliseconds));
-	}
-	virtual ~TestEvent() {}
-
-	// Event is invoked in the aux thread
-	void OnEventAux(PhasorThread& thread) {
-		printf("Invoked in auxillary %08X\n", GetCurrentThreadId());
-		ReinvokeInMain(thread);
-		count++;
-	}
-
-	// Event is invoked in the main thread
-	void OnEventMain(PhasorThread& thread) {
-		printf("Invoked in main %08X\n", GetCurrentThreadId());
-		//if (count < 1)
-		ReinvokeInAux(thread, 10);
-
-	}
-};

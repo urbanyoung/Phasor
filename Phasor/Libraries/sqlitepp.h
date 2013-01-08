@@ -75,7 +75,7 @@ namespace sqlite
 		void Close();
 
 		// Creates a new query
-		std::unique_ptr<SQLiteQuery> NewQuery(const char* query);
+		std::unique_ptr<SQLiteQuery> NewQuery(const std::wstring& query);
 
 		// Returns a pointer to the open sqlite3 database. If the database
 		// has been closed an exception is thrown.
@@ -112,6 +112,8 @@ namespace sqlite
 		Object::unique_ptr object;
 		sqlite_types type;
 
+		SQLiteValue(const std::string& val);
+		SQLiteValue(const std::wstring& val);
 		SQLiteValue(const char* val);
 		SQLiteValue(const wchar_t* val);
 		SQLiteValue(int val);
@@ -129,25 +131,21 @@ namespace sqlite
 	{
 	private:
 		sqlite3_stmt* stmt;
-		char* query;
-
-		// Allocates memory for and copies over the query. If there is an
-		// existing query it is freed
-		void copy_query(const char* new_query);
+		std::wstring query;
 
 		// Prepares the statement
 		void prepare_statement();
 		
 	public:	
 
-		SQLiteQuery(SQLite& parent, const char* query);
+		SQLiteQuery(SQLite& parent, const std::wstring& query);
 		virtual ~SQLiteQuery();
 
 		// Executes the statement
 		std::unique_ptr<SQLiteResult> Execute();
 
 		// Resets the statement to use the given query
-		void Reset(const char* query);
+		void Reset(const std::wstring& query);
 
 		// Binds values to the required parameters
 		void BindValue(const char* name, const SQLiteValue& value);

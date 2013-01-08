@@ -62,7 +62,7 @@ namespace logging
 		g_ScriptsLog->SetMoveDirectory(new_move_dir);
 		g_GameLog->GetLogStream().SetMoveDirectory(new_move_dir);
 		g_RconLog->SetMoveDirectory(new_move_dir);
-		out << "Logs will be moved to '" << new_move_dir << "' if they exceed the log limit" << endl;
+		out << "Logs will be moved to '" << new_move_dir << "' if they exceed the size limit" << endl;
 		return e_command_result::kProcessed;
 	}
 }
