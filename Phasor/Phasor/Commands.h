@@ -41,23 +41,10 @@ namespace commands
 		static const char* k_arg_names[];
 
 		template <class T>
-		T ReadNumber(e_arg_types type, T min, T max)
-		{
-			HasData();
-			T value;
-			if (!StringToNumber<T>(args[index], value) || value < min || value > max)
-				RaiseError(type, min, max);
-			index++;
-			return value;
-		}
+		T ReadNumber(e_arg_types type, T min, T max);
 
-		template <class T>
-		bool InVector(const std::vector<T>& opts, const T& to_check)
-		{
-			for (size_t x = 0; x < opts.size(); x++)
-				if (opts[x] == to_check) return true;
-			return false;
-		}
+		bool InVector(const std::vector<std::string>& opts, 
+			const std::string& to_check);		
 
 		void RaiseError(e_arg_types expected, double min=0, double max=0,
 			const std::vector<std::string>* opts = 0);

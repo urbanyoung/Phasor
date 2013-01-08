@@ -124,12 +124,20 @@ namespace commands
 		return WidenString(ReadString(min,max));
 	}	
 
+	bool CArgParser::InVector(const std::vector<std::string>& opts, 
+		const std::string& to_check)
+	{
+		for (size_t x = 0; x < opts.size(); x++)
+			if (opts[x] == to_check) return true;
+		return false;
+	}
+
 	std::string CArgParser::ReadStringOneOf(const std::vector<std::string>& opts,
 		bool ignorecase)
 	{
 		std::string str = ReadString();
 		if (ignorecase) ToLowercase(str);
-		if (!InVector<std::string>(opts, str)) {
+		if (!InVector(opts, str)) {
 			index--; // incremented on success in ReadString
 			RaiseError(kStringOneOf, 0, 0, &opts);
 		}
@@ -140,6 +148,17 @@ namespace commands
 		bool ignorecase)
 	{
 		return WidenString(ReadStringOneOf(opts, ignorecase));
+	}
+
+	template <class T>
+	T CArgParser::ReadNumber(e_arg_types type, T min, T max)
+	{
+		HasData();
+		T value;
+		if (!StringToNumber<T>(args[index], value) || value < min || value > max)
+			RaiseError(type, min, max);
+		index++;
+		return value;
 	}
 
 	int CArgParser::ReadInt(int min, int max) {	return ReadNumber<int>(kInteger, min,max); }

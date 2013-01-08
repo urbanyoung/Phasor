@@ -105,7 +105,18 @@ template <>
 double _StringToNumber<double>(const char* start, char** end) { return strtod(start, end);}
 
 
-// Used in TokenizeArgs
+// 
+// Tokenization
+// ------------------------------------------------------------------------
+template <class T, class _Tc>
+T GetStringEndingAtNext(const T& input, _Tc c, size_t start, size_t& end)
+{
+	size_t found = input.find_first_of(c, start);
+	T out = input.substr(start, found - start);
+	end = found == input.npos ? input.npos : found + 1;
+	return out;
+}
+
 template <>
 const std::string ArgsSearchString<std::string>()
 {

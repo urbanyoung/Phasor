@@ -43,14 +43,7 @@ bool StringToNumber(const std::string& str, T& out)
 // start is the position (inclusive) where to start searching from.
 // end is the position after the next occurrence, or npos if none.
 template <class T, class _Tc>
-T GetStringEndingAtNext(const T& input, _Tc c, size_t start, size_t& end)
-{
-	size_t found = input.find_first_of(c, start);
-	T out = input.substr(start, found - start);
-	end = found == input.npos ? input.npos : found + 1;
-	return out;
-}
-// " ' or space
+T GetStringEndingAtNext(const T& input, _Tc c, size_t start, size_t& end);
 template <class T>
 const T ArgsSearchString();
 
