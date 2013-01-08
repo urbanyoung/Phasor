@@ -34,6 +34,7 @@ namespace commands
 			kString,
 			kStringOneOf,
 			kInteger,
+			kUnsignedInteger,
 			kDouble,
 			kPlayer
 		};
@@ -52,12 +53,13 @@ namespace commands
 		T ReadNumber(e_arg_types type, T min, T max)
 		{
 			HasData();
-			std::string& arg = args[index++];
+			std::string& arg = args[index];
 			const char* start = arg.c_str(), *expected_end = start + arg.size();
 			char* end;
 			T value = StringToNumber<T>(start, &end);
-			if (end != expected_end) RaiseError(type);
-			if (value < min || value > max) RaiseError(type, min, max);
+			if (end != expected_end || value < min || value > max) 
+				RaiseError(type, min, max);
+			index++;
 			return value;
 		}
 

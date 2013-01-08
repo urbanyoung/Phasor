@@ -18,7 +18,7 @@ namespace halo { namespace game {
 	#pragma pack(pop)
 
 	s_player* GetPlayer(int index);
-	s_player* GetPlayerFromRconId(int playerNum);
+	s_player* GetPlayerFromRconId(unsigned int playerNum);
 	s_player* GetPlayerFromAddress(s_player_structure* player);
 
 	// --------------------------------------------------------------------

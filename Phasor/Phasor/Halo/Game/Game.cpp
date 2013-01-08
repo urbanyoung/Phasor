@@ -24,7 +24,7 @@ namespace halo { namespace game {
 	}
 
 	// Find the player based on their player/rcon/machine id.
-	s_player* GetPlayerFromRconId(int playerNum)
+	s_player* GetPlayerFromRconId(unsigned int playerNum)
 	{
 		for (int i = 0; i < 16; i++) {
 			if (PlayerList[i] && PlayerList[i]->mem->playerNum == playerNum)

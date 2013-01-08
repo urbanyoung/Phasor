@@ -102,7 +102,7 @@ namespace commands
 	}
 
 	// --------------------------------------------------------------------
-	const char* CArgParser::k_arg_names[] = {"none", "string", "stringoneof", "integer", "number", "player"};
+	const char* CArgParser::k_arg_names[] = {"none", "string", "stringoneof", "integer", "unsigned integer", "number", "player"};
 
 	CArgParser::CArgParser(const std::vector<std::string>& args,
 		const std::string& function, size_t start_index) 
@@ -143,15 +143,18 @@ namespace commands
 	}
 
 	int CArgParser::ReadInt(int min, int max) {	return ReadNumber<int>(kInteger, min,max); }
-	unsigned int CArgParser::ReadUInt(unsigned int min, unsigned int max) { return ReadNumber<unsigned int>(kInteger,min,max); }
+	unsigned int CArgParser::ReadUInt(unsigned int min, unsigned int max) { return ReadNumber<unsigned int>(kUnsignedInteger,min,max); }
 	double CArgParser::ReadDouble(double min, double max) { return ReadNumber<double>(kDouble,min,max); }
 	float CArgParser::ReadFloat(float min, float max) {	return (float)ReadDouble(min,max); }
 
 	halo::s_player& CArgParser::ReadPlayer()
 	{
-		int playerIndex = ReadInt()-1;
+		unsigned int playerIndex = ReadUInt()-1;
 		halo::s_player* player = halo::game::GetPlayerFromRconId(playerIndex);
-		if (!player) RaiseError(kPlayer);
+		if (!player) {
+			index--; // incremented on success in ReadInt
+			RaiseError(kPlayer);
+		}
 		return *player;
 	}
 
@@ -191,13 +194,31 @@ namespace commands
 			} break;
 		case kInteger:
 			{
-				if (min != 0 || max != 0)
+				if (min != INT_MIN && max == INT_MAX)
+					desc = m_sprintf("expected integer >= %i", (int)min);
+				else if (min != INT_MIN && max != INT_MAX)
 					desc = m_sprintf("expected integer between %i and %i", (int)min, (int)max);
+				else if (min == INT_MIN && max != INT_MAX)
+					desc = m_sprintf("expected integer <= %i", (int)max);
+			} break;
+		case kUnsignedInteger:
+			{
+				g_PrintStream.print("min %u max %u", min, max);
+				if (min != 0 && max == UINT_MAX)
+					desc = m_sprintf("expected positive integer >= %u", (unsigned int)min);
+				else if (min != 0 && max != UINT_MAX)
+					desc = m_sprintf("expected positive integer between %u and %u", (unsigned int)min, (unsigned int)max);
+				else if (min == 0 && max != UINT_MAX)
+					desc = m_sprintf("expected positive integer <= %u", (unsigned int)max);
 			} break;
 		case kDouble:
 			{
-				if (min != 0 || max != 0)
+				if (min != DBL_MIN && max == DBL_MAX)
+					desc = m_sprintf("expected number >= %.2f", min);
+				else if (min != DBL_MIN && max != DBL_MAX)
 					desc = m_sprintf("expected number between %.2f and %.2f", min, max);
+				else if (min == DBL_MIN && max != DBL_MAX)
+					desc = m_sprintf("expected number <= %.2f", max);
 			} break;
 		case kPlayer:
 			{
