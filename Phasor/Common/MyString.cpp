@@ -92,6 +92,19 @@ std::string m_sprintf(const char *fmt, ...)
 	return str;
 }
 
+//
+// Number functions
+// -----------------------------------------------------------------------
+template <class T>
+T _StringToNumber(const char* start, char** end);
+template <>
+int _StringToNumber<int>(const char* start, char** end) { return strtol(start, end, 10);	}
+template <>
+unsigned int _StringToNumber<unsigned int>(const char* start, char** end) { return strtoul(start, end, 10); }
+template <>
+double _StringToNumber<double>(const char* start, char** end) { return strtod(start, end);}
+
+
 // Used in TokenizeArgs
 template <>
 const std::string ArgsSearchString<std::string>()

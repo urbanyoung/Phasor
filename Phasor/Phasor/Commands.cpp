@@ -73,6 +73,7 @@ namespace commands
 	{
 		std::vector<std::string> tokens = TokenizeArgs(command);
 		if (tokens.size() == 0) return e_command_result::kProcessed;
+		std::string& command_name = tokens[0];
 
 		// pass to scripts here
 		Scripting::PhasorCaller caller;
@@ -86,15 +87,15 @@ namespace commands
 				
 		// Attempt to execute the command, catching any errors resulting
 		// from user input.
-		auto itr = CommandList.find(tokens[0]);
+		auto itr = CommandList.find(command_name);
 		if (itr != CommandList.end()) {
 			try {				
-				CArgParser args(tokens, tokens[0], 1);
+				CArgParser args(tokens, command_name, 1);
 				return itr->second(exec_player, args, out);
 			} catch (CArgParserException& e) {
 				if (e.has_msg()) out << e.what() << endl;
-				auto itr = CommandUsage.find(tokens[0]);
-				out << "usage: " << tokens[0] << " " << itr->second << endl;
+				auto itr = CommandUsage.find(command_name);
+				out << "usage: " << command_name << " " << itr->second << endl;
 				return e_command_result::kProcessed;
 			}
 		}
@@ -113,7 +114,6 @@ namespace commands
 	std::string CArgParser::ReadString(size_t min, size_t max)
 	{
 		HasData();
-		// i also support fixed length strings, so check here
 		size_t len = args[index].size();
 		if (len < min || (len > max && max != 0)) RaiseError(kString, min, max);
 		return args[index++];
@@ -168,6 +168,7 @@ namespace commands
 	void CArgParser::RaiseError(e_arg_types expected,  double min, double max,
 		const std::vector<std::string>* opts)
 	{
+		// no description available
 		if (expected == kNone) throw CArgParserException();
 
 		// default message
@@ -203,7 +204,6 @@ namespace commands
 			} break;
 		case kUnsignedInteger:
 			{
-				g_PrintStream.print("min %u max %u", min, max);
 				if (min != 0 && max == UINT_MAX)
 					desc = m_sprintf("expected positive integer >= %u", (unsigned int)min);
 				else if (min != 0 && max != UINT_MAX)
@@ -225,8 +225,8 @@ namespace commands
 				desc = "invalid player"; 
 			} break;
 		}
-		std::string final_msg = m_sprintf("%s : argument #%i %s", function.c_str(), index,
-			desc.c_str());
+		std::string final_msg = m_sprintf("%s : argument #%u %s", function.c_str(), 
+			1 + index - start_index, desc.c_str());
 		throw CArgParserException(final_msg);
 	}
 }

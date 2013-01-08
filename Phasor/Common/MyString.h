@@ -16,6 +16,26 @@ std::string m_sprintf(const char* _Format, ...);
 std::wstring m_swprintf(const wchar_t* _Format, ...);
 
 //
+// Number functions
+// -----------------------------------------------------------------------
+// Helper function for StringToNumber
+template <class T>
+T _StringToNumber(const char* start, char** end);
+
+// Parse the input string as a number. If there are any characters that
+// would produce a malformed number, false is returned.
+template <class T>
+bool StringToNumber(const std::string& str, T& out)
+{
+	const char* start = str.c_str(), *expected_end = start + str.size();
+	char* end;
+	T value = _StringToNumber<T>(start, &end);
+	if (end != expected_end) return false;
+	out = value;
+	return true;
+}
+
+//
 // Tokenization functions
 // -----------------------------------------------------------------------
 

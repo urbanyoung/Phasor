@@ -24,7 +24,7 @@ namespace commands
 	class CArgParser
 	{
 	private:
-		std::vector<std::string> args;
+		const std::vector<std::string>& args;
 		size_t start_index, index;
 		std::string function; // command being executed (ie sv_players)
 
@@ -41,23 +41,11 @@ namespace commands
 		static const char* k_arg_names[];
 
 		template <class T>
-		T StringToNumber(const char* start, char** end);
-		template <>
-		int StringToNumber<int>(const char* start, char** end) { return strtol(start, end, 10);	}
-		template <>
-		unsigned int StringToNumber<unsigned int>(const char* start, char** end) { return strtoul(start, end, 10); }
-		template <>
-		double StringToNumber<double>(const char* start, char** end) { return strtod(start, end);}
-	
-		template <class T>
 		T ReadNumber(e_arg_types type, T min, T max)
 		{
 			HasData();
-			std::string& arg = args[index];
-			const char* start = arg.c_str(), *expected_end = start + arg.size();
-			char* end;
-			T value = StringToNumber<T>(start, &end);
-			if (end != expected_end || value < min || value > max) 
+			T value;
+			if (!StringToNumber<T>(args[index], value) || value < min || value > max)
 				RaiseError(type, min, max);
 			index++;
 			return value;
@@ -76,6 +64,7 @@ namespace commands
 		void HasData() { if (args.size() <= index) RaiseError(kNone); }
 
 	public:
+		// args should remain for duration of this object
 		explicit CArgParser(const std::vector<std::string>& args, 
 			const std::string& function, size_t start_index);
 		size_t size() const { return args.size() - start_index;}
