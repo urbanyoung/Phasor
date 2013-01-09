@@ -165,12 +165,17 @@ namespace halo { namespace server
 		}
 		// !IMPORTANT!
 		// If the stream gets stored anywhere it must be cloned.
+		std::unique_ptr<CCheckedPlayerStream> playerStream;
 		COutStream* stream;
-		if (exec_player != NULL) stream = exec_player->stream;
-		else stream = &g_PrintStream;
-		return can_execute ? commands::ProcessCommand(command,
-			*stream, exec_player)
-			: e_command_result::kProcessed;
+		if (exec_player != NULL) {
+			playerStream(new CCheckedPlayerStream(*(exec_player->stream)));
+			stream = playerStream.get();
+		} else stream = &g_PrintStream;
+		
+		return can_execute 
+				? 
+				commands::ProcessCommand(command, *stream, exec_player)
+				: e_command_result::kProcessed;
 	}
 
 	// This function is effectively sv_map_next

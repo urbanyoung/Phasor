@@ -11,6 +11,7 @@ namespace halo { namespace alias
 {
 	using namespace sqlite;
 	std::unique_ptr<SQLite> aliasdb;
+	bool do_track = true;
 
 	enum e_alias_events
 	{
@@ -74,7 +75,7 @@ namespace halo { namespace alias
 				case kWildcardQuery:
 					{
 						std::unique_ptr<SQLiteQuery> query = 
-							aliasdb->NewQuery(L"SELECT * FROM alias WHERE name LIKE :wildcard");
+							aliasdb->NewQuery(L"SELECT * FROM alias WHERE name LIKE :wildcard ORDER BY hash,name");
 						query->BindValue(":wildcard", wildcard);
 						this->result = std::move(query->Execute());
 						ReinvokeInMain(g_Thread);
@@ -99,9 +100,20 @@ namespace halo { namespace alias
 			switch (event_type)
 			{
 			case kWildcardQuery:
-			case kHashQuery: // Print the results
 				{
-					// todo: send to correct stream
+					for (size_t x = 0; x < result->size(); x++) {
+						ObjWString& name = (ObjWString&)(*result)[x]["name"];
+						ObjWString& hash = (ObjWString&)(*result)[x]["hash"];
+						*stream << name.GetValue() << " - " << hash.GetValue()
+							<< endl;						
+					}
+
+					stream->print("%i results matching '%s'", 
+						result->size(), wildcard.c_str());
+				} break;
+
+			case kHashQuery:
+				{
 					static const int kNamesPerLine = 4;
 					size_t x = 0;
 					while (x < result->size()) {
@@ -116,12 +128,9 @@ namespace halo { namespace alias
 						*stream << line << endl;
 						x += process_count;
 					}
-					if (event_type == kHashQuery)
-						stream->print("%i results matching hash '%s'", 
+					stream->print("%i results matching hash '%s'", 
 							result->size(), hash.c_str());
-					else if (event_type == kWildcardQuery)
-						stream->print("%i results matching '%s'", 
-							result->size(), wildcard.c_str());
+						
 				} break;
 			}
 		}
@@ -148,6 +157,7 @@ namespace halo { namespace alias
 
 	void OnPlayerJoin(s_player& player)
 	{
+		if (!do_track) return;
 		if (aliasdb != nullptr) {
 			std::shared_ptr<PhasorThreadEvent> e(
 				new CAliasEvent(g_PrintStream.clone(), kSaveAlias, player.hash,
@@ -156,33 +166,42 @@ namespace halo { namespace alias
 		}
 	}
 
+	e_command_result DisplayAliasFailedToInitiliaze(COutStream& out)
+	{
+		out << "The alias system failed to initialize at startup. No commands can be used." << endl;
+		return e_command_result::kProcessed;
+	}
+
 	// --------------------------------------------------------------------
 	e_command_result sv_alias_search(void*, CArgParser& args, COutStream& out)
 	{
+		if (aliasdb == nullptr) return DisplayAliasFailedToInitiliaze(out);
+		std::string query = args.ReadString();
+		std::shared_ptr<PhasorThreadEvent> e(
+			new CAliasEvent(out.clone(), kWildcardQuery, "", L"", query));
+		g_Thread.InvokeInAux(e);
+		out << "Fetching results. Please wait." << endl;
+
 		return e_command_result::kProcessed;
 	}
 
 	e_command_result sv_alias_hash(void*, CArgParser& args, COutStream& out)
 	{
-		std::string hash = args.ReadPlayerOrHash();
-		if (aliasdb == nullptr) {
-			out << "The alias system is inactive. Enable with sv_alias_enable" << endl;
-			return e_command_result::kProcessed;
-		}
+		if (aliasdb == nullptr) return DisplayAliasFailedToInitiliaze(out);
 
+		std::string hash = args.ReadPlayerOrHash();
 		std::shared_ptr<PhasorThreadEvent> e(
 			new CAliasEvent(out.clone(), kHashQuery, hash, L"", ""));
 		g_Thread.InvokeInAux(e);
-
+		out << "Fetching results. Please wait." << endl;
 		return e_command_result::kProcessed;
 	}
 
 	e_command_result sv_alias_enable(void*, CArgParser& args, COutStream& out)
 	{
-		bool state = args.ReadBool();
-		if (state && aliasdb != nullptr) {
-
-		}
+		if (aliasdb == nullptr) return DisplayAliasFailedToInitiliaze(out);
+		do_track = args.ReadBool();
+		out << "The alias system is " << (do_track ? "active" : "inactive") << endl;
 		return e_command_result::kProcessed;
 	}
 }}

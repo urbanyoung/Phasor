@@ -35,7 +35,9 @@ namespace commands
 		cmd["sv_logname"]			= &logging::sv_logname;
 		cmd["sv_loglimit"]			= &logging::sv_loglimit;
 		cmd["sv_logmovedir"]		= &logging::sv_logmovedir;
+		cmd["sv_alias_enable"]		= &alias::sv_alias_enable;
 		cmd["sv_alias_hash"]		= &alias::sv_alias_hash;
+		cmd["sv_alias_search"]		= &alias::sv_alias_search;
 		return cmd;
 	}();
 
@@ -53,7 +55,9 @@ namespace commands
 		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
 		usage["sv_loglimit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";
 		usage["sv_logmovedir"]		= "<directory>";
+		usage["sv_alias_enable"]	= "<status>";
 		usage["sv_alias_hash"]		= "<hash or player index>";
+		usage["sv_alias_search"]	= "<partial name to find>";
 		return usage;
 	}();
 

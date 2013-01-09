@@ -15,7 +15,7 @@ namespace halo
 		g_PrintStream << "New player " << memory_id << endl;
 		mem = GetPlayerMemory(memory_id);
 		afk = new afk_detection::CAFKDetection(*this, g_Timers);
-		stream = new CCheckedPlayerStream(*this);	
+		stream = new CPlayerStream(*this);	
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
 		m_object = 0;

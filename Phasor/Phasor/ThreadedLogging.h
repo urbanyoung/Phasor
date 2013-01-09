@@ -25,12 +25,13 @@ private:
 	DWORD dwDelay;
 
 	void Initialize(DWORD dwDelay);
+	// Write the lines in data to file, then cleanup data.
 	void LogLinesAndCleanup(std::unique_ptr<lines_t> data);
+	// Reallocate lines.
 	void AllocateLines();
 
 protected:
 	virtual bool Write(const std::wstring& str) override;
-	virtual std::unique_ptr<COutStream> clone() override;
 
 public:
 	CThreadedLogging(const std::wstring& dir, const std::wstring& file,
@@ -40,6 +41,8 @@ public:
 	CThreadedLogging(const CLoggingStream& stream, PhasorThread& thread,
 		DWORD dwDelay=DEFAULT_SAVE_DELAY);
 	virtual ~CThreadedLogging();
+
+	virtual std::unique_ptr<COutStream> clone() override;
 
 	// CLoggingStream isn't threadsafe, so we're responsible for thread safety.
 	virtual void SetMoveSize(DWORD kbSize) override;

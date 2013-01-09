@@ -29,19 +29,18 @@ private:
 
 protected:
 	virtual bool Write(const std::wstring& str) override;
-	virtual std::unique_ptr<COutStream> clone() override
-	{
-		return std::unique_ptr<COutStream>(new CLoggingStream(*this));
-	}
-
 	CLoggingStream(const CLoggingStream& other);
 
 public:
 	// directory should be normalized (finish with a single \\)
 	CLoggingStream(const std::wstring& fileDirectory, 
 		const std::wstring& fileName, const std::wstring& moveDirectory);
-	
 	virtual ~CLoggingStream();
+
+	virtual std::unique_ptr<COutStream> clone() override
+	{
+		return std::unique_ptr<COutStream>(new CLoggingStream(*this));
+	}
 
 	virtual void SetMoveSize(DWORD kbSize);
 	virtual void SetMoveDirectory(const std::wstring& move_to);
