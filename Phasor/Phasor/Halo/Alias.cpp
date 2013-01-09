@@ -27,15 +27,15 @@ namespace halo { namespace alias
 		e_alias_events event_type;
 		std::unique_ptr<SQLiteResult> result;
 		bool has_error;
-		COutStream& stream;
+		std::unique_ptr<COutStream> stream;
 
 	public:
-		CAliasEvent(COutStream& stream, 
+		CAliasEvent(std::unique_ptr<COutStream> stream, 
 			e_alias_events event_type, const std::string& hash, 
 			const std::wstring& player_name, const std::string& wildcard) 
-		: PhasorThreadEvent(0), stream(stream), event_type(event_type), hash(hash),
+		: PhasorThreadEvent(0), event_type(event_type), hash(hash),
 				player_name(player_name), wildcard(wildcard), has_error(false),
-				result(nullptr)
+				result(nullptr), stream(std::move(stream))
 		{
 		}
 
@@ -91,7 +91,7 @@ namespace halo { namespace alias
 		virtual void OnEventMain(PhasorThread& thread)
 		{
 			if (has_error) {
-				stream << "An error occurred and your query wasn't successful. "
+				*stream << "An error occurred and your query wasn't successful. "
 					<< "Check the Phasor log for details" << endl;
 				return;
 			}
@@ -113,14 +113,14 @@ namespace halo { namespace alias
 							ObjWString& name = (ObjWString&)(*result)[x + i]["name"];
 							line += m_swprintf(L"%-19s", name.GetValue());
 						}
-						stream << line << endl;
+						*stream << line << endl;
 						x += process_count;
 					}
 					if (event_type == kHashQuery)
-						stream.print("%i results matching hash '%s'", 
+						stream->print("%i results matching hash '%s'", 
 							result->size(), hash.c_str());
 					else if (event_type == kWildcardQuery)
-						stream.print("%i results matching '%s'", 
+						stream->print("%i results matching '%s'", 
 							result->size(), wildcard.c_str());
 				} break;
 			}
@@ -150,7 +150,7 @@ namespace halo { namespace alias
 	{
 		if (aliasdb != nullptr) {
 			std::shared_ptr<PhasorThreadEvent> e(
-				new CAliasEvent(g_PrintStream, kSaveAlias, player.hash,
+				new CAliasEvent(g_PrintStream.clone(), kSaveAlias, player.hash,
 				player.mem->playerName,	""));
 			g_Thread.InvokeInAux(e);
 		}
@@ -171,7 +171,7 @@ namespace halo { namespace alias
 		}
 
 		std::shared_ptr<PhasorThreadEvent> e(
-			new CAliasEvent(out, kHashQuery, hash, L"", ""));
+			new CAliasEvent(out.clone(), kHashQuery, hash, L"", ""));
 		g_Thread.InvokeInAux(e);
 
 		return e_command_result::kProcessed;
@@ -180,7 +180,9 @@ namespace halo { namespace alias
 	e_command_result sv_alias_enable(void*, CArgParser& args, COutStream& out)
 	{
 		bool state = args.ReadBool();
-		if (state && aliasdb != nullptr)
+		if (state && aliasdb != nullptr) {
+
+		}
 		return e_command_result::kProcessed;
 	}
 }}

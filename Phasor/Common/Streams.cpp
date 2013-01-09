@@ -2,9 +2,9 @@
 #include "MyString.h"
 #include <vector>
 
-COutStream::COutStream() : no_flush(false)
+COutStream::COutStream() : no_flush(false), length_to_write(0)
 {
-	str.reserve(kDefaultBufferSize); // start with 8kb
+	Reserve(kDefaultBufferSize); // start with 8kb
 }
 
 COutStream::~COutStream()
@@ -17,15 +17,28 @@ void COutStream::Reserve(size_t size)
 {
 	str.clear();
 	str.reserve(size); // start with 8kb
+	length_to_write = 0;
 }
 
 void COutStream::Flush()
 {
-	if (!str.size()) return;
-	if (Write(str) || str.size() > (1 << 16)) {
+	if (!length_to_write) return;
+	if (Write(str) || length_to_write > (1 << 16)) {
 		// clear the string on success or if it's > 64kb
 		Reserve(kDefaultBufferSize);
 	}
+}
+
+void COutStream::AppendData(const std::wstring& str)
+{
+	this->str += str;
+	length_to_write += str.length();
+}
+
+void COutStream::AppendData(const wchar_t c)
+{
+	this->str += c;
+	length_to_write++;
 }
 
 COutStream& COutStream::operator<<(const endl_tag&)
@@ -37,13 +50,12 @@ COutStream& COutStream::operator<<(const endl_tag&)
 
 COutStream & COutStream::operator<<(const std::string& string)
 {
-	str += WidenString(string);
-	return *this;
+	return *this << WidenString(string);
 }
 
 COutStream & COutStream::operator<<(const std::wstring& string)
 {
-	str += string;
+	AppendData(string);
 	return *this;
 }
 
@@ -54,38 +66,35 @@ COutStream & COutStream::operator<<(const char *string)
 
 COutStream & COutStream::operator<<(const wchar_t *string)
 {
-	str += string;
+	AppendData(string);
 	return *this;
 }
 
 COutStream & COutStream::operator<<(wchar_t c)
 {
-	str += c;
+	AppendData(c);
 	return *this;
 }
 
 COutStream & COutStream::operator<<(int number)
 {
-	wchar_t str[32];
+	wchar_t str[64];
 	swprintf_s(str, NELEMS(str), L"%i", number);
-	this->str += str;
-	return *this;
+	return *this << str;
 }
 
 COutStream & COutStream::operator<<(DWORD number)
 {
-	wchar_t str[32] = {0};
+	wchar_t str[64];
 	swprintf_s(str, NELEMS(str), L"%u", number);
-	this->str += str;
-	return *this;
+	return *this << str;
 }
 
 COutStream & COutStream::operator<<(double number)
 {
-	wchar_t str[32];
+	wchar_t str[64];
 	swprintf_s(str, NELEMS(str), L"%.4d", number);
-	this->str += str;
-	return *this;
+	return *this << str;
 }
 
 void COutStream::print(const char* format, ...)

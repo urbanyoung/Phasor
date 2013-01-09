@@ -9,6 +9,7 @@ void CThreadedLogging::Initialize(DWORD dwDelay)
 	threadEvent.reset(new CLogThreadEvent(*this, dwDelay));
 	id = thread.InvokeInAux(threadEvent);
 	AllocateLines();
+	this->dwDelay = dwDelay;
 }
 
 CThreadedLogging::CThreadedLogging(const std::wstring& dir, const std::wstring& file,
@@ -24,6 +25,12 @@ CThreadedLogging::CThreadedLogging(const CLoggingStream& stream, PhasorThread& t
 	: CLoggingStream(stream), thread(thread)
 {
 	Initialize(dwDelay);
+}
+
+std::unique_ptr<COutStream> CThreadedLogging::clone()
+{
+	return std::unique_ptr<COutStream>(new CThreadedLogging
+		(fileDirectory,fileName,moveDirectory, thread, dwDelay));
 }
 
 CThreadedLogging::~CThreadedLogging()
@@ -44,8 +51,7 @@ void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 	Lock _(loggingStreamCS);
 	size_t size = data->size();
 	if (size == 0) return;
-	if (size == 1) // no point copying for one entry
-	{
+	if (size == 1) { // no point copying for one entry
 		CLoggingStream::Write(*data->begin());
 		data->clear();
 		return;
@@ -58,8 +64,7 @@ void CThreadedLogging::LogLinesAndCleanup(std::unique_ptr<lines_t> data)
 	
 	// todo: handle write failures
 	auto itr = data->begin();
-	while (itr != data->end())
-	{
+	while (itr != data->end()) {
 		// don't want to need to expand the buffer
 		if (out.size() + itr->size() > out.capacity()) {
 			CLoggingStream::Write(out);
@@ -112,6 +117,24 @@ void CThreadedLogging::EnableTimestamp(bool state)
 	Lock _(loggingStreamCS);
 	bDoTimestamp = state;
 	CLoggingStream::EnableTimestamp(state);
+}
+
+void CThreadedLogging::AppendData(const std::wstring& str)
+{
+	Lock _(loggingStreamCS);
+	COutStream::AppendData(str);
+}
+
+void CThreadedLogging::AppendData(wchar_t c)
+{
+	Lock _(loggingStreamCS);
+	COutStream::AppendData(c);
+}
+
+void CThreadedLogging::Reserve(size_t size)
+{
+	Lock _(loggingStreamCS);
+	COutStream::Reserve(size);
 }
 
 CLogThreadEvent::CLogThreadEvent(CThreadedLogging& owner, DWORD dwDelay)

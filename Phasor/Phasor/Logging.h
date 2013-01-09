@@ -7,7 +7,7 @@
 // each entry.
 class CLoggingStream : public COutStream
 {
-private:
+protected:
 	std::wstring moveDirectory; // directory to move file to
 	std::wstring filePath; // path to file inclusive of name and extension
 	std::wstring fileName; //  name of file (no path info, no extension)
@@ -17,7 +17,7 @@ private:
 	DWORD errorOffset; // increases when moving the file fails
 
 	bool bTimestamp; // should timestamps be prepended? default true
-
+private:
 	void Initialize(const std::wstring& directory,
 		const std::wstring& fileName, const std::wstring& moveDirectory);
 	void SetNames(const std::wstring& directory,
@@ -25,15 +25,22 @@ private:
 
 	// Check if the file should be moved.
 	void CheckAndMove(DWORD curSize);
+	CLoggingStream& operator=(const CLoggingStream& rhs);
 
 protected:
-	virtual bool Write(const std::wstring& str);
+	virtual bool Write(const std::wstring& str) override;
+	virtual std::unique_ptr<COutStream> clone() override
+	{
+		return std::unique_ptr<COutStream>(new CLoggingStream(*this));
+	}
+
+	CLoggingStream(const CLoggingStream& other);
 
 public:
 	// directory should be normalized (finish with a single \\)
-	CLoggingStream(const std::wstring& dir, const std::wstring& file,
-		const std::wstring& move_dir);
-	CLoggingStream(const CLoggingStream& other);
+	CLoggingStream(const std::wstring& fileDirectory, 
+		const std::wstring& fileName, const std::wstring& moveDirectory);
+	
 	virtual ~CLoggingStream();
 
 	virtual void SetMoveSize(DWORD kbSize);

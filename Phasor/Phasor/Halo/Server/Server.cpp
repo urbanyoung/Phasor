@@ -164,9 +164,7 @@ namespace halo { namespace server
 			if (!can_execute) *exec_player->stream << L" ** Access denied **" << endl;
 		}
 		// !IMPORTANT!
-		// todo: fix the stream situation.. if player executing command quits
-		// quickly after executing and the stream is stored somewhere.. 
-		// crash. Need to think of a better system.
+		// If the stream gets stored anywhere it must be cloned.
 		COutStream* stream;
 		if (exec_player != NULL) stream = exec_player->stream;
 		else stream = &g_PrintStream;

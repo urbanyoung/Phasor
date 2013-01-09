@@ -10,6 +10,7 @@ namespace halo
 {
 	namespace afk_detection { class CAFKDetection; }
 	struct s_player;
+	class CCheckedPlayerStream;
 
 	// -----------------------------------------------------------------
 	class CPlayerStream : public COutStream
@@ -17,12 +18,18 @@ namespace halo
 	private:
 		s_player& player;
 	protected:		   
-		virtual bool Write(const std::wstring& str);
+		virtual bool Write(const std::wstring& str) override;
+		virtual std::unique_ptr<COutStream> clone() override
+		{
+			return std::unique_ptr<COutStream>(new CPlayerStream(player));
+		}
 
 	public:
 		CPlayerStream(s_player& player)
 			: player(player) {}
 		virtual ~CPlayerStream() {}
+
+		friend class CCheckedPlayerStream;
 	};
 	// ------------------------------------------------------------------
 
@@ -77,7 +84,7 @@ namespace halo
 		int memory_id;
 		s_player_structure* mem;
 		afk_detection::CAFKDetection* afk;
-		CPlayerStream* stream;
+		CCheckedPlayerStream* stream;
 
 		// ----------------------------------------------------------------
 		explicit s_player(int memory_id);
@@ -93,5 +100,33 @@ namespace halo
 
 	s_player_structure* GetPlayerMemory(int index);
 
-	
+	// Checks if the specified player (hash and slot) still exist before
+	// writing to the stream. If not writes are ignored.
+	class CCheckedPlayerStream : public CPlayerStream
+	{
+	private:
+		std::string hash;
+		DWORD memoryId;
+
+	protected:
+
+		virtual bool Write(const std::wstring& str) override;
+
+	public:
+		CCheckedPlayerStream(s_player& player) : CPlayerStream(player),
+			hash(player.hash), memoryId(player.memory_id)
+		{
+		}
+		CCheckedPlayerStream(CPlayerStream& stream) : CPlayerStream(stream.player),
+			hash(stream.player.hash), memoryId(stream.player.memory_id)
+		{
+
+		}
+		virtual ~CCheckedPlayerStream() {}
+
+		virtual std::unique_ptr<COutStream> clone() override
+		{
+			return std::unique_ptr<COutStream>(new CCheckedPlayerStream(player));
+		}
+	};
 }

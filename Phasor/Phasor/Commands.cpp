@@ -199,7 +199,6 @@ namespace commands
 		return player.hash;
 	}
 
-	// returns true if player was read
 	std::string CArgParser::ReadPlayerOrHash()
 	{
 		HasData();

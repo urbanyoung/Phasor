@@ -4,10 +4,10 @@
 
 // ----------------------------------------------------------------------
 //
-void CLoggingStream::SetNames(const std::wstring& directory, 
+void CLoggingStream::SetNames(const std::wstring& fileDirectory, 
 	const std::wstring& fileName, const std::wstring& moveDirectory)
 {
-	this->fileDirectory = directory;
+	this->fileDirectory = fileDirectory;
 	this->moveDirectory = moveDirectory;
 	this->fileName = fileName;
 	this->filePath = fileDirectory + fileName + L".log";	
@@ -22,11 +22,11 @@ void CLoggingStream::Initialize(const std::wstring& directory,
 	SetNames(directory, fileName, moveDirectory);
 }
 
-CLoggingStream::CLoggingStream(const std::wstring& dir, const std::wstring& file,
-	const std::wstring& move_dir)
+CLoggingStream::CLoggingStream(const std::wstring& fileDirectory, 
+	const std::wstring& fileName, const std::wstring& moveDirectory)
 	: COutStream()
 {
-	Initialize(dir, file, move_dir);
+	Initialize(fileDirectory, fileName, moveDirectory);
 }
 
 CLoggingStream::CLoggingStream(const CLoggingStream& other)

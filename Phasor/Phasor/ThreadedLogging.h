@@ -14,20 +14,23 @@ class CLogThreadEvent;
 class CThreadedLogging : public CLoggingStream
 {
 private:
+	// cs locks lines, loggingStreamCS locks the stream
 	CRITICAL_SECTION cs, loggingStreamCS;
-	DWORD id;
+	DWORD id; // timer id
 	PhasorThread& thread;
 	std::shared_ptr<CLogThreadEvent> threadEvent;
 	typedef std::list<std::wstring> lines_t;
 	std::unique_ptr<lines_t> lines;
 	bool bDoTimestamp;
+	DWORD dwDelay;
 
 	void Initialize(DWORD dwDelay);
 	void LogLinesAndCleanup(std::unique_ptr<lines_t> data);
 	void AllocateLines();
 
 protected:
-	virtual bool Write(const std::wstring& str);
+	virtual bool Write(const std::wstring& str) override;
+	virtual std::unique_ptr<COutStream> clone() override;
 
 public:
 	CThreadedLogging(const std::wstring& dir, const std::wstring& file,
@@ -44,6 +47,11 @@ public:
 	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName) override;
 	virtual void SetOutFile(const std::wstring& fileName) override; // use cur dir
 	virtual void EnableTimestamp(bool state) override;
+
+	// COutStream isn't thread safe either.
+	virtual void AppendData(const std::wstring& str) override;
+	virtual void AppendData(wchar_t c) override;
+	virtual void Reserve(size_t size) override;
 
 	friend class CLogThreadEvent;
 };

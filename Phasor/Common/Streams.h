@@ -2,6 +2,8 @@
 
 #include <string>
 #include <sstream>
+#include <memory>
+#include <boost/noncopyable.hpp>
 #include "Types.h"
 
 #define _WINDOWS_LINE_END
@@ -27,16 +29,20 @@ public:
 	virtual bool Read(BYTE* outbuffer, DWORD to_read, DWORD* read) = 0;
 };
 
-class COutStream
+class COutStream : boost::noncopyable
 {
 private:
-	//std::wstringstream ss;
 	std::wstring str;
+	size_t length_to_write;
 	static const size_t kDefaultBufferSize = 1 << 13; // 8kb
 
-	void Reserve(size_t size);
-public:
-	virtual bool Write(const std::wstring& str) = 0;
+protected:
+	
+	// These are the only functions to access str and length_to_write.
+	// Derived classes than need to provide thread safety should override these.
+	virtual void AppendData(const std::wstring& str);
+	virtual void AppendData(wchar_t c);
+	virtual void Reserve(size_t size);
 
 public: // stream modifiers
 	bool no_flush;
@@ -44,6 +50,11 @@ public: // stream modifiers
 public:
 	COutStream();
 	virtual ~COutStream();
+
+	// Creates a copy of stream
+	virtual std::unique_ptr<COutStream> clone() = 0;
+	// Called to write data to the stream
+	virtual bool Write(const std::wstring& str) = 0;
 
 	// Called to flush the stream (and on endl)
 	void Flush();
@@ -78,8 +89,7 @@ public:
 
 	~NoFlush()
 	{
-		stream.Flush();
-		stream.no_flush = prev;
+		if ((stream.no_flush = prev)) stream.Flush();		
 	}
 };
 

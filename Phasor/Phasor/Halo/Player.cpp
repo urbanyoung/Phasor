@@ -5,6 +5,7 @@
 #include "../../Common/MyString.h"
 #include "Addresses.h"
 #include "Server/Server.h"
+#include "Game/Game.h"
 #include <assert.h>
 
 namespace halo 
@@ -14,7 +15,7 @@ namespace halo
 		g_PrintStream << "New player " << memory_id << endl;
 		mem = GetPlayerMemory(memory_id);
 		afk = new afk_detection::CAFKDetection(*this, g_Timers);
-		stream = new CPlayerStream(*this);	
+		stream = new CCheckedPlayerStream(*this);	
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
 		m_object = 0;
@@ -72,6 +73,13 @@ namespace halo
 	bool CPlayerStream::Write(const std::wstring& str)
 	{
 		server::MessagePlayer(player, str);
+		return true;
+	}
+
+	bool CCheckedPlayerStream::Write(const std::wstring& str)
+	{
+		s_player* player = game::GetPlayer(memoryId);
+		if (player && player->hash == hash) return CPlayerStream::Write(str);
 		return true;
 	}
 }
