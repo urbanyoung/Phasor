@@ -99,8 +99,6 @@ namespace halo
 
 		friend class CCheckedPlayerStream;
 	};
-	//
-	// 
 	
 	// Checks if the specified player (hash and slot) still exist before
 	// writing to the stream. If not writes are ignored.

@@ -111,7 +111,8 @@ namespace commands
 
 	// --------------------------------------------------------------------
 	const char* CArgParser::k_arg_names[] = {"none", "string", "stringoneof", 
-		"integer", "unsigned integer", "number", "boolean", "player", "player or hash"};
+		"integer", "positive integer", "number", "boolean", "player", "player or hash"};
+
 
 	CArgParser::CArgParser(const std::vector<std::string>& args,
 		const std::string& function, size_t start_index) 

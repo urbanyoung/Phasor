@@ -28,6 +28,7 @@ namespace halo { namespace alias
 		e_alias_events event_type;
 		std::unique_ptr<SQLiteResult> result;
 		bool has_error;
+		std::string err_msg;
 		std::unique_ptr<COutStream> stream;
 
 	public:
@@ -84,7 +85,7 @@ namespace halo { namespace alias
 			}
 			catch (SQLiteError& error)
 			{
-				g_PhasorLog->print("alias query failed : %s", error.what());
+				err_msg = error.what();
 				has_error = true;
 			}
 		}
@@ -94,6 +95,7 @@ namespace halo { namespace alias
 			if (has_error) {
 				*stream << "An error occurred and your query wasn't successful. "
 					<< "Check the Phasor log for details" << endl;
+				*g_PhasorLog << "ALIAS QUERY ERROR : " << err_msg << endl;
 				return;
 			}
 
@@ -108,7 +110,7 @@ namespace halo { namespace alias
 							<< endl;						
 					}
 
-					stream->print("%i results matching '%s'", 
+					stream->print("%i results with names matching '%s'", 
 						result->size(), wildcard.c_str());
 				} break;
 
@@ -150,7 +152,7 @@ namespace halo { namespace alias
 		}
 		catch (SQLiteError& error)
 		{
-			g_PhasorLog->print("Cannot create alias database error '%s'", error.what());
+			g_PhasorLog->print("Cannot create alias database, error '%s'", error.what());
 			aliasdb.reset();
 		}
 	}
