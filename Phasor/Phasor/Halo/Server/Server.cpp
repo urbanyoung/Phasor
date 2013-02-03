@@ -64,7 +64,7 @@ namespace halo { namespace server
 		s_player* player = game::GetPlayerFromAddress(m_player);
 
 		if (player)	{
-			game::OnClientUpdate(player);
+			game::OnClientUpdate(*player);
 			//player->afk->CheckPlayerActivity();
 		}
 	}
@@ -119,7 +119,6 @@ namespace halo { namespace server
 		s_player* exec_player = GetExecutingPlayer();
 		bool can_execute = exec_player == NULL;
 
-		// create the output stream
 		if (can_execute) { // server console executing
 			// save the command for memory (arrow keys)
 			s_command_cache* cache = (s_command_cache*)ADDR_CMDCACHE;
@@ -128,7 +127,6 @@ namespace halo { namespace server
 				command);
 			cache->cur = 0xFFFF;
 		} else {
-			// don't want the person executing it to see this output
 			CEchoStream echo(g_PrintStream, *g_RconLog);
 			std::string authName;
 			Admin::result_t result = Admin::CanUseCommand(exec_player->hash,
@@ -161,20 +159,18 @@ namespace halo { namespace server
 				} break;
 			}
 
-			if (!can_execute) *exec_player->stream << L" ** Access denied **" << endl;
+			if (!can_execute) *(exec_player->stream) << L" ** Access denied **" << endl;
 		}
 		// !IMPORTANT!
 		// If the stream gets stored anywhere it must be cloned.
-		std::unique_ptr<CCheckedPlayerStream> playerStream;
-		COutStream* stream;
+		std::unique_ptr<CCheckedStream> checkedStream;
 		if (exec_player != NULL) {
-			playerStream(new CCheckedPlayerStream(*(exec_player->stream)));
-			stream = playerStream.get();
-		} else stream = &g_PrintStream;
+			checkedStream.reset(new CCheckedStream(*exec_player->stream, true));
+		} else checkedStream.reset(new CCheckedStream(g_PrintStream, false));
 		
 		return can_execute 
 				? 
-				commands::ProcessCommand(command, *stream, exec_player)
+				commands::ProcessCommand(command, *checkedStream, exec_player)
 				: e_command_result::kProcessed;
 	}
 
@@ -214,7 +210,7 @@ namespace halo { namespace server
 		}
 	}
 
-	void MessagePlayer(s_player& player, const std::wstring& str)
+	void MessagePlayer(const s_player& player, const std::wstring& str)
 	{
 		g_PrintStream << "todo: make this message the player - " << str << endl;
 	}

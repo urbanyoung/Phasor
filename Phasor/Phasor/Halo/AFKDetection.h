@@ -32,5 +32,5 @@ namespace halo { namespace afk_detection
 	void Enable();
 	void Disable();
 	e_command_result sv_kickafk(void*, 
-		commands::CArgParser& args, COutStream& out);
+		commands::CArgParser& args, CCheckedStream& out);
 }}

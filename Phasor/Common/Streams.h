@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 #include <memory>
-#include <boost/noncopyable.hpp>
+#include "noncopyable.h"
 #include "Types.h"
 
 #define _WINDOWS_LINE_END
@@ -29,7 +29,7 @@ public:
 	virtual bool Read(BYTE* outbuffer, DWORD to_read, DWORD* read) = 0;
 };
 
-class COutStream : boost::noncopyable
+class COutStream : private noncopyable
 {
 private:
 	std::wstring str;

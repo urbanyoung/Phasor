@@ -20,10 +20,10 @@ namespace commands
 	// ------------------------------------------------------------------------
 	// Command handlers
 
-	typedef e_command_result (*cmd_func)(void*, CArgParser&, COutStream&);
+	typedef e_command_result (*cmd_func)(void*, CArgParser&, CCheckedStream&);
 	static const std::map<std::string, cmd_func> CommandList = []() -> std::map<std::string, cmd_func>
 	{
-		typedef e_command_result (*cmd_func)(void*, commands::CArgParser&, COutStream&);
+		typedef e_command_result (*cmd_func)(void*, commands::CArgParser&, CCheckedStream&);
 		std::map<std::string, cmd_func> cmd;
 		cmd["sv_mapcycle_begin"]	= &server::maploader::sv_mapcycle_begin;
 		cmd["sv_mapcycle_add"]		= &server::maploader::sv_mapcycle_add;
@@ -74,9 +74,14 @@ namespace commands
 		inline bool has_msg() { return err.size() != 0; }
 	};
 
+	e_command_result ProcessCommand(const std::string& command, 
+		COutStream& out)
+	{
+		return ProcessCommand(command, CCheckedStream(out,false), NULL);
+	}
 	// Returns success or failure
 	e_command_result ProcessCommand(const std::string& command, 
-		COutStream& out, halo::s_player* exec_player)
+		halo::CCheckedStream& out, halo::s_player* exec_player)
 	{
 		std::vector<std::string> tokens = TokenizeArgs(command);
 		if (tokens.size() == 0) return e_command_result::kProcessed;
@@ -100,9 +105,9 @@ namespace commands
 				CArgParser args(tokens, command_name, 1);
 				return itr->second(exec_player, args, out);
 			} catch (CArgParserException& e) {
-				if (e.has_msg()) out << e.what() << endl;
+				if (e.has_msg()) out() << e.what() << endl;
 				auto itr = CommandUsage.find(command_name);
-				out << "usage: " << command_name << " " << itr->second << endl;
+				out() << "usage: " << command_name << " " << itr->second << endl;
 				return e_command_result::kProcessed;
 			}
 		}

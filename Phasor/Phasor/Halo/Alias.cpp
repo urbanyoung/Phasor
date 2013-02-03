@@ -137,7 +137,6 @@ namespace halo { namespace alias
 			}
 		}
 	};
-	std::shared_ptr<CAliasEvent> threadEvent;
 
 	void Initialize()
 	{
@@ -164,7 +163,7 @@ namespace halo { namespace alias
 			std::shared_ptr<PhasorThreadEvent> e(
 				new CAliasEvent(g_PrintStream.clone(), kSaveAlias, player.hash,
 				player.mem->playerName,	""));
-			g_Thread.InvokeInAux(e);
+			g_Thread.InvokeInAux(e); // sole ownership by g_Thread once returned
 		}
 	}
 
@@ -175,31 +174,31 @@ namespace halo { namespace alias
 	}
 
 	// --------------------------------------------------------------------
-	e_command_result sv_alias_search(void*, CArgParser& args, COutStream& out)
+	e_command_result sv_alias_search(void*, CArgParser& args, CCheckedStream& out)
 	{
 		if (aliasdb == nullptr) return DisplayAliasFailedToInitiliaze(out);
 		std::string query = args.ReadString();
 		std::shared_ptr<PhasorThreadEvent> e(
-			new CAliasEvent(out.clone(), kWildcardQuery, "", L"", query));
+			new CAliasEvent(out.clone_stream(), kWildcardQuery, "", L"", query));
 		g_Thread.InvokeInAux(e);
 		out << "Fetching results. Please wait." << endl;
 
 		return e_command_result::kProcessed;
 	}
 
-	e_command_result sv_alias_hash(void*, CArgParser& args, COutStream& out)
+	e_command_result sv_alias_hash(void*, CArgParser& args, CCheckedStream& out)
 	{
 		if (aliasdb == nullptr) return DisplayAliasFailedToInitiliaze(out);
 
 		std::string hash = args.ReadPlayerOrHash();
 		std::shared_ptr<PhasorThreadEvent> e(
-			new CAliasEvent(out.clone(), kHashQuery, hash, L"", ""));
+			new CAliasEvent(out.clone_stream(), kHashQuery, hash, L"", ""));
 		g_Thread.InvokeInAux(e);
 		out << "Fetching results. Please wait." << endl;
 		return e_command_result::kProcessed;
 	}
 
-	e_command_result sv_alias_enable(void*, CArgParser& args, COutStream& out)
+	e_command_result sv_alias_enable(void*, CArgParser& args, CCheckedStream& out)
 	{
 		if (aliasdb == nullptr) return DisplayAliasFailedToInitiliaze(out);
 		do_track = args.ReadBool();

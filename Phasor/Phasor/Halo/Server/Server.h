@@ -75,7 +75,7 @@ namespace server
 	#pragma pack(pop)
 
 	void StartGame(const char* map);
-	void MessagePlayer(s_player& player, const std::wstring& str);
+	void MessagePlayer(const s_player& player, const std::wstring& str);
 	void MessageAllPlayers(const wchar_t* fmt, ...);
 	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port);
 	bool GetPlayerHash(const s_player& player, std::string& hash);

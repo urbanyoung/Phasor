@@ -9,7 +9,6 @@ namespace Lua
 	// Class: State
 	// Lua state wrapper
 	//
-
 	// Creates a new state
 	State::State(const char* file)
 	{
@@ -28,9 +27,8 @@ namespace Lua
 			std::string error = lua_tostring(this->L, -1);
 			lua_pop(this->L, 1);
 			lua_close(this->L);
-
 			throw std::exception(error.c_str());
-		}
+		}		
 	}
 
 	// Destroys the state

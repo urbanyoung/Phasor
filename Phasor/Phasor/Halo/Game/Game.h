@@ -59,7 +59,7 @@ namespace halo { namespace game {
 	bool __stdcall OnObjectInteraction(DWORD playerId, DWORD m_ObjId);
 
 	// Called when a player's position is updated
-	void OnClientUpdate(s_player* player);
+	void OnClientUpdate(s_player& player);
 
 	// Called when an object's damage is being looked up
 	void __stdcall OnDamageLookup(DWORD receivingObj, DWORD causingObj, LPBYTE tagEntry);

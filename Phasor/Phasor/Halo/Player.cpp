@@ -14,17 +14,16 @@ namespace halo
 	{
 		g_PrintStream << "New player " << memory_id << endl;
 		mem = GetPlayerMemory(memory_id);
-		afk = new afk_detection::CAFKDetection(*this, g_Timers);
-		stream = new CPlayerStream(*this);	
+		afk.reset(new afk_detection::CAFKDetection(*this, g_Timers));
+		stream.reset(new CPlayerStream(*this));	
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
 		m_object = 0;
 	}
+
 	s_player::~s_player()
 	{
 		g_PrintStream << "Player " << memory_id << " left" << endl;
-		delete afk;
-		delete stream;
 	}
 
 	objects::s_halo_object* s_player::get_object()
@@ -36,22 +35,22 @@ namespace halo
 	}
 
 	// todo: store a bool indicating if admin
-	bool s_player::IsAdmin()
+	bool s_player::IsAdmin() const
 	{
 		return Admin::IsAdmin(hash);
 	}
 
-	void s_player::Message(const wchar_t* fmt, ...)
+	void s_player::Message(const wchar_t* fmt, ...) const
 	{
 		va_list ArgList;
 		va_start(ArgList, fmt);
 		std::wstring str = FormatVarArgsW(fmt, ArgList);
 		va_end(ArgList);
 
-		g_PrintStream << "todo: make this message player - " << str << endl;
+		server::MessagePlayer(*this, str);
 	}
 
-	void s_player::Kick()
+	void s_player::Kick() const
 	{
 		g_PrintStream << "todo: kick player" << endl;
 	}
@@ -67,19 +66,5 @@ namespace halo
 		}
 
 		return mem;
-	}
-
-	// -------------------------------------------------------------------
-	bool CPlayerStream::Write(const std::wstring& str)
-	{
-		server::MessagePlayer(player, str);
-		return true;
-	}
-
-	bool CCheckedPlayerStream::Write(const std::wstring& str)
-	{
-		s_player* player = game::GetPlayer(memoryId);
-		if (player && player->hash == hash) return CPlayerStream::Write(str);
-		return true;
-	}
+	}	
 }

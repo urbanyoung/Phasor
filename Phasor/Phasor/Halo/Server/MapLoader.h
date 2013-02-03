@@ -89,15 +89,15 @@ namespace halo { namespace server { namespace maploader
 		COutStream& stream);*/
 
 	e_command_result sv_mapcycle_begin(void*, 
-		commands::CArgParser& args, COutStream& out);
+		commands::CArgParser& args, CCheckedStream& out);
 	e_command_result sv_mapcycle_add(void*, 
-		commands::CArgParser& args, COutStream& out);
+		commands::CArgParser& args, CCheckedStream& out);
 	e_command_result sv_mapcycle_del(void* exec_player, 
-		commands::CArgParser& args, COutStream& out);
+		commands::CArgParser& args, CCheckedStream& out);
 	e_command_result sv_mapcycle(void*, 
-		commands::CArgParser& args, COutStream& out);
+		commands::CArgParser& args, CCheckedStream& out);
 	e_command_result sv_map(void*, 
-		commands::CArgParser& args, COutStream& out);
+		commands::CArgParser& args, CCheckedStream& out);
 	e_command_result sv_end_game(void*,
-		commands::CArgParser& args, COutStream&);
+		commands::CArgParser& args, CCheckedStream&);
 }}}

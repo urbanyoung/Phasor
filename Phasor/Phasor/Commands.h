@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "../Common/Streams.h"
+#include "Halo/HaloStreams.h"
 #include "Halo/Player.h"
 
 // stupid enum warning
@@ -16,8 +16,9 @@ enum e_command_result
 namespace commands 
 {
 	e_command_result ProcessCommand(const std::string& command, 
-		COutStream& out, halo::s_player* exec_player=NULL);
-
+		halo::CCheckedStream& out, halo::s_player* exec_player=NULL);
+	e_command_result ProcessCommand(const std::string& command, 
+		COutStream& out);
 	// Used for parsing user input in server commands.
 	// If an error occurs the Read functions throw and exception which
 	// is caught in ProcessCommand.

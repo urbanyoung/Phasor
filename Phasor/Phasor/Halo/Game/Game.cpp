@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "../Server/ServerStreams.h"
+#include "../HaloStreams.h"
 #include "../Server/MapLoader.h"
 #include "../Player.h"
 #include "../AFKDetection.h"
@@ -108,8 +108,8 @@ namespace halo { namespace game {
 		}
 	}
 
-	void OnClientUpdate(s_player* player)
+	void OnClientUpdate(s_player& player)
 	{
-		player->afk->CheckPlayerActivity();
+		player.afk->CheckPlayerActivity();
 	}
 }}

@@ -2,7 +2,9 @@
 
 #include "../../Common/Types.h"
 #include "../../Common/Streams.h"
+#include "../../Common/noncopyable.h"
 #include "Game/Objects.h"
+#include "HaloStreams.h"
 #include <string>
 #include <memory>
 
@@ -57,76 +59,31 @@ namespace halo
 
 	class CPlayerStream;
 
-	struct s_player
+	struct s_player : private noncopyable
 	{
 		std::string hash, ip;
 		WORD port;
 		int memory_id;
 		s_player_structure* mem;
-		afk_detection::CAFKDetection* afk;
-		CPlayerStream* stream;
+		std::unique_ptr<afk_detection::CAFKDetection> afk;
+		std::unique_ptr<CPlayerStream> stream;
 
 		// ----------------------------------------------------------------
 		explicit s_player(int memory_id);
 		~s_player();
 
 		objects::s_halo_object* get_object();
-		bool IsAdmin();
-		void Message(const wchar_t* fmt, ...);
-		void Kick();
+		bool IsAdmin() const;
+		void Message(const wchar_t* fmt, ...) const;
+		void Kick() const;
 	private: // just for testing get_object
 		objects::s_halo_object* m_object;		
+		void setup(int memory_id);
+
 	};
 
 	s_player_structure* GetPlayerMemory(int index);
 
 	// -----------------------------------------------------------------
-	class CPlayerStream : public COutStream
-	{
-	private:
-		s_player& player;
-	protected:		   
-		virtual bool Write(const std::wstring& str) override;
-		virtual std::unique_ptr<COutStream> clone() override
-		{
-			return std::unique_ptr<COutStream>(new CPlayerStream(player));
-		}
 
-	public:
-		CPlayerStream(s_player& player)
-			: player(player) {}
-		virtual ~CPlayerStream() {}
-
-		friend class CCheckedPlayerStream;
-	};
-	
-	// Checks if the specified player (hash and slot) still exist before
-	// writing to the stream. If not writes are ignored.
-	class CCheckedPlayerStream : public CPlayerStream
-	{
-	private:
-		std::string hash;
-		DWORD memoryId;
-
-	protected:
-
-		virtual bool Write(const std::wstring& str) override;
-
-	public:
-		CCheckedPlayerStream(s_player& player) : CPlayerStream(player),
-			hash(player.hash), memoryId(player.memory_id)
-		{
-		}
-		CCheckedPlayerStream(CPlayerStream& stream) : CPlayerStream(stream.player),
-			hash(stream.player.hash), memoryId(stream.player.memory_id)
-		{
-
-		}
-		virtual ~CCheckedPlayerStream() {}
-
-		virtual std::unique_ptr<COutStream> clone() override
-		{
-			return std::unique_ptr<COutStream>(new CCheckedPlayerStream(player));
-		}
-	};
 }

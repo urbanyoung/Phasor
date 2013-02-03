@@ -5,47 +5,69 @@
 
 namespace halo { namespace objects
 {
+/*#define UNKNOWNX(line, size)  char unknown_##line[(size)]
+#define UNKNOWN(size)   UNKNOWNX(__COUNTER__, size)
+	*/
+	#define STR_CAT(a,b)            a##b
+	#define STR_CAT_DELAYED(a,b)   STR_CAT(a,b)
+	#define UNKNOWN(size) char STR_CAT_DELAYED(_unused_,__COUNTER__)[size]
+	#define UNKNOWN_BITFIELD(size) char STR_CAT_DELAYED(_unusedbf_, __COUNTER__) : size
+
 	#pragma pack(push, 1)
 	// Some structure issues were clarified thanks to the code at:
 	// http://code.google.com/p/halo-devkit/source/browse/trunk/halo_sdk/Engine/objects.h
 	struct s_halo_object_header // generic object header
 	{
 		DWORD mapId; // 0x0000
-		long unk[3]; // 0x0004
-		char unkBits : 2; // 0x0010
+		UNKNOWN(12);
+		UNKNOWN_BITFIELD(2);
+		//long unk[3]; // 0x0004
+		//char unkBits : 2; // 0x0010
 		bool ignoreGravity : 1;
-		char unk1 : 4;
+		UNKNOWN_BITFIELD(4);
+		//char unk1 : 4;
 		bool noCollision : 1; // has no collision box, projectiles etc pass right through
-		char unkBits1[3];
+		UNKNOWN(3);
+		//char unkBits1[3];
 		unsigned long timer; // 0x0014
-		char empty[0x44]; // 0x0018
+		UNKNOWN(0x44);// empty;
+		//UNKNOWN(4);
+		//char empty[0x44]; // 0x0018
 		vect3d location; // 0x005c
 		vect3d velocity; // 0x0068
 		vect3d rotation; // 0x0074
 		vect3d unkVector11; // 0x0080 dunno
 		vect3d unkVector; // 0x008C (not sure, i let server deal with it)
-		char unkChunk[0x28]; // 0x0098
+		UNKNOWN(0x28);
+		//char unkChunk[0x28]; // 0x0098
 		unsigned long ownerPlayer; // 0x00c0 (index of owner (if has one))
 		unsigned long ownerObject; // 0x00c4 (object id of owner, if projectile is player id)
-		char unkChunk1[0x18]; // 0x00c8
+		//char unkChunk1[0x18]; // 0x00c8
+		UNKNOWN(0x18);
 		float health; // 0x00e0
 		float shield; // 0x00e4
-		char unkChunk2[0x10]; // 0x00e8
+		UNKNOWN(0x10);
+		//char unkChunk2[0x10]; // 0x00e8
 		vect3d location1; // 0x00f8 set when in a vehicle unlike other one. best not to use tho (isnt always set)
-		char unkChunk3[0x10]; // 0x0104
+		UNKNOWN(0x10);
+		//char unkChunk3[0x10]; // 0x0104
 		unsigned long veh_weaponId; // 0x0114
 		unsigned long player_curWeapon; // 0x0118
 		unsigned long vehicleId; // 0x011C
 		BYTE bGunner; // 0x0120
 		short unkShort; // 0x0121
 		BYTE bFlashlight; // 0x0123
-		long unkLong; // 0x0124
+		UNKNOWN(4);
+	//	long unkLong; // 0x0124
 		float shield1; // 0x0128 (same as other shield)
 		float flashlightCharge; // 0x012C (1.0 when on)
-		long unkLong1; // 0x0130
+		UNKNOWN(4);
+		//long unkLong1; // 0x0130
 		float flashlightCharge1; // 0x0134
-		long unkChunk4[0x2f]; // 0x0138
+		UNKNOWN(0xBC);
+		//long unkChunk4[0x2f]; // 0x0138
 	};
+	static_assert (sizeof(s_halo_object_header) == 0x138 + 0x2f * sizeof(float), "bad");
 
 	struct s_halo_biped
 	{
