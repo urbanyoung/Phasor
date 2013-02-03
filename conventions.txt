@@ -1,0 +1,4 @@
+Conventions:
+
+	If an object stores a reference then it's object owner's responsiblity to ensure
+	that reference stays valid for the duration of the objects lifetime.
