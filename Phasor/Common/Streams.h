@@ -18,17 +18,6 @@ static const endl_tag endl;
 
 class CStreamModifier;
 
-class CInStream
-{
-public:
-	CInStream();
-	virtual ~CInStream();
-
-	// Reads data from the stream.
-	// 
-	virtual bool Read(BYTE* outbuffer, DWORD to_read, DWORD* read) = 0;
-};
-
 class COutStream : private noncopyable
 {
 private:
@@ -39,7 +28,7 @@ private:
 protected:
 	
 	// These are the only functions to access str and length_to_write.
-	// Derived classes than need to provide thread safety should override these.
+	// Derived classes that need to provide thread safety should override these.
 	virtual void AppendData(const std::wstring& str);
 	virtual void AppendData(wchar_t c);
 	virtual void Reserve(size_t size);
@@ -92,19 +81,3 @@ public:
 		if ((stream.no_flush = prev)) stream.Flush();		
 	}
 };
-
-// Output to a file which is kept open for the duration of the stream
-/*class COutFileStream : public COutStream
-{
-protected:
-	COutFile file;
-
-public:
-	COutFileStream();
-	virtual ~COutFileStream();
-
-	// Open the specified file, creating it if it doesn't exist.
-	bool Open(const std::wstring& file);
-
-	virtual bool Write(const std::wstring& str);
-};*/

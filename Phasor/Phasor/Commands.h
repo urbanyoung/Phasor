@@ -16,9 +16,8 @@ enum e_command_result
 namespace commands 
 {
 	e_command_result ProcessCommand(const std::string& command, 
-		halo::CCheckedStream& out, halo::s_player* exec_player=NULL);
-	e_command_result ProcessCommand(const std::string& command, 
-		COutStream& out);
+		COutStream& out, halo::s_player* exec_player=NULL);
+
 	// Used for parsing user input in server commands.
 	// If an error occurs the Read functions throw and exception which
 	// is caught in ProcessCommand.

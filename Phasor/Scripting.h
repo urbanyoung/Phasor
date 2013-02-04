@@ -5,17 +5,6 @@
 #include <array>
 typedef unsigned long DWORD;
 
-/*
- * Each script is uniquely identified by its name relative to the 
- * scripts folder. So like
- * Scripts/
- *   MyScript/
- *     dostuff.lua     
- *   hello.lua
- *   
- *   dostuff.lua's unique would be MyScript/dostuff
- *   hello.lua's unique id would be hello
- */
 namespace Scripting
 {
 	class Scripts;

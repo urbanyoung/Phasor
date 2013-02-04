@@ -93,7 +93,7 @@ namespace halo { namespace afk_detection
 	void Enable()  { CAFKDetection::bDisable = false; }
 
 	e_command_result sv_kickafk(void*, 
-		commands::CArgParser& args, CCheckedStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
 		CAFKDetection::max_duration = args.ReadUInt();
 

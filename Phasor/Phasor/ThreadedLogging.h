@@ -31,7 +31,8 @@ private:
 	void AllocateLines();
 
 protected:
-	virtual bool Write(const std::wstring& str) override;
+	// CLoggingStream
+	bool Write(const std::wstring& str) override;
 
 public:
 	CThreadedLogging(const std::wstring& dir, const std::wstring& file,
@@ -40,21 +41,22 @@ public:
 		DWORD dwDelay=DEFAULT_SAVE_DELAY);
 	CThreadedLogging(const CLoggingStream& stream, PhasorThread& thread,
 		DWORD dwDelay=DEFAULT_SAVE_DELAY);
-	virtual ~CThreadedLogging();
+	~CThreadedLogging();
 
-	virtual std::unique_ptr<COutStream> clone() override;
+	// COutStream
+	std::unique_ptr<COutStream> clone() override;
 
 	// CLoggingStream isn't threadsafe, so we're responsible for thread safety.
-	virtual void SetMoveSize(DWORD kbSize) override;
-	virtual void SetMoveDirectory(const std::wstring& move_to) override;
-	virtual void SetOutFile(const std::wstring& directory,const std::wstring& fileName) override;
-	virtual void SetOutFile(const std::wstring& fileName) override; // use cur dir
-	virtual void EnableTimestamp(bool state) override;
+	void SetMoveSize(DWORD kbSize) override;
+	void SetMoveDirectory(const std::wstring& move_to) override;
+	void SetOutFile(const std::wstring& directory,const std::wstring& fileName) override;
+	void SetOutFile(const std::wstring& fileName) override; // use cur dir
+	void EnableTimestamp(bool state) override;
 
 	// COutStream isn't thread safe either.
-	virtual void AppendData(const std::wstring& str) override;
-	virtual void AppendData(wchar_t c) override;
-	virtual void Reserve(size_t size) override;
+	void AppendData(const std::wstring& str) override;
+	void AppendData(wchar_t c) override;
+	void Reserve(size_t size) override;
 
 	friend class CLogThreadEvent;
 };
@@ -69,7 +71,8 @@ private:
 	CLogThreadEvent(CThreadedLogging& owner, DWORD dwDelay);
 
 public:
-	virtual void OnEventAux(PhasorThread& thread);
+	// PhasorThreadEvent
+	void OnEventAux(PhasorThread& thread) override;
 
 	friend class CThreadedLogging;
 };

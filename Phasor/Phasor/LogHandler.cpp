@@ -27,7 +27,7 @@ namespace logging
 		return log;
 	}
 
-	e_command_result sv_logname(void*, CArgParser& args, CCheckedStream& out)
+	e_command_result sv_logname(void*, CArgParser& args, COutStream& out)
 	{
 		std::string log_type = args.ReadStringOneOf(log_types, true);
 		std::wstring log_newname = args.ReadWideString();
@@ -39,7 +39,7 @@ namespace logging
 		return e_command_result::kProcessed;
 	}
 
-	e_command_result sv_loglimit(void*, CArgParser& args, CCheckedStream& out)
+	e_command_result sv_loglimit(void*, CArgParser& args, COutStream& out)
 	{
 		std::string log_type = args.ReadStringOneOf(log_types, true);
 		unsigned int max_size = args.ReadUInt(1);
@@ -51,7 +51,7 @@ namespace logging
 		return e_command_result::kProcessed;
 	}
 
-	e_command_result sv_logmovedir(void*, CArgParser& args, CCheckedStream& out)
+	e_command_result sv_logmovedir(void*, CArgParser& args, COutStream& out)
 	{
 		std::wstring new_move_dir = args.ReadWideString();
 		if (!NDirectory::IsDirectory(new_move_dir)) {

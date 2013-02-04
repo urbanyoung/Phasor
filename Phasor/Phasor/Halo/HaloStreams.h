@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Common/Streams.h"
+#include <assert.h>
 
 namespace halo { 
 	struct s_player;
@@ -21,94 +22,82 @@ namespace halo {
 		}
 	};
 
-	// Writes to two streams at once. 
-	class CEchoStream : public COutStream
-	{
-	private:
-		COutStream &first, &second;
-		std::unique_ptr<COutStream> first_ptr, second_ptr;
-
-		// If an echo stream gets cloned it needs to own the clones of
-		// first and second.
-		CEchoStream(std::unique_ptr<COutStream> first_ptr, 
-			std::unique_ptr<COutStream> second_ptr)
-			: first(*first_ptr), second(*second_ptr),
-			first_ptr(std::move(first_ptr)), second_ptr(std::move(second_ptr))
-		{
-		}
-
-	protected:		   
-		virtual bool Write(const std::wstring& str);
-
-	public:
-		CEchoStream(COutStream& first, COutStream& second)
-			: first(first), second(second) {}
-		virtual ~CEchoStream() {}
-
-		virtual std::unique_ptr<COutStream> clone() override
-		{
-			return std::unique_ptr<COutStream>(new CEchoStream(
-				first.clone(), second.clone()));
-		}
-	};
-
 	// Writes to a specific player
 	class CPlayerStream : public COutStream
 	{
+	private:
+		int memory_id;
+		std::string hash;
+		
+		// used when cloning. forces checks to be made before each Write.
+		CPlayerStream(const s_player& player, bool);
+
 	protected:	
 		const s_player& player;
 		virtual bool Write(const std::wstring& str) override;
 
 	public:
 		CPlayerStream(const s_player& player)
-			: player(player) {}
+			: player(player), memory_id(-1) {}
 		virtual ~CPlayerStream() {}
 
 		virtual std::unique_ptr<COutStream> clone() override
 		{
-			return std::unique_ptr<COutStream>(new CPlayerStream(player));
+			return std::unique_ptr<COutStream>(new CPlayerStream(player,true));
 		}
 
 		const s_player& GetPlayer() { return player; }
 	};	
 
-	// Wrapper class around COutStreams. When being cloned non-player
-	// streams are treated as normal (virtual clone method called) whereas
-	// player streams get transformed into a CCheckedPlayerStream which
-	// checks the player still exists before writing to it.
-	class CCheckedStream : noncopyable
+	// Used to create a forwarding chain of COutStreams, so that each one
+	// is written to. 
+	class Forwarder : public COutStream
 	{
-	private:
-		COutStream& stream;
-		bool player_stream;
+	protected:
+		bool Write(const std::wstring& str) override
+		{
+			bool b = true;
+			if (next) b = next->Write(str);		
+			return b && stream->Write(str);
+		}
+
 	public:
-		CCheckedStream(COutStream& stream, bool player_stream) 
-			: stream(stream), player_stream(player_stream)
+		typedef std::unique_ptr<Forwarder> next_ptr;
+		typedef std::unique_ptr<COutStream> stream_ptr;
+
+		explicit Forwarder(COutStream& stream, next_ptr& next)
+			: stream(stream.clone()), next(std::move(next))
 		{
 		}
 
-		COutStream& operator()()
+		std::unique_ptr<COutStream> clone() override
 		{
-			return stream;
+			std::unique_ptr<COutStream> forwarder(new Forwarder);
+			Forwarder* this_next = this, *that_next = (Forwarder*)forwarder.get();
+			while (this_next) {
+				that_next->next = next_ptr((Forwarder*)this_next->next->clone().release());
+				that_next->stream = this_next->stream->clone();
+				this_next = this->next->next.get();
+				that_next = that_next->next.get();
+			}
+			return forwarder;
 		}
 
-		operator COutStream&(void) const
+		static next_ptr end_point(COutStream& stream)
 		{
-			return stream;
+			return next_ptr(new Forwarder(stream, next_ptr()));
 		}
 
-		// Proxy COutStream
-		COutStream & operator<<(const endl_tag&) { return stream << endl; }
-		COutStream & operator<<(const std::string& string) { return stream << string; }
-		COutStream & operator<<(const std::wstring& string) { return stream << string; }
-		COutStream & operator<<(const char *string) { return stream << string; }
-		COutStream & operator<<(const wchar_t *string) { return stream << string; }
-		COutStream & operator<<(wchar_t c) { return stream << c; }
-		COutStream & operator<<(DWORD number) { return stream << number; }
-		COutStream & operator<<(int number)  { return stream << number; }
-		COutStream & operator<<(double number){ return stream << number; }
+		static next_ptr mid_point(COutStream& stream, next_ptr& next)
+		{
+			return next_ptr(new Forwarder(stream, std::move(next)));
+		}
 
-		std::unique_ptr<COutStream> clone_stream();
+	private:
+		next_ptr next;
+		stream_ptr stream;
+
+		Forwarder() {}
 	};
 }
 

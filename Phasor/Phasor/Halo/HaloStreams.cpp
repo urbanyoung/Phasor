@@ -62,82 +62,30 @@ namespace halo
 		return true;
 	}
 
-	// --------------------------------------------------------------------
-	// 
-	bool CEchoStream::Write(const std::wstring& str)
-	{
-		bool b1 = first.Write(str);
-		return second.Write(str) && b1;
-	}
-
 	// -------------------------------------------------------------------
 	//
 	bool CPlayerStream::Write(const std::wstring& str)
 	{
-		server::MessagePlayer(player, str);
-		return true;
-	}
-
-	// --------------------------------------------------------------------
-	// 
-	// Checks if the specified player (hash and slot) still exist before
-	// writing to the player.
-	class CCheckedPlayerStream : public CPlayerStream
-	{
-	private:
-		// we need copys of the values, because CPlayerStream::player
-		// isn't guaranteed to be valid.
-		int memory_id;
-		std::string hash;
-
-		void init(const s_player& player)
-		{
-			memory_id = player.memory_id;
-			hash = player.hash;
-		}
-
-	protected:
-
-		virtual bool Write(const std::wstring& str) override
-		{
-			// CPlayerStream expects its player to be valid throughout its
-			// lifetime. This may not be true if the stream has been cloned
+		if (memory_id != -1) {
+			// If the stream gets cloned it creates a checked stream.
 			// so we need to check that CPlayerStream references the correct
 			// slot and that the hashes match.
 			// GetPlayer will always return the same ptr for the same 
 			// slot so we only need to check if its non-null
 			s_player* player = game::GetPlayer(memory_id);
-			if (player == &(this->player) && player->hash == hash) 
-				return CPlayerStream::Write(str);
-			return true;
+			if (player != &this->player || player->hash != hash) 
+				return true; // player is now invalid. ignore.
 		}
-
-	public:
-		CCheckedPlayerStream(const s_player& player) : CPlayerStream(player)
-		{
-			init(player);
-		}
-
-		CCheckedPlayerStream(CPlayerStream& stream) 
-			: CPlayerStream(stream.GetPlayer())
-		{
-			init(player);
-		}
-
-		std::unique_ptr<COutStream> clone() override
-		{
-			return std::unique_ptr<COutStream>(new CCheckedPlayerStream(player));
-		}
-	};
+		server::MessagePlayer(player, str);
+		return true;
+	}
 
 	// --------------------------------------------------------------------
 	//
-	std::unique_ptr<COutStream> CCheckedStream::clone_stream()
-	{
-		if (player_stream) {
-			CPlayerStream& pstream = (CPlayerStream&)stream;
-			return std::unique_ptr<COutStream>(
-				new CCheckedPlayerStream(pstream));
-		} else return stream.clone();
-	}
+	// 
+	CPlayerStream::CPlayerStream(const s_player& player, bool)
+		: player(player), memory_id(player.memory_id), hash(player.hash)
+	{}
+
+
 }

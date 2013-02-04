@@ -537,7 +537,7 @@ namespace halo { namespace server { namespace maploader
 	bool in_mapcycle = false;
 
 	bool ReadGameDataFromUser(s_phasor_mapcycle_entry& entry,
-		commands::CArgParser& args, CCheckedStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
 		entry.map = args.ReadString();
 		entry.gametype = args.ReadWideString();
@@ -547,7 +547,7 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	e_command_result sv_mapcycle_begin(void*, 
-		commands::CArgParser& args, CCheckedStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
 		// Check if there is any cycle data
 		if (!mapcycleList.size()) {
@@ -573,7 +573,7 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	e_command_result sv_mapcycle_add(void*, 
-		commands::CArgParser& args, CCheckedStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
 		s_phasor_mapcycle_entry entry;
 		if (!ReadGameDataFromUser(entry, args, out)) return e_command_result::kProcessed;
@@ -595,7 +595,7 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	e_command_result sv_mapcycle_del(void* exec_player, 
-		commands::CArgParser& args, CCheckedStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
 		unsigned int index = args.ReadUInt();
 		if (index < 0 || index >= mapcycleList.size()) {
@@ -613,9 +613,9 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	e_command_result sv_mapcycle(void*, 
-		commands::CArgParser& args, CCheckedStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
-		out().wprint(L"   %-20s%-20s%s", L"Map", L"Variant", L"Script(s)");
+		out.wprint(L"   %-20s%-20s%s", L"Map", L"Variant", L"Script(s)");
 		const wchar_t* fmt = L"%-3i%-20s%-20s%s";
 
 		for (size_t x = 0; x < mapcycleList.size(); x++)
@@ -629,7 +629,7 @@ namespace halo { namespace server { namespace maploader
 			std::wstring scripts_desc_w = WidenString(scripts_desc);
 			if (!scripts_desc_w.size()) scripts_desc_w = L"<no scripts>";
 			std::wstring map_w = WidenString(entry.map);
-			out().wprint(fmt, x, map_w.c_str(), entry.gametype.c_str(), 
+			out.wprint(fmt, x, map_w.c_str(), entry.gametype.c_str(), 
 				scripts_desc_w.c_str());
 		}
 
@@ -637,7 +637,7 @@ namespace halo { namespace server { namespace maploader
 	}
 
 	e_command_result sv_map(void*, 
-		commands::CArgParser& args, CCheckedStream& out)
+		commands::CArgParser& args, COutStream& out)
 	{
 		s_phasor_mapcycle_entry entry;
 		if (!ReadGameDataFromUser(entry, args, out)) return e_command_result::kProcessed;
@@ -662,7 +662,7 @@ namespace halo { namespace server { namespace maploader
 		return e_command_result::kProcessed;
 	}
 
-	e_command_result sv_end_game(void*, commands::CArgParser&, CCheckedStream&)
+	e_command_result sv_end_game(void*, commands::CArgParser&, COutStream&)
 	{
 		in_mapcycle = false;
 		return e_command_result::kGiveToHalo;

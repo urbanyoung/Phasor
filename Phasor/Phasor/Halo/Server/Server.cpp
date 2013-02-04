@@ -127,7 +127,8 @@ namespace halo { namespace server
 				command);
 			cache->cur = 0xFFFF;
 		} else {
-			CEchoStream echo(g_PrintStream, *g_RconLog);
+			Forwarder echo(g_PrintStream, Forwarder::end_point(*g_RconLog));
+			
 			std::string authName;
 			Admin::result_t result = Admin::CanUseCommand(exec_player->hash,
 				command, &authName);
@@ -161,17 +162,19 @@ namespace halo { namespace server
 
 			if (!can_execute) *(exec_player->stream) << L" ** Access denied **" << endl;
 		}
-		// !IMPORTANT!
-		// If the stream gets stored anywhere it must be cloned.
-		std::unique_ptr<CCheckedStream> checkedStream;
-		if (exec_player != NULL) {
-			checkedStream.reset(new CCheckedStream(*exec_player->stream, true));
-		} else checkedStream.reset(new CCheckedStream(g_PrintStream, false));
-		
-		return can_execute 
-				? 
-				commands::ProcessCommand(command, *checkedStream, exec_player)
-				: e_command_result::kProcessed;
+
+		COutStream& outStream = (exec_player == NULL) ? 
+								(COutStream&)g_PrintStream : 
+								(COutStream&)*exec_player->stream;
+								
+		/*Forwarder f(g_PrintStream,  
+			Forwarder::mid_point(g_PrintStream,
+			Forwarder::mid_point(*g_RconLog,
+			Forwarder::end_point(g_PrintStream))));
+		COutStream& outStream = (COutStream&)f;*/
+		return	can_execute ? 
+				commands::ProcessCommand(command, outStream, exec_player) :
+				e_command_result::kProcessed;
 	}
 
 	// This function is effectively sv_map_next
