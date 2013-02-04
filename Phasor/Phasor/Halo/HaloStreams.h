@@ -49,6 +49,44 @@ namespace halo {
 		const s_player& GetPlayer() { return player; }
 	};	
 
+	class TempForwarder : public COutStream
+	{
+	public:
+		typedef std::unique_ptr<TempForwarder> next_ptr;
+	private:
+		COutStream& stream;
+		next_ptr next;
+
+	protected:
+		bool Write(const std::wstring& str) override
+		{
+			bool b = true;
+			if (next) b = next->Write(str);		
+			return b && stream.Write(str);
+		}
+		// This stream is temporary and shouldn't be copied/cloned.
+		std::unique_ptr<COutStream> clone() override
+		{
+			assert(0);
+			return std::unique_ptr<COutStream>();
+		}
+
+	public:
+		TempForwarder(COutStream& stream, next_ptr& next)
+			: stream(stream), next(std::move(next))
+		{
+		}		
+
+		static next_ptr end_point(COutStream& stream)
+		{
+			return next_ptr(new TempForwarder(stream, next_ptr()));
+		}
+
+		static next_ptr mid_point(COutStream& stream, next_ptr& next)
+		{
+			return next_ptr(new TempForwarder(stream, std::move(next)));
+		}
+	};
 	// Used to create a forwarding chain of COutStreams, so that each one
 	// is written to. 
 	class Forwarder : public COutStream

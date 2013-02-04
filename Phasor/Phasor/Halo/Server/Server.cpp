@@ -127,7 +127,7 @@ namespace halo { namespace server
 				command);
 			cache->cur = 0xFFFF;
 		} else {
-			Forwarder echo(g_PrintStream, Forwarder::end_point(*g_RconLog));
+			TempForwarder echo(g_PrintStream, TempForwarder::end_point(*g_RconLog));
 			
 			std::string authName;
 			Admin::result_t result = Admin::CanUseCommand(exec_player->hash,
