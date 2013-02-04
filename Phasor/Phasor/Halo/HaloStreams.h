@@ -49,6 +49,9 @@ namespace halo {
 		const s_player& GetPlayer() { return player; }
 	};	
 
+	// Creates a temporary forwarding chain
+	// No streams are copied and as such this class cannot be copied/cloned
+	// and all streams should remain valid for its duration.
 	class TempForwarder : public COutStream
 	{
 	public:
@@ -73,9 +76,7 @@ namespace halo {
 
 	public:
 		TempForwarder(COutStream& stream, next_ptr& next)
-			: stream(stream), next(std::move(next))
-		{
-		}		
+			: stream(stream), next(std::move(next))	{}		
 
 		static next_ptr end_point(COutStream& stream)
 		{
@@ -87,8 +88,9 @@ namespace halo {
 			return next_ptr(new TempForwarder(stream, std::move(next)));
 		}
 	};
-	// Used to create a forwarding chain of COutStreams, so that each one
-	// is written to. 
+
+	// Used to create a forwarding chain for COutStreams.
+	// All streams passed in are cloned and managed by this class.
 	class Forwarder : public COutStream
 	{
 	protected:

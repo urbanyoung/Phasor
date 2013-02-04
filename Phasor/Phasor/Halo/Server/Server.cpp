@@ -127,8 +127,9 @@ namespace halo { namespace server
 				command);
 			cache->cur = 0xFFFF;
 		} else {
-			TempForwarder echo(g_PrintStream, TempForwarder::end_point(*g_RconLog));
-			
+			TempForwarder echo(g_PrintStream, 
+				TempForwarder::end_point(*g_RconLog));
+
 			std::string authName;
 			Admin::result_t result = Admin::CanUseCommand(exec_player->hash,
 				command, &authName);
@@ -146,7 +147,9 @@ namespace halo { namespace server
 				{
 					echo << L"An authorized player is attempting to use an unauthorized command:" << endl;
 					echo << L"Name: '" << exec_player->mem->playerName <<
-						L"' Hash: " << exec_player->hash << endl;
+						L"' Hash: " << exec_player->hash << " Authed as: '" 
+						<< authName << "'" << endl;
+					echo << "Command: '" << command << "'" << endl;
 				} break;
 			case Admin::E_OK:
 				{
@@ -155,8 +158,7 @@ namespace halo { namespace server
 						exec_player->mem->playerName;
 					if (authName.size())
 						echo << L" (authed as '" <<	authName << L"').";
-					echo << endl;							
-					
+					echo << endl;
 				} break;
 			}
 
