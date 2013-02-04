@@ -3,7 +3,6 @@
 #include "Common/Common.h"
 #include "Common/MyString.h"
 #include "PhasorAPI.h"
-#include "PhasorScript.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()
@@ -12,11 +11,11 @@
 namespace Scripting
 {
 	using namespace Common;
-	const std::wstring log_prefix = L"                     ---> ";
-
+	const std::wstring log_prefix = L"  ";
 	#define DEFAULT_TIMEOUT 2000
-
 	static const DWORD versions[] = {10059};
+
+	// --------------------------------------------------------------------
 
 	// Checks if the specified version is compatible
 	bool CompatibleVersion(DWORD required) 
@@ -31,7 +30,6 @@ namespace Scripting
 		}
 		return compatible;		
 	}
-
 
 	// --------------------------------------------------------------------
 	//
@@ -54,23 +52,26 @@ namespace Scripting
 		try
 		{
 			std::string file = abs_file.str();
-			std::unique_ptr<ScriptState> state = Manager::OpenScript(file.c_str());
-			state->SetInfo(file, script);
+			std::unique_ptr<ScriptState> state_ = Manager::OpenScript(file.c_str());
+			std::unique_ptr<PhasorScript> phasor_state(
+				new PhasorScript(state_));  
+			
+			phasor_state->SetInfo(file, script);
 
-			CheckScriptCompatibility(*state, script);
-			PhasorAPI::Register(*state);
+			CheckScriptCompatibility(*phasor_state->state, script);
+			PhasorAPI::Register(*phasor_state->state);
 
 			// Notify the script that it's been loaded.
 			bool fexists = false;
 			Manager::Caller caller;
 			caller.AddArg(GetCurrentProcessId());
-			caller.Call(*state, "OnScriptLoad", &fexists, DEFAULT_TIMEOUT);
+			caller.Call(*phasor_state->state, "OnScriptLoad", &fexists, DEFAULT_TIMEOUT);
 
 			if (!fexists) {
 				throw std::exception("function 'OnScriptLoad' undefined.");
 			}
 
-			scripts[script] = std::move(state);
+			scripts[script] = std::move(phasor_state);
 		}
 		catch (std::exception& e)
 		{
@@ -83,14 +84,14 @@ namespace Scripting
 	Scripts::scripts_t::iterator Scripts::CloseScript(scripts_t::iterator itr)
 	{
 		if (itr == scripts.end()) return itr;
-		std::unique_ptr<ScriptState> state(std::move(itr->second));
+		std::unique_ptr<PhasorScript> phasor_state(std::move(itr->second));
 		itr = scripts.erase(itr);
 
 		try {
 			Manager::Caller caller;
-			caller.Call(*state, "OnScriptUnload", DEFAULT_TIMEOUT);
+			caller.Call(*phasor_state->state, "OnScriptUnload", DEFAULT_TIMEOUT);
 		} catch (std::exception & e) {
-			HandleError(*state, e.what());
+			HandleError(*phasor_state, e.what());
 		}
 		return itr;
 	}
@@ -133,12 +134,12 @@ namespace Scripting
 	}
 
 	// Called when an error is raised by a script.
-	void Scripts::HandleError(ScriptState& state, const std::string& desc)
+	void Scripts::HandleError(PhasorScript& phasor_state, const std::string& desc)
 	{
 		NoFlush _(errstream); // flush once at the end of the func
 
-		errstream << L"Error in '" << state.GetName() << L'\'' <<  endl;
-		errstream << log_prefix << L"Path: " << state.GetPath() << endl;
+		errstream << L"Error in '" << phasor_state.GetName() << L'\'' <<  endl;
+		errstream << log_prefix << L"Path: " << phasor_state.GetPath() << endl;
 		errstream << log_prefix << L"Error: " << desc << endl;
 
 		std::string blockedFunc;
@@ -146,17 +147,17 @@ namespace Scripting
 		// Process the callstack, block last Phasor -> Script function called
 		// there should only be one.
 		bool blocked = false;
-		while (!state.callstack.empty())
+		while (!phasor_state.state->callstack.empty())
 		{
-			Manager::ScriptCallstack& entry = *state.callstack.top();
+			Manager::ScriptCallstack& entry = *phasor_state.state->callstack.top();
 
 			if (!blocked && !entry.scriptInvoked) { 
-				state.BlockFunction(entry.func);
+				phasor_state.BlockFunction(entry.func);
 				blocked = true;
 				blockedFunc = entry.func;
 			}
 
-			state.callstack.pop();
+			phasor_state.state->callstack.pop();
 		}
 
 		if (blocked) {
@@ -183,11 +184,12 @@ namespace Scripting
 
 		for (; itr != s.scripts.end(); ++itr)
 		{
-			ScriptState& state = *itr->second;
-			if (!state.FunctionAllowed(function)) continue;
+			PhasorScript& phasor_state = *itr->second;
+			if (!phasor_state.FunctionAllowed(function)) continue;
 
 			try
 			{				
+				Manager::ScriptState& state = *phasor_state.state;
 				bool found = false;
 				Result r = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
 
@@ -219,7 +221,7 @@ namespace Scripting
 			{
 				// script errored, process it (for now just rethrow)
 				// todo: add handling
-				s.HandleError(state, e.what());
+				s.HandleError(phasor_state, e.what());
 				//throw;
 			}
 		}
@@ -227,5 +229,33 @@ namespace Scripting
 		this->Clear();
 
 		return result;
+	}
+
+	// -------------------------------------------------------------------
+	void PhasorScript::BlockFunction(const std::string& func)
+	{
+		blockedFunctions.insert(func);
+	}
+
+	void PhasorScript::SetInfo(const std::string& path, const std::string& name)
+	{
+		this->name = name;
+		this->path = path;
+	}
+
+	const std::string& PhasorScript::GetName()
+	{
+		return name;
+	}
+
+	const std::string& PhasorScript::GetPath()
+	{
+		return path;
+	}
+
+	// Checks if the specified script function is allowed to be called.
+	bool PhasorScript::FunctionAllowed(const std::string& func)
+	{
+		return blockedFunctions.find(func) == blockedFunctions.end();
 	}
 }

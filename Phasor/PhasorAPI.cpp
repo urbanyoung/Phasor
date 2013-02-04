@@ -4,7 +4,6 @@
 
 using namespace Common;
 
-std::array<Common::obj_type, 5> expected_types = {TYPE_BOOL};
 namespace PhasorAPI
 {
 	void testf(Object::unique_deque& args, Object::unique_list& results)
@@ -15,6 +14,9 @@ namespace PhasorAPI
 			new ObjString("Hello, register test.")));
 	}
 
+	// Functions to register for scripts use.
+	// When any function is called all parameters have been type checked
+	// and so can be treated as valid.
 	const Manager::ScriptCallback PhasorExportTable[] =
 	{
 		// {&cfunc, "funcname", min_args, {arg1_t, arg2_t, .. argn_t}}

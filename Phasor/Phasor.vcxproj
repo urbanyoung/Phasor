@@ -148,7 +148,6 @@
     <ClInclude Include="Lua.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="PhasorAPI.h" />
-    <ClInclude Include="PhasorScript.h" />
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />
     <ClInclude Include="Phasor\CrashHandler.h" />

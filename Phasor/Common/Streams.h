@@ -78,6 +78,6 @@ public:
 
 	~NoFlush()
 	{
-		if ((stream.no_flush = prev)) stream.Flush();		
+		if (!(stream.no_flush = prev)) stream.Flush();		
 	}
 };

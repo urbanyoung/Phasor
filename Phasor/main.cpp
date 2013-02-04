@@ -18,7 +18,7 @@
 #include "Phasor/CrashHandler.h"
 #include "Phasor/Globals.h"
 #include "Common/FileIO.h"
-
+#include "Phasor/Halo/HaloStreams.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 //#define WAIT_AND_QUIT Sleep(10000); return 1;
@@ -31,6 +31,8 @@ std::unique_ptr<CPhasorLog> g_PhasorLog;
 std::unique_ptr<CGameLog> g_GameLog;
 std::unique_ptr<CRconLog> g_RconLog;
 std::unique_ptr<Scripting::Scripts> g_Scripts;
+// todo: remove before release
+std::unique_ptr<halo::Forwarder> scriptOutput;
 
 // Locate and create all directories Phasor will use. If an error occurs
 // this function never returns and the process is terminated.
@@ -82,7 +84,10 @@ extern "C" __declspec(dllexport) void OnLoad()
 	//	g_ScriptsLog->EnableTimestamp(false);
 		g_GameLog.reset(new CGameLog(g_LogsDirectory, L"GameLog", g_Thread));
 		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_OldLogsDirectory, g_Thread));
-		g_Scripts.reset(new Scripting::Scripts(*g_ScriptsLog,g_ScriptsDirectory));
+		
+		// todo: remove before release
+		scriptOutput.reset(new halo::Forwarder(g_PrintStream, halo::Forwarder::end_point(*g_ScriptsLog)));
+		g_Scripts.reset(new Scripting::Scripts(*scriptOutput,g_ScriptsDirectory));
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
 		LoadEarlyInit(PhasorLog);

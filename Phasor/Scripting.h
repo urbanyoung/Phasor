@@ -2,7 +2,11 @@
 
 #include "Manager.h"
 #include "Common/Streams.h"
+#include "Common/noncopyable.h"
 #include <array>
+#include <set>
+#include <string>
+
 typedef unsigned long DWORD;
 
 namespace Scripting
@@ -16,21 +20,44 @@ namespace Scripting
 {
 	typedef Manager::Result Result;
 
+	class PhasorScript : noncopyable
+	{
+	private:
+		std::set<std::string> blockedFunctions;
+		std::string name, path;
+
+	public:
+		std::unique_ptr<Manager::ScriptState> state;
+
+		PhasorScript(std::unique_ptr<Manager::ScriptState>& state)
+			: state(std::move(state)) {}
+		virtual ~PhasorScript() {}
+
+		void BlockFunction(const std::string& func);
+		void SetInfo(const std::string& path, const std::string& name);
+
+		const std::string& GetName();
+		const std::string& GetPath();
+
+		// Checks if the specified script function is allowed to be called.
+		bool FunctionAllowed(const std::string& func);
+	};
+
 	// --------------------------------------------------------------------
 	// Only reason this is a class is to ensure the errstream is set.
 	class Scripts
 	{
 	private:
-		typedef std::map<std::string, std::unique_ptr<ScriptState>> scripts_t; 
+		typedef std::map<std::string, std::unique_ptr<PhasorScript>> scripts_t; 
 		std::string scriptsDir;
-		std::map<std::string, std::unique_ptr<ScriptState>> scripts;
+		scripts_t scripts;
 		COutStream& errstream;
 
 		// Checks if the script is compatible with this version of Phasor.
 		void CheckScriptCompatibility(ScriptState& state, const char* script);
 
 		// Called when an error is raised by a script.
-		void HandleError(ScriptState& state, const std::string& desc);
+		void HandleError(PhasorScript& state, const std::string& desc);
 
 		scripts_t::iterator CloseScript(scripts_t::iterator itr);
 

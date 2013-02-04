@@ -183,9 +183,6 @@
     <ClInclude Include="Common\Types.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="PhasorScript.h">
-      <Filter>Scripting</Filter>
-    </ClInclude>
     <ClInclude Include="Manager.h">
       <Filter>Scripting\Manager</Filter>
     </ClInclude>

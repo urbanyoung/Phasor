@@ -7,7 +7,6 @@
 #include <memory>
 #include <stack>
 #include "Common/Common.h"
-#include "PhasorScript.h" // for ScriptState
 
 typedef unsigned long DWORD;
 
@@ -76,7 +75,7 @@ namespace Manager
 	// --------------------------------------------------------------------
 	// Class: ScriptState
 	// Classes compatible with this interface should inherit this class.
-	class ScriptState : public Scripting::PhasorScript
+	class ScriptState
 	{
 	public:
 		virtual ~ScriptState(){}
