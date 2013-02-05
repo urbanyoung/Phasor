@@ -26,6 +26,7 @@ namespace PhasorAPI
 		// {&cfunc, "funcname", min_args, {arg1_t, arg2_t, .. argn_t}}
 		// remember: n > min_args if there are overloads.
 		{&testf, "test_func", 3, {TYPE_NUMBER, TYPE_BOOL, TYPE_STRING}},
+		// Memory related functions: see memory.h
 		{&l_readbit, "readbit", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_readbyte, "readbyte", 1, {TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_readchar, "readchar", 1, {TYPE_NUMBER}},
@@ -44,6 +45,7 @@ namespace PhasorAPI
 		{&l_writeint, "writeint", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writefloat, "writefloat", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writedouble, "writedouble", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}}
+		// 
 	};
 
 	void Register(Manager::ScriptState& state)

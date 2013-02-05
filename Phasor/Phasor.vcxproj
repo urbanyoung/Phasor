@@ -148,7 +148,9 @@
     <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="Lua.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="PhasorAPI\deprecated.h" />
     <ClInclude Include="PhasorAPI\memory.h" />
+    <ClInclude Include="PhasorAPI\output.h" />
     <ClInclude Include="PhasorAPI\PhasorAPI.h" />
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />

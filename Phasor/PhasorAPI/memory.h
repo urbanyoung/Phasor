@@ -1,4 +1,6 @@
 /*! \file memory.h
+ * \brief Memory related functions for scripts.
+ * 
  * Provides the memory related Phasor scripting functions.
  *
  *	Note:
@@ -29,10 +31,13 @@
  *	
  *	float - 32 bit floating point number from [-3.402823466e+38, 3.402823466e+38]
  *	
+ *	double - 64 bit floating point number from[-1.7976931348623158e+308, 1.7976931348623158e+308]
+ *	
 */
 #include "../Common/Common.h"
 #include "PhasorAPI.h"
 #include <list> 
+
 
 /*! \brief Reads a bit from the specified memory address.
  *
@@ -147,6 +152,20 @@ void l_readint(PHASOR_API_ARGS);
  */
 void l_readfloat(PHASOR_API_ARGS);
 
+/*! \brief Reads a double from the specified memory address.
+ *
+ *	\param base_address The base address to use.
+ *	\param [address_offset] The offset relative to base_address.
+ *	\return The word read
+ *	
+ *	Example usage:
+ *  \code
+ *		local b = readdouble(0x12345678, 3) -- read the double at 0x12345678 + 3
+ *		local b = readdouble(0x12345678) -- read the double at 0x12345678
+ *  \endcode
+ */
+void l_readdouble(PHASOR_API_ARGS);
+
 /*! \brief Writes a bit to the specified memory address.
  *
  *	\param base_address The base address to use.
@@ -259,3 +278,17 @@ void l_writeint(PHASOR_API_ARGS);
  *  \endcode
  */
 void l_writefloat(PHASOR_API_ARGS);
+
+/*! \brief Writes a double to the specified memory address.
+ *
+ *	\param base_address The base address to use.
+ *	\param [address_offset] The offset relative to base_address.
+ *	\param data The data to write
+ *	
+ *	Example usage:
+ *  \code
+ *		writedouble(0x12345678, 3, 1.5) -- write 1.5 to 0x12345678 + 3
+ *		writedouble(0x12345678, 1.5) -- write 1.5 to 0x12345678
+ *  \endcode
+ */
+void l_writedouble(PHASOR_API_ARGS);
