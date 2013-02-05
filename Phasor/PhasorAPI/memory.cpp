@@ -120,15 +120,19 @@ struct s_write_info : s_read_info
 		return true;
 	}
 
+	// Process and validate the script's write query.
+	// bound_check indicates whether to check the values range against its
+	// supposed size. 
 	s_write_info(CallHandler& handler, 
-		const Object::unique_deque& args, bool is_write_bit)
+		const Object::unique_deque& args, bool is_write_bit,
+		bool bounds_check=true)
 		: s_read_info(args, is_write_bit, 3)
 	{
 		ObjNumber& num = (ObjNumber&)*args[i++];
 		double value = num.GetValue();
 
 		T data;
-		if (!CheckTypeLimits<T>(value, &data))
+		if (!CheckTypeLimits<T>(value, &data) && bounds_check)
 			handler.RaiseError("attempted to write value outside of type's range.");
 		
 		if (!write_data_raw<T>(address, data)) {
@@ -139,14 +143,6 @@ struct s_write_info : s_read_info
 	}
 };
 
-void l_readbit(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
-{
-	s_read_info r(args, true);
-	BYTE b = read_data<BYTE>(handler, r.address);
-	bool bit = ((b & (1 << r.bit_offset)) >> r.bit_offset) == 1;
-	results.push_back(std::unique_ptr<Object>(new ObjBool(bit)));
-}
-
 template <typename T>
 void read_type(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
@@ -155,71 +151,125 @@ void read_type(CallHandler& handler, Object::unique_deque& args, Object::unique_
 	results.push_back(std::unique_ptr<Object>(new ObjNumber(value)));
 }
 
+void l_readbit(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	s_read_info r(args, true);
+	BYTE b = read_data<BYTE>(handler, r.address);
+	bool bit = ((b & (1 << r.bit_offset)) >> r.bit_offset) == 1;
+	results.push_back(std::unique_ptr<Object>(new ObjBool(bit)));
+}
+
 void l_readbyte(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	read_type<BYTE>(handler, args, results);
 }
+
 void l_readchar(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	read_type<char>(handler, args, results);
 }
+
 void l_readword(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	read_type<WORD>(handler, args, results);
 }
+
 void l_readshort(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	read_type<short>(handler, args, results);
 }
+
 void l_readdword(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	read_type<DWORD>(handler, args, results);
 }
+
 void l_readint(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	read_type<int>(handler, args, results);
 }
+
 void l_readfloat(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	read_type<float>(handler, args, results);
 }
+
 void l_readdouble(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	read_type<double>(handler, args, results);
 }
+
 void l_writebit(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<bool> w(handler, args, true);
 }
+
 void l_writebyte(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<BYTE> w(handler, args, false);
 }
+
 void l_writechar(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<char> w(handler, args, false);
 }
+
 void l_writeword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<WORD> w(handler, args, false);
 }
+
 void l_writeshort(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<short> w(handler, args, false);
 }
+
 void l_writedword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<DWORD> w(handler, args, false);
 }
+
 void l_writeint(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<int> w(handler, args, false);
 }
+
 void l_writefloat(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<float> w(handler, args, false);
 }
+
 void l_writedouble(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	s_write_info<double> w(handler, args, false);
+}
+
+// Old versions need to be provided because prior to 10.00.10.059 there was
+// no bounds checking on writes. 
+namespace deprecated
+{
+	void l_writebit(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+	{
+		s_write_info<bool> w(handler, args, true, false);
+	}
+
+	void l_writebyte(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+	{
+		s_write_info<BYTE> w(handler, args, false false);
+	}
+
+	void l_writeword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+	{
+		s_write_info<WORD> w(handler, args, false false);
+	}
+
+	void l_writedword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+	{
+		s_write_info<DWORD> w(handler, args, false false);
+	}
+
+	void l_writefloat(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+	{
+		s_write_info<float> w(handler, args, false false);
+	}
 }
