@@ -30,11 +30,13 @@ namespace Manager
 {		
 	class Result;			
 	class ScriptState;
+	class CallHandler;
 
 	// nice article about aggregate types http://stackoverflow.com/questions/4178175/what-are-aggregates-and-pods-and-how-why-are-they-special
 	struct ScriptCallback 
 	{
-		void (*func)(Common::Object::unique_deque&,	Common::Object::unique_list&);
+		void (*func)(CallHandler& handler, Common::Object::unique_deque&,
+			Common::Object::unique_list&);
 		const char* name;
 		int minargs;
 		std::array<Common::obj_type, 5> fmt; // change max args as needed

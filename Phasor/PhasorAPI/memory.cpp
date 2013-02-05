@@ -1,6 +1,7 @@
 #include "memory.h"
 
 using namespace Common;
+using namespace Manager;
 
 // Attempt to read data at the specified address
 template <class T> bool read_data(LPBYTE destAddress, T & data)
@@ -32,43 +33,43 @@ template <class T> bool writeData(LPBYTE destAddress, T data)
 	return success;
 }
 
-void l_readbit(Object::unique_deque& args, Object::unique_list& results)
+void l_readbit(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_readbyte(Object::unique_deque& args, Object::unique_list& results)
+void l_readbyte(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_readword(Object::unique_deque& args, Object::unique_list& results)
+void l_readword(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_readdword(Object::unique_deque& args, Object::unique_list& results)
+void l_readdword(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_readfloat(Object::unique_deque& args, Object::unique_list& results)
+void l_readfloat(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_writebit(Object::unique_deque& args, Object::unique_list& results)
+void l_writebit(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_writebyte(Object::unique_deque& args, Object::unique_list& results)
+void l_writebyte(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_writeword(Object::unique_deque& args, Object::unique_list& results)
+void l_writeword(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_writedword(Object::unique_deque& args, Object::unique_list& results)
+void l_writedword(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }
-void l_writefloat(Object::unique_deque& args, Object::unique_list& results)
+void l_writefloat(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 
 }

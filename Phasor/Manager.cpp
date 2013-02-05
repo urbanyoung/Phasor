@@ -27,11 +27,11 @@ namespace Manager
 
 	// Used for invoking c functions from scripts
 	static MObject::unique_list InvokeCFunction(ScriptState& state,
-		MObject::unique_deque& args, const ScriptCallback* cb)
+		CallHandler& handler, MObject::unique_deque& args, const ScriptCallback* cb)
 	{
 		Common::Object::unique_list results;
 		state.PushCall(cb->name, true);
-		cb->func(args, results);
+		cb->func(handler, args, results);
 		state.PopCall();
 		return results;
 	}
@@ -75,7 +75,7 @@ namespace Manager
 			__NO_RET RaiseError(ss.str());
 		}
 
-		return InvokeCFunction(state, args, cb);
+		return InvokeCFunction(state, *this, args, cb);
 	}
 
 	// --------------------------------------------------------------------
