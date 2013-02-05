@@ -1,0 +1,26 @@
+\hypertarget{_d_1_2_development_2_c_09_09_2_phasor_2doxytest_2memory_8h-example}{\section{D\-:/\-Development/\-C++/\-Phasor/doxytest/memory.\-h}
+}
+Reads a bit at the specified memory address. usage\-: readbit(base\-\_\-address, address\-\_\-offet, bit\-\_\-offset) or readbit(address, bit\-\_\-offset)
+
+
+\begin{DoxyParams}{Parameters}
+{\em base\-\_\-address} & The base address to use. \\
+\hline
+{\em address\-\_\-offset} & The offset relative to base\-\_\-address. \\
+\hline
+{\em bit\-\_\-offset} & Which bit to read (starting at 0) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The specified bit (ie 1 or 0)
+\end{DoxyReturn}
+
+\begin{DoxyCode}
+hello() 
+\end{DoxyCode}
+ Note\-: bit\-\_\-offset can be any value and Phasor will resolve the correct byte to use.
+
+
+\begin{DoxyCodeInclude}
+\end{DoxyCodeInclude}
+ 

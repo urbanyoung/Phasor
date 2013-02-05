@@ -1,0 +1,62 @@
+\hypertarget{group___write_functions}{\section{Write\-Functions}
+\label{group___write_functions}\index{Write\-Functions@{Write\-Functions}}
+}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{group___write_functions_gaabc2a9b7c3258b381065d169145bfd64}{l\-\_\-writebyte} (P\-H\-A\-S\-O\-R\-\_\-\-A\-P\-I\-\_\-\-A\-R\-G\-S)
+\begin{DoxyCompactList}\small\item\em Writes memory at the specified memory address. \end{DoxyCompactList}\item 
+void \hyperlink{group___write_functions_ga811a13d588f18577d6d22f45cdb7083f}{l\-\_\-writeword} (P\-H\-A\-S\-O\-R\-\_\-\-A\-P\-I\-\_\-\-A\-R\-G\-S)
+\item 
+void \hyperlink{group___write_functions_ga5fdd5f8acc439abb0964f6946d1e07ba}{l\-\_\-writedword} (P\-H\-A\-S\-O\-R\-\_\-\-A\-P\-I\-\_\-\-A\-R\-G\-S)
+\item 
+void \hyperlink{group___write_functions_ga60b56237f33200a87f0a6283587ed660}{l\-\_\-writefloat} (P\-H\-A\-S\-O\-R\-\_\-\-A\-P\-I\-\_\-\-A\-R\-G\-S)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\subsection{Function Documentation}
+\hypertarget{group___write_functions_gaabc2a9b7c3258b381065d169145bfd64}{\index{Write\-Functions@{Write\-Functions}!l\-\_\-writebyte@{l\-\_\-writebyte}}
+\index{l\-\_\-writebyte@{l\-\_\-writebyte}!WriteFunctions@{Write\-Functions}}
+\subsubsection[{l\-\_\-writebyte}]{\setlength{\rightskip}{0pt plus 5cm}void l\-\_\-writebyte (
+\begin{DoxyParamCaption}
+\item[{P\-H\-A\-S\-O\-R\-\_\-\-A\-P\-I\-\_\-\-A\-R\-G\-S}]{}
+\end{DoxyParamCaption}
+)}}\label{group___write_functions_gaabc2a9b7c3258b381065d169145bfd64}
+
+
+Writes memory at the specified memory address. 
+
+usage\-: writebyte(base\-\_\-address, address\-\_\-offet, data) or writebyte(address, data)
+
+
+\begin{DoxyParams}{Parameters}
+{\em base\-\_\-address} & The base address to use. \\
+\hline
+{\em address\-\_\-offset} & The offset relative to base\-\_\-address. \\
+\hline
+{\em data} & The data to write\\
+\hline
+\end{DoxyParams}
+note\-: writebyte, writeword, writeword and writefloat all have the exact same arguments, the only difference is the types they write. writebyte -\/ Writes a single byte writeword -\/ Writes two bytes writedword -\/ Write four bytes writefloat -\/ Writes four bytes and treats it as a floating point number \hypertarget{group___write_functions_ga5fdd5f8acc439abb0964f6946d1e07ba}{\index{Write\-Functions@{Write\-Functions}!l\-\_\-writedword@{l\-\_\-writedword}}
+\index{l\-\_\-writedword@{l\-\_\-writedword}!WriteFunctions@{Write\-Functions}}
+\subsubsection[{l\-\_\-writedword}]{\setlength{\rightskip}{0pt plus 5cm}void l\-\_\-writedword (
+\begin{DoxyParamCaption}
+\item[{P\-H\-A\-S\-O\-R\-\_\-\-A\-P\-I\-\_\-\-A\-R\-G\-S}]{}
+\end{DoxyParamCaption}
+)}}\label{group___write_functions_ga5fdd5f8acc439abb0964f6946d1e07ba}
+\hypertarget{group___write_functions_ga60b56237f33200a87f0a6283587ed660}{\index{Write\-Functions@{Write\-Functions}!l\-\_\-writefloat@{l\-\_\-writefloat}}
+\index{l\-\_\-writefloat@{l\-\_\-writefloat}!WriteFunctions@{Write\-Functions}}
+\subsubsection[{l\-\_\-writefloat}]{\setlength{\rightskip}{0pt plus 5cm}void l\-\_\-writefloat (
+\begin{DoxyParamCaption}
+\item[{P\-H\-A\-S\-O\-R\-\_\-\-A\-P\-I\-\_\-\-A\-R\-G\-S}]{}
+\end{DoxyParamCaption}
+)}}\label{group___write_functions_ga60b56237f33200a87f0a6283587ed660}
+\hypertarget{group___write_functions_ga811a13d588f18577d6d22f45cdb7083f}{\index{Write\-Functions@{Write\-Functions}!l\-\_\-writeword@{l\-\_\-writeword}}
+\index{l\-\_\-writeword@{l\-\_\-writeword}!WriteFunctions@{Write\-Functions}}
+\subsubsection[{l\-\_\-writeword}]{\setlength{\rightskip}{0pt plus 5cm}void l\-\_\-writeword (
+\begin{DoxyParamCaption}
+\item[{P\-H\-A\-S\-O\-R\-\_\-\-A\-P\-I\-\_\-\-A\-R\-G\-S}]{}
+\end{DoxyParamCaption}
+)}}\label{group___write_functions_ga811a13d588f18577d6d22f45cdb7083f}
