@@ -57,6 +57,8 @@ namespace Lua
 		// Destroys the state
 		static void Close(State* state);
 
+		lua_State* GetState() { return L; }
+
 		// Loads and runs a string
 		void DoString(const char* str);
 
@@ -286,10 +288,10 @@ namespace Lua
 		static int LuaCall(lua_State* L);
 
 		// Formats a message describing an argument error
-		std::string DescribeError(lua_State* L, int narg, int got, int expected);
+		/*std::string DescribeError(lua_State* L, int narg, int got, int expected);
 
 		// Raises the Lua error, function never returns.
-		int RaiseError(lua_State* L, int narg, int got, int expected);
+		int RaiseError(lua_State* L, int narg, int got, int expected);*/
 
 	public:
 		// Creates a new C function

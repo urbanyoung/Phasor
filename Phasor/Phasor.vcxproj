@@ -107,7 +107,8 @@
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
-    <ClCompile Include="PhasorAPI.cpp" />
+    <ClCompile Include="PhasorAPI\memory.cpp" />
+    <ClCompile Include="PhasorAPI\PhasorAPI.cpp" />
     <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />
     <ClCompile Include="Phasor\CrashHandler.cpp" />
@@ -147,7 +148,8 @@
     <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="Lua.h" />
     <ClInclude Include="Manager.h" />
-    <ClInclude Include="PhasorAPI.h" />
+    <ClInclude Include="PhasorAPI\memory.h" />
+    <ClInclude Include="PhasorAPI\PhasorAPI.h" />
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />
     <ClInclude Include="Phasor\CrashHandler.h" />

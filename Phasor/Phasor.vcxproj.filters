@@ -29,9 +29,6 @@
     <ClCompile Include="Manager.cpp">
       <Filter>Scripting\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="PhasorAPI.cpp">
-      <Filter>Scripting\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Libraries\sqlitepp.cpp">
       <Filter>Libraries\SQLite</Filter>
     </ClCompile>
@@ -103,6 +100,12 @@
     </ClCompile>
     <ClCompile Include="Phasor\Halo\HaloStreams.cpp">
       <Filter>Phasor\Halo</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\PhasorAPI.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\memory.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +188,6 @@
     </ClInclude>
     <ClInclude Include="Manager.h">
       <Filter>Scripting\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="PhasorAPI.h">
-      <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
     <ClInclude Include="Libraries\sqlitepp.h">
       <Filter>Libraries\SQLite</Filter>
@@ -278,6 +278,12 @@
     </ClInclude>
     <ClInclude Include="Phasor\Halo\HaloStreams.h">
       <Filter>Phasor\Halo</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\PhasorAPI.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\memory.h">
+      <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

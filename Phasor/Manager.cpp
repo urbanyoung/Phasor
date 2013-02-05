@@ -25,8 +25,8 @@ namespace Manager
 		for (size_t i = 0; i < n; i++) state.RegisterFunction(&funcs[i]);
 	}
 
-	// Scripts should use call this function when invoking a C function
-	MObject::unique_list InvokeCFunction(ScriptState& state,
+	// Used for invoking c functions from scripts
+	static MObject::unique_list InvokeCFunction(ScriptState& state,
 		MObject::unique_deque& args, const ScriptCallback* cb)
 	{
 		Common::Object::unique_list results;
@@ -34,6 +34,48 @@ namespace Manager
 		cb->func(args, results);
 		state.PopCall();
 		return results;
+	}
+
+	// --------------------------------------------------------------------
+	// Class: CallHandler
+	CallHandler::CallHandler(ScriptState& state, const ScriptCallback* cb, int nargs)
+			: state(state), cb(cb), nargs(nargs) 
+	{
+	}
+
+	MObject::unique_list CallHandler::Call()
+	{
+		static const int maxargs_all = cb->fmt.size(); // max any function can receive
+		int maxargs = 0; // max number of arguments this specific function expects
+		int minargs = cb->minargs; // minimum allowed
+
+		// Make sure the received arguments are within the extreme limits
+		if (nargs < minargs) { 
+			std::stringstream ss;
+			ss << "'" << cb->name << "' expects at least " << minargs  
+				<< " argument(s) and received " << nargs;
+			__NO_RET RaiseError(ss.str());
+		} else if (nargs > maxargs_all) {
+			std::stringstream ss;
+			ss << "'" << cb->name << "' expects at most " << maxargs_all  
+				<< " argument(s) and received " << nargs;
+			__NO_RET RaiseError(ss.str());
+		}
+
+		MObject::unique_deque args;	
+		for (int i = 0; i < nargs; i++) {
+			if (cb->fmt[i] == Common::TYPE_NIL) break;
+			maxargs++;
+			args.push_back(GetArgument(cb->fmt[i]));
+		}
+		if (maxargs < nargs) {
+			std::stringstream ss;
+			ss << "'" << cb->name << "' only expects " << maxargs <<
+				" argument(s) and received " << nargs;
+			__NO_RET RaiseError(ss.str());
+		}
+
+		return InvokeCFunction(state, args, cb);
 	}
 
 	// --------------------------------------------------------------------

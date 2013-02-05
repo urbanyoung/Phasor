@@ -2,7 +2,7 @@
 #include "Manager.h"
 #include "Common/Common.h"
 #include "Common/MyString.h"
-#include "PhasorAPI.h"
+#include "PhasorAPI/PhasorAPI.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()

@@ -342,6 +342,71 @@ namespace Lua
 	}
 	
 	// -------------------------------------------------------------------
+	// Used by CFunction for invoking C functions.
+	class LuaCallHandler : public Manager::CallHandler
+	{
+	private:
+		int cur_arg;
+		lua_State* L;
+
+	protected:
+		void __NO_RET RaiseError(const std::string& err) override
+		{
+			return (void)luaL_error(L, err.c_str());
+		}
+
+		// Get the next argument for the function, if it's not of the
+		// expected type an error should be described and raised through 
+		// RaiseError. 
+		std::unique_ptr<MObject> GetArgument(Common::obj_type expected) override
+		{
+			int indx = ++cur_arg;
+
+			std::unique_ptr<MObject> obj;
+			switch (expected)
+			{
+			case Common::TYPE_BOOL:
+				{
+					int b;
+					// phasor_legacy: this "fix" is specific to Phaosr
+					// old versions accepted 0 as boolean false but Lua treats
+					// it as boolean true.
+					if (lua_type(L, indx) == Type_Number && lua_tonumber(L, indx) == 0) 
+						b = 0;
+					else
+						b = lua_toboolean(L, indx);
+					obj.reset(new MObjBool(b != 0));
+				} break;
+			case Common::TYPE_NUMBER:
+				{
+					// if it can't be converted luaL_checknumber raises an error
+					lua_Number n = luaL_checknumber(L, indx);
+					obj.reset(new MObjNumber(n));
+				} break;
+			case Common::TYPE_STRING:
+				{
+					// checkstring converts stack value and raises an error
+					// if no conversion exists
+					luaL_checkstring(L, indx);
+					obj.reset(new MObjString(lua_tostring(L, indx)));
+				} break;
+			case Common::TYPE_TABLE:
+				{
+					RaiseError("Expected table but these aren't implemented yet.");
+				} break;
+			}
+			return obj;
+		}
+	public:
+		LuaCallHandler(State& state, 
+			const Manager::ScriptCallback* cb, int nargs)
+			: CallHandler(state, cb, nargs), cur_arg(0)
+		{
+			State& luaState = (State&)state;
+			L = luaState.GetState();
+		}
+	};
+	// -------------------------------------------------------------------
 	CFunction::CFunction(State* state, const Manager::ScriptCallback* cb)
 		: Object(state), cb(cb)
 	{
@@ -355,7 +420,7 @@ namespace Lua
 	}
 
 	// Formats a message describing an argument error
-	std::string CFunction::DescribeError(lua_State* L, int narg, int got, int expected)
+	/*std::string CFunction::DescribeError(lua_State* L, int narg, int got, int expected)
 	{
 		std::stringstream ss;
 		ss << "bad argument #" << narg << " to '" << this->cb->name << "' ("
@@ -367,7 +432,7 @@ namespace Lua
 	{
 		// this function never returns (throws exc
 		return luaL_error(L, DescribeError(L, narg, got, expected).c_str());
-	}
+	}*/
 
 	// Calls the C function from Lua
 	int CFunction::LuaCall(lua_State* L)
@@ -375,102 +440,18 @@ namespace Lua
 		// Get the CFunction class from upvalue
 		CFunction* function = (CFunction*)lua_touserdata(L, lua_upvalueindex(1));	
 
-		const int maxargs_all = function->cb->fmt.size(); // max any function can receive
-		int maxargs = 0; // max number of arguments this specific function expects
-		int minargs = function->cb->minargs; // minimum allowed
 		int nargs = lua_gettop(L); // number of args received
+		LuaCallHandler call(*function->state, function->cb, nargs);
 
-		// Make sure the received arguments are within the extreme limits
-		if (nargs < minargs) { 
-			std::stringstream ss;
-			ss << "'" << function->cb->name << "' expects at least " << minargs  
-				<< " argument(s) and received " << nargs;
-			return luaL_error(L, ss.str().c_str()); // noret
-		} else if (nargs > maxargs_all) {
-			std::stringstream ss;
-			ss << "'" << function->cb->name << "' expects at most " << maxargs_all  
-				<< " argument(s) and received " << nargs;
-			return luaL_error(L, ss.str().c_str()); // noret
-		}
-
-		MObject::unique_deque args;		
-
-		// Check the arguments are of expected type and add them to args.
-		for (int i = 0; i < nargs; i++)
-		{
-			if (function->cb->fmt[i] == Common::TYPE_NIL)
-				break; // no more args expected.
-
-			int indx = i + 1;
-			maxargs++;
-
-			std::unique_ptr<MObject> obj;
-			switch (function->cb->fmt[i])
-			{
-			case Common::TYPE_BOOL:
-				{
-					int b;
-					// phasor_legacy: this "fix" is specific to Phaosr
-					// old versions accepted 0 as boolean false but Lua treats
-					// it as boolean true.
-					if (lua_type(L, indx) == Type_Number && lua_tonumber(L, indx) == 0) 
-						b = 0;
-					else
-						b = lua_toboolean(L, indx);
-					obj.reset(new MObjBool(b != 0));
-
-					break;
-				}
-			case Common::TYPE_NUMBER:
-				{
-					// if it can't be converted luaL_checknumber raises an error
-					lua_Number n = luaL_checknumber(L, indx);
-					obj.reset(new MObjNumber(n));
-
-					break;
-				}
-			case Common::TYPE_STRING:
-				{
-					// checkstring converts stack value and raises an error
-					// if no conversion exists
-					luaL_checkstring(L, indx);
-					obj.reset(new MObjString(lua_tostring(L, indx)));
-					break;
-				}
-			case Common::TYPE_TABLE:
-				{
-					obj.reset(new MObject());
-				/*	int type = lua_type(L, indx);
-
-					if (type != Type_Table) {
-						return function->RaiseError(L, i + 1, type, Type_Table);
-						// RaiseError never returns
-					}*/
-
-					break;
-				}
-			}
-			args.push_front(std::move(obj));
-			//lua_pop(L, 1);
-		}
-		lua_pop(L, nargs);
-
-		// Too many arguments were received
-		if (maxargs < nargs) {
-			return function->RaiseError(L, maxargs + 1, lua_type(L, maxargs + 1), Type_Nil);
-			// RaiseError never returns
-		}
-		
-		// Call the C function
-		MObject::unique_list results = 
-			Manager::InvokeCFunction(*(function->state), args, function->cb);
+		// build the argument list + call the func
+		MObject::unique_list results = call.Call();
+		lua_pop(L, nargs); // done with args now
 
 		// Push the results on the stack
 		for (auto itr = results.begin(); itr != results.end(); ++itr)
 			function->state->Push(*(*itr));
 
 		int nresults = results.size();
-
 		return nresults;
 	}
 

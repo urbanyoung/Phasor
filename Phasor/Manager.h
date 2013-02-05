@@ -59,10 +59,6 @@ namespace Manager
 	// Register the specified functions with the script
 	void RegisterFunctions(ScriptState& state, const ScriptCallback* funcs, size_t n);
 
-	// Scripts should use call this function when invoking a C function
-	MObject::unique_list InvokeCFunction(ScriptState& state,
-		MObject::unique_deque & args, const ScriptCallback* cb);
-
 	struct ScriptCallstack
 	{
 		std::string func;
@@ -70,6 +66,34 @@ namespace Manager
 
 		ScriptCallstack(const std::string& func, bool scriptInvoked)
 			: func(func), scriptInvoked(scriptInvoked) {}
+	};
+
+#define __NO_RET
+	// Scripts should derive from this and implement the getters.
+	class CallHandler
+	{
+	private:
+		const ScriptCallback* cb;
+		int nargs;		
+
+	protected:
+
+		ScriptState& state;
+
+		// Get the next argument for the function, if it's not of the
+		// expected type an error should be described and raised through 
+		// RaiseError. 
+		virtual std::unique_ptr<MObject> GetArgument(Common::obj_type expected) = 0;
+
+		CallHandler(ScriptState& state, const ScriptCallback* cb, int nargs);
+	public:		
+
+		// Invokes the call to the setup function
+		MObject::unique_list Call();
+
+		// This function should propagate the error to the script's
+		// virtual machine. It should not return. 
+		virtual void __NO_RET RaiseError(const std::string& err) = 0;
 	};
 
 	// --------------------------------------------------------------------
