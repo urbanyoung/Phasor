@@ -76,6 +76,7 @@ namespace halo
 		bool IsAdmin() const;
 		void Message(const wchar_t* fmt, ...) const;
 		void Kick() const;
+		void ConsoleMessage(const std::string& str) const;
 	private: // just for testing get_object
 		objects::s_halo_object* m_object;		
 		void setup(int memory_id);

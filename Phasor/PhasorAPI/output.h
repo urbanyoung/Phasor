@@ -36,7 +36,7 @@
  *		hprintf("This will be printed to the console.")
  * \endcode
  */
-void l_hprintf(PHASOR_API_ARG);
+void l_hprintf(PHASOR_API_ARGS);
 
 /*! \brief Sends a chat message to the entire server.
  *

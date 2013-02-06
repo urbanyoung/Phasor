@@ -3,10 +3,18 @@
 #include <list>
 
 #include "memory.h"
+#include "output.h"
+#include "deprecated.h"
 
 using namespace Common;
 using namespace Manager;
 
+/*! \todo 
+ * Add a way for API functions to check if the deprecated version is being
+ * used via a call to something like PhasorAPI::IsDeprecated().
+ * This is required for functions which require different usage from the 
+ * same parameters, ie l_sendconsoletext.
+ */
 namespace PhasorAPI
 {
 	void testf(CallHandler& handler, 
@@ -44,8 +52,22 @@ namespace PhasorAPI
 		{&l_writedword, "writedword", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writeint, "writeint", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writefloat, "writefloat", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
-		{&l_writedouble, "writedouble", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}}
-		// 
+		{&l_writedouble, "writedouble", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		// Output related functions: see output.h
+		{&l_hprintf, "hprintf", 1, {TYPE_STRING}}
+	};
+
+	// Deprecated functions (just the differences)
+	const ScriptCallback PhasorExportTableDeprecated[] =
+	{
+		// Memory related functions: see memory.h
+		{&deprecated::l_writebit, "writebit", 4, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&deprecated::l_writebyte, "writebyte", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&deprecated::l_writeword, "writeword", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&deprecated::l_writedword, "writedword", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&deprecated::l_writefloat, "writefloat", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		// Output related functions: see output.h
+		{&l_hprintf, "hprintf", 1, {TYPE_STRING, TYPE_NUMBER}}
 	};
 
 	void Register(Manager::ScriptState& state)

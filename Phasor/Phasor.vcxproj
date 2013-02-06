@@ -108,6 +108,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="PhasorAPI\memory.cpp" />
+    <ClCompile Include="PhasorAPI\output.cpp" />
     <ClCompile Include="PhasorAPI\PhasorAPI.cpp" />
     <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />

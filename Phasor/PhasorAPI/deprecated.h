@@ -82,21 +82,4 @@ namespace deprecated
 	 *  \endcode
 	 */
 	void l_writefloat(PHASOR_API_ARGS);
-
-	// Output functions
-	// --------------------------------------------------------------------
-	// 
-	// 
-
-	/*! \brief [cng | dep] Outputs a string to the server console, or optionally
-	 * a player.
-	 * \param str The string to print
-	 * \param [player] The player to send message to, as console text.
-	 * 
-	 * Example usage:
-	 * \code
-	 *		hprintf("Hello player 1", 1)
-	 * \endcode
-	 */
-	void l_hprintf(PHASOR_API_ARG);
 }

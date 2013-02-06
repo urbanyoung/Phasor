@@ -50,6 +50,11 @@ namespace halo
 		server::MessagePlayer(*this, str);
 	}
 
+	void s_player::ConsoleMessage(const std::string& str) const
+	{
+		g_PrintStream << "todo: console message player" << endl << str << endl;
+	}
+
 	void s_player::Kick() const
 	{
 		g_PrintStream << "todo: kick player" << endl;

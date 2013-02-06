@@ -107,6 +107,9 @@
     <ClCompile Include="PhasorAPI\memory.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="PhasorAPI\output.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">

@@ -255,21 +255,21 @@ namespace deprecated
 
 	void l_writebyte(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 	{
-		s_write_info<BYTE> w(handler, args, false false);
+		s_write_info<BYTE> w(handler, args, false, false);
 	}
 
 	void l_writeword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 	{
-		s_write_info<WORD> w(handler, args, false false);
+		s_write_info<WORD> w(handler, args, false, false);
 	}
 
 	void l_writedword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 	{
-		s_write_info<DWORD> w(handler, args, false false);
+		s_write_info<DWORD> w(handler, args, false, false);
 	}
 
 	void l_writefloat(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 	{
-		s_write_info<float> w(handler, args, false false);
+		s_write_info<float> w(handler, args, false, false);
 	}
 }
