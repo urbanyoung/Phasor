@@ -33,7 +33,7 @@ void sendconsoletext(CallHandler& handler, Object& message, Object& playerObj, b
 {
 	std::vector<std::string> msgs = ReadString(message);
 	halo::s_player* player = ReadPlayer(handler, playerObj, strict);
-	if (!strict && !player) return;
+	if (!player) return;
 	for (size_t x = 0; x < msgs.size(); x++)
 		player->ConsoleMessage(msgs[x]);
 }

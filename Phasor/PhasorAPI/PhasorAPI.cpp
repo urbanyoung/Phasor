@@ -68,7 +68,7 @@ namespace PhasorAPI
 	// Keeps track of functions that have been removed. ie those in the deprecated
 	// table but not in the current version's export table. Phasor will assert
 	// if this value is incorrect.
-	static const size_t n_removed_functions = 1;
+	static const size_t n_removed_functions = 0;
 	// Number of entries in the deprecated diff table.
 	static const size_t n_deprecated_diff = sizeof(PhasorExportTableDeprecatedDiff)/sizeof(PhasorExportTableDeprecatedDiff[0]);
 
@@ -109,12 +109,13 @@ namespace PhasorAPI
 		bDeprecatedBuilt = true;
 	}
 
-	void Register(Manager::ScriptState& state, bool deprecated)
+	void Register(Manager::ScriptState& state, bool current_api)
 	{
+		printf("using current api %i\n", current_api);
 		size_t nentries = 0;
 		const Manager::ScriptCallback* funcs;
 
-		if (!deprecated) {
+		if (current_api) {
 			nentries = export_table_size;
 			funcs = PhasorExportTable;
 		} else {

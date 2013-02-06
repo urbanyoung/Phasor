@@ -8,5 +8,5 @@
 
 namespace PhasorAPI
 {
-	void Register(Manager::ScriptState& state, bool deprecated);
+	void Register(Manager::ScriptState& state, bool current_api);
 }
