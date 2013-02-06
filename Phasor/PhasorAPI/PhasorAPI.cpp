@@ -9,12 +9,6 @@
 using namespace Common;
 using namespace Manager;
 
-/*! \todo 
- * Add a way for API functions to check if the deprecated version is being
- * used via a call to something like PhasorAPI::IsDeprecated().
- * This is required for functions which require different usage from the 
- * same parameters, ie l_sendconsoletext.
- */
 namespace PhasorAPI
 {
 	void testf(CallHandler& handler, 

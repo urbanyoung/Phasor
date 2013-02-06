@@ -46,3 +46,8 @@ void l_hprintf(CallHandler& handler, Object::unique_deque& args, Object::unique_
 	for (size_t x = 0; x < msgs.size(); x++)
 		g_PrintStream << msgs[x] << endl;
 }
+
+void l_sendconsoletext(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+{
+	return sendconsoletext(handler, *args[1], *args[0], true);
+}
