@@ -111,6 +111,9 @@ namespace PhasorAPI
 
 	void Register(Manager::ScriptState& state, bool current_api)
 	{
+		// want it created right away so i can check the asserts
+		if (!bDeprecatedBuilt) BuildDeprecatedTable();
+
 		printf("using current api %i\n", current_api);
 		size_t nentries = 0;
 		const Manager::ScriptCallback* funcs;
@@ -119,7 +122,6 @@ namespace PhasorAPI
 			nentries = export_table_size;
 			funcs = PhasorExportTable;
 		} else {
-			if (!bDeprecatedBuilt) BuildDeprecatedTable();
 			nentries = n_deprecated_size;
 			funcs = PhasorExportTableDeprecated;
 		}
