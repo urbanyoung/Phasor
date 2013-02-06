@@ -21,7 +21,7 @@ halo::s_player* ReadPlayer(CallHandler& handler, Object& playerObj, bool strict)
 	ObjNumber& num = (ObjNumber&)playerObj;
 	int player_id = (int)num.GetValue();
 	halo::s_player* player = halo::game::GetPlayer(player_id);
-	if (!player) {
+	if (!player && strict) {
 		std::string err = m_sprintf("valid player required : player %i doesn't exist.",
 			player_id);
 		handler.RaiseError(err);

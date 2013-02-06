@@ -8,6 +8,10 @@
 #include <windows.h> // for GetCurrentProcessId()
 #include <array>
 
+/*! \todo
+ * Add type checking to return values from scripts.
+ */
+
 namespace Scripting
 {
 	using namespace Common;
@@ -59,7 +63,7 @@ namespace Scripting
 			phasor_state->SetInfo(file, script);
 
 			CheckScriptCompatibility(*phasor_state->state, script);
-			PhasorAPI::Register(*phasor_state->state);
+			PhasorAPI::Register(*phasor_state->state,true);
 
 			// Notify the script that it's been loaded.
 			bool fexists = false;
