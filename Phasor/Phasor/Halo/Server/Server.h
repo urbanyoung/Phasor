@@ -95,7 +95,7 @@ namespace server
 	// Send a chat message to the player
 	void MessagePlayer(const s_player& player, const std::wstring& str);
 	// Send a console message to the player
-	void ConsoleMessagePlayer(const s_player& player, const std::wstring& str);
+	bool ConsoleMessagePlayer(const s_player& player, const std::wstring& str);
 	// Gets the player's ip
 	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port);
 	// Gets the player's hash

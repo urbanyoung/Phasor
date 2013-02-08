@@ -7,6 +7,7 @@
 #include "../Game/Game.h"
 #include "../../Globals.h"
 #include "../../Admin.h"
+#include "Packet.h"
 
 namespace halo { namespace server
 {
@@ -216,16 +217,53 @@ namespace halo { namespace server
 
 	/*! \todo
 	 * Chat messaging players.
+	 * 
 	 * Console messaging players.
 	 */
 	void MessagePlayer(const s_player& player, const std::wstring& str)
 	{
+		if (str.size() > 150) return;
 		g_PrintStream << "todo: make this message the player via chat - " << str << endl;
 	}
 
-	void ConsoleMessagePlayer(const s_player& player, const std::wstring& str)
+	bool ConsoleMessagePlayer(const s_player& player, const std::wstring& str)
 	{
-		g_PrintStream << "todo: make this console message player - " << str << endl;
+		bool bSent = true;
+		if (str.size() < 0x50)
+		{
+
+#pragma pack(push, 1)
+			struct s_console_msg
+			{
+				char* msg_ptr;
+				DWORD unk; // always 0
+				char msg[0x50];
+
+				s_console_msg(const char* text)
+				{
+					memset(msg, 0, 0x50);
+					strcpy_s(msg, 0x50, text);
+					unk = 0;
+					msg_ptr = msg;
+				}
+			};
+#pragma pack(pop)
+
+			std::string str_narrow = NarrowString(str);
+			s_console_msg d(str_narrow.c_str());
+			static BYTE buffer[8192]; 
+
+#ifdef PHASOR_PC
+			DWORD size = server::BuildPacket(buffer, 0, 0x37, 0, (LPBYTE)&d, 0,1,0);
+#elif  PHASOR_CE 
+			DWORD size = server::BuildPacket(buffer, 0, 0x38, 0, (LPBYTE)&d, 0,1,0);
+#endif
+			AddPacketToPlayerQueue(player.mem->playerNum, buffer, size, 1,1,0,1,3);
+		}
+		else
+			bSent = false; // too long
+
+		return bSent;
 	}
 
 	halo::s_player* GetPlayerExecutingCommand()

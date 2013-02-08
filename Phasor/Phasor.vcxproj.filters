@@ -110,6 +110,9 @@
     <ClCompile Include="PhasorAPI\output.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Packet.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -293,6 +296,9 @@
     </ClInclude>
     <ClInclude Include="PhasorAPI\deprecated.h">
       <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Packet.h">
+      <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
