@@ -23,11 +23,9 @@ std::vector<std::wstring> ReadString(Object& obj)
 
 		while (brace_pos != itr->npos && end_brace_pos != itr->npos) {
 			size_t diff = end_brace_pos - brace_pos;
-			if (diff <= 3) { // ids can only be at most 2 digits				
+			if (diff == 2 || diff == 3) { // ids can only be at most 2 digits				
 				std::string str = NarrowString(itr->substr(brace_pos + 1, diff - 1));
 				int id;
-				/*! \todo
-				 * make sure this prints screwed names correctly */
 				if (StringToNumber<int>(str, id)) {
 					halo::s_player* player = halo::game::GetPlayer(id);
 					if (player) {
@@ -115,6 +113,44 @@ void l_respond(CallHandler& handler, Object::unique_deque& args, Object::unique_
 	halo::s_player* player = halo::server::GetPlayerExecutingCommand();
 	COutStream& stream = (player == NULL) ? (COutStream&)g_PrintStream : (COutStream&)*player->console_stream;
 	WriteMessageToStream(stream, *args[0]);
+}
+
+void l_log_msg(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+{
+	ObjNumber& num = (ObjNumber&)*args[0];
+	DWORD log_id = (DWORD)num.GetValue();
+	COutStream* stream;
+	switch (log_id)
+	{
+	case 1: // game log
+		{
+			// can't treat the gaming log as a normal stream
+			std::vector<std::wstring> msgs = ReadString(*args[1]);
+			for (size_t x = 0; x < msgs.size(); x++)
+				g_GameLog->WriteLog(kScriptEvent, L"%s", msgs[x].c_str());
+			return;
+		} break;
+	case 2: //phasor log
+		{
+			stream = g_PhasorLog.get();
+		} break;
+	case 3: // rcon log
+		{
+			stream = g_RconLog.get();
+		} break;
+	case 4: // script log
+		{
+			stream = g_ScriptsLog.get();
+		} break;
+	default:
+		{
+			std::stringstream ss;
+			ss << "log_msg : '" << log_id << "' is not a valid id.";
+			handler.RaiseError(ss.str());
+
+		} break;
+	}
+	WriteMessageToStream(*stream, *args[1]);
 }
 
 namespace deprecated

@@ -2,16 +2,22 @@
 
 #include "ThreadedLogging.h"
 
+// These are encoded as 8 bit numbers
+// xxxx xxxx
+// type event
+// Where type is Game, Player etc and event is the specific event (join, leave etc)
+
 enum glog_type
 {
-	kGameEnd = 1 << 6,
+	kGameEnd = 1 << 4,
 	kGameStart,
-	kPlayerJoin = (1 << 7) + 2,
+	kPlayerJoin = (1 << 5) + 2,
 	kPlayerLeave,
 	kPlayerChange,
 	kPlayerDeath,
-	kServerCommand = (1 << 8) + 6,
-	kServerClose
+	kServerCommand = (1 << 6) + 6,
+	kServerClose,
+	kScriptEvent = (1 << 7) + 8
 };
 
 class CGameLog

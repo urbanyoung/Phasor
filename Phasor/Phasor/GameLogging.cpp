@@ -9,7 +9,8 @@ static const wchar_t* type_names[] =
 {
 	L"   GAME     ",
 	L"   PLAYER   ",
-	L"   SERVER   "
+	L"   SERVER   ",
+	L"   SCRIPT   "
 };
 
 static const wchar_t* event_names[] = 
@@ -21,7 +22,8 @@ static const wchar_t* event_names[] =
 	L"CHANGE       ",
 	L"DEATH        ",
 	L"COMMAND      ",
-	L"CLOSE        "
+	L"CLOSE        ",
+	L"             "
 };
 
 CGameLog::CGameLog(const std::wstring& dir, const std::wstring& file,
@@ -46,11 +48,13 @@ void CGameLog::WriteLog(glog_type type, wchar_t* format, ...)
 	std::wstring str = FormatVarArgsW(format, ArgList);
 	va_end(ArgList);
 
-	DWORD type_name_index = ((type & kPlayerJoin) >> 7) + 
-		((type & kServerCommand) >> 7);
+	DWORD type_name_index = 0*((type & kGameEnd) >> 4) + 
+							1*((type & kPlayerJoin) >> 5) +
+							2*((type & kServerCommand) >> 6) + 
+							3*((type & kScriptEvent) >> 7);
 
 	const wchar_t* type_name = type_names[type_name_index];
-	const wchar_t* event_name = event_names[type & 0x3F];
+	const wchar_t* event_name = event_names[type & 0x0F];
 
 	*logstream << type_name << event_name << str << endl;
 }

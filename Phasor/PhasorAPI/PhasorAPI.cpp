@@ -53,7 +53,7 @@ namespace PhasorAPI
 		{&l_privatesay, "privatesay", 2, {TYPE_NUMBER, TYPE_STRING}},
 		{&l_sendconsoletext, "sendconsoletext", 2, {TYPE_NUMBER, TYPE_STRING}},
 		{&l_respond, "respond", 1, {TYPE_STRING}},
-		//{&l_log_msg, "log_msg", 2, {TYPE_NUMBER, TYPE_STRING}}
+		{&l_log_msg, "log_msg", 2, {TYPE_NUMBER, TYPE_STRING}}
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 
