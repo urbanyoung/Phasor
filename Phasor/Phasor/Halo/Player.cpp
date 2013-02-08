@@ -15,7 +15,8 @@ namespace halo
 		g_PrintStream << "New player " << memory_id << endl;
 		mem = GetPlayerMemory(memory_id);
 		afk.reset(new afk_detection::CAFKDetection(*this, g_Timers));
-		stream.reset(new CPlayerStream(*this));	
+		console_stream.reset(new PlayerConsoleStream(*this));	
+		chat_stream.reset(new PlayerChatStream(*this));
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
 		m_object = 0;
@@ -38,21 +39,6 @@ namespace halo
 	bool s_player::IsAdmin() const
 	{
 		return Admin::IsAdmin(hash);
-	}
-
-	void s_player::Message(const wchar_t* fmt, ...) const
-	{
-		va_list ArgList;
-		va_start(ArgList, fmt);
-		std::wstring str = FormatVarArgsW(fmt, ArgList);
-		va_end(ArgList);
-
-		server::MessagePlayer(*this, str);
-	}
-
-	void s_player::ConsoleMessage(const std::wstring& str) const
-	{
-		g_PrintStream << "todo: console message player" << endl << str << endl;
 	}
 
 	void s_player::Kick() const

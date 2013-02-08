@@ -22,122 +22,63 @@ namespace halo {
 		}
 	};
 
-	// Writes to a specific player
-	class CPlayerStream : public COutStream
+	class CPlayerBaseStream : public COutStream
 	{
 	private:
+		// Memory id of player at last known point.
+		// -1 unless stream has been cloned.
 		int memory_id;
+		// Hash of player at last known point
 		std::string hash;
-		
-		// used when cloning. forces checks to be made before each Write.
-		CPlayerStream(const s_player& player, bool);
-
-	protected:	
+	protected:
 		const s_player& player;
+
+		CPlayerBaseStream(const s_player& player, bool do_check);
+		CPlayerBaseStream(const s_player& player);
+
+		// Checks if the player is still valid
+		bool ValidatePlayer();
+
+	public:
+		const s_player& GetPlayer() { return player; }
+	};
+
+	// Writes console text to a specific player
+	class PlayerConsoleStream : public CPlayerBaseStream
+	{
+	private:	
+		// used when cloning. forces checks to be made before each Write.
+		PlayerConsoleStream(const s_player& player, bool);
+
+	protected:		
 		virtual bool Write(const std::wstring& str) override;
 
 	public:
-		CPlayerStream(const s_player& player)
-			: player(player), memory_id(-1) {}
-		virtual ~CPlayerStream() {}
+		PlayerConsoleStream(const s_player& player);
 
 		virtual std::unique_ptr<COutStream> clone() override
 		{
-			return std::unique_ptr<COutStream>(new CPlayerStream(player,true));
+			return std::unique_ptr<COutStream>(new PlayerConsoleStream(player,true));
 		}
-
-		const s_player& GetPlayer() { return player; }
 	};	
 
-	// Creates a temporary forwarding chain
-	// No streams are copied and as such this class cannot be copied/cloned
-	// and all streams should remain valid for its duration.
-	class TempForwarder : public COutStream
+	class PlayerChatStream : public CPlayerBaseStream
 	{
-	public:
-		typedef std::unique_ptr<TempForwarder> next_ptr;
-	private:
-		COutStream& stream;
-		next_ptr next;
+	private:	
+		// used when cloning. forces checks to be made before each Write.
+		PlayerChatStream(const s_player& player, bool);
 
-	protected:
-		bool Write(const std::wstring& str) override
-		{
-			bool b = true;
-			if (next) b = next->Write(str);		
-			return b && stream.Write(str);
-		}
-		// This stream is temporary and shouldn't be copied/cloned.
-		std::unique_ptr<COutStream> clone() override
-		{
-			assert(0);
-			return std::unique_ptr<COutStream>();
-		}
+	protected:		
+		virtual bool Write(const std::wstring& str) override;
 
 	public:
-		TempForwarder(COutStream& stream, next_ptr& next)
-			: stream(stream), next(std::move(next))	{}		
+		PlayerChatStream(const s_player& player);
 
-		static next_ptr end_point(COutStream& stream)
+		virtual std::unique_ptr<COutStream> clone() override
 		{
-			return next_ptr(new TempForwarder(stream, next_ptr()));
-		}
-
-		static next_ptr mid_point(COutStream& stream, next_ptr& next)
-		{
-			return next_ptr(new TempForwarder(stream, std::move(next)));
+			return std::unique_ptr<COutStream>(new PlayerChatStream(player,true));
 		}
 	};
 
-	// Used to create a forwarding chain for COutStreams.
-	// All streams passed in are cloned and managed by this class.
-	class Forwarder : public COutStream
-	{
-	protected:
-		bool Write(const std::wstring& str) override
-		{
-			bool b = true;
-			if (next) b = next->Write(str);		
-			return b && stream->Write(str);
-		}
-
-	public:
-		typedef std::unique_ptr<Forwarder> next_ptr;
-		typedef std::unique_ptr<COutStream> stream_ptr;
-
-		explicit Forwarder(COutStream& stream, next_ptr& next)
-			: stream(stream.clone()), next(std::move(next))
-		{
-		}
-
-		std::unique_ptr<COutStream> clone() override
-		{
-			std::unique_ptr<COutStream> forwarder(new Forwarder);
-			Forwarder* this_next = this, *that_next = (Forwarder*)forwarder.get();
-			while (this_next) {
-				that_next->next = next_ptr((Forwarder*)this_next->next->clone().release());
-				that_next->stream = this_next->stream->clone();
-				this_next = this->next->next.get();
-				that_next = that_next->next.get();
-			}
-			return forwarder;
-		}
-
-		static next_ptr end_point(COutStream& stream)
-		{
-			return next_ptr(new Forwarder(stream, next_ptr()));
-		}
-
-		static next_ptr mid_point(COutStream& stream, next_ptr& next)
-		{
-			return next_ptr(new Forwarder(stream, std::move(next)));
-		}
-
-	private:
-		next_ptr next;
-		stream_ptr stream;
-
-		Forwarder() {}
-	};
 }
 

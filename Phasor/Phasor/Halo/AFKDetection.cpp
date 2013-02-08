@@ -81,7 +81,7 @@ namespace halo { namespace afk_detection
 				server::MessageAllPlayers(L"%s", msg.c_str());
 				g_PrintStream << msg << endl;
 			} else {
-				player.Message(L"You don't appear to be playing. You will be kicked in %i minute(s), if you remain inactive.", 
+				player.chat_stream->wprint(L"You don't appear to be playing. You will be kicked in %i minute(s), if you remain inactive.", 
 					max_duration - afk_duration);
 			}
 		} else afk_duration = 0;

@@ -1,5 +1,6 @@
 #include "output.h"
 #include "../Phasor/Halo/Game/Game.h"
+#include "../Phasor/Halo/Server/Server.h"
 #include "../Common/MyString.h"
 #include "../Phasor/Globals.h"
 #include <vector>
@@ -8,6 +9,8 @@
 using namespace Common;
 using namespace Manager;
 
+// Reads the message argument and parses it, replacing {x} with player x's 
+// name and splitting the message into a new one at each \n
 std::vector<std::wstring> ReadString(Object& obj)
 {
 	ObjString& str = (ObjString&)obj;
@@ -55,25 +58,80 @@ halo::s_player* ReadPlayer(CallHandler& handler, Object& playerObj, bool strict)
 	return player;
 }
 
-void sendconsoletext(CallHandler& handler, Object& message, Object& playerObj, bool strict=true)
+void WriteMessageToStream(COutStream& stream, Object& message)
 {
 	std::vector<std::wstring> msgs = ReadString(message);
-	halo::s_player* player = ReadPlayer(handler, playerObj, strict);
-	if (!player) return;
 	for (size_t x = 0; x < msgs.size(); x++)
-		player->ConsoleMessage(msgs[x]);
+		stream << msgs[x] << endl;
 }
 
+// Sends console text to the specified player. 
+// strict indicates whether or not an error should be raised if the
+// player cannot be found.
+void sendconsoletext(CallHandler& handler, Object& message, Object& playerObj, bool strict=true)
+{
+	halo::s_player* player = ReadPlayer(handler, playerObj, strict);
+	if (!player) return;
+	WriteMessageToStream(*player->console_stream, message);
+}
+
+// Print to console
 void l_hprintf(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	// backwards compatibility with old Phasor.
 	if (args.size() == 2) return sendconsoletext(handler, *args[0], *args[1], false);
-	std::vector<std::wstring> msgs = ReadString(*args[0]);
-	for (size_t x = 0; x < msgs.size(); x++)
-		g_PrintStream << msgs[x] << endl;
+	WriteMessageToStream(g_PrintStream, *args[0]);
 }
 
+// Send console text to the specified player (strict)
 void l_sendconsoletext(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	return sendconsoletext(handler, *args[1], *args[0], true);
+}
+
+// Send message to the specified player
+void privatesay(halo::s_player& player, Object& msgObj)
+{
+	WriteMessageToStream(*player.chat_stream, msgObj);
+}
+
+// Send message to specified player, raising an error if player not found.
+void l_privatesay(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+{
+	//player never null because strict = true
+	halo::s_player* player = ReadPlayer(handler, *args[0], true); 
+	privatesay(*player, *args[1]);
+}
+
+// Send message to entire server
+void l_say(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+{
+	std::vector<std::wstring> msgs = ReadString(*args[0]);
+	for (size_t x = 0; x < msgs.size(); x++)
+		halo::server::MessageAllPlayers(L"%s", msgs[x].c_str());
+}
+
+// Respond to person executing the server command or hprintf if no player.
+void l_respond(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+{
+	/*! \todo
+	 * change to print as console text, but first create a console text
+	 * output stream for player. check all current uses of s_player::stream
+	 * to see what i'm using it as. I should create two distinct player streams
+	 * chat stream and console stream.
+	 * */
+	halo::s_player* player = halo::server::GetPlayerExecutingCommand();
+	COutStream& stream = (player == NULL) ? (COutStream&)g_PrintStream : (COutStream&)*player->console_stream;
+	WriteMessageToStream(stream, *args[0]);
+}
+
+namespace deprecated
+{
+	// Don't raise an error if player not found.
+	void l_privatesay(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
+	{
+		halo::s_player* player = ReadPlayer(handler, *args[0], false); 
+		if (!player) return;
+		privatesay(*player, *args[1]);
+	}
 }

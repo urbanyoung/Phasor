@@ -62,9 +62,16 @@ namespace halo
 		return true;
 	}
 
-	// -------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	//
-	bool CPlayerStream::Write(const std::wstring& str)
+	CPlayerBaseStream::CPlayerBaseStream(const s_player& player, bool do_check) 
+		: player(player), memory_id(player.memory_id), hash(player.hash)
+	{}
+	CPlayerBaseStream::CPlayerBaseStream(const s_player& player)
+		: player(player), memory_id(-1)
+	{}
+
+	bool CPlayerBaseStream::ValidatePlayer()
 	{
 		if (memory_id != -1) {
 			// If the stream gets cloned it creates a checked stream.
@@ -74,18 +81,52 @@ namespace halo
 			// slot so we only need to check if its non-null
 			s_player* player = game::GetPlayer(memory_id);
 			if (player != &this->player || player->hash != hash) 
-				return true; // player is now invalid. ignore.
+				return false; // player is now invalid. ignore.
 		}
-		server::MessagePlayer(player, str);
 		return true;
 	}
 
-	// --------------------------------------------------------------------
+	// -------------------------------------------------------------------
 	//
-	// 
-	CPlayerStream::CPlayerStream(const s_player& player, bool)
-		: player(player), memory_id(player.memory_id), hash(player.hash)
-	{}
+
+	PlayerConsoleStream::PlayerConsoleStream(const s_player& player)
+		: CPlayerBaseStream(player) 
+	{
+	}
+
+	//use checking
+	PlayerConsoleStream::PlayerConsoleStream(const s_player& player, bool)
+		: CPlayerBaseStream(player, true)
+	{
+	}
+
+	bool PlayerConsoleStream::Write(const std::wstring& str)
+	{
+		if (!ValidatePlayer()) return true; // invalid now
+		server::ConsoleMessagePlayer(player, str);
+		return true;
+	}
+
+	// -------------------------------------------------------------------
+	//
+	PlayerChatStream::PlayerChatStream(const s_player& player)
+		: CPlayerBaseStream(player) 
+	{
+	}
+
+	//use checking
+	PlayerChatStream::PlayerChatStream(const s_player& player, bool)
+		: CPlayerBaseStream(player, true)
+	{
+	}
+
+	bool PlayerChatStream::Write(const std::wstring& str)
+	{
+		if (!ValidatePlayer()) return true; // invalid now
+		std::wstring msg = L"** SERVER ** " + str;
+		server::MessagePlayer(player, msg);
+		return true;
+	}
 
 
 }

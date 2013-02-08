@@ -32,7 +32,10 @@ std::unique_ptr<CGameLog> g_GameLog;
 std::unique_ptr<CRconLog> g_RconLog;
 std::unique_ptr<Scripting::Scripts> g_Scripts;
 // todo: remove before release
-std::unique_ptr<halo::Forwarder> scriptOutput;
+/*! \todo
+ * before release change back to file output only
+ */
+std::unique_ptr<Forwarder> scriptOutput;
 
 // Locate and create all directories Phasor will use. If an error occurs
 // this function never returns and the process is terminated.
@@ -86,7 +89,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_OldLogsDirectory, g_Thread));
 		
 		// todo: remove before release
-		scriptOutput.reset(new halo::Forwarder(g_PrintStream, halo::Forwarder::end_point(*g_ScriptsLog)));
+		scriptOutput.reset(new Forwarder(g_PrintStream, Forwarder::end_point(*g_ScriptsLog)));
 		g_Scripts.reset(new Scripting::Scripts(*scriptOutput,g_ScriptsDirectory));
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;

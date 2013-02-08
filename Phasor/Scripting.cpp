@@ -8,10 +8,6 @@
 #include <windows.h> // for GetCurrentProcessId()
 #include <array>
 
-/*! \todo
- * Add type checking to return values from scripts.
- */
-
 namespace Scripting
 {
 	using namespace Common;
@@ -230,10 +226,7 @@ namespace Scripting
 			} 
 			catch (std::exception & e)
 			{
-				// script errored, process it (for now just rethrow)
-				// todo: add handling
 				s.HandleError(phasor_state, e.what());
-				//throw;
 			}
 		}
 

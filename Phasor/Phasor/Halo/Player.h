@@ -57,8 +57,6 @@ namespace halo
 	};
 	#pragma pack(pop)
 
-	class CPlayerStream;
-
 	struct s_player : private noncopyable
 	{
 		std::string hash, ip;
@@ -66,7 +64,8 @@ namespace halo
 		int memory_id;
 		s_player_structure* mem;
 		std::unique_ptr<afk_detection::CAFKDetection> afk;
-		std::unique_ptr<CPlayerStream> stream;
+		std::unique_ptr<PlayerConsoleStream> console_stream;
+		std::unique_ptr<PlayerChatStream> chat_stream;
 
 		// ----------------------------------------------------------------
 		explicit s_player(int memory_id);
@@ -74,9 +73,7 @@ namespace halo
 
 		objects::s_halo_object* get_object();
 		bool IsAdmin() const;
-		void Message(const wchar_t* fmt, ...) const;
 		void Kick() const;
-		void ConsoleMessage(const std::wstring& str) const;
 	private: // just for testing get_object
 		objects::s_halo_object* m_object;		
 		void setup(int memory_id);

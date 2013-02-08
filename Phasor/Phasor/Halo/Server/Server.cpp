@@ -162,12 +162,12 @@ namespace halo { namespace server
 				} break;
 			}
 
-			if (!can_execute) *(exec_player->stream) << L" ** Access denied **" << endl;
+			if (!can_execute) *(exec_player->console_stream) << L" ** Access denied **" << endl;
 		}
 
 		COutStream& outStream = (exec_player == NULL) ? 
 								(COutStream&)g_PrintStream : 
-								(COutStream&)*exec_player->stream;
+								(COutStream&)*exec_player->console_stream;
 								
 		/*Forwarder f(g_PrintStream,  
 			Forwarder::mid_point(g_PrintStream,
@@ -215,9 +215,18 @@ namespace halo { namespace server
 		}
 	}
 
+	/*! \todo
+	 * Chat messaging players.
+	 * Console messaging players.
+	 */
 	void MessagePlayer(const s_player& player, const std::wstring& str)
 	{
-		g_PrintStream << "todo: make this message the player - " << str << endl;
+		g_PrintStream << "todo: make this message the player via chat - " << str << endl;
+	}
+
+	void ConsoleMessagePlayer(const s_player& player, const std::wstring& str)
+	{
+		g_PrintStream << "todo: make this console message player - " << str << endl;
 	}
 
 	void MessageAllPlayers(const wchar_t* fmt, ...)
@@ -231,6 +240,12 @@ namespace halo { namespace server
 			s_player* player = game::GetPlayer(i);
 			if (player) MessagePlayer(*player, str);
 		}		
+	}
+
+	halo::s_player* GetPlayerExecutingCommand()
+	{
+		DWORD execPlayerNumber = *(DWORD*)UlongToPtr(ADDR_RCONPLAYER);
+		return game::GetPlayerFromRconId(execPlayerNumber);
 	}
 
 	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port)
