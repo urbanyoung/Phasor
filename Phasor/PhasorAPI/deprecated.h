@@ -14,6 +14,10 @@
 
 namespace deprecated
 {
+	/*! \todo
+	 * explain why functions have been deprecated. ie what changed
+	 */
+
 	// Memory functions
 	// --------------------------------------------------------------------
 	// 
@@ -82,4 +86,18 @@ namespace deprecated
 	 *  \endcode
 	 */
 	void l_writefloat(PHASOR_API_ARGS);
+
+	// -------------------------------------------------------------------
+	// Output commands
+	/*! \brief [cng] Sends a chat message to the specified player.
+	 *
+	 * \param player_id The memory id of the player to message.
+	 * \param str The message to send.
+	 * 
+	 * Example usage:
+	 * \code
+	 *		privatesay(1, "Hello") -- message player with id 1
+	 *	\endcode
+	 */
+	void l_privatesay(PHASOR_API_ARGS);
 }

@@ -113,6 +113,9 @@
     <ClCompile Include="Phasor\Halo\Server\Packet.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Chat.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -298,6 +301,9 @@
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\Packet.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Chat.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>

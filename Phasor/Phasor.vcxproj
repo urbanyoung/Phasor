@@ -124,6 +124,7 @@
     <ClCompile Include="Phasor\Halo\HaloStreams.cpp" />
     <ClCompile Include="Phasor\Halo\Hooks.cpp" />
     <ClCompile Include="Phasor\Halo\Player.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\Chat.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Gametypes.cpp" />
     <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Packet.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Phasor\Halo\HaloStreams.h" />
     <ClInclude Include="Phasor\Halo\Hooks.h" />
     <ClInclude Include="Phasor\Halo\Player.h" />
+    <ClInclude Include="Phasor\Halo\Server\Chat.h" />
     <ClInclude Include="Phasor\Halo\Server\Gametypes.h" />
     <ClInclude Include="Phasor\Halo\Server\MapLoader.h" />
     <ClInclude Include="Phasor\Halo\Server\MapVote.h" />

@@ -49,7 +49,11 @@ namespace PhasorAPI
 		{&l_writedouble, "writedouble", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		// Output related functions: see output.h
 		{&l_hprintf, "hprintf", 1, {TYPE_STRING}},
-		{&l_sendconsoletext, "sendconsoletext", 2, {TYPE_NUMBER, TYPE_STRING}}
+		{&l_say, "say", 1, {TYPE_STRING}},
+		{&l_privatesay, "privatesay", 2, {TYPE_NUMBER, TYPE_STRING}},
+		{&l_sendconsoletext, "sendconsoletext", 2, {TYPE_NUMBER, TYPE_STRING}},
+		{&l_respond, "respond", 1, {TYPE_STRING}},
+		//{&l_log_msg, "log_msg", 2, {TYPE_NUMBER, TYPE_STRING}}
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 
@@ -64,6 +68,7 @@ namespace PhasorAPI
 		{&deprecated::l_writefloat, "writefloat", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		// Output related functions: see output.h
 		{&l_hprintf, "hprintf", 1, {TYPE_STRING, TYPE_NUMBER}},
+		{&deprecated::l_privatesay, "privatesay", 2, {TYPE_NUMBER, TYPE_STRING}}
 	};
 	// Keeps track of functions that have been removed. ie those in the deprecated
 	// table but not in the current version's export table. Phasor will assert
