@@ -77,8 +77,8 @@ namespace halo { namespace afk_detection
 			if (afk_duration >= max_duration) {
 				player.Kick();
 				TempForwarder f(server::say_stream, TempForwarder::end_point(g_PrintStream));
-				f.wprint(L"%s has been kicked due to inactivity.",
-					player.mem->playerName);
+				f << player.mem->playerName << " has been kicked due to inactivity." << endl;
+
 			} else {
 				player.chat_stream->wprint(L"You don't appear to be playing. You will be kicked in %i minute(s), if you remain inactive.", 
 					max_duration - afk_duration);

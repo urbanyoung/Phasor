@@ -6,6 +6,10 @@
 
 std::string NarrowString(const std::wstring& wide);
 std::wstring WidenString(const std::string& narrow);
+// Remove all trailing \n characters from the input string.
+std::wstring StripTrailingEndl(const std::wstring& str);
+std::string StripTrailingEndl(const std::string& str);
+
 void ToLowercase(std::string& str);
 void ToLowercase(std::wstring& str);
 void CStrToLower(char* str);

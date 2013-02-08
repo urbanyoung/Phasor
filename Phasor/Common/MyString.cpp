@@ -18,6 +18,25 @@ std::wstring WidenString(const std::string& str)
 	return ss.str();
 }
 
+template <class T, class Tc> T StripTrailingEndl(const T& str, Tc endlchar)
+{
+	T out;
+	size_t count = 0, last = str.size()-1;
+	while (str.at(last--) == endlchar) count++;
+	if (count == 0) out = str;
+	else out = str.substr(out.size()-count);
+	return out;
+}
+
+std::wstring StripTrailingEndl(const std::wstring& str)
+{
+	return StripTrailingEndl<std::wstring>(str, L'\n');
+}
+std::string StripTrailingEndl(const std::string& str)
+{
+	return StripTrailingEndl<std::string, char>(str, '\n');
+}
+
 void ToLowercase(std::string& str)
 {
 	std::transform(str.begin(), str.end(),str.begin(), tolower);

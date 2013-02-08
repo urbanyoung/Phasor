@@ -170,17 +170,14 @@ namespace halo { namespace server
 		COutStream& outStream = (exec_player == NULL) ? 
 								(COutStream&)g_PrintStream : 
 								(COutStream&)*exec_player->console_stream;
-								
-		/*Forwarder f(g_PrintStream,  
-			Forwarder::mid_point(g_PrintStream,
-			Forwarder::mid_point(*g_RconLog,
-			Forwarder::end_point(g_PrintStream))));
-		COutStream& outStream = (COutStream&)f;*/
+		
 		return	can_execute ? 
 				commands::ProcessCommand(command, outStream, exec_player) :
 				e_command_result::kProcessed;
 	}
 
+	// --------------------------------------------------------------------
+	// 
 	// This function is effectively sv_map_next
 	void StartGame(const char* map)
 	{
@@ -270,14 +267,14 @@ namespace halo { namespace server
 	}
 
 	// --------------------------------------------------------------------
-	//
-	 bool SayStream::Write(const std::wstring& str)
-	 {
-		 std::wstring msg = L"** SERVER ** " + str;
-		 for (int i = 0; i < 16; i++) {
-			 s_player* player = game::GetPlayer(i);
-			 if (player) MessagePlayer(*player, msg);
-		 }	
-		 return true;
-	 }
+	// Server message.
+	bool SayStream::Write(const std::wstring& str)
+	{
+		std::wstring msg = L"** SERVER ** " + StripTrailingEndl(str);
+		for (int i = 0; i < 16; i++) {
+			s_player* player = game::GetPlayer(i);
+			if (player) MessagePlayer(*player, msg);
+		}	
+		return true;
+	}
 }}

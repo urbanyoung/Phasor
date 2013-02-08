@@ -3,7 +3,7 @@
 #include "Server/Server.h"
 #include "Game/Game.h"
 #include <iostream>
-
+#include "../../Common/MyString.h"
 halo::CHaloPrintStream g_PrintStream;
 
 namespace halo
@@ -103,7 +103,7 @@ namespace halo
 	bool PlayerConsoleStream::Write(const std::wstring& str)
 	{
 		if (!ValidatePlayer()) return true; // invalid now
-		server::ConsoleMessagePlayer(player, str);
+		server::ConsoleMessagePlayer(player, StripTrailingEndl(str));
 		return true;
 	}
 
@@ -123,10 +123,8 @@ namespace halo
 	bool PlayerChatStream::Write(const std::wstring& str)
 	{
 		if (!ValidatePlayer()) return true; // invalid now
-		std::wstring msg = L"** SERVER ** " + str;
+		std::wstring msg = L"** SERVER ** " + StripTrailingEndl(str);
 		server::MessagePlayer(player, msg);
 		return true;
 	}
-
-
 }
