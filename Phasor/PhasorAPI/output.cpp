@@ -106,20 +106,12 @@ void l_privatesay(CallHandler& handler, Object::unique_deque& args, Object::uniq
 // Send message to entire server
 void l_say(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	std::vector<std::wstring> msgs = ReadString(*args[0]);
-	for (size_t x = 0; x < msgs.size(); x++)
-		halo::server::MessageAllPlayers(L"%s", msgs[x].c_str());
+	WriteMessageToStream(halo::server::say_stream, *args[0]);
 }
 
 // Respond to person executing the server command or hprintf if no player.
 void l_respond(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	/*! \todo
-	 * change to print as console text, but first create a console text
-	 * output stream for player. check all current uses of s_player::stream
-	 * to see what i'm using it as. I should create two distinct player streams
-	 * chat stream and console stream.
-	 * */
 	halo::s_player* player = halo::server::GetPlayerExecutingCommand();
 	COutStream& stream = (player == NULL) ? (COutStream&)g_PrintStream : (COutStream&)*player->console_stream;
 	WriteMessageToStream(stream, *args[0]);

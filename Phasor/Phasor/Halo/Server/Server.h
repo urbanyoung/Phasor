@@ -74,11 +74,26 @@ namespace server
 	};
 	#pragma pack(pop)
 
+	// Stream for sending server messages
+	class SayStream : public COutStream
+	{
+	protected:
+		virtual bool Write(const std::wstring& str);
+
+	public:
+		SayStream() {}
+
+		virtual std::unique_ptr<COutStream> clone() override
+		{
+			return std::unique_ptr<COutStream>(new SayStream());
+		}
+	};
+
+	extern SayStream say_stream;
+
 	void StartGame(const char* map);
 	// Send a chat message to the player
 	void MessagePlayer(const s_player& player, const std::wstring& str);
-	// Send a chat message to all players
-	void MessageAllPlayers(const wchar_t* fmt, ...);
 	// Send a console message to the player
 	void ConsoleMessagePlayer(const s_player& player, const std::wstring& str);
 	// Gets the player's ip

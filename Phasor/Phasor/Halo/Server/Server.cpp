@@ -10,6 +10,8 @@
 
 namespace halo { namespace server
 {
+	SayStream say_stream;
+
 	#pragma pack(push, 1)
 	struct s_hash_data
 	{
@@ -229,19 +231,6 @@ namespace halo { namespace server
 		g_PrintStream << "todo: make this console message player - " << str << endl;
 	}
 
-	void MessageAllPlayers(const wchar_t* fmt, ...)
-	{
-		va_list ArgList;
-		va_start(ArgList, fmt);
-		std::wstring str = FormatVarArgsW(fmt, ArgList);
-		va_end(ArgList);
-
-		for (int i = 0; i < 16; i++) {
-			s_player* player = game::GetPlayer(i);
-			if (player) MessagePlayer(*player, str);
-		}		
-	}
-
 	halo::s_player* GetPlayerExecutingCommand()
 	{
 		DWORD execPlayerNumber = *(DWORD*)UlongToPtr(ADDR_RCONPLAYER);
@@ -279,4 +268,16 @@ namespace halo { namespace server
 		}
 		return found;
 	}
+
+	// --------------------------------------------------------------------
+	//
+	 bool SayStream::Write(const std::wstring& str)
+	 {
+		 std::wstring msg = L"** SERVER ** " + str;
+		 for (int i = 0; i < 16; i++) {
+			 s_player* player = game::GetPlayer(i);
+			 if (player) MessagePlayer(*player, msg);
+		 }	
+		 return true;
+	 }
 }}
