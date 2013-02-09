@@ -107,9 +107,11 @@
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="PhasorAPI\api_readers.cpp" />
     <ClCompile Include="PhasorAPI\memory.cpp" />
     <ClCompile Include="PhasorAPI\output.cpp" />
     <ClCompile Include="PhasorAPI\PhasorAPI.cpp" />
+    <ClCompile Include="PhasorAPI\playerinfo.cpp" />
     <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />
     <ClCompile Include="Phasor\CrashHandler.cpp" />
@@ -151,10 +153,12 @@
     <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="Lua.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="PhasorAPI\api_readers.h" />
     <ClInclude Include="PhasorAPI\deprecated.h" />
     <ClInclude Include="PhasorAPI\memory.h" />
     <ClInclude Include="PhasorAPI\output.h" />
     <ClInclude Include="PhasorAPI\PhasorAPI.h" />
+    <ClInclude Include="PhasorAPI\playerinfo.h" />
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />
     <ClInclude Include="Phasor\CrashHandler.h" />

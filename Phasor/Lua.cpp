@@ -162,6 +162,7 @@ namespace Lua
 				lua_pushstring(L, s.GetValue());
 			} break;
 		case Common::TYPE_TABLE: // not supported yet
+		case Common::TYPE_NIL:
 		default:
 			{
 				lua_pushnil(L);

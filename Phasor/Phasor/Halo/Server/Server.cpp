@@ -283,16 +283,14 @@ namespace halo { namespace server
 		if (!machine) return false;
 		s_hash_list* hash_list = (s_hash_list*)ADDR_HASHLIST;
 		hash_list = hash_list->next;
-		bool found = false;
 		while (hash_list && hash_list->data) {	
 			if (hash_list->data->id == machine->id_hash) {
 				hash = hash_list->data->hash;
-				found = true;
-				break;
+				return true;
 			}
 			hash_list = hash_list->next;
 		}
-		return found;
+		return false;
 	}
 
 	// --------------------------------------------------------------------
@@ -300,10 +298,7 @@ namespace halo { namespace server
 	bool SayStream::Write(const std::wstring& str)
 	{
 		std::wstring msg = L"** SERVER ** " + StripTrailingEndl(str);
-		for (int i = 0; i < 16; i++) {
-			s_player* player = game::GetPlayer(i);
-			if (player) MessagePlayer(*player, msg);
-		}	
+		chat::DispatchChat(chat::kChatServer, msg);
 		return true;
 	}
 }}

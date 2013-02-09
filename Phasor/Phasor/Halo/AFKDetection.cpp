@@ -71,7 +71,7 @@ namespace halo { namespace afk_detection
 
 	void CAFKDetection::CheckInactivity()
 	{
-		if (max_duration == 0 || bDisable || player.IsAdmin()) return;
+		if (max_duration == 0 || bDisable || player.is_admin) return;
 		if (move_count <= kMoveCountThreshold) {
 			afk_duration++;
 			if (afk_duration >= max_duration) {

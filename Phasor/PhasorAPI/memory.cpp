@@ -1,4 +1,5 @@
 #include "memory.h"
+#include "api_readers.h"
 #include "../Common/MyString.h"
 #include <limits>
 using namespace Common;
@@ -38,7 +39,9 @@ template <class T> bool write_data_raw(LPBYTE destAddress, T data)
 	}
 	return success;
 }
-
+/*! \todo
+ * Stop readdata from raising errors in old api
+ */
 template <class T> T read_data(CallHandler& handler, LPBYTE dest_address)
 {
 	T data;
@@ -62,25 +65,20 @@ struct s_read_info
 		int kMaxArgsNormalRead = 2)
 		: i(0)
 	{		
-		address = (LPBYTE)Read(*args[i++]);
+		address = (LPBYTE)ReadNumber<DWORD>(*args[i++]);
 		if (!is_read_bit) {
 			if (args.size() == kMaxArgsNormalRead) AddToAddress(*args[i++]);
 		} else { // reading bit so extract param
 			if (args.size() == kMaxArgsNormalRead + 1) AddToAddress(*args[i++]);
-			bit_offset = Read(*args[i++]);
+			bit_offset = ReadNumber<int>(*args[i++]);
 			address += bit_offset / 8;
 			bit_offset %= 8;
 		}		
 	}
 
-	DWORD Read(const Object& num)
-	{
-		ObjNumber& address_offset = (ObjNumber&)num;
-		return (DWORD)address_offset.GetValue();
-	}
 	void AddToAddress(const Object& num)
 	{
-		address += Read(num);
+		address += ReadNumber<DWORD>(num);
 	}
 };
 
@@ -128,8 +126,7 @@ struct s_write_info : s_read_info
 		bool bounds_check=true)
 		: s_read_info(args, is_write_bit, 3)
 	{
-		ObjNumber& num = (ObjNumber&)*args[i++];
-		double value = num.GetValue();
+		double value = ReadNumber<double>(*args[i++]);
 
 		T data;
 		if (!CheckTypeLimits<T>(value, &data) && bounds_check)

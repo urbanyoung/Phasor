@@ -1,60 +1,13 @@
 #include "output.h"
 #include "../Phasor/Halo/Game/Game.h"
 #include "../Phasor/Halo/Server/Server.h"
-#include "../Common/MyString.h"
 #include "../Phasor/Globals.h"
+#include "api_readers.h"
 #include <vector>
 #include <string>
 
 using namespace Common;
 using namespace Manager;
-
-// Reads the message argument and parses it, replacing {x} with player x's 
-// name and splitting the message into a new one at each \n
-std::vector<std::wstring> ReadString(Object& obj)
-{
-	ObjString& str = (ObjString&)obj;
-	std::vector<std::wstring> msgs = Tokenize<std::wstring>(WidenString(str.GetValue()), L"\n");
-
-	// Format each message and replace {i} with i's name.
-	for (auto itr = msgs.begin(); itr != msgs.end(); ++itr) {
-		size_t brace_pos = itr->find(L'{');
-		size_t end_brace_pos = itr->find(L'}', brace_pos);
-
-		while (brace_pos != itr->npos && end_brace_pos != itr->npos) {
-			size_t diff = end_brace_pos - brace_pos;
-			if (diff == 2 || diff == 3) { // ids can only be at most 2 digits				
-				std::string str = NarrowString(itr->substr(brace_pos + 1, diff - 1));
-				int id;
-				if (StringToNumber<int>(str, id)) {
-					halo::s_player* player = halo::game::GetPlayer(id);
-					if (player) {
-						itr->erase(brace_pos, diff + 1);
-						itr->insert(brace_pos, player->mem->playerName);
-					}
-				}
-			}
-			brace_pos = itr->find(L'{', brace_pos + 1);
-			end_brace_pos = itr->find(L'}', brace_pos);
-		}
-	}
-	return msgs;	
-}
-
-// Read the player, if strict is true an error is raised if the player doesn't
-// exist.
-halo::s_player* ReadPlayer(CallHandler& handler, Object& playerObj, bool strict)
-{
-	ObjNumber& num = (ObjNumber&)playerObj;
-	int player_id = (int)num.GetValue();
-	halo::s_player* player = halo::game::GetPlayer(player_id);
-	if (!player && strict) {
-		std::string err = m_sprintf("valid player required : player %i doesn't exist.",
-			player_id);
-		handler.RaiseError(err);
-	}
-	return player;
-}
 
 void WriteMessageToStream(COutStream& stream, Object& message)
 {
@@ -117,8 +70,7 @@ void l_respond(CallHandler& handler, Object::unique_deque& args, Object::unique_
 
 void l_log_msg(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	ObjNumber& num = (ObjNumber&)*args[0];
-	DWORD log_id = (DWORD)num.GetValue();
+	DWORD log_id = ReadNumber<DWORD>(*args[0]);
 	COutStream* stream;
 	switch (log_id)
 	{
@@ -147,7 +99,6 @@ void l_log_msg(CallHandler& handler, Object::unique_deque& args, Object::unique_
 			std::stringstream ss;
 			ss << "log_msg : '" << log_id << "' is not a valid id.";
 			handler.RaiseError(ss.str());
-
 		} break;
 	}
 	WriteMessageToStream(*stream, *args[1]);

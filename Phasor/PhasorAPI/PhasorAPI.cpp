@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "output.h"
 #include "deprecated.h"
+#include "playerinfo.h"
 
 using namespace Common;
 using namespace Manager;
@@ -53,83 +54,25 @@ namespace PhasorAPI
 		{&l_privatesay, "privatesay", 2, {TYPE_NUMBER, TYPE_STRING}},
 		{&l_sendconsoletext, "sendconsoletext", 2, {TYPE_NUMBER, TYPE_STRING}},
 		{&l_respond, "respond", 1, {TYPE_STRING}},
-		{&l_log_msg, "log_msg", 2, {TYPE_NUMBER, TYPE_STRING}}
+		{&l_log_msg, "log_msg", 2, {TYPE_NUMBER, TYPE_STRING}},
+		// Player info related functions: see playerinfo.h
+		{&l_resolveplayer, "resolveplayer", 1, {TYPE_NUMBER}},
+		{&l_rresolveplayer, "rresolveplayer", 1, {TYPE_NUMBER}},
+		{&l_getplayer, "getplayer", 1, {TYPE_NUMBER}},
+		{&l_getip, "getip", 1, {TYPE_NUMBER}},
+		{&l_getport, "getport", 1, {TYPE_NUMBER}},
+		{&l_getteam, "getteam", 1, {TYPE_NUMBER}},
+		{&l_getname, "getname", 1, {TYPE_NUMBER}},
+		{&l_gethash, "gethash", 1, {TYPE_NUMBER}},
+		{&l_getteamsize, "getteamsize", 1, {TYPE_NUMBER}},
+		{&l_getplayerobjectid, "getplayerobjectid", 1, {TYPE_NUMBER}},
+		{&l_isadmin, "isadmin", 1, {TYPE_NUMBER}},
+		{&l_setadmin, "setadmin", 1, {TYPE_NUMBER}}
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 
-	// Deprecated functions (just the differences)
-	ScriptCallback PhasorExportTableDeprecatedDiff[] =
+	void Register(Manager::ScriptState& state)
 	{
-		// Memory related functions: see memory.h
-		{&deprecated::l_writebit, "writebit", 4, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
-		{&deprecated::l_writebyte, "writebyte", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
-		{&deprecated::l_writeword, "writeword", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
-		{&deprecated::l_writedword, "writedword", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
-		{&deprecated::l_writefloat, "writefloat", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
-		// Output related functions: see output.h
-		{&l_hprintf, "hprintf", 1, {TYPE_STRING, TYPE_NUMBER}},
-		{&deprecated::l_privatesay, "privatesay", 2, {TYPE_NUMBER, TYPE_STRING}}
-	};
-	// Keeps track of functions that have been removed. ie those in the deprecated
-	// table but not in the current version's export table. Phasor will assert
-	// if this value is incorrect.
-	static const size_t n_removed_functions = 0;
-	// Number of entries in the deprecated diff table.
-	static const size_t n_deprecated_diff = sizeof(PhasorExportTableDeprecatedDiff)/sizeof(PhasorExportTableDeprecatedDiff[0]);
-
-	// We build the deprecated table once at runtime
-	ScriptCallback PhasorExportTableDeprecated[export_table_size + n_removed_functions];
-	// Number of entries in the deprecated table.
-	static const size_t n_deprecated_size = sizeof(PhasorExportTableDeprecated)/sizeof(PhasorExportTableDeprecated[0]);
-	// We only want to build the table once.
-	static bool bDeprecatedBuilt = false;
-
-	void BuildDeprecatedTable()
-	{
-		// copy the default table over.
-		for (size_t x = 0; x < export_table_size; x++)
-			PhasorExportTableDeprecated[x] = PhasorExportTable[x];
-		// overwrite each entry with the deprecated one, then set the
-		// entry in deprecateddiff to null.
-		for (size_t x = 0; x < n_deprecated_diff; x++) {
-			for (size_t i = 0; i < export_table_size; i++) {
-				if (!strcmp(PhasorExportTableDeprecated[i].name, PhasorExportTableDeprecatedDiff[x].name)) {
-					// catch multiple entries in the table
-					assert(PhasorExportTableDeprecatedDiff[x].func != NULL);
-					PhasorExportTableDeprecated[i] = PhasorExportTableDeprecatedDiff[x];
-					PhasorExportTableDeprecatedDiff[x].func = NULL;
-					break;
-				}
-			}
-		}
-		// add the new entries (those in diff that aren't in PhasorExportTable)
-		size_t i = export_table_size;
-		for (size_t x = 0; x < n_deprecated_diff; x++) {
-			if (PhasorExportTableDeprecatedDiff[x].func != NULL) {
-				assert(i < n_deprecated_size);
-				PhasorExportTableDeprecated[i++] = PhasorExportTableDeprecatedDiff[x];
-			}
-		}
-		assert(i == n_deprecated_size);
-		bDeprecatedBuilt = true;
-	}
-
-	void Register(Manager::ScriptState& state, bool current_api)
-	{
-		// want it created right away so i can check the asserts
-		if (!bDeprecatedBuilt) BuildDeprecatedTable();
-
-		printf("using current api %i\n", current_api);
-		size_t nentries = 0;
-		const Manager::ScriptCallback* funcs;
-
-		if (current_api) {
-			nentries = export_table_size;
-			funcs = PhasorExportTable;
-		} else {
-			nentries = n_deprecated_size;
-			funcs = PhasorExportTableDeprecated;
-		}
-		RegisterFunctions(state, funcs, nentries);
+		RegisterFunctions(state, PhasorExportTable, export_table_size);
 	}
 }

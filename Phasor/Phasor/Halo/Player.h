@@ -62,6 +62,7 @@ namespace halo
 		std::string hash, ip;
 		WORD port;
 		int memory_id;
+		bool is_admin;
 		s_player_structure* mem;
 		std::unique_ptr<afk_detection::CAFKDetection> afk;
 		std::unique_ptr<PlayerConsoleStream> console_stream;
@@ -72,7 +73,6 @@ namespace halo
 		~s_player();
 
 		objects::s_halo_object* get_object();
-		bool IsAdmin() const;
 		void Kick() const;
 	private: // just for testing get_object
 		objects::s_halo_object* m_object;		

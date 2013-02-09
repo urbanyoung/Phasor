@@ -15,15 +15,12 @@ namespace Scripting
 	#define DEFAULT_TIMEOUT 2000
 	// Versions which should use the most up to date api
 	static const DWORD versions[] = {10059};
-	// Versions which should use the deprecated api
-	static const DWORD deprecated_versions[] = {10058};
 
 	// --------------------------------------------------------------------
 	bool CheckCompatibility(const DWORD* table, size_t n, DWORD version)
 	{
 		for (size_t i = 0; i < n; i++) {
-			if (table[i] == version)
-				return true;
+			if (table[i] == version) return true;
 		}
 		return false;
 	}
@@ -33,13 +30,6 @@ namespace Scripting
 	{
 		const int n = sizeof(versions)/sizeof(versions[0]);
 		return CheckCompatibility(versions, n, required);	
-	}
-
-	// Check if the specified version is compatible with the deprecated api
-	static bool CompatibleWithDeprecated(DWORD version)
-	{
-		const int n = sizeof(deprecated_versions)/sizeof(deprecated_versions[0]);
-		return CheckCompatibility(deprecated_versions, n, version);
 	}
 
 	// --------------------------------------------------------------------
@@ -69,8 +59,8 @@ namespace Scripting
 			
 			phasor_state->SetInfo(file, script);
 
-			bool current_api = CheckScriptCompatibility(*phasor_state->state, script);
-			PhasorAPI::Register(*phasor_state->state, current_api);
+			CheckScriptCompatibility(*phasor_state->state, script);
+			PhasorAPI::Register(*phasor_state->state);
 
 			// Notify the script that it's been loaded.
 			bool fexists = false;
@@ -136,7 +126,6 @@ namespace Scripting
 		DWORD requiredVersion = (DWORD)result.ReadNumber().GetValue();
 
 		if (CompatibleWithCurrent(requiredVersion)) return true;
-		else if (CompatibleWithDeprecated(requiredVersion)) return false;
 		else throw std::exception("Not compatible with this version of Phasor.");
 	}
 

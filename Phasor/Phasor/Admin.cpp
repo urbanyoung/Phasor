@@ -6,119 +6,95 @@
 #include <set>
 #include <vector>
 
+/*! \todo
+ * when adding sv_admin_add etc force a recheck of players in the server
+ */
 namespace Admin
 {
-	static const std::string kAllAccess = "-1";
-	class CAccessLevel
+	namespace access
 	{
-	private:
-		typedef std::map<int, CAccessLevel> accessList_t;
-		typedef std::pair<int, CAccessLevel> pair_t;
-		static accessList_t accessList;
-		
-		std::set<const std::string> commands;
-		int level;
-		bool all_access;
-
-		static accessList_t CreateAccessList()
+		static const std::string kAllAccess = "-1";
+		class s_access_level
 		{
-			return accessList_t();
-		}
-
-	public:
-
-		CAccessLevel(int level, const std::vector<std::string>& commands)
-			: level(level), all_access(false)
-		{
-			for (size_t x = 0; x < commands.size(); x++) {
-				const std::string& command = commands[x];
-				if (command == kAllAccess) all_access = true;
-				else this->commands.insert(command);
+			std::set<const std::string> commands;
+			int level;
+			bool all_access;
+		public:
+			s_access_level(int level, const std::vector<std::string>& commands)
+				: level(level), all_access(false)
+			{
+				for (size_t x = 0; x < commands.size(); x++) {
+					const std::string& command = commands[x];
+					if (command == kAllAccess) all_access = true;
+					else this->commands.insert(command);
+				}
 			}
-		}
-		
-		static void Add(CAccessLevel& access)
-		{
-			accessList.insert(pair_t(access.level, access));
+
+			bool is_allowed(const std::string& command) const {
+				return all_access || commands.find(command) != commands.end();
+			}
+
+			int get_level() const { return level; }
+		};
+
+		typedef std::map<int, s_access_level> access_t;
+		typedef std::pair<int, s_access_level> pair_t;
+		access_t accessList;
+
+		void add(const s_access_level& access) {
+			accessList.insert(pair_t(access.get_level(), access));
 		}
 
-		static void Clear()
-		{
-			accessList.clear();
-		}
+		void clear() { accessList.clear(); }
 
-		bool IsAllowed(const std::string& command)
-		{
-			return all_access || commands.find(command) != commands.end();
-		}
-
-		static bool Find(int level, CAccessLevel** out)
-		{
+		bool find(int level, s_access_level** out) {
 			auto access = accessList.find(level);
 			if (access == accessList.end()) return false;
 			if (out) *out = &access->second;
-			return true;			
+			return true;	
 		}
-	};
-	CAccessLevel::accessList_t CAccessLevel::accessList(CAccessLevel::CreateAccessList());
+	}
 
-	class CAdmin
+	namespace admin
 	{
-	private:
-		typedef std::map<std::string, CAdmin> adminList_t;
-		typedef std::pair<std::string, CAdmin> pair_t;
-		static adminList_t adminList;
+		struct s_admin
+		{
+			const access::s_access_level& accessLevel;
+			std::string name, hash;
+
+			s_admin(const std::string& name, const std::string& hash,
+				const access::s_access_level& accessLevel)
+				: name(name), hash(hash), accessLevel(accessLevel)
+			{
+			}
+
+			bool is_allowed(const std::string& command) const {
+				return accessLevel.is_allowed(command);
+			}
+
+		};
+
+		typedef std::map<std::string, s_admin> adminList_t;
+		typedef std::pair<std::string, s_admin> pair_t;
+		adminList_t adminList;
+
+		size_t size() { return adminList.size(); }
 		
-		//int level; // used to lookup CAccessLevel
-		CAccessLevel& accessLevel;
-		std::string name, hash;
-
-		static adminList_t CreateAdminList()
-		{
-			return adminList_t();
-		}
-
-	public:
-		CAdmin(const std::string& name, const std::string& hash,
-			CAccessLevel& accessLevel)
-			: name(name), hash(hash), accessLevel(accessLevel)
-		{
-		}
-
-		static size_t size()
-		{
-			return adminList.size();
-		}
-
-		bool IsAllowed(const std::string& command)
-		{
-			return accessLevel.IsAllowed(command);
-		}
-
-		std::string GetName() { return name; }
-
-		static void Add(CAdmin admin)
-		{
+		void add(const s_admin& admin) { 
 			adminList.insert(pair_t(admin.hash, admin));
 		}
 
-		static void Remove(const std::string& hash)
-		{
+		void remove(const std::string& hash) {
 			auto itr = adminList.find(hash);
-			if (itr != adminList.end())
-				adminList.erase(itr);
+			if (itr != adminList.end())	adminList.erase(itr);
 		}
 
-		static void Clear()
-		{
-			adminList.clear();
-		}
+		void clear() { adminList.clear(); }
 
-		static bool GetAdminFromName(const std::string& name, CAdmin** out)
+		bool find_admin_by_name(const std::string& name, s_admin** out)
 		{
 			auto itr = adminList.begin();
-			while (itr != adminList.end())
-			{
+			while (itr != adminList.end()) {
 				if (itr->second.name == name) {
 					if (out) *out = &itr->second;
 					return true;
@@ -127,48 +103,47 @@ namespace Admin
 			return false;
 		}
 
-		static bool GetAdmin(const std::string& hash, CAdmin** out)
-		{
+		bool find_admin_by_hash(const std::string& hash, s_admin** out) {
 			auto admin = adminList.find(hash);
 			if (admin == adminList.end()) return false;
 			if (out) *out = &admin->second;
 			return true;
 		}
-	};
-	CAdmin::adminList_t CAdmin::adminList(CAdmin::CreateAdminList());
+	}
 
 	// --------------------------------------------------------------------
+	//
 	result_t Add(const std::string& hash, const std::string& authname, int level)
 	{
-		CAccessLevel* accessLevel = 0;
+		access::s_access_level* accessLevel = 0;
 
-		if (CAdmin::GetAdmin(hash, NULL)) return E_HASH_INUSE;
-		if (CAdmin::GetAdminFromName(authname, NULL)) return E_NAME_INUSE;		
-		if (!CAccessLevel::Find(level, &accessLevel)) return E_LEVEL_NOT_EXIST;
+		if (admin::find_admin_by_hash(hash, NULL)) return E_HASH_INUSE;
+		if (admin::find_admin_by_name(authname, NULL)) return E_NAME_INUSE;		
+		if (!access::find(level, &accessLevel)) return E_LEVEL_NOT_EXIST;
 
-		CAdmin admin(authname, hash, *accessLevel);
-		CAdmin::Add(admin);
+		admin::s_admin admin(authname, hash, *accessLevel);
+		admin::add(admin);
 		return E_OK;
 	}
 
 	void Remove(const std::string& hash)
 	{
-		CAdmin::Remove(hash);
+		admin::remove(hash);
 	}
 
 	bool IsAdmin(const std::string& hash)
 	{
-		return CAdmin::GetAdmin(hash, NULL);
+		return admin::find_admin_by_hash(hash, NULL);
 	}
 
 	result_t CanUseCommand(const std::string& hash, const std::string& command,
 		std::string* authName)
 	{
-		if (CAdmin::size() == 0) return E_OK; // hash system inactive
-		CAdmin* admin = 0;
-		if (!CAdmin::GetAdmin(hash, &admin)) return E_NOT_ADMIN;
-		if (authName) *authName = admin->GetName();
-		return admin->IsAllowed(command) ? E_OK : E_NOT_ALLOWED;
+		if (admin::size() == 0) return E_OK; // hash system inactive
+		admin::s_admin* admin = 0;
+		if (!admin::find_admin_by_hash(hash, &admin)) return E_NOT_ADMIN;
+		if (authName) *authName = admin->name;
+		return admin->is_allowed(command) ? E_OK : E_NOT_ALLOWED;
 	}
 
 	// --------------------------------------------------------------------
@@ -194,8 +169,8 @@ namespace Admin
 				std::vector<std::string> tokens = 
 					Tokenize<std::string>(dataBuffer, ", ");
 
-				CAccessLevel accessLevel(level, tokens);
-				CAccessLevel::Add(accessLevel);
+				access::s_access_level accessLevel(level, tokens);
+				access::add(accessLevel);
 
 				processedCount += strlen(outBuffer + processedCount) + 1;			
 			}
@@ -230,8 +205,8 @@ namespace Admin
 	void Initialize(COutStream* out)
 	{
 		// read from files
-		CAdmin::Clear();
-		CAccessLevel::Clear();
+		admin::clear();
+		access::clear();
 
 		std::wstring adminPath = g_ProfileDirectory + L"admin.txt";
 		std::wstring accessPath = g_ProfileDirectory + L"access.ini";

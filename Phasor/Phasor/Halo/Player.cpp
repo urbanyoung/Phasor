@@ -19,6 +19,7 @@ namespace halo
 		chat_stream.reset(new PlayerChatStream(*this));
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
+		is_admin = Admin::IsAdmin(hash);
 		m_object = 0;
 	}
 
@@ -33,12 +34,6 @@ namespace halo
 		assert(m_object == 0 || object == m_object);
 		m_object = object;
 		return object;
-	}
-
-	// todo: store a bool indicating if admin
-	bool s_player::IsAdmin() const
-	{
-		return Admin::IsAdmin(hash);
 	}
 
 	void s_player::Kick() const

@@ -116,6 +116,12 @@
     <ClCompile Include="Phasor\Halo\Server\Chat.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
+    <ClCompile Include="PhasorAPI\api_readers.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\playerinfo.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -305,6 +311,12 @@
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\Chat.h">
       <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\playerinfo.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\api_readers.h">
+      <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
