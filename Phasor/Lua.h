@@ -111,7 +111,7 @@ namespace Lua
 		void push(const MObject& object);
 		std::unique_ptr<LuaObject> peek();
 		std::unique_ptr<LuaObject> pop();
-		std::unique_ptr<MObjTable> pop_table();
+		std::unique_ptr<MObjTable> peek_table();
 
 		std::unique_ptr<LuaObject> get_global(const char* name);
 		void set_global(const char* name, LuaObject& obj);		

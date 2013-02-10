@@ -50,21 +50,18 @@ namespace Lua
 		}
 	}
 
-	std::unique_ptr<MObjTable> State::pop_table()
+	std::unique_ptr<MObjTable> State::peek_table()
 	{
-		static bool dbd = true;
 		std::unique_ptr<MObjTable> table(new MObjTable());
-		if (dbd)lua_pushnil(L); // so we get first key
-		dbd = false;
+		lua_pushnil(L); // so we get first key
+
 		while(lua_next(L, -2)) { 
-			printf("loop\n");
 			auto value = pop();
 			auto key = peek();
+
 			table->insert(std::pair<MObject::unique_ptr, MObject::unique_ptr>
 				(std::move(key->release_object()), std::move(value->release_object())));				
-			//lua_pop(L, 1);
 		}
-		lua_pop(L, 1);
 		return table;
 	}
 
@@ -91,7 +88,7 @@ namespace Lua
 			} break;
 		case Type_Table:
 			{			
-				object.reset(new LuaObject(pop_table()));
+				object.reset(new LuaObject(peek_table()));
 
 			} break;
 		case Type_Nil:
@@ -278,7 +275,7 @@ namespace Lua
 					 */
 					if (lua_type(L, indx) != Type_Table)
 						RaiseError("Expected table.");
-					obj.reset(luaState.pop_table().release());
+					obj.reset(luaState.peek_table().release());
 				} break;
 			}
 			return obj;
