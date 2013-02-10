@@ -226,7 +226,7 @@ namespace Common
 		typedef std::pair<Object::unique_ptr, Object::unique_ptr> pair_t;
 		typedef std::map<Object::unique_ptr, Object::unique_ptr> table_t;
 		table_t table;
-
+		
 		// Copies other into this object
 		void CopyTable(const ObjTable& other);
 
@@ -236,8 +236,8 @@ namespace Common
 	public:
 		ObjTable(const std::map<std::string, std::string>& table);
 		ObjTable(const std::map<std::string, std::unique_ptr<Object>>& table);
-		ObjTable(const table_t& table);
-
+		ObjTable(const std::vector<std::string>& data);
+		ObjTable();
 		~ObjTable();
 
 		ObjTable & operator=(const ObjTable &rhs);
@@ -246,6 +246,10 @@ namespace Common
 		// Create a new, independent copy of this object.
 		virtual std::unique_ptr<Object> NewCopy() const;
 
+		size_t size();
+		table_t::const_iterator begin();
+		table_t::const_iterator end();
+		void insert(pair_t pair);
 		// Get value at index
 		//const Object* operator [] (size_t i);
 		// Returns the value associated with the specified key

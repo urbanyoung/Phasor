@@ -240,7 +240,6 @@ namespace Manager
 			if (found) *found = true;
 		}
 		else if(found) *found = false;
-
 		return result;
 	}
 

@@ -112,6 +112,7 @@
     <ClCompile Include="PhasorAPI\output.cpp" />
     <ClCompile Include="PhasorAPI\PhasorAPI.cpp" />
     <ClCompile Include="PhasorAPI\playerinfo.cpp" />
+    <ClCompile Include="PhasorAPI\string.cpp" />
     <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />
     <ClCompile Include="Phasor\CrashHandler.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="PhasorAPI\output.h" />
     <ClInclude Include="PhasorAPI\PhasorAPI.h" />
     <ClInclude Include="PhasorAPI\playerinfo.h" />
+    <ClInclude Include="PhasorAPI\string.h" />
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />
     <ClInclude Include="Phasor\CrashHandler.h" />

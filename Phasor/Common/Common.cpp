@@ -259,12 +259,21 @@ namespace Common
 		}
 	}
 
-/*	ObjTable::ObjTable(const table_t& table) 
+	ObjTable::ObjTable(const std::vector<std::string>& data)
 		: Object(TYPE_TABLE)
 	{
-		//this->table = table;
-		//table.clear();
-	}*/
+		for (size_t x = 0; x < data.size(); x++) {
+			Object::unique_ptr key(new ObjNumber((DWORD)x));
+			Object::unique_ptr value(new ObjString(data[x]));
+			table.insert(pair_t(move(key), move(value)));
+		}
+	}
+
+	ObjTable::ObjTable()
+		: Object(TYPE_TABLE)
+	{
+
+	}
 
 	ObjTable::ObjTable(const ObjTable& other)
 		: Object(TYPE_TABLE)
@@ -297,14 +306,33 @@ namespace Common
 
 	void ObjTable::CopyTable(const ObjTable& other)
 	{
-		auto itr = other.table.begin();
-		while (itr != other.table.end())
+		for (auto itr = other.table.begin(); itr != other.table.end();
+			++itr)
 		{
 			table.insert(pair_t(
 				itr->first->NewCopy(), itr->second->NewCopy()));
 		}
 	}
 
+	size_t ObjTable::size()
+	{
+		return table.size();
+	}
+
+	ObjTable::table_t::const_iterator ObjTable::begin()
+	{
+		return table.cbegin();
+	}
+
+	ObjTable::table_t::const_iterator ObjTable::end()
+	{
+		return table.cend();
+	}
+
+	void ObjTable::insert(pair_t pair)
+	{
+		table.insert(std::move(pair));
+	}
 	/*const Object& ObjTable::operator [] (const Object& key)
 	{
 		std::map<Object*, Object*>::iterator itr = table.find((Object*)&key);

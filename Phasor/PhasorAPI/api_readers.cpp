@@ -36,6 +36,13 @@ std::vector<std::wstring> ReadString(Object& obj)
 	return msgs;	
 }
 
+// Don't apply any processing like in ReadString
+std::string ReadRawString(Common::Object& obj)
+{
+	ObjString& str = (ObjString&)obj;
+	return str.GetValue();
+}
+
 // Raises an invalid player error
 void RaisePlayerError(Manager::CallHandler& handler, int player_id)
 {
@@ -64,22 +71,27 @@ void AddResultString(const std::string& str, Object::unique_list& results)
 	results.push_back(std::unique_ptr<Object>(new ObjString(str)));
 }
 
-void AddResultString(const std::wstring& str, Common::Object::unique_list& results)
+void AddResultString(const std::wstring& str, Object::unique_list& results)
 {
 	return AddResultString(NarrowString(str), results);
 }
 
-void AddResultNumber(double value,  Object::unique_list& results)
+void AddResultNumber(double value, Object::unique_list& results)
 {
 	results.push_back(std::unique_ptr<Object>(new ObjNumber(value)));
 }
 
-void AddResultBool(bool b, Common::Object::unique_list& results)
+void AddResultBool(bool b, Object::unique_list& results)
 {
 	results.push_back(std::unique_ptr<Object>(new ObjBool(b)));
 }
 
-void AddResultPtr(void* ptr, Common::Object::unique_list& results)
+void AddResultPtr(void* ptr, Object::unique_list& results)
 {
 	results.push_back(std::unique_ptr<Object>(new ObjNumber((DWORD)ptr)));
+}
+
+void AddResultTable(const std::vector<std::string>& data, Object::unique_list& results)
+{
+	results.push_back(std::unique_ptr<Object>(new ObjTable(data)));
 }

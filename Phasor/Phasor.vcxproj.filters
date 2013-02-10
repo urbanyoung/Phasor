@@ -122,6 +122,9 @@
     <ClCompile Include="PhasorAPI\playerinfo.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="PhasorAPI\string.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -316,6 +319,9 @@
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
     <ClInclude Include="PhasorAPI\api_readers.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\string.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>

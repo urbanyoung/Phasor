@@ -15,6 +15,7 @@
 /*! \brief Resolve a player's memory id to their rcon id.
  *
  * \param player The memory id of the player to resolve
+ * \return The player's rcon id
  * 
  * Example usage:
  * \code
@@ -26,6 +27,7 @@ void l_resolveplayer(PHASOR_API_ARGS);
 /*! \brief Resolve a player's rcon id to their memory id.
  *
  * \param player The rcon id of the player to resolve.
+ * \return The player's memory id
  * 
  * Example usage:
  * \code
@@ -37,6 +39,7 @@ void l_rresolveplayer(PHASOR_API_ARGS);
 /*! \brief Get the specified player's memory data.
  *
  * \param player The player's memory id.
+ * \return The address of the player's memory info
  * 
  * Example usage:
  * \code
@@ -48,6 +51,7 @@ void l_getplayer(PHASOR_API_ARGS);
 /*! \brief Get the specified player's ip address.
  *
  * \param player The player's memory id.
+ * \return The player's ip address
  * 
  * Example usage:
  * \code
@@ -59,6 +63,7 @@ void l_getip(PHASOR_API_ARGS);
 /*! \brief Get the specified player's network port
  *
  * \param player The player's memory id.
+ * \return The player's network port
  * 
  * Example usage:
  * \code
@@ -72,6 +77,7 @@ void l_getport(PHASOR_API_ARGS);
 /*! \brief Get the specified player's team
  *
  * \param player The player's memory id.
+ * \return The player's current team.
  * 
  * Example usage:
  * \code
@@ -94,6 +100,7 @@ void l_getname(PHASOR_API_ARGS);
 /*! \brief Get the specified player's hash
  *
  * \param player The player's memory id.
+ * \return The player's hash.
  * 
  * Example usage:
  * \code
@@ -105,6 +112,7 @@ void l_gethash(PHASOR_API_ARGS);
 /*! \brief Get the number of players on the specified team
  *
  * \param team The team to check (0 - red, 1 - blue)
+ * \return The number of players on the specified team
  * 
  * Example usage:
  * \code
@@ -117,6 +125,7 @@ void l_getteamsize(PHASOR_API_ARGS);
 /*! \brief Get the specified player's object id.
  *
  * \param player The player's memory id.
+ * \return The player's object id or nil if they are dead.
  * 
  * Note: If the player is currently dead, nil is returned.
  * 
@@ -130,6 +139,7 @@ void l_getplayerobjectid(PHASOR_API_ARGS);
 /*! \brief Checks if the specified player is an admin.
  *
  * \param player The player's memory id.
+ * \return boolean indicating whether or not the player is an admin.
  * 
  * Example usage:
  * \code

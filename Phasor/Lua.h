@@ -6,6 +6,7 @@
 #include <memory>
 #include "..\lua\lua.hpp"
 #include "Manager.h"
+#include "Common/noncopyable.h"
 
 namespace Lua
 {
@@ -16,289 +17,110 @@ namespace Lua
 	typedef Manager::MObjTable MObjTable;
 
 	class State;
-	class Object;
-	class Nil;
-	class Boolean;
-	class Number;
-	class String;
-	class Table;
-	class LuaFunction;
-	class CFunction;
 
-	enum Type
+	enum LuaType
 	{
-		Type_Nil = 0,
-		Type_Boolean = 1,
-		Type_Number = 3,
-		Type_String = 4,
-		Type_Table = 5,
-		Type_Function = 6
-	};	
+		Type_Nil = LUA_TNIL,
+		Type_Boolean = LUA_TBOOLEAN,
+		Type_LightUserData = LUA_TLIGHTUSERDATA,
+		Type_Number = LUA_TNUMBER,
+		Type_String = LUA_TSTRING,
+		Type_Table = LUA_TTABLE,
+		Type_Function = LUA_TFUNCTION,
+		Type_UserData = LUA_TUSERDATA,
+		Type_Thread = LUA_TTHREAD,
+	};
+
+	class LuaObject : noncopyable
+	{
+	private:
+		std::unique_ptr<MObject> object;
+
+	protected:
+		LuaType type;
+
+		explicit LuaObject(LuaType type);
+	public:
+		explicit LuaObject(); // nil
+		explicit LuaObject(bool value);
+		explicit LuaObject(double value);
+		explicit LuaObject(const std::string& value);
+		explicit LuaObject(const char* value);
+		explicit LuaObject(int index, bool); // use for unknown types
+		explicit LuaObject(std::unique_ptr<MObjTable> table);
+		virtual ~LuaObject();
+
+		LuaType get_type() { return type;}
+
+		virtual void push(State& state);
+		std::unique_ptr<MObject> release_object();
+	};
+
+	class UnhandledObject : public LuaObject
+	{
+	private: 
+		int ref;
+		State& state;
+
+	public:
+		explicit UnhandledObject(State& state, int ref, LuaType actual_type);
+		~UnhandledObject();
+		virtual void push(State& state);
+	};
+
+	// Class: CFunction
+	// used to represent a c function which is callable from Lua. The same
+	// CFunction cannot be bound to multiple states.
+	class CFunction : public LuaObject
+	{
+	private:
+
+		State& state;
+		const Manager::ScriptCallback* cb;
+
+	public:
+		CFunction(State& state, const Manager::ScriptCallback* cb);
+		// inherited from LuaObject
+		virtual void push(State&) override;
+
+		static int LuaCall(lua_State* L);
+	};
 
 	//-----------------------------------------------------------------------------------------
 	// Class: State
 	// This class is analogous to lua_State 
 	//
-
 	class State : public Manager::ScriptState
 	{
 	private:
 		// Underlying Lua state
 		lua_State* L;	
 		std::list<std::unique_ptr<CFunction>> registeredFunctions;
+		
 	public:
 
-		// Creates a new state
 		State(const char* file);
-
-		// Destroys the state
-		~State();
-
-		// Destroys the state
-		static void Close(State* state);
+		~State();	
 
 		lua_State* GetState() { return L; }
 
 		// Loads and runs a string
 		void DoString(const char* str);
 
-		// Gets a global value
-		std::unique_ptr<Object> GetGlobal(const char* name);
+		// Push handled types to the stack (those that MObject can use)
+		void push(const MObject& object);
+		std::unique_ptr<LuaObject> peek();
+		std::unique_ptr<LuaObject> pop();
+		std::unique_ptr<MObjTable> pop_table();
 
-		// Sets a global value
-		void SetGlobal(const char* name, const Object& object);
+		std::unique_ptr<LuaObject> get_global(const char* name);
+		void set_global(const char* name, LuaObject& obj);		
 
-		// Pop an object off the Lua stack and return it.
-		std::unique_ptr<Object> PopLuaObject();
-		std::unique_ptr<Object> PeekLuaObject();
-		std::unique_ptr<MObject> PopMObject();
-		std::unique_ptr<MObject> PeekMObject();
-
-		// Push a generic object onto the Lua stack
-		void Push(const MObject& object);
-
+		// inherited from Manager::ScriptState
 		void RegisterFunction(const Manager::ScriptCallback* cb);
-
-		// Checks if the specified function is defined in the script
 		bool HasFunction(const char* name);
-
-		// Calls a function with an optional timeout
 		MObject::unique_deque Call(const char* name,
 			const MObject::unique_list& args, int timeout = 0);
 		MObject::unique_deque Call(const char* name, int timeout = 0);
-
-		friend class Object;
-		friend class Nil;
-		friend class Boolean;
-		friend class Number;
-		friend class String;
-		friend class Table;
-		friend class LuaFunction;
-		friend class CFunction;
 	};
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Object
-	// Lua value wrapper
-	//
-	// Objects should not out live the State which created them. The creator
-	// is responsible for ensuring this. 
-	// These objects are only created by PopStackObject and are simply meant
-	// as local CPP wrappers for Lua types.
-	class Object
-	{	
-	private:
-		Object(const Object& other);
-		
-		//Object operator=(const Object& other);
-
-	protected:
-		// State the object resides in
-		State* state;
-
-		// Type of object stored
-		Type type;	
-
-		Object(State* state);
-		Object(State* state, Type type);
-
-	public:
-
-		// Push the contained value onto the Lua stack.
-		virtual void Push() const = 0;
-
-		// Deletes the object
-		virtual ~Object();
-
-		// Returns the object type
-		Type GetType() const { return type; };
-
-		// Returns a copy of the object
-		/*virtual std::unique_ptr<Object> Copy();
-
-		// Returns a copy of the object in another state
-		virtual std::unique_ptr<Object> CopyTo(State* state);
-
-		// Convert this object into a generic one.
-		virtual std::unique_ptr<Common::Object> ToGeneric() const;*/
-	};
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Nil
-	// Lua nil wrapper
-	class Nil : public Object
-	{
-	public:
-		Nil(State* state);
-		void Push() const;
-
-		friend class State;
-	};
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Boolean
-	// Lua boolean wrapper
-	//
-	class Boolean : public Object
-	{
-	private:
-		bool value;
-
-	public:
-		Boolean(State* state, bool value);
-		void Push() const;
-		bool GetValue();
-		void SetValue(bool value);
-	};
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Number
-	// Lua number wrapper
-	//
-
-	class Number : public Object
-	{
-	private:
-		double value;
-
-	public:
-		Number(State* state, double value);
-		void Push() const;
-		double GetValue();
-		void SetValue(double value);
-	};
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: String
-	// Lua string wrapper
-	//
-	class String : public Object
-	{
-	private:
-		std::string value;
-
-	public:
-		String(State* state, const std::string& value);
-		void Push() const;
-		std::string GetValue();
-		void SetValue(const std::string& value);
-	};
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Table
-	// Lua table wrapper
-	//
-	/*class Table : public Object
-	{
-	private:
-		std::map<Object, Object> table;
-
-	public:
-		Table(State* state, const std::map<Object,Object>& table);
-		void Push() const;
-		
-		const Object& operator[](const Object& key);
-		const Object& operator[](int key);
-
-		//void SetValue(double value);
-	};*/
-
-	/*class Table : public Object
-	{
-	private:
-		// Creates a new table
-		Table(State* state);
-
-	public:
-		// Gets a value from a key
-		std::unique_ptr<Object> GetValue(int key);
-		std::unique_ptr<Object> GetValue(const char* key);
-		std::unique_ptr<Object> GetValue(Object* key);
-
-		// Sets a key to a value
-		void SetValue(int key, Object& value);
-		void SetValue(const char* key,  Object& value);
-		void SetValue(Object* key, Object& value);
-
-		virtual std::unique_ptr<Object> Copy();
-
-		// Returns a copy of the object
-		virtual std::unique_ptr<Object> CopyTo(State* state);
-
-		// Convert this object into a generic one.
-		virtual std::unique_ptr<Common::Object> ToGeneric();
-
-		friend class State;
-	};*/
-
-	//
-	//-----------------------------------------------------------------------------------------
-	// Class: Function
-	// Lua function wrapper
-	// 
-	class LuaFunction : public Object
-	{
-		int ref;
-	public:
-		LuaFunction(State* state, int ref);
-		~LuaFunction();
-		void Push() const;
-
-		// Calls the Lua function from C with an optional timeout
-		MObject::unique_deque 
-			Call(const MObject::unique_list& args, int timeout = 0);
-	};
-
-	// --------------------------------------------------------------------
-	// Class: CFunction
-	// Register a C function that can be called from Lua
-	class CFunction : public Object
-	{
-	private:
-		// C function associated with this function
-		const Manager::ScriptCallback* cb;
-
-		// Calls the C function from Lua
-		static int LuaCall(lua_State* L);
-
-		// Formats a message describing an argument error
-		/*std::string DescribeError(lua_State* L, int narg, int got, int expected);
-
-		// Raises the Lua error, function never returns.
-		int RaiseError(lua_State* L, int narg, int got, int expected);*/
-
-	public:
-		// Creates a new C function
-		CFunction(State* state, const Manager::ScriptCallback* cb);
-		void Push() const;
-
-	};
-	//
-	//-----------------------------------------------------------------------------------------
 }

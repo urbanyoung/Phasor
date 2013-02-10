@@ -188,11 +188,12 @@ namespace Scripting
 				Manager::ScriptState& state = *phasor_state.state;
 				bool found = false;
 				Result r = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
-
+			
 				// The first result matching the expected types is used
 				if (found && !result_set) {
 					size_t nloop = expected_types.size() < r.size() ?
 						expected_types.size() : r.size();
+					
 					bool use_result = true;
 					Manager::MObject& obj = r.ReadObject();
 					for (size_t i = 0; i < nloop; i++) {

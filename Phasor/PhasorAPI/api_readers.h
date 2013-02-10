@@ -13,6 +13,9 @@ void RaisePlayerError(Manager::CallHandler& handler, int player_id);
 // name and splitting the message into a new one at each \n
 std::vector<std::wstring> ReadString(Common::Object& obj);
 
+// Don't apply any processing like in ReadString
+std::string ReadRawString(Common::Object& obj);
+
 // Read the player, if strict is true an error is raised if the player doesn't
 // exist.
 halo::s_player* ReadPlayer(Manager::CallHandler& handler, Common::Object& playerObj, bool strict);
@@ -30,3 +33,4 @@ void AddResultString(const std::wstring& str, Common::Object::unique_list& resul
 void AddResultNumber(double value, Common::Object::unique_list& results);
 void AddResultBool(bool b, Common::Object::unique_list& results);
 void AddResultPtr(void* ptr, Common::Object::unique_list& result);
+void AddResultTable(const std::vector<std::string>& data, Common::Object::unique_list& result);
