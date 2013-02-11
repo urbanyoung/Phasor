@@ -1,10 +1,8 @@
 /*! \file playerinfo.h
  * \brief Player information querying functions for scripts.
  * 
- * Provides player information related functions for scripts.
- * 
- * Note: All functions, other than getplayer, will raise a Lua error if
- * you send an invalid player. getplayer will return nil and can be used
+ * \b Important: All functions, other than \c getplayer, will raise a Lua error if
+ * you send an invalid player. \c getplayer will return nil and can be used
  * to determine if a particular player is valid.
  */
 
@@ -71,6 +69,10 @@ void l_getip(PHASOR_API_ARGS);
  *		local port = getport(0)
  *		hprintf("Player with ip:port " .. ip .. ":" .. port)
  * \endcode
+ * Example output:
+ * \verbatim
+ Player with ip:port 127.0.0.1:2302
+ \endverbatim
  */
 void l_getport(PHASOR_API_ARGS);
 
@@ -127,12 +129,13 @@ void l_getteamsize(PHASOR_API_ARGS);
  * \param player The player's memory id.
  * \return The player's object id or nil if they are dead.
  * 
- * Note: If the player is currently dead, nil is returned.
- * 
  * Example usage:
  * \code
  *		local player_obj_id = getplayerobjectid(0) -- get player 0's object id
  * \endcode
+ * 
+ * \remark 
+ * If the player is currently dead, nil is returned.
  */
 void l_getplayerobjectid(PHASOR_API_ARGS);
 
@@ -156,7 +159,9 @@ void l_isadmin(PHASOR_API_ARGS);
  * Example usage:
  * \code
  *		setadmin(0) -- player 0 is now an admin 
- *		if (isadmin(0) == true) then end
+ *		if (isadmin(0) == true) then
+ *			-- this will always be true
+ *		end
  * \endcode
  */
 void l_setadmin(PHASOR_API_ARGS);

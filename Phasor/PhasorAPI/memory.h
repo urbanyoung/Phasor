@@ -1,9 +1,6 @@
 /*! \file memory.h
  * \brief Memory related functions for scripts.
- * 
- * Provides the memory related Phasor scripting functions.
  *
- *	Note:
  *	As of 01.00.10.059 all read/write functions have been overloaded
  *	to optionally remove the need for the address offset. For such cases
  *	you shouldn't include address_offset and the address used will be
@@ -17,22 +14,14 @@
  *	\endcode
  *	
  *	### DEFINITIONS
- *	byte - 8 bit positive integer from [0,255]
- *	
- *	char - 8 bit integer from [-128, 127]
- *	
- *	word - 16 bit positive integer from [0,65,535]
- *	
- *	short - 16 bit integer from [-32768, 32767]
- *	
- *	dword - 32 bit positive integer from [0, 4,294,967,295]
- *	
- *	int - 32 bit integer from [-2147483648, 2147483647]
- *	
- *	float - 32 bit floating point number from [-3.402823466e+38, 3.402823466e+38]
- *	
- *	double - 64 bit floating point number from[-1.7976931348623158e+308, 1.7976931348623158e+308]
- *	
+ *		- \c byte - 8 bit positive integer from [0,255] 	
+ *		- \c char - 8 bit integer from [-128, 127]	
+ *		- \c word - 16 bit positive integer from [0,65,535]	
+ *		- \c short - 16 bit integer from [-32768, 32767]	
+ *		- \c dword - 32 bit positive integer from [0, 4,294,967,295]	
+ *		- \c int - 32 bit integer from [-2147483648, 2147483647]	
+ *		- \c float - 32 bit floating point number from [-3.402823466e+38, 3.402823466e+38]	
+ *		- \c double - 64 bit floating point number from[-1.7976931348623158e+308, 1.7976931348623158e+308]	
 */
 #include "../Common/Common.h"
 #include "PhasorAPI.h"

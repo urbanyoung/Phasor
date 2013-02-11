@@ -1,11 +1,9 @@
 /*! \file string.h
  * \brief String manipulation functions provided by Phasor
  * 
- * Provides the string manipulation functions to scripts.
- * 
- * Note: These implementations have changed since the previous Phasor. Both
- * tokenizestring and tokenizecmdstring return an array of strings and as 
- * such gettoken, getcmdtoken, gettokencount, getcmdtokencount have
+ * These implementations have changed since the previous Phasor.\n
+ * Both \c tokenizestring and \c tokenizecmdstring return an array of strings
+ * and as such \c gettoken, \c getcmdtoken, \c gettokencount, \c getcmdtokencount have
  * been removed.
  */
 
@@ -18,6 +16,24 @@
  * \param str The string to tokenize
  * \param delim A string of characters to split at.
  * \return A table consisting of the split strings.
+ * 
+ * Example usage:
+ * \code
+ *		local tokens = tokenizestring("Split at each space,and,comma", " ,")
+ *		-- print the tokens
+ *		for k,v in ipairs(tokens) do
+ *			hprintf("Token " .. k .. " is " .. v)
+ *		end
+ * \endcode
+ * Output:
+ * \verbatim
+ Token 1 is Split
+ Token 2 is at
+ Token 3 is each
+ Token 4 is space
+ Token 5 is and
+ Token 6 is comma
+ \endverbatim
  */
 void l_tokenizestring(PHASOR_API_ARGS);
 
@@ -26,5 +42,22 @@ void l_tokenizestring(PHASOR_API_ARGS);
  *
  * \param str The string to tokenize
  * \return A table consisting of the split strings.
+ * 
+ * Example usage:
+ * \code
+ *		local tokens = tokenizecmdstring("Split at space \"but not while in quotes\" ok?")
+ *		-- print the tokens
+ *		for k,v in ipairs(tokens) do
+ *			hprintf("Token " .. k .. " is " .. v)
+ *		end
+ * \endcode
+ * Output:
+ * \verbatim
+ Token 1 is Split
+ Token 2 is at
+ Token 3 is space
+ Token 4 is but not while in quotes
+ Token 5 is ok?
+ \endverbatim
  */
 void l_tokenizecmdstring(PHASOR_API_ARGS);
