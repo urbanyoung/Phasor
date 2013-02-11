@@ -50,12 +50,12 @@ namespace Lua
 		}
 	}
 
-	std::unique_ptr<MObjTable> State::peek_table()
+	std::unique_ptr<MObjTable> State::peek_table(int indx)
 	{
 		std::unique_ptr<MObjTable> table(new MObjTable());
 		lua_pushnil(L); // so we get first key
 
-		while(lua_next(L, -2)) { 
+		while(lua_next(L, indx - 1)) { 
 			auto value = pop();
 			auto key = peek();
 
@@ -199,7 +199,7 @@ namespace Lua
 			lua_pop(L, -1);
 			throw std::exception(error.c_str());
 		}
-		printf("results\n");
+
 		MObject::unique_deque results;
 
 		// Pop the results off the stack
@@ -273,9 +273,13 @@ namespace Lua
 					/*! \todo
 					 * add proper formatting to this error message
 					 */
+					/*! \todo
+					 * also test peek_table works correctly when not 
+					 * at top of stack.
+					 */
 					if (lua_type(L, indx) != Type_Table)
 						RaiseError("Expected table.");
-					obj.reset(luaState.peek_table().release());
+					obj.reset(luaState.peek_table(indx).release());
 				} break;
 			}
 			return obj;

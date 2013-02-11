@@ -167,48 +167,7 @@ namespace Common
 	// --------------------------------------------------------------------
 	//
 
-	/*ObjString::ObjString(const char* str) : Object(TYPE_STRING)
-	{
-		CopyString(str);
-	}
-
-	ObjString::ObjString(const ObjString& other) : Object(TYPE_STRING)
-	{
-		CopyString(other.str);
-	}
-
-	ObjString::~ObjString()
-	{
-		delete[] str;
-	}
-
-	ObjString& ObjString::operator=(const ObjString& rhs) 
-	{
-		if (this == &rhs) return *this;
-		delete[] str;
-		CopyString(rhs.str);
-		return *this;
-	}
-
-	std::unique_ptr<Object> ObjString::NewCopy() const
-	{
-		return std::unique_ptr<Object>(new ObjString(*this));
-	}
-
-	void ObjString::CopyString(const char* str)
-	{
-		this->str = new char [strlen(str) + 1];
-		strcpy(this->str, str);
-	}
-
-	const char* ObjString::GetValue() const
-	{
-		return this->str;
-	}*/
-
-
-	// --------------------------------------------------------------------
-	//
+	
 	ObjBlob::ObjBlob(BYTE* data, size_t size) : Object(TYPE_BLOB)
 	{
 		std::copy(data, data + size, std::back_inserter(this->data));
@@ -259,11 +218,11 @@ namespace Common
 		}
 	}
 
-	ObjTable::ObjTable(const std::vector<std::string>& data)
+	ObjTable::ObjTable(const std::vector<std::string>& data, size_t firstkey)
 		: Object(TYPE_TABLE)
 	{
 		for (size_t x = 0; x < data.size(); x++) {
-			Object::unique_ptr key(new ObjNumber((DWORD)x));
+			Object::unique_ptr key(new ObjNumber((DWORD)firstkey++));
 			Object::unique_ptr value(new ObjString(data[x]));
 			table.insert(pair_t(move(key), move(value)));
 		}

@@ -6,6 +6,7 @@
 #include "output.h"
 #include "deprecated.h"
 #include "playerinfo.h"
+#include "string.h"
 
 using namespace Common;
 using namespace Manager;
@@ -67,7 +68,10 @@ namespace PhasorAPI
 		{&l_getteamsize, "getteamsize", 1, {TYPE_NUMBER}},
 		{&l_getplayerobjectid, "getplayerobjectid", 1, {TYPE_NUMBER}},
 		{&l_isadmin, "isadmin", 1, {TYPE_NUMBER}},
-		{&l_setadmin, "setadmin", 1, {TYPE_NUMBER}}
+		{&l_setadmin, "setadmin", 1, {TYPE_NUMBER}},
+		// String related functions: see string.h
+		{&l_tokenizestring, "tokenizestring", 2, {TYPE_STRING, TYPE_STRING}},
+		{&l_tokenizecmdstring, "tokenizecmdstring", 1, {TYPE_STRING}}
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 

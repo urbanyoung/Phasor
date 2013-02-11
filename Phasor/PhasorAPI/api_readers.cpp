@@ -93,5 +93,5 @@ void AddResultPtr(void* ptr, Object::unique_list& results)
 
 void AddResultTable(const std::vector<std::string>& data, Object::unique_list& results)
 {
-	results.push_back(std::unique_ptr<Object>(new ObjTable(data)));
+	results.push_back(std::unique_ptr<Object>(new ObjTable(data, 1)));
 }

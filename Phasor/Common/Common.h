@@ -236,7 +236,7 @@ namespace Common
 	public:
 		ObjTable(const std::map<std::string, std::string>& table);
 		ObjTable(const std::map<std::string, std::unique_ptr<Object>>& table);
-		ObjTable(const std::vector<std::string>& data);
+		ObjTable(const std::vector<std::string>& data, size_t firstkey);
 		ObjTable();
 		~ObjTable();
 
