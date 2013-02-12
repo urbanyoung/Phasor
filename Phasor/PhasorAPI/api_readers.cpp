@@ -61,6 +61,13 @@ halo::s_player* ReadPlayer(CallHandler& handler, Object& playerObj, bool strict)
 	return player;
 }
 
+// Reads a boolean
+bool ReadBoolean(const Common::Object& obj)
+{
+	ObjBool& b = (ObjBool&)obj;
+	return b.GetValue();
+}
+
 void AddResultNil(Common::Object::unique_list& results)
 {
 	results.push_back(std::unique_ptr<Object>(new Object()));

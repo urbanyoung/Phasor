@@ -41,6 +41,27 @@ namespace halo
 		g_PrintStream << "todo: kick player" << endl;
 	}
 
+	void s_player::ChangeTeam(bool forcekill) const
+	{
+
+	}
+
+	void s_player::Kill() const
+	{
+
+	}
+
+	void s_player::ApplyCamo(float duration) const
+	{
+
+	}
+
+	void s_player::SetSpeed(float speed) const
+	{
+
+	}
+
+
 	s_player_structure* GetPlayerMemory(int index)
 	{
 		s_player_structure* mem = 0;

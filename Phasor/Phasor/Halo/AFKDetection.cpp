@@ -48,7 +48,7 @@ namespace halo { namespace afk_detection
 		// make sure the object is available
 		objects::s_halo_object* object = player.get_object();
 		if (object)	{
-			vect3d new_camera = object->biped.cameraView;
+			vect3d new_camera = object->biped->cameraView;
 
 			// check if the camera has moved
 			if (new_camera != camera) move_count++;
@@ -56,9 +56,9 @@ namespace halo { namespace afk_detection
 			camera = new_camera;
 
 			// Check if the player is shooting/throwing nades etc, if so they are not afk
-			if (object->biped.actionFlags.melee || 
-				object->biped.actionFlags.primaryWeaponFire ||
-				object->biped.actionFlags.secondaryWeaponFire)
+			if (object->biped->actionFlags.melee || 
+				object->biped->actionFlags.primaryWeaponFire ||
+				object->biped->actionFlags.secondaryWeaponFire)
 				MarkPlayerActive();
 		}
 	}

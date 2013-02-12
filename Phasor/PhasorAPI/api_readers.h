@@ -27,6 +27,9 @@ template <typename T> T ReadNumber(const Common::Object& obj)
 	return (T)num->GetValue();
 }
 
+// Reads a boolean
+bool ReadBoolean(const Common::Object& obj);
+
 void AddResultNil(Common::Object::unique_list& results);
 void AddResultString(const std::string& str, Common::Object::unique_list& results);
 void AddResultString(const std::wstring& str, Common::Object::unique_list& results);

@@ -1,8 +1,7 @@
 /*! \file misc.h
  * \brief Miscellaneous scripting functions that aren't Halo related.
- * 
  */
-#pragma one
+#pragma once
 
 #include "PhasorAPI.h"
 

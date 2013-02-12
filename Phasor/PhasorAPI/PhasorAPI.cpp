@@ -7,21 +7,13 @@
 #include "deprecated.h"
 #include "playerinfo.h"
 #include "string.h"
+#include "misc.h"
 
 using namespace Common;
 using namespace Manager;
 
 namespace PhasorAPI
 {
-	void testf(CallHandler& handler, 
-		Object::unique_deque& args, Object::unique_list& results)
-	{
-		ObjBool& b = (ObjBool&)*args[1];
-		printf("Received %i value %i\n", args[1]->GetType(), b.GetValue());
-		results.push_back(std::unique_ptr<Object>(
-			new ObjString("Hello, register test.")));
-	}
-
 	// Functions to register for scripts use.
 	// When any function is called all parameters have been type checked
 	// and so can be treated as valid.
@@ -29,7 +21,6 @@ namespace PhasorAPI
 	{
 		// {&cfunc, "funcname", min_args, {arg1_t, arg2_t, .. argn_t}}
 		// remember: n > min_args if there are overloads.
-		{&testf, "test_func", 3, {TYPE_NUMBER, TYPE_BOOL, TYPE_STRING}},
 		// Memory related functions: see memory.h
 		{&l_readbit, "readbit", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_readbyte, "readbyte", 1, {TYPE_NUMBER, TYPE_NUMBER}},
@@ -71,7 +62,10 @@ namespace PhasorAPI
 		{&l_setadmin, "setadmin", 1, {TYPE_NUMBER}},
 		// String related functions: see string.h
 		{&l_tokenizestring, "tokenizestring", 2, {TYPE_STRING, TYPE_STRING}},
-		{&l_tokenizecmdstring, "tokenizecmdstring", 1, {TYPE_STRING}}
+		{&l_tokenizecmdstring, "tokenizecmdstring", 1, {TYPE_STRING}},
+		// Miscellaneous functions: see misc.h
+		{&l_getticks, "getticks", 0, {}},
+		{&l_getrandomnumber, "getrandomnumber", 2, {TYPE_NUMBER, TYPE_NUMBER}}
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 
