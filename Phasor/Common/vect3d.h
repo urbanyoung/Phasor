@@ -3,70 +3,37 @@
 #pragma pack(push, 1)
 
 // unions don't like structs with assignment operators
-struct _vect3d
+/*struct _vect3d
 {
 	float x;
 	float y;
 	float z;
-};
+};*/
 
 struct vect3d
 {
-	_vect3d vect;
-	vect3d() {vect.x = 0; vect.y = 0; vect.z = 0; }
-	vect3d(const vect3d& other) : vect(other.vect){}
-	vect3d(const _vect3d& other) : vect(other) {}
-	
-	vect3d& operator=(const _vect3d& rhs)
-	{
-		vect.x = rhs.x;
-		vect.y = rhs.y;
-		vect.z = rhs.z;
-		return *this;
-	}
+	float x;
+	float y;
+	float z;
+
+	vect3d() {x = 0; y = 0; z = 0; }
+	vect3d(const vect3d& other) : x(other.x), y(other.y), z(other.z){}
 
 	vect3d& operator=(const vect3d& rhs)
 	{
-		return this->operator=(rhs.vect);
+		x = rhs.x;
+		y = rhs.y;
+		z = rhs.z;
+		return *this;
 	}
 };
 
-inline bool operator==(const _vect3d& lhs, const _vect3d& rhs)
+inline bool operator==(const vect3d& lhs, const vect3d& rhs)
 {
 	return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
 }
 
-inline bool operator==(const vect3d& lhs, const vect3d& rhs)
-{
-	return lhs.vect == rhs.vect;
-}
-
-inline bool operator==(const _vect3d& lhs, const vect3d& rhs)
-{
-	return lhs == rhs.vect;
-}
-
-inline bool operator==(const vect3d& lhs, const _vect3d& rhs)
-{
-	return !(lhs == rhs);
-}
-
-inline bool operator!=(const _vect3d& lhs, const _vect3d& rhs)
-{
-	return !(lhs == rhs);
-}
-
 inline bool operator!=(const vect3d& lhs, const vect3d& rhs)
-{
-	return !(lhs == rhs);
-}
-
-inline bool operator!=(const _vect3d& lhs, const vect3d& rhs)
-{
-	return !(lhs == rhs);
-}
-
-inline bool operator!=(const vect3d& lhs, const _vect3d& rhs)
 {
 	return !(lhs == rhs);
 }

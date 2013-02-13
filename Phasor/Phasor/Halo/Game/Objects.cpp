@@ -18,8 +18,6 @@ namespace halo { namespace objects {
 		if (objectId.slot >= object_table->header.max_size) return 0;
 
 		s_halo_object* obj = &object_table->entries[objectId.slot];
-		if (obj->id != objectId.id) return 0;
-
-		return obj;
+		return obj->id == objectId.id ? obj : 0;
 	}
 }}

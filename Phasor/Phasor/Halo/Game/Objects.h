@@ -79,7 +79,7 @@ namespace halo { namespace objects
 			UNKNOWN_BITFIELD(1);
 		} actionFlags;
 		UNKNOWN(0x26); // 0x020A
-		_vect3d cameraView; // 230
+		vect3d cameraView; // 230
 		UNKNOWN(0x68); // 0x23c
 		BYTE bodyState; // 0x2A4 (2 = standing, 3 = crouching, 0xff = invalid, like in vehicle)
 		UNKNOWN(0x53); // 0x2A5
