@@ -257,6 +257,15 @@ namespace halo { namespace server
 		return true;
 	}
 
+	void NotifyServerOfTeamChange(const halo::s_player& player)
+	{
+		// build the packet that notifies the server of the team change
+		BYTE d[4] = {(BYTE)player.memory_id, (BYTE)player.mem->team, 0x18, 0};
+		// Gotta pass a pointer to the data
+		DWORD d_ptr = (DWORD)&d;		BYTE buffer[8192];		DWORD retval = server::BuildPacket(buffer, 0, 0x1A, 0, (LPBYTE)&d_ptr, 0, 1, 0);
+		server::AddPacketToGlobalQueue(buffer, retval, 1, 1, 0, 1, 3);
+	}
+
 	halo::s_player* GetPlayerExecutingCommand()
 	{
 		DWORD execPlayerNumber = *(DWORD*)UlongToPtr(ADDR_RCONPLAYER);

@@ -184,6 +184,7 @@ namespace Manager
 		Caller& operator=(const Caller& rhs);
 
 		// Adds an argument to the list, which is passed to the next function called
+		void AddArgNil();
 		void AddArg(bool b);
 		void AddArg(const std::string& str);
 		void AddArg(int value);

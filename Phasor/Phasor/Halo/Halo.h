@@ -15,9 +15,9 @@ namespace halo
 		unsigned short id;		
 
 		/*! \todo check this works */
-		operator long() 
+		unsigned long getul() 
 		{
-			long result = id << 16 | (slot & 0xffff);
+			unsigned long result = id << 16 | (slot & 0xffff);
 			return result;
 		}
 	};

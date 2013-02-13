@@ -73,7 +73,7 @@ namespace halo
 
 		objects::s_halo_object* get_object();
 		void Kick() const;
-		void ChangeTeam(bool forcekill=true) const;
+		void ChangeTeam(BYTE new_team, bool forcekill=true) const;
 		void Kill() const;
 		void ApplyCamo(float duration) const;
 		void SetSpeed(float speed) const;

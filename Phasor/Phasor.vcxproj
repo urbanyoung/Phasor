@@ -140,6 +140,7 @@
     <ClCompile Include="Phasor\PhasorThread.cpp" />
     <ClCompile Include="Phasor\ThreadedLogging.cpp" />
     <ClCompile Include="Scripting.cpp" />
+    <ClCompile Include="ScriptingEvents.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Phasor\ThreadedLogging.h" />
     <ClInclude Include="Phasor\Version.h" />
     <ClInclude Include="Scripting.h" />
+    <ClInclude Include="ScriptingEvents.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="phasor_includes.props" />

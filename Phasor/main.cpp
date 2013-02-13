@@ -30,7 +30,7 @@ std::unique_ptr<CScriptsLog> g_ScriptsLog;
 std::unique_ptr<CPhasorLog> g_PhasorLog;
 std::unique_ptr<CGameLog> g_GameLog;
 std::unique_ptr<CRconLog> g_RconLog;
-std::unique_ptr<Scripting::Scripts> g_Scripts;
+std::unique_ptr<scripting::Scripts> g_Scripts;
 // todo: remove before release
 /*! \todo
  * before release change back to file output only
@@ -90,7 +90,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		
 		// todo: remove before release
 		scriptOutput.reset(new Forwarder(g_PrintStream, Forwarder::end_point(*g_ScriptsLog)));
-		g_Scripts.reset(new Scripting::Scripts(*scriptOutput,g_ScriptsDirectory));
+		g_Scripts.reset(new scripting::Scripts(*scriptOutput,g_ScriptsDirectory));
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
 		LoadEarlyInit(PhasorLog);

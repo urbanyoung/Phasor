@@ -37,9 +37,9 @@ namespace halo { namespace objects
 		UNKNOWN(0x10);
 		vect3d location1; // 0x00f8 set when in a vehicle unlike other one. best not to use tho (isnt always set)
 		UNKNOWN(0x10);
-		unsigned long veh_weaponId; // 0x0114
-		unsigned long player_curWeapon; // 0x0118
-		unsigned long vehicleId; // 0x011C
+		ident veh_weaponId; // 0x0114
+		ident player_curWeapon; // 0x0118
+		ident vehicleId; // 0x011C
 		BYTE bGunner; // 0x0120
 		short unkShort; // 0x0121
 		BYTE bFlashlight; // 0x0123
@@ -83,10 +83,10 @@ namespace halo { namespace objects
 		UNKNOWN(0x68); // 0x23c
 		BYTE bodyState; // 0x2A4 (2 = standing, 3 = crouching, 0xff = invalid, like in vehicle)
 		UNKNOWN(0x53); // 0x2A5
-		unsigned long primaryWeaponId; // 0x2F8
-		unsigned long secondaryWeaponId; // 0x2FC
-		unsigned long tertiaryWeaponId; // 0x300
-		unsigned long quartaryWeaponId; // 0x304
+		ident primaryWeaponId; // 0x2F8
+		ident secondaryWeaponId; // 0x2FC
+		ident tertiaryWeaponId; // 0x300
+		ident quartaryWeaponId; // 0x304
 		UNKNOWN(0x18); // 0x308
 		BYTE zoomLevel; // 0x320 (0xff - no zoom, 0 - 1 zoom, 1 - 2 zoom etc)
 		BYTE zoomLevel1; // 0x321

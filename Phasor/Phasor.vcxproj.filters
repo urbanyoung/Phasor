@@ -131,6 +131,9 @@
     <ClCompile Include="PhasorAPI\misc_halo.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="ScriptingEvents.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -335,6 +338,9 @@
     </ClInclude>
     <ClInclude Include="PhasorAPI\misc_halo.h">
       <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptingEvents.h">
+      <Filter>Scripting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

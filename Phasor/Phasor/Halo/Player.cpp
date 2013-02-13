@@ -6,6 +6,7 @@
 #include "Addresses.h"
 #include "Server/Server.h"
 #include "Game/Game.h"
+#include "../../ScriptingEvents.h"
 #include <assert.h>
 
 namespace halo 
@@ -41,24 +42,90 @@ namespace halo
 		g_PrintStream << "todo: kick player" << endl;
 	}
 
-	void s_player::ChangeTeam(bool forcekill) const
+	void s_player::ChangeTeam(BYTE new_team, bool forcekill) const
 	{
+		using namespace server;
+		s_server_info* server_info = GetServerStruct();
+
+		for (int i = 0; i < 16; i++) {
+			s_presence_item* player_entry = &server_info->player_data[i];
+			if (player_entry->playerId == memory_id) {
+				DWORD old_team = mem->team;
+
+				// update teams in memory
+				mem->team = new_team;
+				mem->team_Again = new_team;
+				player_entry->team = new_team;
+
+				if (forcekill) Kill();
+				NotifyServerOfTeamChange(*this);
+				scripting::events::OnTeamChange(*this, false, old_team);
+				break;
+			}
+		}
 
 	}
 
+	/*!
+	 * \todo set sv_killed */
 	void s_player::Kill() const
 	{
+		//sv_killed = true; // used later for detecting what killed the player
 
+		// kill them
+		DWORD playerMask = (mem->playerJoinCount << 0x10) | memory_id;
+		DWORD playerObj = mem->object_id;
+
+		if (playerObj != -1) {
+			__asm
+			{
+				pushad
+
+				PUSH 0
+				PUSH -1
+				PUSH -1
+				PUSH -1
+				MOV EAX,playerObj
+				call DWORD PTR ds:[FUNC_ONPLAYERDEATH]
+				add esp, 0x10
+				mov eax, playerObj
+				call DWORD PTR ds:[FUNC_ACTIONDEATH_1]
+				mov eax, playerMask
+				call DWORD PTR ds:[FUNC_ACTIONDEATH_2]
+				push playerMask
+				call DWORD PTR ds:[FUNC_ACTIONDEATH_3]
+				add esp, 4
+
+				popad
+			}
+		}
+
+		//sv_killed = false;
 	}
 
 	void s_player::ApplyCamo(float duration) const
 	{
+		DWORD playerMask = (mem->playerJoinCount << 0x10) | memory_id;
+		DWORD count = 0x8000; // count >= 0x8000 == infinite
 
+		if (duration != 0)
+			count = (DWORD)(duration * 30); // 30 ticks per second
+
+		// Make the player invisible
+		__asm
+		{
+			mov eax, memory_id
+			mov ebx, playerMask
+			push count
+			push 0
+			call dword ptr ds:[FUNC_DOINVIS]
+			add esp, 8
+		}
 	}
 
 	void s_player::SetSpeed(float speed) const
 	{
-
+		mem->speed = speed;
 	}
 
 

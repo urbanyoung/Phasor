@@ -1,6 +1,7 @@
 #include "Commands.h"
 #include "../Common/Streams.h"
 #include "../Common/MyString.h"
+#include "../ScriptingEvents.h"
 #include "Logging.h"
 #include "Halo/Server/Server.h"
 #include "Halo/Game/Game.h"
@@ -82,15 +83,8 @@ namespace commands
 		if (tokens.size() == 0) return e_command_result::kProcessed;
 		std::string& command_name = tokens[0];
 
-		// pass to scripts here
-		Scripting::PhasorCaller caller;
-		caller.AddArg(exec_player ? exec_player->memory_id : -1);
-		caller.AddArg(command);
-		Scripting::results_t types = {Common::TYPE_BOOL};
-		Scripting::Result result = caller.Call("OnServerCommand", types);
-
-		if (result.size() && result.ReadBool().GetValue() == false) 
-			return e_command_result::kProcessed;
+		bool do_process = scripting::events::OnServerCommand(exec_player, command);
+		if (!do_process) return e_command_result::kProcessed;
 				
 		// Attempt to execute the command, catching any errors resulting
 		// from user input.

@@ -9,14 +9,14 @@
 
 typedef unsigned long DWORD;
 
-namespace Scripting
+namespace scripting
 {
 	class Scripts;
 }
 
-extern std::unique_ptr<Scripting::Scripts> g_Scripts;
+extern std::unique_ptr<scripting::Scripts> g_Scripts;
 
-namespace Scripting
+namespace scripting
 {
 	typedef Manager::Result Result;
 
@@ -81,7 +81,13 @@ namespace Scripting
 	typedef std::array<Common::obj_type, 5> results_t;
 	class PhasorCaller : public Manager::Caller
 	{
+		bool ignore_ret;
 	public:
+		PhasorCaller::PhasorCaller() : Manager::Caller(), ignore_ret(false)
+		{
+		}
+
+		void ReturnValueIgnored() { ignore_ret = true; }
 		
 		// Calls the specified function on all loaded scripts.
 		Result Call(const std::string& function, 

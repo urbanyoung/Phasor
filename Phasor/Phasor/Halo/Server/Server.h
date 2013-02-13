@@ -92,19 +92,31 @@ namespace server
 	extern SayStream say_stream;
 
 	void StartGame(const char* map);
+
 	// Send a chat message to the player
 	void MessagePlayer(const s_player& player, const std::wstring& str);
+	
 	// Send a console message to the player
 	bool ConsoleMessagePlayer(const s_player& player, const std::wstring& str);
+	
+	// Notify the server a player's team has changed.
+	void NotifyServerOfTeamChange(const halo::s_player& player);
+
 	// Gets the player's ip
 	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port);
+	
 	// Gets the player's hash
 	bool GetPlayerHash(const s_player& player, std::string& hash);
+	
 	// Get the player's machine info (ip struct etc)
 	s_machine_info* GetMachineData(const s_player& player);
+	
 	// Get the player who is executing the current server command.
 	// returns 0 if no player
 	halo::s_player* GetPlayerExecutingCommand();
+
+	s_server_info* GetServerStruct();
+
 
 	// --------------------------------------------------------------------
 	// Events

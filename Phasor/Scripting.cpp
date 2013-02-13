@@ -8,7 +8,7 @@
 #include <windows.h> // for GetCurrentProcessId()
 #include <array>
 
-namespace Scripting
+namespace scripting
 {
 	using namespace Common;
 	const std::wstring log_prefix = L"  ";
@@ -170,13 +170,13 @@ namespace Scripting
 		std::array<Common::obj_type, 5> expected_types, Scripts& s)
 	{
 		// This is the argument which indicates if a scripts' return value is used.
-		this->AddArg(true);
+		this->AddArg(!ignore_ret);
 		ObjBool& using_param = (ObjBool&)**args.rbegin();
 
 		auto itr = s.scripts.begin();
 
 		Result result;
-		bool result_set = false;
+		bool result_set = ignore_ret;
 
 		for (; itr != s.scripts.end(); ++itr)
 		{

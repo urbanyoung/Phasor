@@ -187,6 +187,11 @@ namespace Manager
 		return *this;
 	}
 
+	void Caller::AddArgNil()
+	{
+		std::unique_ptr<Common::Object> arg(new Object()); 
+		args.push_back(std::move(arg));
+	}
 	void Caller::AddArg(bool b)
 	{
 		std::unique_ptr<Common::Object> arg(new ObjBool(b)); 
