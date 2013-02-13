@@ -69,7 +69,7 @@ void l_getteamsize(CallHandler& handler, Object::unique_deque& args, Object::uni
 void l_getplayerobjectid(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	halo::s_player* player = ReadPlayer(handler, *args[0], true);
-	AddResultNumber(player->mem->object_id.getul(), results);
+	AddResultNumber(player->mem->object_id, results);
 }
 
 void l_isadmin(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
