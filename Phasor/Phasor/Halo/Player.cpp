@@ -11,6 +11,12 @@
 
 namespace halo 
 {
+	struct s_player_table
+	{
+		s_table_header header;
+		s_player_structure players[16];
+
+	};
 	s_player::s_player(int memory_id) : memory_id(memory_id)
 	{
 		g_PrintStream << "New player " << memory_id << endl;
@@ -29,10 +35,11 @@ namespace halo
 		g_PrintStream << "Player " << memory_id << " left" << endl;
 	}
 
+	/*! \todo 
+	 * check if object can invalidate itself.. ie does loopobjects ever defrag? */
 	objects::s_halo_object* s_player::get_object()
 	{
 		objects::s_halo_object* object = objects::GetObjectAddress(mem->object_id);
-		assert(m_object == 0 || object == m_object);
 		m_object = object;
 		return object;
 	}
@@ -50,7 +57,7 @@ namespace halo
 		for (int i = 0; i < 16; i++) {
 			s_presence_item* player_entry = &server_info->player_data[i];
 			if (player_entry->playerId == memory_id) {
-				DWORD old_team = mem->team;
+				BYTE old_team = mem->team;
 
 				// update teams in memory
 				mem->team = new_team;
@@ -75,7 +82,7 @@ namespace halo
 		// kill them
 		DWORD playerMask = (mem->playerJoinCount << 0x10) | memory_id;
 		DWORD playerObj = mem->object_id;
-
+		
 		if (playerObj != -1) {
 			__asm
 			{
@@ -128,17 +135,12 @@ namespace halo
 		mem->speed = speed;
 	}
 
-
 	s_player_structure* GetPlayerMemory(int index)
 	{
-		s_player_structure* mem = 0;
 		if (index >= 0 && index < 16) {
-			LPBYTE lpPlayerList = (LPBYTE)*(DWORD*)ULongToPtr(ADDR_PLAYERBASE);
-
-			if (lpPlayerList)
-				mem = (s_player_structure*)(lpPlayerList + 0x38 + (0x200 * index));
+			s_player_table* table = *(s_player_table**)ADDR_PLAYERBASE;
+			if (table) return &table->players[index];
 		}
-
-		return mem;
+		return 0;
 	}	
 }

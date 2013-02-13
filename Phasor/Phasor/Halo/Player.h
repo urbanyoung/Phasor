@@ -23,7 +23,8 @@ namespace halo
 		WORD localClient; // 0x0002 always FF FF on a dedi in Halo is 00 00 if its your player
 		wchar_t playerName[12]; //0x0004
 		UNKNOWN(4); // 0x001C only seen FF FF FF FF
-		DWORD team; // 0x0020
+		BYTE team; // 0x0020
+		UNKNOWN(3); // padding?
 		ident m_interactionObject; // 0x0024 ie Press E to enter THIS vehicle
 		WORD interactionType; // 0x0028 8 for vehicle, 7 for weapon
 		WORD interactionSpecifier; // 0x002A which seat of car etc

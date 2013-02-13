@@ -21,6 +21,8 @@ namespace halo
 			unsigned long result = id << 16 | (slot & 0xffff);
 			return result;
 		}
+
+		bool valid() { return (unsigned long)*this != 0xFFFFFFFF; }
 	};
 	static_assert(sizeof(ident) == 4, "bad");
 

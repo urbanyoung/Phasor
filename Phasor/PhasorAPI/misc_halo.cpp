@@ -8,7 +8,9 @@ void l_changeteam(CallHandler& handler, Object::unique_deque& args, Object::uniq
 {
 	halo::s_player* player = ReadPlayer(handler, *args[0], true);
 	bool forcekill = ReadBoolean(*args[1]);
-	player->ChangeTeam(forcekill);
+	BYTE team = !player->mem->team;
+	if (args.size() == 3) team = ReadNumber<BYTE>(*args[2]);
+	player->ChangeTeam(team, forcekill);
 }
 
 void l_kill(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)

@@ -8,6 +8,7 @@
 #include "playerinfo.h"
 #include "string.h"
 #include "misc.h"
+#include "misc_halo.h"
 
 using namespace Common;
 using namespace Manager;
@@ -65,7 +66,15 @@ namespace PhasorAPI
 		{&l_tokenizecmdstring, "tokenizecmdstring", 1, {TYPE_STRING}},
 		// Miscellaneous functions: see misc.h
 		{&l_getticks, "getticks", 0, {}},
-		{&l_getrandomnumber, "getrandomnumber", 2, {TYPE_NUMBER, TYPE_NUMBER}}
+		{&l_getrandomnumber, "getrandomnumber", 2, {TYPE_NUMBER, TYPE_NUMBER}},
+		// Miscellaneous halo functions: see misc_halo.h
+		{&l_changeteam, "changeteam", 2, {TYPE_NUMBER, TYPE_BOOL, TYPE_NUMBER}},
+		{&l_kill, "kill", 1, {TYPE_NUMBER}},
+		{&l_applycamo, "applycamo", 2, {TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_svcmd, "svcmd", 1, {TYPE_STRING}},
+		{&l_updateammo, "updateammo", 1, {TYPE_NUMBER}},
+		{&l_setammo, "setammo", 1, {TYPE_NUMBER}},
+		{&l_setspeed, "setspeed", 2, {TYPE_NUMBER, TYPE_NUMBER}}
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 

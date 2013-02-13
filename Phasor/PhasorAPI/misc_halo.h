@@ -8,11 +8,16 @@
 /*! \brief Changes the specified player's team.
  *	\param player The player's memory id.
  *	\param forcekill Boolean indicating whether or not to kill the player.
+ *	\param [team] The player's new team (optional)
  *	
  *	Example usage:
  *	\code
  *		changeteam(player, true)
  *	\endcode
+ *	
+ *	\remark
+ *	If you don't specify the player's new team, their new team is the logical NOT
+ *	of their current team. ie red -> blue, blue -> red.
  */
 void l_changeteam(PHASOR_API_ARGS);
 
