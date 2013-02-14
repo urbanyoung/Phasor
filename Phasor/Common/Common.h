@@ -246,9 +246,9 @@ namespace Common
 		// Create a new, independent copy of this object.
 		virtual std::unique_ptr<Object> NewCopy() const;
 
-		size_t size();
-		table_t::const_iterator begin();
-		table_t::const_iterator end();
+		size_t size() const;
+		table_t::const_iterator begin() const;
+		table_t::const_iterator end() const;
 		void insert(pair_t pair);
 		// Get value at index
 		//const Object* operator [] (size_t i);

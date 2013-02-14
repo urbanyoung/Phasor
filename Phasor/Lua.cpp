@@ -120,23 +120,23 @@ namespace Lua
 		{
 		case Common::TYPE_BOOL:
 			{
-				MObjBool& b = (MObjBool&)object;
+				const MObjBool& b = static_cast<const MObjBool&>(object);
 				lua_pushboolean(L, b.GetValue());
 			} break;
 		case Common::TYPE_NUMBER:
 			{
-				MObjNumber& n = (MObjNumber&)object;
+				const MObjNumber& n = static_cast<const MObjNumber&>(object);
 				lua_pushnumber(L, n.GetValue());
 			} break;
 		case Common::TYPE_STRING:
 			{
-				MObjString& s = (MObjString&)object;
+				const MObjString& s = static_cast<const MObjString&>(object);
 				lua_pushstring(L, s.GetValue());
 			} break;
 		
 		case Common::TYPE_TABLE:
 			{
-				MObjTable& table = (MObjTable&)object;
+				const MObjTable& table = static_cast<const MObjTable&>(object);
 				lua_createtable(L, table.size(), table.size());
 
 				for (auto itr = table.begin(); itr != table.end(); ++itr) {

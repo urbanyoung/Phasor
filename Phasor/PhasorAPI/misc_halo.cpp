@@ -3,12 +3,15 @@
 #include "../Phasor/Halo/Game/Objects.h"
 #include "../Phasor/Globals.h"
 #include "../Common/MyString.h"
+
 using namespace Common;
 using namespace Manager;
+using namespace halo;
+using namespace objects;
 
 void l_changeteam(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
-	halo::s_player* player = ReadPlayer(handler, *args[0], true);
+	s_player* player = ReadPlayer(handler, *args[0], true);
 	bool forcekill = ReadBoolean(*args[1]);
 	BYTE team = !player->mem->team;
 	if (args.size() == 3) team = ReadNumber<BYTE>(*args[2]);
@@ -17,13 +20,13 @@ void l_changeteam(CallHandler& handler, Object::unique_deque& args, Object::uniq
 
 void l_kill(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
-	halo::s_player* player = ReadPlayer(handler, *args[0], true);
+	s_player* player = ReadPlayer(handler, *args[0], true);
 	player->Kill();
 }
 
 void l_applycamo(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
-	halo::s_player* player = ReadPlayer(handler, *args[0], true);
+	s_player* player = ReadPlayer(handler, *args[0], true);
 	float duration = ReadNumber<float>(*args[1]);
 	player->ApplyCamo(duration);
 }
@@ -31,7 +34,6 @@ void l_applycamo(CallHandler& handler, Object::unique_deque& args, Object::uniqu
 /*! \todo maybe make a separate command for alias stuff */
 void l_svcmd(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 { 
-	using namespace halo;
 	std::string cmd = ReadRawString(*args[0]);
 	bool want_result = false;
 	if (args.size() == 2) want_result = ReadBoolean(*args[1]);
@@ -50,7 +52,6 @@ void l_svcmd(CallHandler& handler, Object::unique_deque& args, Object::unique_li
 	// will be used.
 
 	server::ExecuteServerCommand(cmd);
-	if (!want_result) return;
 
 	std::vector<std::string> narrowed;
 	narrowed.reserve(output.size());
@@ -64,8 +65,6 @@ void l_svcmd(CallHandler& handler, Object::unique_deque& args, Object::unique_li
 
 void l_updateammo(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
-	using namespace halo;
-	using namespace halo::objects;
 	ident weapon_id = make_ident(ReadNumber<DWORD>(*args[0]));
 	s_halo_weapon* weapon = (s_halo_weapon*)GetObjectAddress(weapon_id);
 	if (weapon) handler.RaiseError("updateammo: invalid weapon id!");
@@ -74,8 +73,6 @@ void l_updateammo(CallHandler& handler, Object::unique_deque& args, Object::uniq
 
 void l_setammo(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
-	using namespace halo;
-	using namespace halo::objects;
 	ident weapon_id = make_ident(ReadNumber<DWORD>(*args[0]));
 	WORD clip_ammo = ReadNumber<WORD>(*args[1]);
 	WORD pack_ammo = ReadNumber<WORD>(*args[2]);
@@ -88,7 +85,7 @@ void l_setammo(CallHandler& handler, Object::unique_deque& args, Object::unique_
 
 void l_setspeed(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
-	halo::s_player* player = ReadPlayer(handler, *args[0], true);
+	s_player* player = ReadPlayer(handler, *args[0], true);
 	float speed = ReadNumber<float>(*args[1]);
 	player->SetSpeed(speed);
 }

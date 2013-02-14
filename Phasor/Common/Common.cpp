@@ -273,17 +273,17 @@ namespace Common
 		}
 	}
 
-	size_t ObjTable::size()
+	size_t ObjTable::size() const
 	{
 		return table.size();
 	}
 
-	ObjTable::table_t::const_iterator ObjTable::begin()
+	ObjTable::table_t::const_iterator ObjTable::begin() const
 	{
 		return table.cbegin();
 	}
 
-	ObjTable::table_t::const_iterator ObjTable::end()
+	ObjTable::table_t::const_iterator ObjTable::end() const
 	{
 		return table.cend();
 	}

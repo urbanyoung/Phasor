@@ -104,8 +104,8 @@ namespace halo { namespace alias
 			case kWildcardQuery:
 				{
 					for (size_t x = 0; x < result->size(); x++) {
-						ObjWString& name = (ObjWString&)(*result)[x]["name"];
-						ObjWString& hash = (ObjWString&)(*result)[x]["hash"];
+						ObjWString& name = static_cast<ObjWString&>((*result)[x]["name"]);
+						ObjWString& hash = static_cast<ObjWString&>((*result)[x]["hash"]);
 						*stream << name.GetValue() << " - " << hash.GetValue()
 							<< endl;						
 					}
@@ -124,7 +124,7 @@ namespace halo { namespace alias
 						size_t left = result->size() - x;
 						size_t process_count = left < kNamesPerLine ? left : kNamesPerLine;
 						for (size_t i = 0; i < process_count; i++) {
-							ObjWString& name = (ObjWString&)(*result)[x + i]["name"];
+							ObjWString& name = static_cast<ObjWString&>((*result)[x + i]["name"]);
 							line += m_swprintf(L"%-19s", name.GetValue());
 						}
 						*stream << line << endl;

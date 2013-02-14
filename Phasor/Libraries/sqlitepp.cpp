@@ -180,31 +180,31 @@ namespace sqlite
 		{
 		case TYPE_STRING:
 			{
-				ObjString& str = (ObjString&)*value.object;
+				ObjString& str = static_cast<ObjString&>(*value.object);
 				result = sqlite3_bind_text(stmt, index, str.GetValue(),
 					-1, SQLITE_TRANSIENT);
 			} break;
 			
 		case TYPE_WSTRING:
 			{
-				ObjWString& str = (ObjWString&)*value.object;
+				ObjWString& str = static_cast<ObjWString&>(*value.object);
 				result = sqlite3_bind_text16(stmt, index, str.GetValue(),
 					-1, SQLITE_TRANSIENT);
 			} break;
 		case TYPE_INT:
 			{
-				ObjNumber& num = (ObjNumber&)value.object;
+				ObjNumber& num = static_cast<ObjNumber&>(*value.object);
 				result = sqlite3_bind_int(stmt, index, (int)num.GetValue());
 			}break;
 		case TYPE_DOUBLE:
 			{
-				ObjNumber& num = (ObjNumber&)value.object;
+				ObjNumber& num = static_cast<ObjNumber&>(*value.object);
 				result = sqlite3_bind_double(stmt, index, num.GetValue());
 
 			}break;
 		case TYPE_BLOB:
 			{
-				ObjBlob& blob = (ObjBlob&)value.object;
+				ObjBlob& blob = static_cast<ObjBlob&>(*value.object);
 				size_t length;
 				BYTE* data = blob.GetData(length);
 				result = sqlite3_bind_blob(stmt, index, data, length,
