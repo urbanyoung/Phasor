@@ -87,7 +87,9 @@ namespace halo { namespace objects
 		ident secondaryWeaponId; // 0x2FC
 		ident tertiaryWeaponId; // 0x300
 		ident quartaryWeaponId; // 0x304
-		UNKNOWN(0x18); // 0x308
+		UNKNOWN(0x16); // 0x308
+		BYTE frag_nade_count; // 0x31e
+		BYTE plasma_nade_count; //0x31f
 		BYTE zoomLevel; // 0x320 (0xff - no zoom, 0 - 1 zoom, 1 - 2 zoom etc)
 		BYTE zoomLevel1; // 0x321
 		UNKNOWN(0x1AA); // 0x322
@@ -142,7 +144,6 @@ namespace halo { namespace objects
 		DWORD unk1[2]; // I don't know
 	};
 
-	// Stripped down hTagHeader
 	struct s_object_info
 	{
 		DWORD tagType;

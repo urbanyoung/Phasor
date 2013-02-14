@@ -78,12 +78,10 @@ namespace halo
 	void s_player::Kill() const
 	{
 		//sv_killed = true; // used later for detecting what killed the player
-
-		// kill them
-		DWORD playerMask = (mem->playerJoinCount << 0x10) | memory_id;
-		DWORD playerObj = mem->object_id;
-		
-		if (playerObj != -1) {
+	
+		if (mem->object_id.valid()) {
+			DWORD playerMask = (mem->playerJoinCount << 0x10) | memory_id;
+			DWORD playerObj = mem->object_id;
 			__asm
 			{
 				pushad

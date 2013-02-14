@@ -70,7 +70,7 @@ namespace Manager
 		}
 		if (maxargs < nargs) {
 			std::stringstream ss;
-			ss << "'" << cb->name << "' only expects " << maxargs <<
+			ss << "'" << cb->name << "' only expects at most " << maxargs <<
 				" argument(s) and received " << nargs;
 			__NO_RET RaiseError(ss.str());
 		}

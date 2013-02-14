@@ -10,49 +10,8 @@ using namespace Manager;
 #undef max
 #undef min
 
-// Attempt to read data at the specified address
-template <class T> bool read_data_raw(LPBYTE destAddress, T & data)
-{
-	bool success = false;
-	DWORD oldProtect = 0;
-	if (VirtualProtect(UlongToPtr(destAddress), sizeof(T), PAGE_EXECUTE_READ, &oldProtect))
-	{
-		data = *(T*)(destAddress);
-		VirtualProtect(UlongToPtr(destAddress), sizeof(T), oldProtect, &oldProtect);
-		success = true;
-	}
-
-	return success;	
-}
-
-// Attempt to write data at the specified address
-template <class T> bool write_data_raw(LPBYTE destAddress, T data)
-{
-	bool success = false;
-	DWORD oldProtect = 0;
-	if (VirtualProtect(UlongToPtr(destAddress), sizeof(T), PAGE_EXECUTE_READWRITE, &oldProtect))
-	{
-		*(T*)(destAddress) = data;
-		VirtualProtect(UlongToPtr(destAddress), sizeof(T), oldProtect, &oldProtect);
-		FlushInstructionCache(GetCurrentProcess(), UlongToPtr(destAddress), sizeof(T)); 
-		success = true;
-	}
-	return success;
-}
-/*! \todo
- * Stop readdata from raising errors in old api
- */
-template <class T> T read_data(CallHandler& handler, LPBYTE dest_address)
-{
-	T data;
-	if (!read_data_raw<T>(dest_address, data)) {
-		std::string err = m_sprintf("Attempting read to invalid memory address %08X",
-			dest_address);
-		handler.RaiseError(err);
-	}
-	return data;
-}
-
+// Parses the input arguments into the destination address and (if specified)
+// the bit offset.
 struct s_read_info
 {
 	LPBYTE address;
@@ -68,7 +27,7 @@ struct s_read_info
 		address = (LPBYTE)ReadNumber<DWORD>(*args[i++]);
 		if (!is_read_bit) {
 			if (args.size() == kMaxArgsNormalRead) AddToAddress(*args[i++]);
-		} else { // reading bit so extract param
+		} else { // reading bit so extract the bit offset
 			if (args.size() == kMaxArgsNormalRead + 1) AddToAddress(*args[i++]);
 			bit_offset = ReadNumber<int>(*args[i++]);
 			address += bit_offset / 8;
@@ -82,10 +41,12 @@ struct s_read_info
 	}
 };
 
-template <typename T>
-// Read the write information and then perform the write.
-struct s_write_info : s_read_info
+// Parse and validate input arguments ready for writing.
+template <typename T> struct s_write_info : s_read_info
 {
+	T data;
+
+	// Check the value is within the expected type's range.
 	template <typename Type>
 	bool CheckTypeLimits(double value, Type* out)
 	{
@@ -95,15 +56,13 @@ struct s_write_info : s_read_info
 		return value <= max_value && value >= min_value;
 	}
 
-	template <>
-	bool CheckTypeLimits<bool>(double value, bool* out)
+	template <> bool CheckTypeLimits<bool>(double value, bool* out)
 	{
 		*out = value == 1;
 		return value == 1 || value == 0;
 	}
 
-	template <>
-	bool CheckTypeLimits<float>(double value, float* out)
+	template <> bool CheckTypeLimits<float>(double value, float* out)
 	{
 		static const float max_value = std::numeric_limits<float>::max();
 		static const float min_value = -max_value;
@@ -111,35 +70,54 @@ struct s_write_info : s_read_info
 		return value <= max_value && value >= min_value;
 	}
 
-	template <>
-	bool CheckTypeLimits<double>(double value, double* out)
+	template <>	bool CheckTypeLimits<double>(double value, double* out)
 	{
 		*out = value;
 		return true;
 	}
 
-	// Process and validate the script's write query.
-	// bound_check indicates whether to check the values range against its
-	// supposed size. 
+	// Can throw if value is out of range.
 	s_write_info(CallHandler& handler, 
-		const Object::unique_deque& args, bool is_write_bit,
-		bool bounds_check=true)
+		const Object::unique_deque& args, bool is_write_bit)
 		: s_read_info(args, is_write_bit, 3)
 	{
 		double value = ReadNumber<double>(*args[i++]);
 
-		T data;
-		if (!CheckTypeLimits<T>(value, &data) && bounds_check)
+		if (!CheckTypeLimits<T>(value, &data))
 			handler.RaiseError("attempted to write value outside of type's range.");
-		
-		if (!write_data_raw<T>(address, data)) {
-			std::string err = m_sprintf("Attempting write to invalid memory address %08X",
-				address);
-			handler.RaiseError(err);
+
+		if (is_write_bit) {
+			BYTE b = read_data<BYTE>(handler, address);
+			if (data == 1) data = (BYTE)(b | (1 << bit_offset)); 
+			else data = (BYTE)(b ^ (1 << bit_offset)); 
 		}
 	}
 };
 
+// shouldn't use bool
+template <> struct s_write_info<bool> {};
+
+// Reads from the specified memory address and raises a script error if 
+// the address is invalid.
+template <class T> T read_data(CallHandler& handler, LPBYTE destAddress)
+{
+	T data;
+
+	DWORD oldProtect = 0;
+	if (VirtualProtect(UlongToPtr(destAddress), sizeof(T), PAGE_EXECUTE_READ, &oldProtect))
+	{
+		data = *(T*)(destAddress);
+		VirtualProtect(UlongToPtr(destAddress), sizeof(T), oldProtect, &oldProtect);
+	} else {
+		std::string err = m_sprintf("Attempting read to invalid memory address %08X",
+			destAddress);
+		handler.RaiseError(err);
+	}
+	return data;
+}
+
+// Reads from the specified memory address and raises a script error if the
+// address. The result is added to results.
 template <typename T>
 void read_type(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
@@ -148,6 +126,29 @@ void read_type(CallHandler& handler, Object::unique_deque& args, Object::unique_
 	results.push_back(std::unique_ptr<Object>(new ObjNumber(value)));
 }
 
+// Writes to the specified memory address and raises a script error if the
+// address is invalid or if they value being written is outside the type's
+// range.
+template <class T>
+void write_type(CallHandler& handler, Object::unique_deque& args, bool write_bit=false)
+{
+	s_write_info<T> w(handler, args, write_bit);
+
+	DWORD oldProtect = 0;
+	if (VirtualProtect(UlongToPtr(w.address), sizeof(T), PAGE_EXECUTE_READWRITE, &oldProtect))
+	{
+		*(T*)(w.address) = w.data;
+		VirtualProtect(UlongToPtr(w.address), sizeof(T), oldProtect, &oldProtect);
+		FlushInstructionCache(GetCurrentProcess(), UlongToPtr(w.address), sizeof(T)); 
+	} else {
+		std::string err = m_sprintf("Attempting write to invalid memory address %08X",
+			w.address);
+		handler.RaiseError(err);
+	}
+}
+
+// -------------------------------------------------------------------------
+// 
 void l_readbit(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	s_read_info r(args, true);
@@ -198,75 +199,45 @@ void l_readdouble(CallHandler& handler, Object::unique_deque& args, Object::uniq
 
 void l_writebit(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<bool> w(handler, args, true);
+	write_type<BYTE>(handler, args, true);
 }
 
 void l_writebyte(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<BYTE> w(handler, args, false);
+	write_type<BYTE>(handler, args);
 }
 
 void l_writechar(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<char> w(handler, args, false);
+	write_type<char>(handler, args);
 }
 
 void l_writeword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<WORD> w(handler, args, false);
+	write_type<WORD>(handler, args);
 }
 
 void l_writeshort(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<short> w(handler, args, false);
+	write_type<short>(handler, args);
 }
 
 void l_writedword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<DWORD> w(handler, args, false);
+	write_type<DWORD>(handler, args);
 }
 
 void l_writeint(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<int> w(handler, args, false);
+	write_type<int>(handler, args);
 }
 
 void l_writefloat(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<float> w(handler, args, false);
+	write_type<float>(handler, args);
 }
 
 void l_writedouble(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	s_write_info<double> w(handler, args, false);
-}
-
-// Old versions need to be provided because prior to 10.00.10.059 there was
-// no bounds checking on writes. 
-namespace deprecated
-{
-	void l_writebit(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
-	{
-		s_write_info<bool> w(handler, args, true, false);
-	}
-
-	void l_writebyte(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
-	{
-		s_write_info<BYTE> w(handler, args, false, false);
-	}
-
-	void l_writeword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
-	{
-		s_write_info<WORD> w(handler, args, false, false);
-	}
-
-	void l_writedword(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
-	{
-		s_write_info<DWORD> w(handler, args, false, false);
-	}
-
-	void l_writefloat(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
-	{
-		s_write_info<float> w(handler, args, false, false);
-	}
+	write_type<double>(handler, args);
 }

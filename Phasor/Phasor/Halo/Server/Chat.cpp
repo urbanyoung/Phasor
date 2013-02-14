@@ -77,7 +77,7 @@ namespace halo { namespace server { namespace chat {
 				{
 					// Check if the sender is in a vehicle
 					halo::objects::s_halo_object* from_obj = from->get_object();
-					if (from_obj && from_obj->biped->base.vehicleId != -1) {
+					if (from_obj && from_obj->biped->base.vehicleId.valid()) {
 						// send to players in this vehicle
 						for (int i = 0; i < 16; i++) {
 							s_player* player = game::GetPlayer(i);
