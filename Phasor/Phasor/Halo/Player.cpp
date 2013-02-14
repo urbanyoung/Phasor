@@ -19,7 +19,7 @@ namespace halo
 	};
 	s_player::s_player(int memory_id) : memory_id(memory_id)
 	{
-		g_PrintStream << "New player " << memory_id << endl;
+		*g_PrintStream << "New player " << memory_id << endl;
 		mem = GetPlayerMemory(memory_id);
 		afk.reset(new afk_detection::CAFKDetection(*this, g_Timers));
 		console_stream.reset(new PlayerConsoleStream(*this));	
@@ -32,21 +32,21 @@ namespace halo
 
 	s_player::~s_player()
 	{
-		g_PrintStream << "Player " << memory_id << " left" << endl;
+		*g_PrintStream << "Player " << memory_id << " left" << endl;
 	}
 
 	/*! \todo 
 	 * check if object can invalidate itself.. ie does loopobjects ever defrag? */
-	objects::s_halo_object* s_player::get_object()
+	objects::s_halo_biped* s_player::get_object()
 	{
-		objects::s_halo_object* object = objects::GetObjectAddress(mem->object_id);
+		objects::s_halo_biped* object = (objects::s_halo_biped*)objects::GetObjectAddress(mem->object_id);
 		m_object = object;
 		return object;
 	}
 
 	void s_player::Kick() const
 	{
-		g_PrintStream << "todo: kick player" << endl;
+		*g_PrintStream << "todo: kick player" << endl;
 	}
 
 	void s_player::ChangeTeam(BYTE new_team, bool forcekill) const

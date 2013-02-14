@@ -102,22 +102,22 @@ namespace halo { namespace objects
 	};
 	static_assert(sizeof(s_halo_biped) == 0x500, "bad");
 
-	// entry in the object table
-	struct s_halo_object
+	struct s_halo_weapon
 	{
-		WORD id;
-		char flags; // 0x44 by default, dunno what they're for.
-		char type;
-		UNKNOWN(2);
-		WORD size;
-		union
-		{
-			void*					data;
-			s_halo_object_header*	base;
-			s_halo_biped*			biped;
-		};
+		s_halo_object_header base;
+		UNKNOWN(0xC2); // 1f4
+		WORD ammo_pack; // 2b6 reserve ammo
+		WORD ammo_clip; // 2b8
+		UNKNOWN(0x96);
+
+		/*! \todo test this and SyncAmmo */
+		void SetAmmo(WORD pack, WORD clip);
+		static void SyncAmmo(ident weaponId);
+
+		// rest of weap is composed on other tags, with these tags
+		// its size is 0x684
 	};
-	static_assert(sizeof(s_halo_object) == 0x0c, "s_halo_object_entry incorrect");
+	static_assert(sizeof(s_halo_weapon) == 0x350, "bad");
 
 	// Structure of tag index table
 	struct s_tag_index_table_header
@@ -154,7 +154,7 @@ namespace halo { namespace objects
 
 	#pragma pack(pop)
 
-	s_halo_object* GetObjectAddress(ident objectId);
+	void* GetObjectAddress(ident objectId);
 
 	// --------------------------------------------------------------------\
 	// Events

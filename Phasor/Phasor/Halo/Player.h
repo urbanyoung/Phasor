@@ -72,14 +72,14 @@ namespace halo
 		explicit s_player(int memory_id);
 		~s_player();
 
-		objects::s_halo_object* get_object();
+		objects::s_halo_biped* get_object();
 		void Kick() const;
 		void ChangeTeam(BYTE new_team, bool forcekill=true) const;
 		void Kill() const;
 		void ApplyCamo(float duration) const;
 		void SetSpeed(float speed) const;
 	private: // just for testing get_object
-		objects::s_halo_object* m_object;		
+		objects::s_halo_biped* m_object;		
 		void setup(int memory_id);
 
 	};

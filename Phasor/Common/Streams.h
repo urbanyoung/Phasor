@@ -4,6 +4,7 @@
 #include <sstream>
 #include <memory>
 #include <assert.h>
+#include <list>
 #include "noncopyable.h"
 #include "Types.h"
 
@@ -172,4 +173,31 @@ private:
 	stream_ptr stream;
 
 	Forwarder() {}
+};
+
+template <class BaseStream>
+class ProxyRecordStream : public BaseStream
+{
+private:
+	std::list<std::wstring>& output;
+
+protected:
+	virtual bool Write(const std::wstring& str)
+	{
+		if (str.size() == 0) return true;
+		output.push_back(str);
+		return BaseStream::Write(str);
+	}
+
+public:
+	ProxyRecordStream(std::list<std::wstring>& output)
+		: output(output) {}
+
+	// not a good idea to clone this because we don't know if output will
+	// stick around. So if this stream needs to be cloned, it just clones
+	// the BaseStream
+	virtual std::unique_ptr<COutStream> clone() override
+	{
+		return std::unique_ptr<COutStream>(new BaseStream());
+	}
 };

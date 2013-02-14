@@ -131,7 +131,7 @@ namespace halo { namespace server
 				command);
 			cache->cur = 0xFFFF;
 		} else {
-			TempForwarder echo(g_PrintStream, 
+			TempForwarder echo(*g_PrintStream, 
 				TempForwarder::end_point(*g_RconLog));
 
 			std::string authName;
@@ -170,8 +170,8 @@ namespace halo { namespace server
 		}
 
 		COutStream& outStream = (exec_player == NULL) ? 
-								(COutStream&)g_PrintStream : 
-								(COutStream&)*exec_player->console_stream;
+								static_cast<COutStream&>(*g_PrintStream) : 
+								static_cast<COutStream&>(*exec_player->console_stream);
 		
 		return	can_execute ? 
 				commands::ProcessCommand(command, outStream, exec_player) :
@@ -264,6 +264,29 @@ namespace halo { namespace server
 		// Gotta pass a pointer to the data
 		DWORD d_ptr = (DWORD)&d;		BYTE buffer[8192];		DWORD retval = server::BuildPacket(buffer, 0, 0x1A, 0, (LPBYTE)&d_ptr, 0, 1, 0);
 		server::AddPacketToGlobalQueue(buffer, retval, 1, 1, 0, 1, 3);
+	}
+
+	void ExecuteServerCommand(const std::string& command)
+	{
+		halo::s_player* old_exec_player = GetPlayerExecutingCommand();
+		const char* cmd = command.c_str();
+		__asm
+		{
+			pushad
+			PUSH 0x2000
+			mov edi, cmd
+			call dword ptr ds: [FUNC_EXECUTESVCMD]
+			add esp, 4		
+			popad
+		}
+
+		SetExecutingPlayer(old_exec_player);
+	}
+
+	void SetExecutingPlayer(halo::s_player* player)
+	{
+		if (!player) *(DWORD*)UlongToPtr(ADDR_RCONPLAYER) = -1;
+		else *(DWORD*)UlongToPtr(ADDR_RCONPLAYER) = player->mem->playerNum;
 	}
 
 	halo::s_player* GetPlayerExecutingCommand()

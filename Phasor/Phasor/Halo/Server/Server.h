@@ -1,3 +1,4 @@
+//! \file Server.h
 #pragma once
 
 #include "../../../Common/Types.h"
@@ -11,7 +12,11 @@ namespace halo {
 	struct s_player_structure;
 namespace server
 {
+	//---------------------------------------------------------------------
+	// DEFINITIONS
+	// 
 	#pragma pack(push, 1)
+	//! Represents Halo's connection information structure (ip, port, keys etc)
 	struct s_connection_info
 	{
 		BYTE ip[4];
@@ -21,6 +26,7 @@ namespace server
 	};
 	static_assert(sizeof(s_connection_info) == 0x150, "incorrect s_connection_info");
 
+	//! Represents an entry in Halo's machine table
 	struct s_machine_info
 	{
 		s_connection_info*** con_info_ptr; 
@@ -45,6 +51,7 @@ namespace server
 	};
 	static_assert(sizeof(s_machine_info) == MACHINE_ENTRY_SIZE, "incorrect s_machine_info");
 
+	//! Represents an entry in Halo's connection player table
 	struct s_presence_item
 	{
 		wchar_t name[12];
@@ -55,6 +62,8 @@ namespace server
 		BYTE playerId;
 	};
 	static_assert(sizeof(s_presence_item) == 0x20, "incorrect s_presence_item");
+
+	//! Server related items (name, gametype, players, machines)
 	struct s_server_info
 	{
 		void* unk_ptr;
@@ -89,18 +98,28 @@ namespace server
 		}
 	};
 
+	//! Stream used for server messages.
 	extern SayStream say_stream;
 
+	/*! \brief Starts a new game on the specified map.
+	 * \param map The map to player. */
 	void StartGame(const char* map);
 
-	// Send a chat message to the player
+	/*! \brief Send a chat message to the player
+	 *	\param player The player to send the message to
+	 *	\param str The message to send.	 */
 	void MessagePlayer(const s_player& player, const std::wstring& str);
 	
-	// Send a console message to the player
+	/*! \brief Send a console message to the player
+	 *	\param player The player to send the message to
+	 *	\param str The message to send.	 */
 	bool ConsoleMessagePlayer(const s_player& player, const std::wstring& str);
 	
-	// Notify the server a player's team has changed.
+	/*! \brief Notifies the server that a player has changed team (syncs it)
+	 *	\param player The player who changed team. */
 	void NotifyServerOfTeamChange(const halo::s_player& player);
+
+	void ExecuteServerCommand(const std::string& command);
 
 	// Gets the player's ip
 	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port);
@@ -111,10 +130,14 @@ namespace server
 	// Get the player's machine info (ip struct etc)
 	s_machine_info* GetMachineData(const s_player& player);
 	
-	// Get the player who is executing the current server command.
-	// returns 0 if no player
+	/*! \brief Get the player executing the current command
+	 * \return The player executing the command, or NULL if no player. */
 	halo::s_player* GetPlayerExecutingCommand();
 
+	void SetExecutingPlayer(halo::s_player* player);
+
+	/*! \brief Get the server struct
+		\return The server struct.*/
 	s_server_info* GetServerStruct();
 
 
@@ -122,28 +145,42 @@ namespace server
 	// Events
 	
 	// Called for console events (exit etc)
+	/*! \brief Called for Windows related console events (ie closing the server)
+	 *	\param fdwCtrlType The type of event. */
 	void __stdcall ConsoleHandler(DWORD fdwCtrlType);
 
-	// Called periodically by Halo to check for console input, I use for timers
+	/*! \brief Called every cycle to read input from the user. I use it for timers. */
 	void __stdcall OnConsoleProcessing();
 
+	/*! \brief Called when a client sends its update packet (new pos, fire etc)
+	 *	\param m_player The memory address of the player who is updating.*/
 	void __stdcall OnClientUpdate(s_player_structure* m_player);
 
-	// Called when a console command is to be executed
-	// true : Event has been handled, don't pass to server
-	// false: Not handled, pass to server.
+	/*! \brief Called to process a server command, after the password has been validated.
+	 *	\param command The command being executed.
+	 *	\return Value indicating whether or not Halo should process the event.*/
 	e_command_result __stdcall ProcessCommand(char* command);
 
+	/*! \brief Called when a new game starts.
+	 *	\param map The map the game is running.*/
 	void __stdcall OnNewGame(const char* map);
+
+	/*! \brief Called when a game stage ends.
+	 *	\param mode Specifies which stage is ending (game, post-game, scorecard) */
 	void __stdcall OnGameEnd(DWORD mode);
 
-	// Called when a map is being loaded
+	/*! \brief Called when a map is being loaded.
+	 *	\param loading_map The map being loaded, which can be changed.
+	 *	\return Boolean indicating whether or not the map was changed.*/
 	bool __stdcall OnMapLoad(maploader::s_mapcycle_entry* loading_map);
 
-	// Called when the server (not Phasor) wants to print a message.
+	/*! \brief Called when halo wants to print a message to the console.
+	 * \todo make sure I send console message if there is an executing player.*/
 	void __stdcall OnHaloPrint(char* msg);
 
-	// Called when halo checks a player's hash
+	/*! \brief Called when halo checks if the specified hash is banned.
+	 *	\param hash The hash being checked.
+	 *	\return Boolean indicating whether or not the player is allowed to join.*/
 	bool __stdcall OnHaloBanCheck(char* hash);
 
 	// Called when the server info is about to be broadcast

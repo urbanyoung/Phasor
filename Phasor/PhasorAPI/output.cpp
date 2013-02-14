@@ -31,7 +31,7 @@ void l_hprintf(CallHandler& handler, Object::unique_deque& args, Object::unique_
 {
 	// backwards compatibility with old Phasor.
 	if (args.size() == 2) return sendconsoletext(handler, *args[0], *args[1], false);
-	WriteMessageToStream(g_PrintStream, *args[0]);
+	WriteMessageToStream(*g_PrintStream, *args[0]);
 }
 
 // Send console text to the specified player (strict)
@@ -64,7 +64,9 @@ void l_say(CallHandler& handler, Object::unique_deque& args, Object::unique_list
 void l_respond(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
 	halo::s_player* player = halo::server::GetPlayerExecutingCommand();
-	COutStream& stream = (player == NULL) ? (COutStream&)g_PrintStream : (COutStream&)*player->console_stream;
+	COutStream& stream = (player == NULL) ?
+		static_cast<COutStream&>(*g_PrintStream) :
+		static_cast<COutStream&>(*player->console_stream);
 	WriteMessageToStream(stream, *args[0]);
 }
 
@@ -102,15 +104,4 @@ void l_log_msg(CallHandler& handler, Object::unique_deque& args, Object::unique_
 		} break;
 	}
 	WriteMessageToStream(*stream, *args[1]);
-}
-
-namespace deprecated
-{
-	// Don't raise an error if player not found.
-	void l_privatesay(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
-	{
-		halo::s_player* player = ReadPlayer(handler, *args[0], false); 
-		if (!player) return;
-		privatesay(*player, *args[1]);
-	}
 }

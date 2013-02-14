@@ -26,6 +26,8 @@ namespace halo
 	};
 	static_assert(sizeof(ident) == 4, "bad");
 
+	ident make_ident(unsigned long id); 
+
 	// Header for tables used throughout Halo (objects, players, loopobjects)
 	struct s_table_header
 	{

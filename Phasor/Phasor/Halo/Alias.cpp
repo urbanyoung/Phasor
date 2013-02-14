@@ -161,7 +161,7 @@ namespace halo { namespace alias
 		if (!do_track) return;
 		if (aliasdb != nullptr) {
 			std::shared_ptr<PhasorThreadEvent> e(
-				new CAliasEvent(g_PrintStream.clone(), kSaveAlias, player.hash,
+				new CAliasEvent(g_PrintStream->clone(), kSaveAlias, player.hash,
 				player.mem->playerName,	""));
 			g_Thread.InvokeInAux(e); // sole ownership by g_Thread once returned
 		}

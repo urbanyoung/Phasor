@@ -46,9 +46,9 @@ namespace halo { namespace afk_detection
 	void CAFKDetection::CheckPlayerActivity()
 	{
 		// make sure the object is available
-		objects::s_halo_object* object = player.get_object();
+		objects::s_halo_biped* object = player.get_object();
 		if (object)	{
-			vect3d new_camera = object->biped->cameraView;
+			vect3d new_camera = object->cameraView;
 
 			// check if the camera has moved
 			if (new_camera != camera) move_count++;
@@ -56,9 +56,9 @@ namespace halo { namespace afk_detection
 			camera = new_camera;
 
 			// Check if the player is shooting/throwing nades etc, if so they are not afk
-			if (object->biped->actionFlags.melee || 
-				object->biped->actionFlags.primaryWeaponFire ||
-				object->biped->actionFlags.secondaryWeaponFire)
+			if (object->actionFlags.melee || 
+				object->actionFlags.primaryWeaponFire ||
+				object->actionFlags.secondaryWeaponFire)
 				MarkPlayerActive();
 		}
 	}
@@ -76,7 +76,7 @@ namespace halo { namespace afk_detection
 			afk_duration++;
 			if (afk_duration >= max_duration) {
 				player.Kick();
-				TempForwarder f(server::say_stream, TempForwarder::end_point(g_PrintStream));
+				TempForwarder f(server::say_stream, TempForwarder::end_point(*g_PrintStream));
 				f << player.mem->playerName << " has been kicked due to inactivity." << endl;
 
 			} else {

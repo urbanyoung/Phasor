@@ -111,6 +111,7 @@
     <ClCompile Include="PhasorAPI\memory.cpp" />
     <ClCompile Include="PhasorAPI\misc.cpp" />
     <ClCompile Include="PhasorAPI\misc_halo.cpp" />
+    <ClCompile Include="PhasorAPI\haloobjects.cpp" />
     <ClCompile Include="PhasorAPI\output.cpp" />
     <ClCompile Include="PhasorAPI\PhasorAPI.cpp" />
     <ClCompile Include="PhasorAPI\playerinfo.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="PhasorAPI\memory.h" />
     <ClInclude Include="PhasorAPI\misc.h" />
     <ClInclude Include="PhasorAPI\misc_halo.h" />
+    <ClInclude Include="PhasorAPI\haloobjects.h" />
     <ClInclude Include="PhasorAPI\output.h" />
     <ClInclude Include="PhasorAPI\PhasorAPI.h" />
     <ClInclude Include="PhasorAPI\playerinfo.h" />

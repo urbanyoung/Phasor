@@ -9,6 +9,7 @@
 #include "string.h"
 #include "misc.h"
 #include "misc_halo.h"
+#include "haloobjects.h"
 
 using namespace Common;
 using namespace Manager;
@@ -71,10 +72,12 @@ namespace PhasorAPI
 		{&l_changeteam, "changeteam", 2, {TYPE_NUMBER, TYPE_BOOL, TYPE_NUMBER}},
 		{&l_kill, "kill", 1, {TYPE_NUMBER}},
 		{&l_applycamo, "applycamo", 2, {TYPE_NUMBER, TYPE_NUMBER}},
-		{&l_svcmd, "svcmd", 1, {TYPE_STRING}},
+		{&l_svcmd, "svcmd", 1, {TYPE_STRING, TYPE_BOOL}},
 		{&l_updateammo, "updateammo", 1, {TYPE_NUMBER}},
-		{&l_setammo, "setammo", 1, {TYPE_NUMBER}},
-		{&l_setspeed, "setspeed", 2, {TYPE_NUMBER, TYPE_NUMBER}}
+		{&l_setammo, "setammo", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_setspeed, "setspeed", 2, {TYPE_NUMBER, TYPE_NUMBER}},
+		// Object related halo functions: see haloobjects.h
+		{&l_getobject, "getobject", 1, {TYPE_NUMBER}}
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 

@@ -4,7 +4,6 @@
 #include "Game/Game.h"
 #include <iostream>
 #include "../../Common/MyString.h"
-halo::CHaloPrintStream g_PrintStream;
 
 namespace halo
 {

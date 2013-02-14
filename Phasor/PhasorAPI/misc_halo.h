@@ -44,16 +44,26 @@ void l_applycamo(PHASOR_API_ARGS);
 
 /*! \brief Executes a server command.
  *	\param cmd The command to execute
+ *	\param [result] Boolean indicating whether or not a result (see remarks)
  *	
  *	Example usage:
  *	\code
  *		svcmd("sv_ban " .. resolveplayer(player))
+ *		local output = svcmd("sv_mapcycle", true)
+ *		for k,v in ipairs(output) do
+ *			hprintf("result: " .. v)
+ *		end
  *	\endcode
  *	
  *	\remark
  *	Be careful when using player ids! Memory ids should not be used when referring
  *	to a player. \c resolveplayer should be used to convert a memory id into
  *	an rcon id.
+ *	
+ *	\remark
+ *	If \c result is true then all text that would be sent to the executing
+ *	player will be logged. Once the command has completed it will be returned
+ *	to you as a table.
  */
 void l_svcmd(PHASOR_API_ARGS);
 

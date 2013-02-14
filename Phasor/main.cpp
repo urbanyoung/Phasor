@@ -31,6 +31,8 @@ std::unique_ptr<CPhasorLog> g_PhasorLog;
 std::unique_ptr<CGameLog> g_GameLog;
 std::unique_ptr<CRconLog> g_RconLog;
 std::unique_ptr<scripting::Scripts> g_Scripts;
+std::unique_ptr<halo::CHaloPrintStream> g_PrintStream;
+
 // todo: remove before release
 /*! \todo
  * before release change back to file output only
@@ -48,7 +50,8 @@ void LoadEarlyInit(COutStream& out);
 extern "C" __declspec(dllexport) void OnLoad()
 //int main()
 {
-	g_PrintStream << L"44656469636174656420746f206d756d2e2049206d69737320796f752e" << endl;
+	g_PrintStream.reset(new halo::CHaloPrintStream());
+	*g_PrintStream << L"44656469636174656420746f206d756d2e2049206d69737320796f752e" << endl;
 	LocateDirectories();
 
 	// can't rename phasor log for startup errors via earlyinit
@@ -89,7 +92,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_OldLogsDirectory, g_Thread));
 		
 		// todo: remove before release
-		scriptOutput.reset(new Forwarder(g_PrintStream, Forwarder::end_point(*g_ScriptsLog)));
+		scriptOutput.reset(new Forwarder(*g_PrintStream, Forwarder::end_point(*g_ScriptsLog)));
 		g_Scripts.reset(new scripting::Scripts(*scriptOutput,g_ScriptsDirectory));
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
@@ -109,14 +112,14 @@ extern "C" __declspec(dllexport) void OnLoad()
 	catch (std::exception& e)
 	{
 		PhasorLog << "Phasor cannot be loaded because : " <<  e.what() << endl;
-		g_PrintStream << "Phasor cannot be loaded because : " <<  e.what() << endl;
+		*g_PrintStream << "Phasor cannot be loaded because : " <<  e.what() << endl;
 		WAIT_AND_QUIT
 	}
 	catch (...)
 	{
 		static const std::wstring err = L"An unknown error occurred which prevented Phasor from loading";
 		PhasorLog << err << endl;
-		g_PrintStream << err << endl;
+		*g_PrintStream << err << endl;
 		WAIT_AND_QUIT
 	}
 	
@@ -137,7 +140,7 @@ void LocateDirectories()
 	}
 	catch (std::exception & e)
 	{
-		g_PrintStream << L"An error occurred which prevented Phasor from loading : "
+		*g_PrintStream << L"An error occurred which prevented Phasor from loading : "
 			<< e.what() << endl;
 		WAIT_AND_QUIT
 	}	
@@ -152,7 +155,7 @@ void LoadEarlyInit(COutStream& out)
 	char line[4096];
 	while (file.ReadLine<char>(line, NELEMS(line), NULL)) {
 		commands::ProcessCommand(line, out);
-		g_PrintStream << line << endl;
+		*g_PrintStream << line << endl;
 	}
 }
 

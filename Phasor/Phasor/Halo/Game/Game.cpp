@@ -52,7 +52,7 @@ namespace halo { namespace game {
 			{
 				afk_detection::Disable();
 				g_GameLog->WriteLog(kGameEnd, L"The game has ended.");
-				g_PrintStream << "The game is ending..." << endl;
+				*g_PrintStream << "The game is ending..." << endl;
 
 			} break;
 

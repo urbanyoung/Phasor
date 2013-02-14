@@ -205,7 +205,7 @@ namespace halo { namespace server { namespace maploader
 						// Default map, let halo add it.
 						if (base_map == map_name)
 							continue;
-						g_PrintStream << "Adding map " << map_name << endl;
+						*g_PrintStream << "Adding map " << map_name << endl;
 						// Add the data into the map table
 						size_t alloc_size = map_name.size() + 1;
 						char* map_alloc = (char*)GlobalAlloc(GMEM_FIXED, alloc_size);

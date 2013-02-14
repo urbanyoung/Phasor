@@ -76,14 +76,14 @@ namespace halo { namespace server { namespace chat {
 			case kChatVehicle:
 				{
 					// Check if the sender is in a vehicle
-					halo::objects::s_halo_object* from_obj = from->get_object();
-					if (from_obj && from_obj->biped->base.vehicleId.valid()) {
+					halo::objects::s_halo_biped* from_obj = from->get_object();
+					if (from_obj && from_obj->base.vehicleId.valid()) {
 						// send to players in this vehicle
 						for (int i = 0; i < 16; i++) {
 							s_player* player = game::GetPlayer(i);
 							if (!player) continue;
-							halo::objects::s_halo_object* obj = player->get_object();
-							if (obj && obj->biped->base.vehicleId == from_obj->biped->base.vehicleId)
+							halo::objects::s_halo_biped* obj = player->get_object();
+							if (obj && obj->base.vehicleId == from_obj->base.vehicleId)
 								AddPacketToPlayerQueue(player->mem->playerNum, PACKET_QUEUE_PARAMS);		
 						}
 					}

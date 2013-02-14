@@ -71,7 +71,7 @@ namespace halo { namespace game {
 	bool __stdcall OnVehicleEntry(DWORD playerId);
 
 	// Called when a player is being ejected from a vehicle
-	bool __stdcall OnVehicleEject(objects::s_halo_object* m_playerObject, bool forceEjected);
+	bool __stdcall OnVehicleEject(objects::s_halo_biped* m_playerObject, bool forceEjected);
 
 	// Called when a player dies
 	void __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode);

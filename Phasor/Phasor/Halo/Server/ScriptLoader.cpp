@@ -15,7 +15,7 @@ namespace halo { namespace server { namespace scriptloader
 
 		if (entry && entry->scripts) {
 			for (size_t x = 0; x < entry->scripts->count; x++) {
-				g_PrintStream << "Opening script " << entry->scripts->script_names[x] << endl;
+				*g_PrintStream << "Opening script " << entry->scripts->script_names[x] << endl;
 				g_Scripts->OpenScript(entry->scripts->script_names[x]);
 			}			
 		}

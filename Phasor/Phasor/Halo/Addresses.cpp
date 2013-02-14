@@ -139,7 +139,7 @@ namespace Addresses
 			std::string err = m_sprintf("FindAddress - Signature not found for local function %s", desc);
 			throw std::exception(err.c_str());
 		}
-		g_PrintStream.print("%-25s : %-25s %08X", __FUNCTION__, desc, dwAddress);
+		g_PrintStream->print("%-25s : %-25s %08X", __FUNCTION__, desc, dwAddress);
 		return dwAddress;
 	}
 
@@ -150,7 +150,7 @@ namespace Addresses
 		DWORD dwAddress = FindAddress(desc, data, size, sig, sig_len, occ, offset);
 		//DWORD dwAddress = (DWORD)data + result + offset;
 		ReadBytes(dwAddress, &dwAddress, 4);
-		g_PrintStream.print("%-25s : %-25s %08X", __FUNCTION__, desc, dwAddress);
+		g_PrintStream->print("%-25s : %-25s %08X", __FUNCTION__, desc, dwAddress);
 		return dwAddress;
 	}
 

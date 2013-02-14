@@ -167,6 +167,9 @@ void l_readdouble(PHASOR_API_ARGS);
  *		writebit(0x12345678, 3, 1, 0) -- write 0 to the 2nd bit at 0x12345678 + 3
  *		writebit(0x12345678, 1, 0) -- write 0 to the 2nd bit at 0x12345678
  *  \endcode
+ *  
+ *  \remark
+ *  \c bit_offset starts at 0 for the least significant bit
  */
 void l_writebit(PHASOR_API_ARGS);
 
