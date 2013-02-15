@@ -1,6 +1,7 @@
 #include "haloobjects.h"
 #include "api_readers.h"
 #include "../Phasor/Halo/Game/Objects.h"
+
 using namespace Common;
 using namespace Manager;
 

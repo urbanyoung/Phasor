@@ -4,12 +4,12 @@
 #include <assert.h>
 #include "memory.h"
 #include "output.h"
-#include "deprecated.h"
 #include "playerinfo.h"
 #include "string.h"
 #include "misc.h"
 #include "misc_halo.h"
 #include "haloobjects.h"
+#include "alias_script.h"
 
 using namespace Common;
 using namespace Manager;
@@ -77,7 +77,11 @@ namespace PhasorAPI
 		{&l_setammo, "setammo", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_setspeed, "setspeed", 2, {TYPE_NUMBER, TYPE_NUMBER}},
 		// Object related halo functions: see haloobjects.h
-		{&l_getobject, "getobject", 1, {TYPE_NUMBER}}
+		{&l_getobject, "getobject", 1, {TYPE_NUMBER}},
+		//
+		{&l_alias_search, "alias_search", 2, {TYPE_STRING, TYPE_STRING}},
+		{&l_alias_hash, "alias_hash", 2, {TYPE_STRING, TYPE_STRING}},
+
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 

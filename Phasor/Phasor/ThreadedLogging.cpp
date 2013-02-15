@@ -27,7 +27,7 @@ CThreadedLogging::CThreadedLogging(const CLoggingStream& stream, PhasorThread& t
 	Initialize(dwDelay);
 }
 
-std::unique_ptr<COutStream> CThreadedLogging::clone()
+std::unique_ptr<COutStream> CThreadedLogging::clone() const
 {
 	return std::unique_ptr<COutStream>(new CThreadedLogging
 		(fileDirectory,fileName,moveDirectory, thread, dwDelay));

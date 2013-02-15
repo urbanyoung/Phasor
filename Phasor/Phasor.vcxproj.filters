@@ -137,6 +137,9 @@
     <ClCompile Include="PhasorAPI\haloobjects.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="PhasorAPI\alias_script.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -318,9 +321,6 @@
     <ClInclude Include="PhasorAPI\output.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
-    <ClInclude Include="PhasorAPI\deprecated.h">
-      <Filter>Scripting\PhasorAPI</Filter>
-    </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\Packet.h">
       <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
@@ -346,6 +346,9 @@
       <Filter>Scripting</Filter>
     </ClInclude>
     <ClInclude Include="PhasorAPI\haloobjects.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\alias_script.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>

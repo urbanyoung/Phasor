@@ -52,6 +52,7 @@ namespace Lua
 
 	std::unique_ptr<MObjTable> State::peek_table(int indx)
 	{
+		printf("peeking at table\n");
 		std::unique_ptr<MObjTable> table(new MObjTable());
 		lua_pushnil(L); // so we get first key
 
@@ -137,13 +138,14 @@ namespace Lua
 		case Common::TYPE_TABLE:
 			{
 				const MObjTable& table = static_cast<const MObjTable&>(object);
-				lua_createtable(L, table.size(), table.size());
+				lua_newtable(L);
 
 				for (auto itr = table.begin(); itr != table.end(); ++itr) {
-					push(*itr->first.get());
-					push(*itr->second.get());
-					lua_rawset(L, -3);
+					push(*itr->first.get());//key
+					push(*itr->second.get());//value
+					lua_settable(L, -3);
 				}
+				
 			} break;
 		case Common::TYPE_NIL:
 		default:
@@ -191,7 +193,7 @@ namespace Lua
 
 		// Push the arguments on the stack
 		for (auto itr = args.begin(); itr != args.end(); ++itr)	push(**itr);
-
+		printf("pushed\n");
 		// Call the Lua function
 		if (lua_pcall_t(L, args.size(), LUA_MULTRET, 0, timeout))
 		{

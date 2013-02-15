@@ -16,7 +16,7 @@ namespace halo {
 		CHaloPrintStream() {}
 		virtual ~CHaloPrintStream() {}
 
-		virtual std::unique_ptr<COutStream> clone() override
+		virtual std::unique_ptr<COutStream> clone() const override
 		{
 			return std::unique_ptr<COutStream>(new CHaloPrintStream());
 		}
@@ -56,7 +56,7 @@ namespace halo {
 	public:
 		PlayerConsoleStream(const s_player& player);
 
-		virtual std::unique_ptr<COutStream> clone() override
+		virtual std::unique_ptr<COutStream> clone() const override
 		{
 			return std::unique_ptr<COutStream>(new PlayerConsoleStream(player,true));
 		}
@@ -74,7 +74,7 @@ namespace halo {
 	public:
 		PlayerChatStream(const s_player& player);
 
-		virtual std::unique_ptr<COutStream> clone() override
+		virtual std::unique_ptr<COutStream> clone() const override
 		{
 			return std::unique_ptr<COutStream>(new PlayerChatStream(player,true));
 		}

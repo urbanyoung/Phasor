@@ -107,6 +107,7 @@
     <ClCompile Include="Lua.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="PhasorAPI\alias_script.cpp" />
     <ClCompile Include="PhasorAPI\api_readers.cpp" />
     <ClCompile Include="PhasorAPI\memory.cpp" />
     <ClCompile Include="PhasorAPI\misc.cpp" />
@@ -158,8 +159,8 @@
     <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="Lua.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="PhasorAPI\alias_script.h" />
     <ClInclude Include="PhasorAPI\api_readers.h" />
-    <ClInclude Include="PhasorAPI\deprecated.h" />
     <ClInclude Include="PhasorAPI\memory.h" />
     <ClInclude Include="PhasorAPI\misc.h" />
     <ClInclude Include="PhasorAPI\misc_halo.h" />
@@ -200,7 +201,9 @@
     <ClInclude Include="ScriptingEvents.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="phasor_includes.props" />
+    <None Include="phasor_includes.props">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

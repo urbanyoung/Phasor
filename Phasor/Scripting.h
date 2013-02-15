@@ -74,6 +74,31 @@ namespace scripting
 		friend class PhasorCaller;
 	};
 
+	/*! \class CheckedScriptReference
+	 *	\brief Inherit this class if you plan on storing any script states,
+	 *	it can be used to determine if they're still valid.
+	 *	
+	 *	\todo check this actually works.
+	 */
+	class CheckedScriptReference
+	{
+	private:
+		bool valid;
+
+		static std::list<CheckedScriptReference*> make_list();
+		static void ScriptBeingClosed(Manager::ScriptState* state);
+		static std::list<CheckedScriptReference*> refed_list;
+
+	protected:
+		Manager::ScriptState* state;
+	public:
+		CheckedScriptReference(Manager::ScriptState* state);
+		virtual ~CheckedScriptReference();
+		bool still_valid() const;
+
+		friend class Scripts;
+	};
+
 	// --------------------------------------------------------------------
 	// Class: PhasorCaller
 	// Interface for invoking function calls on all loaded scripts.

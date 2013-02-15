@@ -21,14 +21,12 @@ namespace halo { namespace objects {
 	};
 	static_assert(sizeof(s_halo_object) == 0x0c, "s_halo_object_entry incorrect");
 
-	/*! \todo look into expanding object limit.. probably not possible due to clients tho */
 	struct s_halo_object_table
 	{
 		s_table_header header;
 		s_halo_object entries[0x800];
 	};	
 
-	/*! \todo check this works */
 	void* GetObjectAddress(ident objectId)
 	{
 		s_halo_object_table* object_table = *(s_halo_object_table**)ADDR_OBJECTBASE;

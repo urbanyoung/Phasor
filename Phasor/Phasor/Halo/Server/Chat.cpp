@@ -17,14 +17,8 @@ namespace halo { namespace server { namespace chat {
 #pragma pack(pop)
 
 	void DispatchChat(e_chat_types type, const std::wstring& msg, 
-		const s_player* from_const, const s_player* to_const)
+		const s_player* from, const s_player* to)
 	{
-		/*! \todo
-		 * Remove non-const casting after get_object has been checked.
-		 */
-		s_player* from = (s_player*)from_const;
-		s_player* to = (s_player*)to_const;
-
 		s_chat_data chat_data;
 		chat_data.type = (DWORD)type;
 		chat_data.msg = msg.c_str();

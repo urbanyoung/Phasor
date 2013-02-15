@@ -94,6 +94,9 @@ namespace scripting
 		} catch (std::exception & e) {
 			HandleError(*phasor_state, e.what());
 		}
+
+		Manager::ScriptState* man_state = static_cast<Manager::ScriptState*>(phasor_state->state.get());
+		CheckedScriptReference::ScriptBeingClosed(man_state);
 		return itr;
 	}
 
@@ -166,6 +169,47 @@ namespace scripting
 
 	// --------------------------------------------------------------------
 	// 
+	// 
+
+	std::list<CheckedScriptReference*> CheckedScriptReference::make_list()
+	{
+		return std::list<CheckedScriptReference*>();
+	}
+
+	void CheckedScriptReference::ScriptBeingClosed(Manager::ScriptState* state)
+	{
+		for (auto itr = refed_list.begin(); itr != refed_list.end(); ++itr) {		
+			if ((*itr)->state == state) (*itr)->valid = false;
+		}
+	}
+
+	CheckedScriptReference::CheckedScriptReference(Manager::ScriptState* state)
+		: state(state)
+	{
+		refed_list.push_back(this);
+	}
+
+	CheckedScriptReference::~CheckedScriptReference()
+	{
+		auto itr = refed_list.begin();
+		while (itr != refed_list.end()) {
+			if (*itr == this) {
+				refed_list.erase(itr);
+				break;
+			}
+			itr++;
+		}
+	}
+
+	bool CheckedScriptReference::still_valid() const {
+		return valid;
+	}
+
+	std::list<CheckedScriptReference*> CheckedScriptReference::refed_list = CheckedScriptReference::make_list();
+
+
+	// --------------------------------------------------------------------
+	// 
 	Result PhasorCaller::Call(const std::string& function, 
 		std::array<Common::obj_type, 5> expected_types, Scripts& s)
 	{
@@ -173,12 +217,10 @@ namespace scripting
 		this->AddArg(!ignore_ret);
 		ObjBool& using_param = (ObjBool&)**args.rbegin();
 
-		auto itr = s.scripts.begin();
-
 		Result result;
 		bool result_set = ignore_ret;
 
-		for (; itr != s.scripts.end(); ++itr)
+		for (auto itr = s.scripts.begin(); itr != s.scripts.end(); ++itr)
 		{
 			PhasorScript& phasor_state = *itr->second;
 			if (!phasor_state.FunctionAllowed(function)) continue;

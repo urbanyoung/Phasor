@@ -68,25 +68,6 @@ namespace halo { namespace server { namespace maploader
 
 	// Get a pointer to the current map in the playlist
 	s_mapcycle_entry* GetCurrentMapcycleEntry();
-/*	s_mapcycle_entry* GetMapcycleStart();
-	s_mapcycle_entry* GetCurrentMapcycleEntry();
-
-	// Set the pointer to the server's mapcycle
-	void SetMapcycleStart(s_mapcycle_entry* new_map);
-
-	// Number of entries in the mapcycle
-	DWORD GetMapcycleCount();
-
-	// Set number of entries in the mapcycle
-	void SetMapcycleCount(DWORD new_count);
-
-	// Clears the current mapcycle
-	void ClearMapcycle();
-
-	// Loads a map into the current mapcycle
-	bool AddMapToCycle(const std::string& map, const std::wstring&, 
-		std::vector<std::string>& scripts,
-		COutStream& stream);*/
 
 	e_command_result sv_mapcycle_begin(void*, 
 		commands::CArgParser& args, COutStream& out);

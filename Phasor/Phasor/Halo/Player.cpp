@@ -17,7 +17,7 @@ namespace halo
 		s_player_structure players[16];
 
 	};
-	s_player::s_player(int memory_id) : memory_id(memory_id)
+	s_player::s_player(int memory_id) : memory_id(memory_id), sv_killed(false)
 	{
 		*g_PrintStream << "New player " << memory_id << endl;
 		mem = GetPlayerMemory(memory_id);
@@ -27,7 +27,6 @@ namespace halo
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
 		is_admin = Admin::IsAdmin(hash);
-		m_object = 0;
 	}
 
 	s_player::~s_player()
@@ -35,13 +34,9 @@ namespace halo
 		*g_PrintStream << "Player " << memory_id << " left" << endl;
 	}
 
-	/*! \todo 
-	 * check if object can invalidate itself.. ie does loopobjects ever defrag? */
-	objects::s_halo_biped* s_player::get_object()
+	objects::s_halo_biped* s_player::get_object() const
 	{
-		objects::s_halo_biped* object = (objects::s_halo_biped*)objects::GetObjectAddress(mem->object_id);
-		m_object = object;
-		return object;
+		return (objects::s_halo_biped*)objects::GetObjectAddress(mem->object_id);
 	}
 
 	void s_player::Kick() const
@@ -49,7 +44,7 @@ namespace halo
 		*g_PrintStream << "todo: kick player" << endl;
 	}
 
-	void s_player::ChangeTeam(BYTE new_team, bool forcekill) const
+	void s_player::ChangeTeam(BYTE new_team, bool forcekill)
 	{
 		using namespace server;
 		s_server_info* server_info = GetServerStruct();
@@ -73,11 +68,9 @@ namespace halo
 
 	}
 
-	/*!
-	 * \todo set sv_killed */
-	void s_player::Kill() const
+	void s_player::Kill()
 	{
-		//sv_killed = true; // used later for detecting what killed the player
+		sv_killed = true; // used later for detecting what killed the player
 	
 		if (mem->object_id.valid()) {
 			DWORD playerMask = (mem->playerJoinCount << 0x10) | memory_id;
@@ -105,7 +98,7 @@ namespace halo
 			}
 		}
 
-		//sv_killed = false;
+		sv_killed = false;
 	}
 
 	void s_player::ApplyCamo(float duration) const

@@ -222,9 +222,10 @@ namespace Common
 	// Wrapper for an associative container
 	class ObjTable : public Object
 	{
-	private:
+	public:
 		typedef std::pair<Object::unique_ptr, Object::unique_ptr> pair_t;
 		typedef std::map<Object::unique_ptr, Object::unique_ptr> table_t;
+	private:
 		table_t table;
 		
 		// Copies other into this object

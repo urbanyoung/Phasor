@@ -110,7 +110,6 @@ namespace halo { namespace objects
 		WORD ammo_clip; // 2b8
 		UNKNOWN(0x96);
 
-		/*! \todo test this and SyncAmmo */
 		void SetAmmo(WORD pack, WORD clip);
 		static void SyncAmmo(ident weaponId);
 

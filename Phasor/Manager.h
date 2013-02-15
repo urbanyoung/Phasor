@@ -27,7 +27,8 @@ typedef Manager::ScriptState ScriptState;
 // Provides an interface for managing scripts of different types.
 // Currently only Lua is supported, but others can be integrated easily.
 namespace Manager
-{		
+{
+	
 	class Result;			
 	class ScriptState;
 	class CallHandler;
@@ -80,8 +81,6 @@ namespace Manager
 
 	protected:
 
-		ScriptState& state;
-
 		// Get the next argument for the function, if it's not of the
 		// expected type an error should be described and raised through 
 		// RaiseError. 
@@ -89,6 +88,8 @@ namespace Manager
 
 		CallHandler(ScriptState& state, const ScriptCallback* cb, int nargs);
 	public:		
+
+		ScriptState& state;
 
 		// Invokes the call to the setup function
 		MObject::unique_list Call();
@@ -192,6 +193,7 @@ namespace Manager
 		void AddArg(float value);
 		void AddArg(double value);	
 		void AddArg(const std::map<std::string, std::string>& table);	
+		void AddArg(std::unique_ptr<Common::Object> obj);
 
 		// Clears the current argument list
 		void Clear();

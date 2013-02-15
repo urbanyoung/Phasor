@@ -36,7 +36,7 @@ public:
 	~CLoggingStream();
 
 	// COutStream
-	std::unique_ptr<COutStream> clone() override
+	std::unique_ptr<COutStream> clone() const override
 	{
 		return std::unique_ptr<COutStream>(new CLoggingStream(*this));
 	}

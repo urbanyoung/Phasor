@@ -62,7 +62,7 @@ namespace halo
 		std::string hash, ip;
 		WORD port;
 		int memory_id;
-		bool is_admin;
+		bool is_admin, sv_killed;
 		s_player_structure* mem;
 		std::unique_ptr<afk_detection::CAFKDetection> afk;
 		std::unique_ptr<PlayerConsoleStream> console_stream;
@@ -72,16 +72,12 @@ namespace halo
 		explicit s_player(int memory_id);
 		~s_player();
 
-		objects::s_halo_biped* get_object();
+		objects::s_halo_biped* get_object() const;
 		void Kick() const;
-		void ChangeTeam(BYTE new_team, bool forcekill=true) const;
-		void Kill() const;
+		void ChangeTeam(BYTE new_team, bool forcekill=true);
+		void Kill();
 		void ApplyCamo(float duration) const;
 		void SetSpeed(float speed) const;
-	private: // just for testing get_object
-		objects::s_halo_biped* m_object;		
-		void setup(int memory_id);
-
 	};
 
 	s_player_structure* GetPlayerMemory(int index);

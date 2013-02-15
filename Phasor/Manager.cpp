@@ -234,6 +234,11 @@ namespace Manager
 		args.push_back(std::move(arg));
 	}
 
+	void Caller::AddArg(std::unique_ptr<Common::Object> obj)
+	{
+		args.push_back(std::move(obj));
+	}
+
 	Result Caller::Call(ScriptState& state, const std::string& function, bool* found, int timeout)
 	{
 		Result result;

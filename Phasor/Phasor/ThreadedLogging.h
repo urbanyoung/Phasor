@@ -44,7 +44,7 @@ public:
 	~CThreadedLogging();
 
 	// COutStream
-	std::unique_ptr<COutStream> clone() override;
+	std::unique_ptr<COutStream> clone() const override;
 
 	// CLoggingStream isn't threadsafe, so we're responsible for thread safety.
 	void SetMoveSize(DWORD kbSize) override;

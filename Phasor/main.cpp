@@ -48,7 +48,6 @@ void LoadEarlyInit(COutStream& out);
 
 // Called when the dll is loaded
 extern "C" __declspec(dllexport) void OnLoad()
-//int main()
 {
 	g_PrintStream.reset(new halo::CHaloPrintStream());
 	*g_PrintStream << L"44656469636174656420746f206d756d2e2049206d69737320796f752e" << endl;
@@ -76,7 +75,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Building gametype list..." << endl;
 		if (!halo::server::gametypes::BuildGametypeList())
 			PhasorLog << L"    No gametypes were found!" << endl;
-		PhasorLog.print("%i", (int)0x80000000);
+
 		halo::InstallHooks();
 
 		if (!g_Thread.run()) {
@@ -91,7 +90,6 @@ extern "C" __declspec(dllexport) void OnLoad()
 		g_GameLog.reset(new CGameLog(g_LogsDirectory, L"GameLog", g_Thread));
 		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_OldLogsDirectory, g_Thread));
 		
-		// todo: remove before release
 		scriptOutput.reset(new Forwarder(*g_PrintStream, Forwarder::end_point(*g_ScriptsLog)));
 		g_Scripts.reset(new scripting::Scripts(*scriptOutput,g_ScriptsDirectory));
 
@@ -104,10 +102,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Initializing alias system" << endl;
 		halo::alias::Initialize();
 
-		PhasorLog << L"Phasor was successfully initialized." << endl;
-
-		// We want threaded logging from now on
-		*g_PhasorLog << "test" << endl;		
+		PhasorLog << L"Phasor was successfully initialized." << endl;	
 	}
 	catch (std::exception& e)
 	{

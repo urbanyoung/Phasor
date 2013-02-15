@@ -43,7 +43,7 @@ public:
 	virtual ~COutStream();
 
 	// Creates a copy of stream
-	virtual std::unique_ptr<COutStream> clone() = 0;
+	virtual std::unique_ptr<COutStream> clone() const = 0;
 	// Called to write data to the stream
 	virtual bool Write(const std::wstring& str) = 0;
 
@@ -103,7 +103,7 @@ protected:
 		return b && stream.Write(str);
 	}
 	// This stream is temporary and shouldn't be copied/cloned.
-	std::unique_ptr<COutStream> clone() override
+	std::unique_ptr<COutStream> clone() const override
 	{
 		assert(0);
 		return std::unique_ptr<COutStream>();
@@ -145,10 +145,11 @@ public:
 	{
 	}
 
-	std::unique_ptr<COutStream> clone() override
+	std::unique_ptr<COutStream> clone() const override
 	{
 		std::unique_ptr<COutStream> forwarder(new Forwarder);
-		Forwarder* this_next = this, *that_next = (Forwarder*)forwarder.get();
+		const Forwarder* this_next = this;
+		Forwarder* that_next = (Forwarder*)forwarder.get();
 		while (this_next) {
 			that_next->next = next_ptr((Forwarder*)this_next->next->clone().release());
 			that_next->stream = this_next->stream->clone();
@@ -175,6 +176,23 @@ private:
 	Forwarder() {}
 };
 
+// ignores all input
+class SinkStream : public COutStream
+{
+	virtual bool Write(const std::wstring& str)
+	{
+		return true;
+	}
+
+public:
+
+	virtual std::unique_ptr<COutStream> clone() const override
+	{
+		return std::unique_ptr<COutStream>(new SinkStream());
+	}
+
+};
+
 template <class BaseStream>
 class ProxyRecordStream : public BaseStream
 {
@@ -196,7 +214,7 @@ public:
 	// not a good idea to clone this because we don't know if output will
 	// stick around. So if this stream needs to be cloned, it just clones
 	// the BaseStream
-	virtual std::unique_ptr<COutStream> clone() override
+	virtual std::unique_ptr<COutStream> clone() const override
 	{
 		return std::unique_ptr<COutStream>(new BaseStream());
 	}

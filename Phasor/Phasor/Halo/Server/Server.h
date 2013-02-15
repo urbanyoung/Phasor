@@ -92,7 +92,7 @@ namespace server
 	public:
 		SayStream() {}
 
-		virtual std::unique_ptr<COutStream> clone() override
+		virtual std::unique_ptr<COutStream> clone() const override
 		{
 			return std::unique_ptr<COutStream>(new SayStream());
 		}
