@@ -33,6 +33,8 @@ namespace PhasorAPI
 		{&l_readint, "readint", 1, {TYPE_NUMBER}},
 		{&l_readfloat, "readfloat", 1, {TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_readdouble, "readdouble", 1, {TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_readstring, "readstring", 1, {TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_readwidestring, "readwidestring", 1, {TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writebit, "writebit", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writebyte, "writebyte", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writechar, "writechar", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
@@ -42,6 +44,8 @@ namespace PhasorAPI
 		{&l_writeint, "writeint", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writefloat, "writefloat", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_writedouble, "writedouble", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_writestring, "writestring", 2, {TYPE_NUMBER, TYPE_STRING}},
+		{&l_writewidestring, "writewidestring", 2, {TYPE_NUMBER, TYPE_STRING}},
 		// Output related functions: see output.h
 		{&l_hprintf, "hprintf", 1, {TYPE_STRING}},
 		{&l_say, "say", 1, {TYPE_STRING}},
@@ -76,9 +80,12 @@ namespace PhasorAPI
 		{&l_updateammo, "updateammo", 1, {TYPE_NUMBER}},
 		{&l_setammo, "setammo", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_setspeed, "setspeed", 2, {TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_getprofilepath, "getprofilepath", 0, {}},
 		// Object related halo functions: see haloobjects.h
 		{&l_getobject, "getobject", 1, {TYPE_NUMBER}},
-		//
+		{&l_getobjectcoords, "getobjectcoords", 1, {TYPE_NUMBER}},
+		{&l_objecttoplayer, "objecttoplayer", 1, {TYPE_NUMBER}},
+		// Alias related functions: see alias_script.h
 		{&l_alias_search, "alias_search", 2, {TYPE_STRING, TYPE_STRING}},
 		{&l_alias_hash, "alias_hash", 2, {TYPE_STRING, TYPE_STRING}},
 

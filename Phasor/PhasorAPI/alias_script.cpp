@@ -60,7 +60,7 @@ public:
 		
 		Manager::Caller caller;
 		caller.AddArg(std::move(result_obj));
-		caller.Call(*state, callback, 5000);
+		caller.Call(*state, callback, DEFAULT_TIMEOUT);
 	}
 };
 

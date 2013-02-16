@@ -99,3 +99,13 @@ void l_setammo(PHASOR_API_ARGS);
  *	\endcode
  */
 void l_setspeed(PHASOR_API_ARGS);
+
+/*! \brief Gets halo's data directory (where banned.txt is stored)
+ *	\return The profile directory 
+ *	
+ *	Example usage:
+ *	\code
+ *		local profilepath = getprofilepath()
+ *	\endcode
+ *	*/
+void l_getprofilepath(PHASOR_API_ARGS);

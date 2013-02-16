@@ -12,7 +12,7 @@ namespace scripting
 {
 	using namespace Common;
 	const std::wstring log_prefix = L"  ";
-	#define DEFAULT_TIMEOUT 2000
+	
 	// Versions which should use the most up to date api
 	static const DWORD versions[] = {10059};
 

@@ -8,6 +8,7 @@
 #include <string>
 
 typedef unsigned long DWORD;
+#define DEFAULT_TIMEOUT 2000
 
 namespace scripting
 {

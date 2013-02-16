@@ -2,6 +2,7 @@
 #include "api_readers.h"
 #include "../Phasor/Halo/Game/Objects.h"
 #include "../Phasor/Globals.h"
+#include "../Phasor/Directory.h"
 #include "../Common/MyString.h"
 
 using namespace Common;
@@ -88,4 +89,9 @@ void l_setspeed(CallHandler& handler, Object::unique_deque& args, Object::unique
 	s_player* player = ReadPlayer(handler, *args[0], true);
 	float speed = ReadNumber<float>(*args[1]);
 	player->SetSpeed(speed);
+}
+
+void l_getprofilepath(CallHandler& handler, Object::unique_deque&, Object::unique_list& results)
+{
+	AddResultString(g_ProfileDirectory, results);
 }

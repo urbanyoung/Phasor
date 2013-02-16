@@ -21,7 +21,10 @@
  *		- \c dword - 32 bit positive integer from [0, 4,294,967,295]	
  *		- \c int - 32 bit integer from [-2147483648, 2147483647]	
  *		- \c float - 32 bit floating point number from [-3.402823466e+38, 3.402823466e+38]	
- *		- \c double - 64 bit floating point number from[-1.7976931348623158e+308, 1.7976931348623158e+308]	
+ *		- \c double - 64 bit floating point number from[-1.7976931348623158e+308, 1.7976931348623158e+308]
+ *		
+ * \remark
+ * All string operations are limited to 80 characters at max.
 */
 #include "../Common/Common.h"
 #include "PhasorAPI.h"
@@ -61,7 +64,7 @@ void l_readbyte(PHASOR_API_ARGS);
  *
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
- *	\return The byte read.
+ *	\return The char read.
  *	
  *	Example usage:
  *  \code
@@ -89,7 +92,7 @@ void l_readword(PHASOR_API_ARGS);
  *
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
- *	\return The word read
+ *	\return The short read
  *	
  *	Example usage:
  *  \code
@@ -117,7 +120,7 @@ void l_readdword(PHASOR_API_ARGS);
  *
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
- *	\return The dword read
+ *	\return The integer read
  *	
  *	Example usage:
  *  \code
@@ -145,7 +148,7 @@ void l_readfloat(PHASOR_API_ARGS);
  *
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
- *	\return The word read
+ *	\return The double read
  *	
  *	Example usage:
  *  \code
@@ -154,6 +157,25 @@ void l_readfloat(PHASOR_API_ARGS);
  *  \endcode
  */
 void l_readdouble(PHASOR_API_ARGS);
+
+/*! \brief Reads a string from the specified memory address.
+ *
+ *	\param address The memory address to read from.
+ *	\param [length] The number of characters to read.
+ */
+void l_readstring(PHASOR_API_ARGS);
+
+/*! \brief Reads a wide string from the specified memory address.
+ *
+ *	\param address The memory address to read from.
+ *	\param [length] The number of wide characters to read.
+ *	
+ *	\remark
+ *	A wide string is one where each character is two bytes wide. Lua
+ *	can't handle wide strings so Phasor will convert to a narrow string
+ *	before returning.
+ */
+void l_readwidestring(PHASOR_API_ARGS);
 
 /*! \brief Writes a bit to the specified memory address.
  *
@@ -284,3 +306,31 @@ void l_writefloat(PHASOR_API_ARGS);
  *  \endcode
  */
 void l_writedouble(PHASOR_API_ARGS);
+
+/*! \brief Writes a string to the specified memory address
+ *
+ *	\param address The address to write to.
+ *	\param str The string to write.
+ *
+ * Example usage:
+ * \code
+ *		writestring(0x12345678, "write this string.")
+ * \endcode
+ */
+void l_writestring(PHASOR_API_ARGS);
+
+/*! \brief Writes a wide string to the specified memory address
+ *
+ *	\param address The address to write to.
+ *	\param str The string to write.
+ *
+ * Example usage:
+ * \code
+ *		writewidestring(0x12345678, "write this string.")
+ * \endcode
+ * 
+ * \remark 
+ * Lua doesn't support wide strings, so Phasor will convert the provided
+ * narrow string to wide before writing it. 
+ */
+void l_writewidestring(PHASOR_API_ARGS);

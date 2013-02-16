@@ -138,7 +138,7 @@ namespace Lua
 		case Common::TYPE_TABLE:
 			{
 				const MObjTable& table = static_cast<const MObjTable&>(object);
-				lua_newtable(L);
+				lua_createtable(L, table.size(), table.size());
 
 				for (auto itr = table.begin(); itr != table.end(); ++itr) {
 					push(*itr->first.get());//key
