@@ -244,7 +244,7 @@ __declspec(naked) void OnPlayerQuit_CC()
 		ret
 	}
 }
-/*
+
 DWORD teamsel_ret = 0, selection = 0;
 
 // Codecave for team selection
@@ -275,7 +275,7 @@ __declspec(naked) void OnTeamSelection_CC()
 }
 
 // Codecave for handling team changes
-DWORD teamchange_ret = 0;
+/*DWORD teamchange_ret = 0;
 __declspec(naked) void OnTeamChange_CC()
 {	
 	__asm
@@ -329,7 +329,7 @@ DO_NOT_CHANGE:
 		ret
 	}
 }
-
+/*
 // Codecave for player spawns (just before server notification)
 __declspec(naked) void OnPlayerSpawn_CC()
 {	
@@ -852,7 +852,7 @@ __declspec(naked) void ExitProcess_CC()
 		ret
 	}
 }
-
+*/
 __declspec(naked) void OnHaloPrint_CC()
 {
 	__asm
@@ -876,6 +876,8 @@ __declspec(naked) void OnHaloBanCheck_CC()
 		pop halobancheck_ret
 
 		pushad
+		mov eax, [esp + 0x28]
+		push eax
 		push edi
 		call server::OnHaloBanCheck
 		cmp al, 1 // not banned
@@ -895,7 +897,7 @@ PLAYER_NOT_BANNED:
 		ret
 	}
 }
-
+/*
 DWORD versionBroadcast_ret = 0;
 __declspec(naked) void OnVersionBroadcast_CC()
 {
@@ -1041,7 +1043,7 @@ namespace halo
 		// ----------------------------------------------------------------
 		//
 		// Codecave for detecting game ending
-		//CreateCodeCave(CC_GAMEEND, 5, OnGameEnd_CC);
+		CreateCodeCave(CC_GAMEEND, 5, OnGameEnd_CC);
 
 		// Codecave used to detect a new game
 		CreateCodeCave(CC_NEWGAME, 5, OnNewGame_CC);
@@ -1053,17 +1055,17 @@ namespace halo
 		CreateCodeCave(CC_PLAYERQUIT, 9, OnPlayerQuit_CC);
 
 		// Codecave used to decide the player's team
-		/*CreateCodeCave(CC_TEAMSELECTION, 5, OnTeamSelection_CC);
+		CreateCodeCave(CC_TEAMSELECTION, 5, OnTeamSelection_CC);
 
 		// Codecave for handling team changes
-		#ifdef PHASOR_PC
+	/*	#ifdef PHASOR_PC
 		CreateCodeCave(CC_TEAMCHANGE, 6, OnTeamChange_CC);
 		#elif PHASOR_CE
 		CreateCodeCave(CC_TEAMCHANGE, 5, OnTeamChange_CC);
-		#endif
+		#endif*/
 
 		// Codecaves for detecting player spawns
-		CreateCodeCave(CC_PLAYERSPAWN, 5, OnPlayerSpawn_CC);
+		/*CreateCodeCave(CC_PLAYERSPAWN, 5, OnPlayerSpawn_CC);
 		CreateCodeCave(CC_PLAYERSPAWNEND, 8, OnPlayerSpawnEnd_CC);
 
 		// Codecave called when a weapon is created
@@ -1103,11 +1105,11 @@ namespace halo
 		// Codecaves for detecting vehicle ejections
 		CreateCodeCave(CC_VEHICLEFORCEEJECT, 8, OnVehicleForceEject_CC);
 		CreateCodeCave(CC_VEHICLEUSEREJECT, 7, OnVehicleUserEject_CC);
-
+		*/
 		// Generic codecaves
 		CreateCodeCave(CC_HALOPRINT, 6, OnHaloPrint_CC);
 		CreateCodeCave(CC_HALOBANCHECK, 6, OnHaloBanCheck_CC);
-		CreateCodeCave(CC_VERSIONBROADCAST, 6, OnVersionBroadcast_CC);
+		//CreateCodeCave(CC_VERSIONBROADCAST, 6, OnVersionBroadcast_CC);
 
 		//CreateCodeCave(0x005112d4, 5, OnJoinCheck_CC);
 		//
@@ -1120,7 +1122,7 @@ namespace halo
 		//BYTE curCmp[] = {0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
 		//WriteBytes(0x00512479 , &curCmp, sizeof(curCmp));
 
-		*/
+		
 		// I want to remove haloded's seh chain so that I can get extra exception
 		// information (passed to the unhandled exception filter)
 		#pragma pack(push, 1)

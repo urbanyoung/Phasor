@@ -7,6 +7,8 @@
 #include "../Game/Game.h"
 #include "../../Globals.h"
 #include "../../Admin.h"
+#include "../../../ScriptingEvents.h"
+
 #include "Packet.h"
 #include "Chat.h"
 
@@ -56,6 +58,11 @@ namespace halo { namespace server
 		return NULL;
 	}
 
+	void __stdcall ConsoleHandler(DWORD fdwCtrlType)
+	{
+
+	}
+
 	// Called periodically by Halo to check for console input, I use for timers
 	void __stdcall OnConsoleProcessing()
 	{
@@ -69,6 +76,7 @@ namespace halo { namespace server
 
 		if (player)	{
 			game::OnClientUpdate(*player);
+			scripting::events::OnClientUpdate(*player);
 			//player->afk->CheckPlayerActivity();
 		}
 	}
@@ -99,8 +107,8 @@ namespace halo { namespace server
 		// Fix the map name
 		maploader::OnNewGame();
 #endif
-		game::OnNewGame(map);
 		scriptloader::LoadScripts();
+		game::OnNewGame(map);
 	}
 
 	// Called when a game stage ends
@@ -109,10 +117,31 @@ namespace halo { namespace server
 		game::OnGameEnd(mode);
 	}
 
-	s_player* GetExecutingPlayer()
+	void __stdcall OnHaloPrint(char* msg)
 	{
-		int playerNum = *(int*)UlongToPtr(ADDR_RCONPLAYER);
-		return game::GetPlayerFromRconId(playerNum);
+		*g_PrintStream << msg << endl;
+		s_player* player = GetPlayerExecutingCommand();
+		if (player) *player->console_stream << msg << endl;
+	}
+
+	bool __stdcall OnHaloBanCheck(char* hash, s_machine_info* machine)
+	{
+		// fix an exploit where hashes can be uppercase (gamespy still validates
+		// them but they are treated as different by the server)
+		for (size_t i = 0; i < strlen(hash); i++)
+			if (hash[i] >= 'A' && hash[i] <= 'Z')
+				hash[i] += 32;
+		
+		std::string ip;
+		GetMachineIP(*machine, &ip, NULL);
+		
+		bool allow = scripting::events::OnBanCheck(hash, ip);
+
+		if (!allow) { 
+			*g_PhasorLog << "Scripts rejected player. Hash " << hash << 
+				" IP : " << ip << endl;
+		}
+		return allow;
 	}
 
 	// Called when a console command is to be executed
@@ -120,7 +149,7 @@ namespace halo { namespace server
 	// kGiveToHalo: Not handled, pass to server.
 	e_command_result __stdcall ProcessCommand(char* command)
 	{
-		s_player* exec_player = GetExecutingPlayer();
+		s_player* exec_player = GetPlayerExecutingCommand();
 		bool can_execute = exec_player == NULL;
 
 		if (can_execute) { // server console executing
@@ -295,28 +324,19 @@ namespace halo { namespace server
 		return game::GetPlayerFromRconId(execPlayerNumber);
 	}
 
-	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port)
-	{
-		s_machine_info* machine = GetMachineData(player);
-		if (!machine) return false;
-		if (ip) {
-			BYTE* ip_data = machine->get_con_info()->ip;
-			*ip = m_sprintf("%d.%d.%d.%d", ip_data[0], ip_data[1],
-				ip_data[2], ip_data[3]);
-		}
-		if (port) *port = machine->get_con_info()->port;
-
-		return true;
-	}
-
 	bool GetPlayerHash(const s_player& player, std::string& hash)
 	{
 		s_machine_info* machine = GetMachineData(player);
 		if (!machine) return false;
+		return GetMachineHash(*machine, hash);
+	}
+
+	bool GetMachineHash(s_machine_info& machine, std::string& hash)
+	{
 		s_hash_list* hash_list = (s_hash_list*)ADDR_HASHLIST;
 		hash_list = hash_list->next;
 		while (hash_list && hash_list->data) {	
-			if (hash_list->data->id == machine->id_hash) {
+			if (hash_list->data->id == machine.id_hash) {
 				hash = hash_list->data->hash;
 				return true;
 			}
@@ -324,7 +344,28 @@ namespace halo { namespace server
 		}
 		return false;
 	}
+	
+	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port)
+	{
+		s_machine_info* machine = GetMachineData(player);
+		if (!machine) return false;
+		return GetMachineIP(*machine, ip, port);
+	}
 
+	bool GetMachineIP(s_machine_info& machine, std::string* ip, WORD* port)
+	{
+		s_connection_info* con = machine.get_con_info();
+		if (!con) return false;
+		if (ip) {
+			BYTE* ip_data = con->ip;
+			*ip = m_sprintf("%d.%d.%d.%d", ip_data[0], ip_data[1],
+				ip_data[2], ip_data[3]);
+		}
+		if (port) *port = con->port;
+
+		return true;
+	}
+	
 	// --------------------------------------------------------------------
 	// Server message.
 	bool SayStream::Write(const std::wstring& str)

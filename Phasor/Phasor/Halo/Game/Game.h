@@ -4,7 +4,11 @@
 #include "Objects.h"
 #include "../Player.h"
 
-namespace halo { namespace game {
+namespace halo { 
+	namespace server {
+		struct s_machine_info;
+	}
+	namespace game {
 
 	// Structures
 	// 
@@ -37,7 +41,7 @@ namespace halo { namespace game {
 	void __stdcall OnPlayerQuit(DWORD playerId);
 
 	// Called when a player's team is being assigned
-	DWORD __stdcall OnTeamSelection(DWORD cur_team, LPBYTE lpMachinePtr);
+	DWORD __stdcall OnTeamSelection(DWORD cur_team, server::s_machine_info* machine);
 
 	// Called when a player tries to change team
 	bool __stdcall OnTeamChange(DWORD playerId, DWORD team);

@@ -195,6 +195,10 @@ template <class T> void write_data(CallHandler& handler, LPBYTE destAddress,
 	}
 }
 
+// ------------------------------------------------------------------------
+// Reader/writer functions used by rest of the script.
+// 
+
 // Reads from the specified memory address and raises a script error if the
 // address. The result is added to results.
 template <typename T>

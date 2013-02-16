@@ -45,4 +45,33 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnServerCommand", result_bool));
 	}
 
+	void OnNewGame(const std::string& map)
+	{
+		PhasorCaller caller;
+		caller.AddArg(map);
+		caller.Call("OnNewGame");
+	}
+
+	void OnGameEnd(DWORD stage)
+	{
+		PhasorCaller caller;
+		caller.AddArg(stage);
+		caller.Call("OnGameEnd");
+	}
+
+	/*! \todo make function so scripts can check if hash-checking is on */
+	bool OnBanCheck(const std::string& hash, const std::string& ip)
+	{
+		PhasorCaller caller;
+		caller.AddArg(hash);
+		caller.AddArg(ip);
+		return HandleResult<bool>(caller.Call("OnBanCheck", result_bool));
+	}
+
+	void OnClientUpdate(const halo::s_player& player)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		caller.Call("OnClientUpdate");
+	}
 }}

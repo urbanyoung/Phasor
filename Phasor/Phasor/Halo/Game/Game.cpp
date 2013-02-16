@@ -6,6 +6,7 @@
 #include "../Alias.h"
 #include "../../Globals.h"
 #include "../../../Common/MyString.h"
+#include "../../../ScriptingEvents.h"
 #include <vector>
 
 namespace halo { namespace game {
@@ -66,6 +67,8 @@ namespace halo { namespace game {
 
 			} break;
 		}	
+
+		scripting::events::OnGameEnd(mode);
 	}
 
 	// Called when a new game starts
@@ -74,6 +77,8 @@ namespace halo { namespace game {
 		afk_detection::Enable();
 		for (int i = 0; i < 16; i++) PlayerList[i].reset();
 		g_GameLog->WriteLog(kGameStart, "A new game has started on map %s", map);
+
+		scripting::events::OnNewGame(map);
 	}
 
 	// Called when a player joins (after verification).
@@ -106,6 +111,13 @@ namespace halo { namespace game {
 				);
 			PlayerList[playerId].reset();
 		}
+	}
+
+	DWORD __stdcall OnTeamSelection(DWORD cur_team, server::s_machine_info* machine)
+	{
+		server:: s_connection_info* con = machine->get_con_info();
+		g_PrintStream->print("%i.%i.%i.%i:%i", con->ip[0],con->ip[1],con->ip[2],con->ip[3],con->port);
+		return cur_team;
 	}
 
 	void OnClientUpdate(s_player& player)

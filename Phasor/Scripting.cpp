@@ -232,7 +232,7 @@ namespace scripting
 				Result r = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
 			
 				// The first result matching the expected types is used
-				if (found && !result_set) {
+				if (r.size() && !result_set) {
 					size_t nloop = expected_types.size() < r.size() ?
 						expected_types.size() : r.size();
 					

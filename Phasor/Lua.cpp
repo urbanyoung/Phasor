@@ -193,7 +193,7 @@ namespace Lua
 
 		// Push the arguments on the stack
 		for (auto itr = args.begin(); itr != args.end(); ++itr)	push(**itr);
-		printf("pushed\n");
+
 		// Call the Lua function
 		if (lua_pcall_t(L, args.size(), LUA_MULTRET, 0, timeout))
 		{

@@ -123,9 +123,11 @@ namespace server
 
 	// Gets the player's ip
 	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port);
+	bool GetMachineIP(s_machine_info& machine, std::string* ip, WORD* port);
 	
 	// Gets the player's hash
 	bool GetPlayerHash(const s_player& player, std::string& hash);
+	bool GetMachineHash(s_machine_info& machine, std::string& hash);
 	
 	// Get the player's machine info (ip struct etc)
 	s_machine_info* GetMachineData(const s_player& player);
@@ -174,16 +176,15 @@ namespace server
 	 *	\return Boolean indicating whether or not the map was changed.*/
 	bool __stdcall OnMapLoad(maploader::s_mapcycle_entry* loading_map);
 
-	/*! \brief Called when halo wants to print a message to the console.
-	 * \todo make sure I send console message if there is an executing player.*/
+	/*! \brief Called when halo wants to print a message to the console.*/
 	void __stdcall OnHaloPrint(char* msg);
 
 	/*! \brief Called when halo checks if the specified hash is banned.
 	 *	\param hash The hash being checked.
 	 *	\return Boolean indicating whether or not the player is allowed to join.*/
-	bool __stdcall OnHaloBanCheck(char* hash);
+	bool __stdcall OnHaloBanCheck(char* hash, s_machine_info* machine);
 
 	// Called when the server info is about to be broadcast
-	bool __stdcall OnVersionBroadcast(DWORD arg1, DWORD arg2);
+	//bool __stdcall OnVersionBroadcast(DWORD arg1, DWORD arg2);
 
 } }
