@@ -275,7 +275,7 @@ __declspec(naked) void OnTeamSelection_CC()
 }
 
 // Codecave for handling team changes
-/*DWORD teamchange_ret = 0;
+DWORD teamchange_ret = 0;
 __declspec(naked) void OnTeamChange_CC()
 {	
 	__asm
@@ -329,7 +329,7 @@ DO_NOT_CHANGE:
 		ret
 	}
 }
-/*
+
 // Codecave for player spawns (just before server notification)
 __declspec(naked) void OnPlayerSpawn_CC()
 {	
@@ -379,7 +379,7 @@ __declspec(naked) void OnPlayerSpawnEnd_CC()
 		ret
 	}
 }
-
+/*
 DWORD objcreation_ret = 0;
 
 // Codecave for modifying weapons as they're created
@@ -1058,18 +1058,18 @@ namespace halo
 		CreateCodeCave(CC_TEAMSELECTION, 5, OnTeamSelection_CC);
 
 		// Codecave for handling team changes
-	/*	#ifdef PHASOR_PC
+		#ifdef PHASOR_PC
 		CreateCodeCave(CC_TEAMCHANGE, 6, OnTeamChange_CC);
 		#elif PHASOR_CE
 		CreateCodeCave(CC_TEAMCHANGE, 5, OnTeamChange_CC);
-		#endif*/
+		#endif
 
 		// Codecaves for detecting player spawns
-		/*CreateCodeCave(CC_PLAYERSPAWN, 5, OnPlayerSpawn_CC);
+		CreateCodeCave(CC_PLAYERSPAWN, 5, OnPlayerSpawn_CC);
 		CreateCodeCave(CC_PLAYERSPAWNEND, 8, OnPlayerSpawnEnd_CC);
 
 		// Codecave called when a weapon is created
-		CreateCodeCave(CC_OBJECTCREATION, 5, OnObjectCreation_CC);
+		/*CreateCodeCave(CC_OBJECTCREATION, 5, OnObjectCreation_CC);
 
 		// Codecave for handling weapon assignment to spawning players
 		CreateCodeCave(CC_WEAPONASSIGN, 6, OnWeaponAssignment_CC);

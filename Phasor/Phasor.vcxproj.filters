@@ -140,6 +140,9 @@
     <ClCompile Include="PhasorAPI\alias_script.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\tags.cpp">
+      <Filter>Phasor\Halo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -350,6 +353,9 @@
     </ClInclude>
     <ClInclude Include="PhasorAPI\alias_script.h">
       <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\tags.h">
+      <Filter>Phasor\Halo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

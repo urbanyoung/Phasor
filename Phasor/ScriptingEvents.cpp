@@ -5,6 +5,7 @@
 namespace scripting { namespace events {
 
 	static const results_t result_bool = {Common::TYPE_BOOL};
+	static const results_t result_number = {Common::TYPE_NUMBER};
 
 	/*! \todo make something so that scripts can return different types of data
 	 *
@@ -26,14 +27,15 @@ namespace scripting { namespace events {
 		return !result.size() || result.ReadBool().GetValue();
 	}
 
-	bool OnTeamChange(const halo::s_player& player, bool relevant, DWORD old_team)
+	bool OnTeamChange(const halo::s_player& player, bool relevant, DWORD old_team,
+		DWORD new_team)
 	{
 		PhasorCaller caller;
 		// if we're not going to process return values, let scripts know
 		if (!relevant) caller.ReturnValueIgnored();
 		AddPlayerArg(&player, caller);
 		caller.AddArg(old_team);
-		caller.AddArg(player.mem->team);
+		caller.AddArg(new_team);
 		return HandleResult<bool>(caller.Call("OnTeamChange", result_bool));
 	}
 
@@ -73,5 +75,44 @@ namespace scripting { namespace events {
 		PhasorCaller caller;
 		AddPlayerArg(&player, caller);
 		caller.Call("OnClientUpdate");
+	}
+
+	void OnPlayerJoin(const halo::s_player& player)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		caller.Call("OnPlayerJoin");
+	}
+
+	void OnPlayerLeave(const halo::s_player& player)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		caller.Call("OnPlayerLeave");
+	}
+
+	bool OnTeamDecision(DWORD in_team, DWORD& out_team)
+	{
+		PhasorCaller caller;
+		caller.AddArg(in_team);
+		Result r = caller.Call("OnTeamDecision", result_number);
+		if (r.size()) out_team = (DWORD)r.ReadNumber().GetValue();
+		return r.size() != 0;
+	}
+
+	void OnPlayerSpawn(const halo::s_player& player, halo::ident m_objectId)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		caller.AddArg(m_objectId);
+		caller.Call("OnPlayerSpawn");
+	}
+
+	void OnPlayerSpawnEnd(const halo::s_player& player, halo::ident m_objectId)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		caller.AddArg(m_objectId);
+		caller.Call("OnPlayerSpawnEnd");
 	}
 }}

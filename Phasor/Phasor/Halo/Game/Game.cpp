@@ -7,6 +7,7 @@
 #include "../../Globals.h"
 #include "../../../Common/MyString.h"
 #include "../../../ScriptingEvents.h"
+#include "../tags.h"
 #include <vector>
 
 namespace halo { namespace game {
@@ -56,16 +57,6 @@ namespace halo { namespace game {
 				*g_PrintStream << "The game is ending..." << endl;
 
 			} break;
-
-		case 2: // post game carnage report
-			{
-
-			} break; 
-
-		case 3: // players can leave
-			{
-
-			} break;
 		}	
 
 		scripting::events::OnGameEnd(mode);
@@ -75,6 +66,8 @@ namespace halo { namespace game {
 	void OnNewGame(const char* map)
 	{
 		afk_detection::Enable();
+		halo::BuildTagCache();
+
 		for (int i = 0; i < 16; i++) PlayerList[i].reset();
 		g_GameLog->WriteLog(kGameStart, "A new game has started on map %s", map);
 
@@ -94,6 +87,7 @@ namespace halo { namespace game {
 			player->mem->playerName, WidenString(player->hash).c_str(),
 			WidenString(player->ip).c_str(), player->port);
 		alias::OnPlayerJoin(*player);
+		scripting::events::OnPlayerJoin(*player);
 	}
 
 	// Called when a player quits
@@ -109,19 +103,56 @@ namespace halo { namespace game {
 			g_GameLog->WriteLog(kPlayerLeave, L"%s (%s)", 
 				player->mem->playerName, WidenString(player->hash).c_str()
 				);
+
+			scripting::events::OnPlayerLeave(*player);
 			PlayerList[playerId].reset();
 		}
 	}
 
 	DWORD __stdcall OnTeamSelection(DWORD cur_team, server::s_machine_info* machine)
 	{
-		server:: s_connection_info* con = machine->get_con_info();
-		g_PrintStream->print("%i.%i.%i.%i:%i", con->ip[0],con->ip[1],con->ip[2],con->ip[3],con->port);
-		return cur_team;
+		DWORD new_team = cur_team;
+		scripting::events::OnTeamDecision(cur_team, new_team);
+		return new_team;
 	}
 
+	/*! \todo add checks when sv_teams_change or w/e is enabled */
+	bool __stdcall OnTeamChange(DWORD playerId, DWORD new_team)
+	{
+		s_player* player = GetPlayer(playerId);
+		bool allow = true;
+
+		if (player && new_team != player->mem->team) {
+			allow = scripting::events::OnTeamChange(*player, true, new_team,
+				player->mem->team);
+
+			g_GameLog->WriteLog(kPlayerChange, L"Blocked %s from changing team.", 
+				player->mem->playerName);
+		}
+		return allow;
+	}
+
+	// Called when a player is about to spawn (object already created)
+	void __stdcall OnPlayerSpawn(DWORD playerId, ident m_objectId)
+	{
+		halo::s_player* player = GetPlayer(playerId);
+		if (!player) return;
+		scripting::events::OnPlayerSpawn(*player, m_objectId);
+	}
+
+	// Called after the server has been notified of a player spawn
+	void __stdcall OnPlayerSpawnEnd(DWORD playerId, ident m_objectId)
+	{
+		halo::s_player* player = GetPlayer(playerId);
+		if (!player) return;
+		scripting::events::OnPlayerSpawnEnd(*player, m_objectId);
+	}
+
+	/*! \todo make phasor go through a script to detect which functions
+	 *! it has when loading, then blacklist the rest of the expected ones. */
 	void OnClientUpdate(s_player& player)
 	{
+		// scripts called from server
 		player.afk->CheckPlayerActivity();
 	}
 }}

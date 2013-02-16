@@ -58,10 +58,10 @@ namespace halo { namespace server
 		return NULL;
 	}
 
-	void __stdcall ConsoleHandler(DWORD fdwCtrlType)
+/*	void __stdcall ConsoleHandler(DWORD fdwCtrlType)
 	{
 
-	}
+	}*/
 
 	// Called periodically by Halo to check for console input, I use for timers
 	void __stdcall OnConsoleProcessing()
@@ -70,6 +70,7 @@ namespace halo { namespace server
 		g_Thread.ProcessEvents();
 	}
 
+	/*! \todo make this more efficient.. shouldn't need to GetPlayerFromAddress */
 	void __stdcall OnClientUpdate(s_player_structure* m_player)
 	{
 		s_player* player = game::GetPlayerFromAddress(m_player);
@@ -77,7 +78,6 @@ namespace halo { namespace server
 		if (player)	{
 			game::OnClientUpdate(*player);
 			scripting::events::OnClientUpdate(*player);
-			//player->afk->CheckPlayerActivity();
 		}
 	}
 

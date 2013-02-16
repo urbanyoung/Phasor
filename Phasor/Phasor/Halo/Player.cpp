@@ -61,7 +61,7 @@ namespace halo
 
 				if (forcekill) Kill();
 				NotifyServerOfTeamChange(*this);
-				scripting::events::OnTeamChange(*this, false, old_team);
+				scripting::events::OnTeamChange(*this, false, old_team, new_team);
 				break;
 			}
 		}

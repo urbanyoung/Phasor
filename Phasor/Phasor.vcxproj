@@ -138,6 +138,7 @@
     <ClCompile Include="Phasor\Halo\Server\Packet.cpp" />
     <ClCompile Include="Phasor\Halo\Server\ScriptLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Server.cpp" />
+    <ClCompile Include="Phasor\Halo\tags.cpp" />
     <ClCompile Include="Phasor\Logging.cpp" />
     <ClCompile Include="Phasor\LogHandler.cpp" />
     <ClCompile Include="Phasor\PhasorThread.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="Phasor\Halo\Server\Packet.h" />
     <ClInclude Include="Phasor\Halo\Server\ScriptLoader.h" />
     <ClInclude Include="Phasor\Halo\Server\Server.h" />
+    <ClInclude Include="Phasor\Halo\tags.h" />
     <ClInclude Include="Phasor\Logging.h" />
     <ClInclude Include="Phasor\LogHandler.h" />
     <ClInclude Include="Phasor\PhasorThread.h" />

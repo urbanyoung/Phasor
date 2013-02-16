@@ -11,6 +11,7 @@
  *		- If you return a value and \c relevant == \c false it will be ignored.
  *		- The value indicating the server is executing the command is \c nil not \c -1
  *		- OnClientUpdate only receives the player's memory id, not their object id.
+ *		- OnPlayerJoin only receives the player's memory id, not their team too.
  * 
  */
 
@@ -22,6 +23,7 @@
 
 namespace halo
 {
+	struct ident;
 	struct s_player;
 }
 
@@ -45,7 +47,8 @@ namespace scripting {
 		 *		function OnTeamChange(player, old_team, new_team, relevant)
 		 *	\endcode
 		 */
-		bool OnTeamChange(const halo::s_player& player, bool relevant, DWORD old_team);
+		bool OnTeamChange(const halo::s_player& player, bool relevant, DWORD old_team,
+			DWORD new_team);
 
 		/*! \brief Called when a server command is being executed.
 		 * 
@@ -119,6 +122,62 @@ namespace scripting {
 		 */
 		void OnClientUpdate(const halo::s_player& player);
 
+		/*! \brief Called when a player successfully joins the game.
+		 *
+		 *	\param player The joining player's memory id.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnPlayerJoin(player)
+		 *	\endcode
+		 */
+		void OnPlayerJoin(const halo::s_player& player);
 
+		/*! \brief Called when a player quits.
+		 * 
+		 *	\param player The player who left.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnPlayerLeave(player)
+		 *	\endcode
+		 */
+		void OnPlayerLeave(const halo::s_player& player);
+
+		/*! \brief Called when a player needs to be assigned a team.
+		 *
+		 *	\param team The team the player is about to be put on.
+		 *	\return The team you want the player on, or \c nil if you don't care.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnTeamDecsion(team)
+		 *	\endcode
+		 */
+		bool OnTeamDecision(DWORD in_team, DWORD& out_team);
+
+		/*! \brief Called when a player has spawned.
+		 * 
+		 *	\param player The player who is spawning.
+		 *	\param objid The player's new object id.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnPlayerSpawn(player, m_objectId)
+		 *	\endcode
+		 */
+		void OnPlayerSpawn(const halo::s_player& player, halo::ident m_objectId);
+
+		/*! \brief Called when the server has been notified on the player's spawn.
+		 * 
+		 *	\param player The player who is spawning.
+		 *	\param objid The player's new object id.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnPlayerSpawnEnd(player, m_objectId)
+		 *	\endcode
+		 */
+		void OnPlayerSpawnEnd(const halo::s_player& player, halo::ident m_objectId);
 }}
 

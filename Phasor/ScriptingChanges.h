@@ -23,4 +23,5 @@
 		- <b>Object related functions are stricter</b>. All functions, apart from \c getobject will
 		  raise an error if you pass an invalid object.
 			- This shouldn't cause any issues unless you're reading object ids from the wrong place.
+		- \c OnPlayerJoin no longer receives the player's team.
 */

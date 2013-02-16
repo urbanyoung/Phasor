@@ -1,6 +1,7 @@
 #include "Objects.h"
 #include "../Addresses.h"
 #include "../../Globals.h"
+#include <map>
 
 namespace halo { namespace objects {
 

@@ -5,6 +5,8 @@
 #include "../Player.h"
 
 namespace halo { 
+	struct ident;
+	struct s_object_info;
 	namespace server {
 		struct s_machine_info;
 	}
@@ -47,17 +49,17 @@ namespace halo {
 	bool __stdcall OnTeamChange(DWORD playerId, DWORD team);
 
 	// Called when a player is about to spawn (object already created)
-	void __stdcall OnPlayerSpawn(DWORD playerId, DWORD m_objectId);
+	void __stdcall OnPlayerSpawn(DWORD playerId, ident m_objectId);
 
 	// Called after the server has been notified of a player spawn
-	void __stdcall OnPlayerSpawnEnd(DWORD playerId, DWORD m_objectId);
+	void __stdcall OnPlayerSpawnEnd(DWORD playerId, ident m_objectId);
 
 	// Called when a weapon is created
-	void __stdcall OnObjectCreation(DWORD m_weaponId);
+	void __stdcall OnObjectCreation(ident m_objectId);
 
 	// Called when a weapon is assigned to an object
 	DWORD __stdcall OnWeaponAssignment(DWORD playerId, DWORD owningObjectId,
-		objects::s_object_info* curWeapon, DWORD order);
+		s_object_info* curWeapon, DWORD order);
 
 	// Called when a player can interact with an object
 	bool __stdcall OnObjectInteraction(DWORD playerId, DWORD m_ObjId);

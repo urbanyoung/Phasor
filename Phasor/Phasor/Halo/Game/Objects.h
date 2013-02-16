@@ -3,6 +3,7 @@
 #include "../../../Common/Types.h"
 #include "../../../Common/vect3d.h"
 #include "../Halo.h"
+#include <string>
 
 namespace halo { namespace objects
 {
@@ -117,40 +118,7 @@ namespace halo { namespace objects
 		// its size is 0x684
 	};
 	static_assert(sizeof(s_halo_weapon) == 0x350, "bad");
-
-	// Structure of tag index table
-	struct s_tag_index_table_header
-	{
-		DWORD next_ptr;
-		DWORD starting_index; // ??
-		DWORD unk;
-		DWORD entityCount;
-		DWORD unk1;
-		DWORD readOffset;
-		BYTE unk2[8];
-		DWORD readSize;
-		DWORD unk3;
-	};
-
-	// Structure of the tag header (entry in tag table)
-	struct s_tag_header
-	{
-		DWORD tagType; // ie weap
-		DWORD unk[2]; // I don't know
-		DWORD id; // unique id for map
-		char* tagName; // name of tag
-		LPBYTE metaData; // data for this tag
-		DWORD unk1[2]; // I don't know
-	};
-
-	struct s_object_info
-	{
-		DWORD tagType;
-		char* tagName;
-		DWORD empty;
-		DWORD id;
-	};
-
+	
 	#pragma pack(pop)
 
 	void* GetObjectAddress(ident objectId);
