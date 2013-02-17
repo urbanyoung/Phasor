@@ -5,7 +5,7 @@
 namespace halo { namespace objects {
 
 	// entry in the object table
-	struct s_halo_object
+	struct s_halo_object_header
 	{
 		WORD id;
 		char flags; // 0x44 by default, dunno what they're for.
@@ -15,16 +15,16 @@ namespace halo { namespace objects {
 		union
 		{
 			void*					data;
-			s_halo_object_header*	base;
+			s_halo_object*	base;
 			s_halo_biped*			biped;
 		};
 	};
-	static_assert(sizeof(s_halo_object) == 0x0c, "s_halo_object_entry incorrect");
+	static_assert(sizeof(s_halo_object_header) == 0x0c, "s_halo_object_entry incorrect");
 
 	struct s_halo_object_table
 	{
 		s_table_header header;
-		s_halo_object entries[0x800];
+		s_halo_object_header entries[0x800];
 	};	
 
 	void* GetObjectAddress(ident objectId)
@@ -32,7 +32,7 @@ namespace halo { namespace objects {
 		s_halo_object_table* object_table = *(s_halo_object_table**)ADDR_OBJECTBASE;
 		if (objectId.slot >= object_table->header.max_size) return 0;
 
-		s_halo_object* obj = &object_table->entries[objectId.slot];
+		s_halo_object_header* obj = &object_table->entries[objectId.slot];
 		return obj->id == objectId.id ? obj->data : 0;
 	}
 

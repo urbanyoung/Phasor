@@ -248,7 +248,7 @@ namespace halo { namespace server
 	void MessagePlayer(const s_player& player, const std::wstring& str)
 	{
 		if (str.size() > 150) return;
-		chat::DispatchChat(chat::kChatServer, str, NULL, &player);
+		chat::DispatchChat(chat::kChatServer, str.c_str(), NULL, &player);
 	}
 
 	bool ConsoleMessagePlayer(const s_player& player, const std::wstring& str)
@@ -371,7 +371,7 @@ namespace halo { namespace server
 	bool SayStream::Write(const std::wstring& str)
 	{
 		std::wstring msg = L"** SERVER ** " + StripTrailingEndl(str);
-		chat::DispatchChat(chat::kChatServer, msg);
+		chat::DispatchChat(chat::kChatServer, msg.c_str());
 		return true;
 	}
 }}

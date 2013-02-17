@@ -82,6 +82,7 @@ namespace scripting
 				if (!phasor_state->state->HasFunction(events[x].c_str()))
 					phasor_state->BlockFunction(events[x]);
 			}
+
 			scripts[script] = std::move(phasor_state);
 		}
 		catch (std::exception& e)
@@ -233,18 +234,10 @@ namespace scripting
 		for (auto itr = s.scripts.begin(); itr != s.scripts.end(); ++itr)
 		{
 			PhasorScript& phasor_state = *itr->second;
-			LARGE_INTEGER start1;
-			QueryPerformanceCounter(&start1);
 
-			if (!phasor_state.FunctionAllowed(function)) {
-				LARGE_INTEGER end;
-				QueryPerformanceCounter(&end);
-				printf("blocked %i\n", end.QuadPart-start1.QuadPart);
+			if (!phasor_state.FunctionAllowed(function))
 				continue;
-			}
 
-			LARGE_INTEGER start;
-			QueryPerformanceCounter(&start);
 			try
 			{				
 				Manager::ScriptState& state = *phasor_state.state;
@@ -280,9 +273,6 @@ namespace scripting
 			{
 				s.HandleError(phasor_state, e.what());
 			}
-			LARGE_INTEGER end;
-			QueryPerformanceCounter(&end);
-			printf("%s %i\n", function.c_str(), end.QuadPart-start.QuadPart);
 		}
 
 		this->Clear();

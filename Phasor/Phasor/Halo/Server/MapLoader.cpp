@@ -650,10 +650,10 @@ namespace halo { namespace server { namespace maploader
 			return e_command_result::kProcessed;
 		}		
 		
-		// todo: disable next map vote (from server.cpp).
-		// todo: change this function to non sv_ command, give sv_map
-		// to Server which calls this (returning bool for success)
-		// and it can deal with map voting.
+		/*! \todo disable next map vote (from server.cpp).
+		  change this function to non sv_ command, give sv_map
+		 to Server which calls this (returning bool for success)
+		 and it can deal with map voting. */
 		
 		// start the new game
 		cycle_loader->SetActiveCycle(std::move(new_cycle));

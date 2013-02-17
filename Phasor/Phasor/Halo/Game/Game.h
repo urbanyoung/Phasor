@@ -7,25 +7,22 @@
 namespace halo { 
 	struct ident;
 	struct s_object_info;
+	struct s_tag_entry;
+
 	namespace server {
 		struct s_machine_info;
+		namespace chat {
+			struct s_chat_data;
+		}
 	}
+	
 	namespace game {
-
-	// Structures
-	// 
-	#pragma pack(push, 1)
-	struct chatData
-	{
-		DWORD type;
-		DWORD player;
-		wchar_t* msg;
-	};
-	#pragma pack(pop)
+		struct s_chat_data;
 
 	s_player* GetPlayer(int index);
 	s_player* GetPlayerFromRconId(unsigned int playerNum);
 	s_player* GetPlayerFromAddress(s_player_structure* player);
+	s_player* GetPlayerFromObject(objects::s_halo_biped* obj);
 
 	// --------------------------------------------------------------------
 	// Events
@@ -70,10 +67,10 @@ namespace halo {
 	void OnClientUpdate(s_player& player);
 
 	// Called when an object's damage is being looked up
-	void __stdcall OnDamageLookup(ident receivingObj, ident causingObj, LPBYTE tagEntry);
+	void __stdcall OnDamageLookup(ident receivingObj, ident causingObj, s_tag_entry* tag);
 
 	// Called when someone chats in the server
-	void __stdcall OnChat(chatData* chat);
+	void __stdcall OnChat(server::chat::s_chat_data* chat);
 
 	// Called when a player attempts to enter a vehicle
 	bool __stdcall OnVehicleEntry(DWORD playerId);

@@ -15,6 +15,7 @@ enum glog_type
 	kPlayerLeave,
 	kPlayerChange,
 	kPlayerDeath,
+	kPlayerChat,
 	kServerCommand = (1 << 6) + 6,
 	kServerClose,
 	kScriptEvent = (1 << 7) + 8

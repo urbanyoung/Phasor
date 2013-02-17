@@ -465,7 +465,7 @@ __declspec(naked) void OnWeaponAssignment_CC()
 		ret
 	}
 }
-/*
+
 DWORD objInteraction_ret = 0;
 
 // Codecave for handling object pickup interactions
@@ -539,7 +539,7 @@ __declspec(naked) void OnChat_CC()
 		ret
 	}
 }
-*/
+
 // Codecave for player position updates
 __declspec(naked) void OnClientUpdate_CC()
 {
@@ -572,7 +572,7 @@ START_PROCESSING:
 	}
 }
 
-/*DWORD dmglookup_ret = 0;
+DWORD dmglookup_ret = 0;
 
 // Codecaves for handling weapon damage
 __declspec(naked) void OnDamageLookup_CC()
@@ -738,7 +738,7 @@ ALLOW_RELOAD:
 		ret
 	}
 }
-
+/*
 // used to control object respawning
 DWORD objres_ret = 0;
 __declspec(naked) void OnObjectRespawn_CC()
@@ -792,7 +792,7 @@ __declspec(naked) void OnEquipmentDestroy_CC()
 		ret
 	}
 }
-
+*/
 DWORD vehfeject_ret = 0;
 __declspec(naked) void OnVehicleForceEject_CC()
 {
@@ -859,31 +859,6 @@ NOT_EJECTING:
 	}
 }
 
-void __stdcall OnExitProcess(DWORD retAddr)
-{
-//	logging::LogData(LOGGING_PHASOR, L"ExitProcess from 0x%08X", retAddr);
-}
-
-DWORD exitProc_ret  =0;
-__declspec(naked) void ExitProcess_CC()
-{
-	__asm
-	{
-		pop exitProc_ret
-		pushad
-		mov eax, [esp + 0x20]
-		push eax
-		call OnExitProcess
-		popad
-		MOV EAX,EAX
-		PUSH EBP
-		MOV EBP,ESP
-
-		push exitProc_ret
-		ret
-	}
-}
-*/
 __declspec(naked) void OnHaloPrint_CC()
 {
 	__asm
@@ -928,102 +903,7 @@ PLAYER_NOT_BANNED:
 		ret
 	}
 }
-/*
-DWORD versionBroadcast_ret = 0;
-__declspec(naked) void OnVersionBroadcast_CC()
-{
-	__asm
-	{
-		pop versionBroadcast_ret
 
-		pushad // -0x20
-
-		mov esi, [esp + 0x28]
-		mov edi, [esp + 0x24]
-
-		push esi
-		push edi
-		call server::OnVersionBroadcast // return value: 1 - do broadcast, 0 - don't
-		cmp al, 1
-		je do_broadcast
-
-		popad // don't broadcast
-		ret
-
-do_broadcast:
-
-		popad
-
-		// overwritten code
-		SUB ESP,0x834
-		push versionBroadcast_ret
-		ret
-	}
-}
-
-void __stdcall OnJoinCheck(LPBYTE lList, LPBYTE mem)
-{
-	if (game::GetPlayerList().size() == 16)
-	{
-		DWORD mask = player->mem->playerJoinCount << 0x10, funccall = 0x494780;
-		__asm
-		{
-			pushad
-			mov eax, mask
-			call dword ptr ds:[funccall]
-			//add esp, 4
-			popad
-		}
-		halo::ExecuteServerCommand(0,"sv_kick 16");
-	}
-		//halo::ExecuteServerCommand(0,"sv_kick 1");
-		/(DWORD*)lList = 0;
-		(reserved slots:
-		005112AA      90            NOP
-			005112AB      90            NOP
-
-
-			005152FD      83C4 0C       ADD ESP,0C
-			00515300      C3            RETN
-			00515301      90            NOP
-			00515302      90            NOP
-			00515303      90            NOP
-			00515304      90            NOP
-
-			00512479      90            NOP
-			0051247A      90            NOP
-			0051247B      90            NOP
-			0051247C      90            NOP
-			0051247D      90            NOP
-			0051247E      90            NOP
-}
-
-DWORD joinCheck_ret = 0;
-__declspec(naked) void OnJoinCheck_CC()
-{
-	__asm
-	{
-		pop joinCheck_ret
-
-		ADD ESP,4
-		TEST EAX,EAX
-
-		pushad
-		pushfd
-
-		lea edi, [ebp + 0xaa0]
-		push eax
-		push edi
-		call OnJoinCheck
-
-		popfd
-		popad
-
-		push joinCheck_ret
-		ret
-	}
-}
-*/
 namespace halo
 {
 	using namespace Common;
@@ -1107,13 +987,13 @@ namespace halo
 		CreateCodeCave(CC_WEAPONASSIGN, 6, OnWeaponAssignment_CC);
 
 		// Codecave for interations with pickable objects
-		/*CreateCodeCave(CC_OBJECTINTERACTION, 5, OnObjectInteraction_CC);
-		*/
+		CreateCodeCave(CC_OBJECTINTERACTION, 5, OnObjectInteraction_CC);
+		
 		// Codecave for position updates
 		CreateCodeCave(CC_CLIENTUPDATE, 6, OnClientUpdate_CC);
 
 		// Codecave for handling damage being done
-	/*	CreateCodeCave(CC_DAMAGELOOKUP, 6, OnDamageLookup_CC);
+		CreateCodeCave(CC_DAMAGELOOKUP, 6, OnDamageLookup_CC);
 
 		// Codecave for server chat
 		CreateCodeCave(CC_CHAT, 7, OnChat_CC);
@@ -1131,13 +1011,13 @@ namespace halo
 		CreateCodeCave(CC_KILLMULTIPLIER, 5, OnKillMultiplier_CC);
 
 		// used to control whether or not objects respawn
-		CreateCodeCave(CC_OBJECTRESPAWN, 32, OnObjectRespawn_CC);
+		/*CreateCodeCave(CC_OBJECTRESPAWN, 32, OnObjectRespawn_CC);
 		CreateCodeCave(CC_EQUIPMENTDESTROY, 6, OnEquipmentDestroy_CC);
-
+		*/
 		// Codecaves for detecting vehicle ejections
 		CreateCodeCave(CC_VEHICLEFORCEEJECT, 8, OnVehicleForceEject_CC);
 		CreateCodeCave(CC_VEHICLEUSEREJECT, 7, OnVehicleUserEject_CC);
-		*/
+	
 		// Generic codecaves
 		CreateCodeCave(CC_HALOPRINT, 6, OnHaloPrint_CC);
 		CreateCodeCave(CC_HALOBANCHECK, 6, OnHaloBanCheck_CC);

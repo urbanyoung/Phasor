@@ -8,11 +8,15 @@
 #include "../../../Common/MyString.h"
 #include "../../../ScriptingEvents.h"
 #include "../tags.h"
+#include "../Server/Chat.h"
 #include <vector>
 
 namespace halo { namespace game {
 	typedef std::unique_ptr<s_player> s_player_ptr;
 	s_player_ptr PlayerList[16];
+
+	// used by OnDamageLookup to replace dmg tag.. shitty method but meh
+	void* dmgInfo_addr = 0;
 
 	inline bool valid_index(DWORD playerIndex)
 	{
@@ -45,6 +49,15 @@ namespace halo { namespace game {
 		return NULL;
 	}
 
+	s_player* GetPlayerFromObject(objects::s_halo_biped* obj)
+	{
+		for (int i = 0; i < 16; i++) {
+			if (PlayerList[i] && PlayerList[i]->get_object() == (void*)obj)
+				return PlayerList[i].get();
+		}
+		return NULL;
+	}
+
 	// Called when a game stage ends
 	void OnGameEnd(DWORD mode)
 	{
@@ -65,6 +78,7 @@ namespace halo { namespace game {
 	// Called when a new game starts
 	void OnNewGame(const char* map)
 	{
+		dmgInfo_addr = 0;
 		afk_detection::Enable();
 		halo::BuildTagCache();
 
@@ -174,6 +188,20 @@ namespace halo { namespace game {
 		if (!b) return weap_id;
 		return result_id;
 	}
+
+	// Called when a player can interact with an object
+	bool __stdcall OnObjectInteraction(DWORD playerId, ident m_ObjId)
+	{
+		bool allow = true;
+		halo::s_player* player = game::GetPlayer(playerId);
+		if (player) {
+			objects::s_halo_object* obj = (objects::s_halo_object*)
+				objects::GetObjectAddress(m_ObjId);
+
+			allow = scripting::events::OnObjectInteraction(*player, m_ObjId, obj->map_id);		
+		}
+		return allow;
+	}
 	
 	/*! \todo make phasor go through a script to detect which functions
 	 *! it has when loading, then blacklist the rest of the expected ones. */
@@ -181,5 +209,142 @@ namespace halo { namespace game {
 	{
 		// scripts called from server
 		player.afk->CheckPlayerActivity();
+	}
+
+	// Called when an object's damage is being looked up
+	void __stdcall OnDamageLookup(ident receivingObj, ident causingObj, s_tag_entry* tag)
+	{
+		static BYTE m_dmg_info[0x2A0];
+
+		// Overwrite previous tag (with orig)
+		if (dmgInfo_addr)
+			memcpy(dmgInfo_addr, m_dmg_info, sizeof(m_dmg_info));
+		
+		// Save info for rewriting the tag
+		dmgInfo_addr = tag->metaData;
+		memcpy(m_dmg_info, tag->metaData, sizeof(m_dmg_info));
+
+		scripting::events::OnDamageLookup(receivingObj, causingObj, tag);
+	}
+
+	// Called when someone chats in the server
+	void __stdcall OnChat(server::chat::s_chat_data* chat)
+	{
+		using namespace server::chat;
+		static const wchar_t* typeValues[] = {L"GLOBAL", L"TEAM", L"VEHICLE"};
+		s_player* sender = GetPlayer(chat->player);
+		if (!sender || chat->type < kChatAll || chat->type > kChatVehicle) return;
+
+		int length = wcslen(chat->msg);
+		if (length > 64)
+			return;
+
+		sender->afk->MarkPlayerActive();
+
+		bool allow = scripting::events::OnServerChat(*sender, chat->type,
+			NarrowString(chat->msg));
+
+		if (!allow) return;
+
+		g_GameLog->WriteLog(kPlayerChat, L"[%s] %s: %s", typeValues[chat->type], 
+			sender->mem->playerName, chat->msg);
+
+		DispatchChat(chat->type, chat->msg, sender);
+	}
+
+	// Called when a player attempts to enter a vehicle
+	bool __stdcall OnVehicleEntry(DWORD playerId)
+	{
+		s_player* player = GetPlayer(playerId);
+		if (!player) return true;
+
+		objects::s_halo_biped* obj = (objects::s_halo_biped*)objects::GetObjectAddress(player->mem->object_id);
+		if (!obj) return true;
+
+		return scripting::events::OnVehicleEntry(*player, player->mem->m_interactionObject,
+			player->mem->interactionType, true);
+	}
+
+	// Called when a player is being ejected from a vehicle
+	bool __stdcall OnVehicleEject(objects::s_halo_biped* player_obj, bool forceEjected)
+	{
+		s_player* player = GetPlayerFromObject(player_obj);
+		if (!player) return true;
+		return scripting::events::OnVehicleEject(*player, forceEjected);
+	}
+
+	// Called when a player dies
+	void __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode)
+	{
+		s_player* victim = GetPlayer(victimId);
+		s_player* killer = GetPlayer(killerId);
+
+		if (!victim) return;
+
+		// log the death based on type
+		switch (mode)
+		{
+		case 1: // fall dmg or server kill
+			{
+				if (victim->sv_killed)	mode = 0;
+	
+				g_GameLog->WriteLog(kPlayerDeath, L"%s died (%i).", 
+					victim->mem->playerName, mode);
+
+			} break;
+
+		case 2: // killed by guardians
+			{
+				g_GameLog->WriteLog(kPlayerDeath, L"%s was killed by the guardians.", 
+					victim->mem->playerName);
+			} break;
+
+		case 3: // killed by a vehicle
+			{
+				g_GameLog->WriteLog(kPlayerDeath, L"%s was killed by a vehicle.", 
+					victim->mem->playerName);
+			} break;
+
+		case 4: // killed by another player
+			{
+				if (killer) {
+					g_GameLog->WriteLog(kPlayerDeath, L"%s was killed by %s.", 
+						victim->mem->playerName, killer->mem->playerName);
+				}
+			} break;
+
+		case 5: // betrayed
+			{
+				if (killer) {
+					g_GameLog->WriteLog(kPlayerDeath, L"%s was betrayed by %s.", 
+						victim->mem->playerName, killer->mem->playerName);
+				}
+			} break;
+
+		case 6: // suicide
+			{
+				g_GameLog->WriteLog(kPlayerDeath, L"%s committed suicide.", 
+					victim->mem->playerName);
+			} break;
+		}
+			
+		scripting::events::OnPlayerKill(*victim, killer, mode);
+	}
+
+	// Called when a player gets a double kill, spree etc
+	void __stdcall OnKillMultiplier(DWORD playerId, DWORD multiplier)
+	{
+		halo::s_player* player = GetPlayer(playerId);
+		if (!player) return;
+		scripting::events::OnKillMultiplier(*player, multiplier);
+	}
+
+	// Called when a weapon is reloaded
+	bool __stdcall OnWeaponReload(ident m_WeaponId)
+	{
+		objects::s_halo_weapon* weap = (objects::s_halo_weapon*)objects::GetObjectAddress(m_WeaponId);
+		if (!weap) return true;
+		halo::s_player* player = GetPlayer(weap->base.ownerPlayer.slot);
+		return scripting::events::OnWeaponReload(player, m_WeaponId);
 	}
 }}

@@ -29,6 +29,7 @@ namespace halo
 {
 	struct ident;
 	struct s_player;
+	struct s_tag_entry;
 
 	namespace objects {
 		struct s_object_creation_disposition;
@@ -251,5 +252,152 @@ namespace scripting {
 		 */
 		bool OnWeaponAssignment(halo::s_player* player, halo::ident owner, DWORD order,
 			halo::ident weap_id, halo::ident& out);
+
+		/*! \brief Called when a player interacts with an object (ie stands on it)
+		 *
+		 *	\param player The player interacting with the object
+		 *	\param objid  The object being interacted with.
+		 *	\param mapid  The map id of the object being interacted with.
+		 *	\return Boolean indicating whether or not to allow the interaction.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnObjectInteraction(player, objid, mapid)
+		 *	\endcode	
+		 */
+		bool OnObjectInteraction(halo::s_player& player, halo::ident objid,
+			halo::ident mapid);
+
+		/*! \brief Called when the server needs to apply damage to an object.
+		 *
+		 *	\param receiving_objid Object id of the object that is to receive the damage.
+		 *	\param causing_objid Object id of the object that is causing the damage.
+		 *	\param tagdata Memory address of the tag data. Overwrite as required.
+		 *	\param mapid The map id of the damage tag being used.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnDamageLookup(receiving_objid, causing_objid, tagdata, mapid)
+		 *	\endcode
+		 */
+		void OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag);
+
+		/*! \brief Called when a player chats in the server.
+		 * 
+		 *	\param player The chatting player's memory id
+		 *	\param type The type of chat
+		 *	\param msg The message being sent.
+		 *	\return Boolean indicating whether or not the msg should be sent.
+		 *	
+		 *	\remark
+		 *	Valid type values:
+		 *		- 0 All chat
+		 *		- 1 Team chat
+		 *		- 2 Vehicle chat
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnServerChat(player, type, msg)
+		 *	\endcode
+		 */
+		bool OnServerChat(const halo::s_player& sender, DWORD type, const std::string& msg);
+
+		/*! \brief Called when a player is wanting to enter a vehicle.
+		 * 
+		 *	\param player The player's memory id.
+		 *	\param veh_id The object id of the vehicle they're trying to enter.
+		 *	\param seat The seat they're trying to enter.
+		 *	\param mapid The map id of the vehicle they're trying to enter.
+		 *	\param relevant Whether or not you can stop them entering.
+		 *	
+		 *	\return Boolean indicating whether or not they should be allowed to enter.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnVehicleEntry(player, veh_id, seat, mapid, relevant)
+		 *	\endcode
+		 */
+		bool OnVehicleEntry(const halo::s_player& player, halo::ident veh_id,
+			DWORD seat, bool relevant);
+
+		/*! \brief Called when a player is leaving a vehicle.
+		 *
+		 *	\param player The player's memory id
+		 *	\param relevant Boolean indicating whether or not you can stop them leaving.
+		 *	\return Boolean indicating whether or not they can leave.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnVehicleEject(player, relevant)
+		 *	\endcode
+		 */
+		bool OnVehicleEject(const halo::s_player& player, bool forceEjected);
+
+		/*! \brief Called when a player is killed.
+		 *
+		 *	\param killer The killer's memory id.
+		 *	\param victim The victim's memory id.
+		 *	\param mode Describes how they died.
+		 *	
+		 *	\remark
+		 *		- \c killer can be \c nil.
+		 *		- \c victim is never \c nil.
+		 *		- Modes:
+		 *			- 0 Killed by the server.
+		 *			- 1 Killed by fall damage.
+		 *			- 2 Killed by the guardians.
+		 *			- 3 Killed by a vehicle.
+		 *			- 4 Killed by \c killer
+		 *			- 5 Betrayed by \c killer
+		 *			- 6 Suicide
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnPlayerKill(killer, victim, mode)
+		 *	\endcode
+		 */
+		void OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,
+			DWORD mode);
+
+		/*! \brief Called when a player gets a kill streak.
+		 *
+		 *	\param player The player's memory id
+		 *	\param multiplier The multiplier the player got.
+		 *	
+		 *	\remark
+		 *	Valid multipliers are:
+		 *		- 7 Double kill
+		 *		- 9 Triple kill
+		 *		- 10 Killtacular
+		 *		- 11 Killing spree
+		 *		- 12 Running riot	
+		 *		- 16 Double kill w/ score
+		 *		- 15 Triple kill w/ score
+		 *		- 14 Killtacular w/ score
+		 *		- 18 Killing spree w/ score
+		 *		- 17 Running riot w/ score
+		 *	
+		 *	\remark
+		 *	I think the w/ score ones happen in Slayer.
+		 */
+		void OnKillMultiplier(const halo::s_player& player, DWORD multiplier);
+
+		/*! \brief Called when a weapon is being reloaded.
+		 *
+		 *	\param player The player who is reloading.
+		 *	\param objid The object id of the weapon being reloaded.
+		 *	\reload Boolean indicating whether or not they can reload.
+		 *	
+		 *	\remark
+		 *	\c player can be nil if a vehicle's weapon is being reloaded.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnWeaponReload(player, objid)
+		 *	\endcode
+		 */
+		bool OnWeaponReload(const halo::s_player* player, halo::ident weap);
+		
+
 }}
 

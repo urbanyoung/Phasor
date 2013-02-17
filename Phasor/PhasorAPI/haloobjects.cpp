@@ -19,7 +19,7 @@ void l_getobject(CallHandler& handler, Object::unique_deque& args, Object::uniqu
 void l_getobjectcoords(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	ident id = make_ident(ReadNumber<DWORD>(*args[0]));
-	s_halo_object_header* obj = (s_halo_object_header*)GetObjectAddress(id);
+	s_halo_object* obj = (s_halo_object*)GetObjectAddress(id);
 	if (!obj) handler.RaiseError("getobjectcoords : invalid object id");
 	AddResultNumber(obj->location.x, results);
 	AddResultNumber(obj->location.y, results);

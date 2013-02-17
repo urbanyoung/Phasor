@@ -12,7 +12,7 @@ namespace halo { namespace objects
 	// http://code.google.com/p/halo-devkit/source/browse/trunk/halo_sdk/Engine/objects.h
 	// 
 
-	struct s_halo_object_header // generic object header
+	struct s_halo_object // generic object header
 	{
 		ident map_id; // 0x0000
 		UNKNOWN(12);
@@ -29,7 +29,7 @@ namespace halo { namespace objects
 		UNKNOWN(sizeof(vect3d)); // some vector
 		UNKNOWN(sizeof(vect3d)); // some vector
 		UNKNOWN(0x28);
-		unsigned long ownerPlayer; // 0x00c0 (index of owner (if has one))
+		ident ownerPlayer; // 0x00c0 (index of owner (if has one))
 		ident ownerObject; // 0x00c4 (object id of owner, if projectile is player id)
 		UNKNOWN(0x18);
 		float health; // 0x00e0
@@ -50,11 +50,11 @@ namespace halo { namespace objects
 		float flashlightCharge1; // 0x0134
 		UNKNOWN(0xBC);
 	};
-	static_assert (sizeof(s_halo_object_header) == 0x1f4, "bad");
+	static_assert (sizeof(s_halo_object) == 0x1f4, "bad");
 
 	struct s_halo_biped
 	{
-		s_halo_object_header base;
+		s_halo_object base;
 		UNKNOWN(0x10); // 0x1f4
 		long invisible; // 0x204 (0x41 inactive, 0x51 active. probably bitfield but never seen anything else referenced)
 		
@@ -104,7 +104,7 @@ namespace halo { namespace objects
 
 	struct s_halo_weapon
 	{
-		s_halo_object_header base;
+		s_halo_object base;
 		UNKNOWN(0xC2); // 1f4
 		WORD ammo_pack; // 2b6 reserve ammo
 		WORD ammo_clip; // 2b8

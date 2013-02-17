@@ -21,6 +21,7 @@ static const wchar_t* event_names[] =
 	L"LEAVE        ",
 	L"CHANGE       ",
 	L"DEATH        ",
+	L"CHAT         ",
 	L"COMMAND      ",
 	L"CLOSE        ",
 	L"             "

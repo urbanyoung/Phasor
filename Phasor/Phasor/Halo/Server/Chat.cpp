@@ -6,22 +6,12 @@
 
 namespace halo { namespace server { namespace chat {
 
-#pragma pack(push, 1)
-	struct s_chat_data
-	{
-		DWORD type;
-		DWORD player;
-		const wchar_t* msg;
-	};
-
-#pragma pack(pop)
-
-	void DispatchChat(e_chat_types type, const std::wstring& msg, 
+	void DispatchChat(e_chat_types type, const wchar_t* msg, 
 		const s_player* from, const s_player* to)
 	{
 		s_chat_data chat_data;
-		chat_data.type = (DWORD)type;
-		chat_data.msg = msg.c_str();
+		chat_data.type = type;
+		chat_data.msg = msg;
 
 		switch (type)
 		{
@@ -31,6 +21,7 @@ namespace halo { namespace server { namespace chat {
 			} break;
 		case kChatAll:
 		case kChatTeam:
+		case kChatVehicle:
 			{
 				assert(from != NULL);
 				chat_data.player = from->memory_id;

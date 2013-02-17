@@ -1,6 +1,7 @@
 #include "ScriptingEvents.h"
 #include "Scripting.h"
 #include "Phasor/Halo/Player.h"
+#include "Phasor/Halo/tags.h"
 
 namespace scripting { namespace events {
 
@@ -174,4 +175,85 @@ namespace scripting { namespace events {
 		out = halo::make_ident((unsigned long)r.ReadNumber().GetValue());
 		return true;
 	}
+
+	bool OnObjectInteraction(halo::s_player& player, halo::ident objid,
+		halo::ident mapid)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		AddArgIdent(objid, caller);
+		AddArgIdent(mapid, caller);
+		return HandleResult<bool>(caller.Call("OnObjectInteraction", result_bool));
+	}
+
+	void OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag)
+	{
+		PhasorCaller caller;
+		AddArgIdent(receiving, caller);
+		AddArgIdent(causing, caller);
+		caller.AddArg((DWORD)tag->metaData);
+		AddArgIdent(tag->id, caller);
+		caller.Call("OnDamageLookup");
+	}
+
+	bool OnServerChat(const halo::s_player& sender, DWORD type, const std::string& msg)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&sender, caller);
+		caller.AddArg(type);
+		caller.AddArg(msg);
+		return HandleResult<bool>(caller.Call("OnServerChat", result_bool));
+	}
+
+	/*! \todo set forceEntered */
+	bool OnVehicleEntry(const halo::s_player& player, halo::ident veh_id,
+		DWORD seat, bool relevant)
+	{
+		halo::objects::s_halo_object* obj = (halo::objects::s_halo_object*)
+			halo::objects::GetObjectAddress(veh_id);
+		if (!obj) return true;
+
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		AddArgIdent(veh_id, caller);
+		caller.AddArg(seat);		
+		AddArgIdent(obj->map_id, caller);
+		if (!relevant) caller.ReturnValueIgnored();
+		return HandleResult<bool>(caller.Call("OnVehicleEntry", result_bool));
+	}
+
+	bool OnVehicleEject(const halo::s_player& player, bool forceEjected)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		if (forceEjected) caller.ReturnValueIgnored();
+		return HandleResult<bool>(caller.Call("OnVehicleEject", result_bool));
+	}
+
+	void OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,
+		DWORD mode)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(killer, caller);
+		AddPlayerArg(&victim, caller);
+		caller.AddArg(mode);
+		caller.Call("OnPlayerKill");
+	}
+
+	void OnKillMultiplier(const halo::s_player& player, DWORD multiplier)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		caller.AddArg(multiplier);
+		caller.Call("OnKillMultiplier");
+	}
+
+	bool OnWeaponReload(const halo::s_player* player, halo::ident weap)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(player, caller);
+		AddArgIdent(weap, caller);
+		return HandleResult<bool>(caller.Call("OnWeaponReload", result_bool));
+	}
+
 }}
