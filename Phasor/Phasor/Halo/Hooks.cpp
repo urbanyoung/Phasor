@@ -379,10 +379,10 @@ __declspec(naked) void OnPlayerSpawnEnd_CC()
 		ret
 	}
 }
-/*
+
 DWORD objcreation_ret = 0;
 
-// Codecave for modifying weapons as they're created
+// Codecave for modifying objects as they're created
 __declspec(naked) void OnObjectCreation_CC()
 {
 	__asm
@@ -399,6 +399,37 @@ __declspec(naked) void OnObjectCreation_CC()
 		MOV ECX,DWORD PTR DS:[EAX+4]
 		TEST ECX,ECX
 		push objcreation_ret
+		ret
+	}
+}
+
+DWORD objcreationattempt_ret = 0;
+
+// Codecave for blocking objects from being created
+__declspec(naked) void OnObjectCreationAttempt_CC()
+{
+	__asm
+	{
+		pop objcreationattempt_ret
+
+		pushad
+
+		mov eax, [ESP + 0x24]
+		push eax // creation description
+		call game::OnObjectCreationAttempt
+
+		cmp al, 1
+		je ALLOW_CREATION
+
+		popad
+		mov eax, -1
+		ret
+
+ALLOW_CREATION:
+		popad
+
+		SUB ESP,0x21C
+		push objcreationattempt_ret
 		ret
 	}
 }
@@ -434,7 +465,7 @@ __declspec(naked) void OnWeaponAssignment_CC()
 		ret
 	}
 }
-
+/*
 DWORD objInteraction_ret = 0;
 
 // Codecave for handling object pickup interactions
@@ -1069,13 +1100,14 @@ namespace halo
 		CreateCodeCave(CC_PLAYERSPAWNEND, 8, OnPlayerSpawnEnd_CC);
 
 		// Codecave called when a weapon is created
-		/*CreateCodeCave(CC_OBJECTCREATION, 5, OnObjectCreation_CC);
+		CreateCodeCave(CC_OBJECTCREATION, 5, OnObjectCreation_CC);
+		CreateCodeCave(CC_OBJECTCREATIONATTEMPT, 6, OnObjectCreationAttempt_CC);
 
 		// Codecave for handling weapon assignment to spawning players
 		CreateCodeCave(CC_WEAPONASSIGN, 6, OnWeaponAssignment_CC);
 
 		// Codecave for interations with pickable objects
-		CreateCodeCave(CC_OBJECTINTERACTION, 5, OnObjectInteraction_CC);
+		/*CreateCodeCave(CC_OBJECTINTERACTION, 5, OnObjectInteraction_CC);
 		*/
 		// Codecave for position updates
 		CreateCodeCave(CC_CLIENTUPDATE, 6, OnClientUpdate_CC);

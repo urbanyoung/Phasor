@@ -12,6 +12,10 @@
  *		- The value indicating the server is executing the command is \c nil not \c -1
  *		- OnClientUpdate only receives the player's memory id, not their object id.
  *		- OnPlayerJoin only receives the player's memory id, not their team too.
+ *		- OnWeaponAssignment should return the \c id on the desired weapon, it shouldn't
+ *		  returned the result of \c lookuptag, instead use \c gettagid. Also, for
+ *		  performance reasons scripts should save the result of \c gettagid instead
+ *		  of calling it each time.
  * 
  */
 
@@ -25,6 +29,10 @@ namespace halo
 {
 	struct ident;
 	struct s_player;
+
+	namespace objects {
+		struct s_object_creation_disposition;
+	}
 }
 
 namespace scripting {
@@ -179,5 +187,66 @@ namespace scripting {
 		 *	\endcode
 		 */
 		void OnPlayerSpawnEnd(const halo::s_player& player, halo::ident m_objectId);
+
+		/*! \brief Called when an object has just been created. You can modify
+		 *	most object settings and have it sync.
+		 *	
+		 *	\param objid The object id of the newly created object.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnObjectCreation(m_objid)
+		 *	\endcode
+		 */
+		void OnObjectCreation(halo::ident m_objectId);
+
+		/*! \brief Called when an object wants to be created. You can block it.
+		 *
+		 *	\param mapid The id of the object being created.
+		 *	\param parentid The object id of the to be created object's parent.
+		 *	\param player The memory id of the owning player.
+		 *	\return Boolean indicating whether or not the object should be created.
+		 *	
+		 *	\remark
+		 *	Both \c parent and \c player can be nil if the object doesn't
+		 *	have a parent or isn't owned by a player.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnObjectCreationAttempt(mapid, parentid, player)
+		 *	\endcode
+		 */
+		bool OnObjectCreationAttempt(halo::objects::s_object_creation_disposition* info);
+
+		/*! \brief Called when an object is being assigned their spawn weapons.
+		 * 
+		 *	\param player The memory id of the player, if the weapons belong to a player.
+		 *	\param owner The object id of the object which owns the assigned weapon.
+		 *	\param order Which weapon is being assigned (first, second, third etc)
+		 *	\param weap_id	The map id of the weapon which will be assigned.
+		 *	\return The map id of the weapon you wish to assign.
+		 *	
+		 *	\remarks
+		 *		- \c player is \nil when assigning weapons to vehicles.
+		 *		- \c The value returned should be either:
+		 *			- \c nil if you don't want to change the assigned weapon.
+		 *			- \em or The map id of the weapon you wish to assign
+		 *			- \em or -1 if you don't want the weapon to be assigned.
+		 *			
+		 *	\remark
+		 *	I recommend you do all of your tag lookups in \c OnNewGame and
+		 *	store the results globally.
+		 *	
+		 *	\remark 
+		 *	For this to have any effect the gametype must have starting equipment
+		 *	set to generic.
+		 *
+		 * Definition:
+		 * \code
+		 *		function OnWeaponAssignment(player, owner_id, order, weap_id)
+		 *	\endcode
+		 */
+		bool OnWeaponAssignment(halo::s_player* player, halo::ident owner, DWORD order,
+			halo::ident weap_id, halo::ident& out);
 }}
 

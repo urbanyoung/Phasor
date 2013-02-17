@@ -148,6 +148,33 @@ namespace halo { namespace game {
 		scripting::events::OnPlayerSpawnEnd(*player, m_objectId);
 	}
 
+	// Called when a weapon is created
+	void __stdcall OnObjectCreation(ident m_objectId)
+	{
+		scripting::events::OnObjectCreation(m_objectId);
+	}
+
+	bool __stdcall OnObjectCreationAttempt(objects::s_object_creation_disposition* creation_info)
+	{
+		/*! \todo make sure the player is correct */
+		return scripting::events::OnObjectCreationAttempt(creation_info);
+	}
+	/*! \todo lookuptag : tag -> memory address
+	 *		  gettagid: tag -> tag (map) id
+	 */
+	ident __stdcall OnWeaponAssignment(DWORD playerId, ident owningObjectId,
+		s_object_info* curWeapon, DWORD order)
+	{
+		halo::s_player* player = game::GetPlayer(playerId);
+		ident weap_id = curWeapon->id, result_id;
+
+		bool b = scripting::events::OnWeaponAssignment(player, owningObjectId, order, weap_id,
+			result_id);
+
+		if (!b) return weap_id;
+		return result_id;
+	}
+	
 	/*! \todo make phasor go through a script to detect which functions
 	 *! it has when loading, then blacklist the rest of the expected ones. */
 	void OnClientUpdate(s_player& player)

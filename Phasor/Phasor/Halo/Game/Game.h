@@ -57,18 +57,20 @@ namespace halo {
 	// Called when a weapon is created
 	void __stdcall OnObjectCreation(ident m_objectId);
 
+	bool __stdcall OnObjectCreationAttempt(objects::s_object_creation_disposition* creation_info);
+
 	// Called when a weapon is assigned to an object
-	DWORD __stdcall OnWeaponAssignment(DWORD playerId, DWORD owningObjectId,
+	ident __stdcall OnWeaponAssignment(DWORD playerId, ident owningObjectId,
 		s_object_info* curWeapon, DWORD order);
 
 	// Called when a player can interact with an object
-	bool __stdcall OnObjectInteraction(DWORD playerId, DWORD m_ObjId);
+	bool __stdcall OnObjectInteraction(DWORD playerId, ident m_ObjId);
 
 	// Called when a player's position is updated
 	void OnClientUpdate(s_player& player);
 
 	// Called when an object's damage is being looked up
-	void __stdcall OnDamageLookup(DWORD receivingObj, DWORD causingObj, LPBYTE tagEntry);
+	void __stdcall OnDamageLookup(ident receivingObj, ident causingObj, LPBYTE tagEntry);
 
 	// Called when someone chats in the server
 	void __stdcall OnChat(chatData* chat);
@@ -86,5 +88,5 @@ namespace halo {
 	void __stdcall OnKillMultiplier(DWORD playerId, DWORD multiplier);
 
 	// Called when a weapon is reloaded
-	bool __stdcall OnWeaponReload(DWORD m_WeaponId); 
+	bool __stdcall OnWeaponReload(ident m_WeaponId); 
 }}

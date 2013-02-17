@@ -118,8 +118,10 @@ unsigned long PATCH_TEAMSELECTION = 0x00513BAE;
 unsigned long CC_VERSIONBROADCAST = 0x00598d90;
 unsigned long FUNC_INITVERSIONBROADCAST = CC_VERSIONBROADCAST + 6;
 unsigned long ADDR_BROADCASTVERSION = 0x005df840;
-extern unsigned long ADDR_HASHLIST = 0x006A2AE4;
-extern unsigned long ADDR_SERVERSTRUCT = 0x00745BA0;
+unsigned long ADDR_HASHLIST = 0x006A2AE4;
+unsigned long ADDR_SERVERSTRUCT = 0x00745BA0;
+unsigned long CC_OBJECTCREATIONATTEMPT = 0x52c600;
+
 namespace Addresses
 {
 	using namespace Common;
@@ -385,6 +387,9 @@ namespace Addresses
 
 		BYTE sig56[] = {0x8B, 0x48, 0x04, 0x85, 0xC9, 0x75, 0x3A};
 		CC_OBJECTCREATION = FindAddress("CC_OBJECTCREATION", codeSection, codeSize, sig56, sizeof(sig56), 0, 0);
+
+		BYTE sig_createattempt[] = {0x8B, 0xAC, 0x24, 0x28, 0x02, 0x00, 0x00, 0x8B, 0x45, 0x00};
+		CC_OBJECTCREATIONATTEMPT = FindAddress("CC_OBJECTCREATIONATTEMPT", codeSection, codeSize, sig_createattempt, sizeof(sig_createattempt), 0, -14);
 
 		BYTE sig57[] = {0x8B, 0xF0, 0x8B, 0xCF, 0x2B, 0xF7};
 		CC_MAPCYCLEADD = FindAddress("CC_MAPCYCLEADD", codeSection, codeSize, sig57, sizeof(sig57), 0, 0);

@@ -3,7 +3,6 @@
 #include "../../../Common/Types.h"
 #include "../../../Common/vect3d.h"
 #include "../Halo.h"
-#include <string>
 
 namespace halo { namespace objects
 {
@@ -118,6 +117,15 @@ namespace halo { namespace objects
 		// its size is 0x684
 	};
 	static_assert(sizeof(s_halo_weapon) == 0x350, "bad");
+
+	struct s_object_creation_disposition
+	{
+		ident map_id;
+		UNKNOWN(4);
+		ident player_ident;
+		ident parent;
+		// rest unknown.. 
+	};
 	
 	#pragma pack(pop)
 

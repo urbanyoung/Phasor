@@ -20,6 +20,12 @@ namespace scripting { namespace events {
 		else caller.AddArgNil();
 	}
 
+	void AddArgIdent(const halo::ident id, PhasorCaller& caller)
+	{
+		if (!id.valid()) caller.AddArgNil();
+		else caller.AddArg(id);
+	}
+
 	template <class T> T HandleResult(Result& result);
 
 	template <> bool HandleResult<bool>(Result& result)
@@ -104,7 +110,7 @@ namespace scripting { namespace events {
 	{
 		PhasorCaller caller;
 		AddPlayerArg(&player, caller);
-		caller.AddArg(m_objectId);
+		AddArgIdent(m_objectId, caller);
 		caller.Call("OnPlayerSpawn");
 	}
 
@@ -112,7 +118,38 @@ namespace scripting { namespace events {
 	{
 		PhasorCaller caller;
 		AddPlayerArg(&player, caller);
-		caller.AddArg(m_objectId);
+		AddArgIdent(m_objectId, caller);
 		caller.Call("OnPlayerSpawnEnd");
+	}
+
+	void OnObjectCreation(halo::ident m_objectId)
+	{
+		PhasorCaller caller;
+		AddArgIdent(m_objectId, caller);
+		caller.Call("OnObjectCreation");
+	}
+
+	bool OnObjectCreationAttempt(halo::objects::s_object_creation_disposition* info)
+	{
+		PhasorCaller caller;
+		AddArgIdent(info->map_id, caller);
+		AddArgIdent(info->parent, caller);
+		if (info->player_ident.valid()) caller.AddArg((DWORD)info->player_ident.slot);
+		else caller.AddArgNil();
+		return HandleResult<bool>(caller.Call("OnObjectCreationAttempt", result_bool));
+	}
+
+	bool OnWeaponAssignment(halo::s_player* player, halo::ident owner, DWORD order,
+		halo::ident weap_id, halo::ident& out)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(player, caller);
+		AddArgIdent(owner, caller);
+		caller.AddArg(order);
+		AddArgIdent(weap_id, caller);
+		Result r = caller.Call("OnWeaponAssignment", result_number);
+		if (!r.size()) return false; // no results
+		out = halo::make_ident((unsigned long)r.ReadNumber().GetValue());
+		return true;
 	}
 }}
