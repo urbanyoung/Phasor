@@ -3,6 +3,7 @@
 #include "Common/Common.h"
 #include "Common/MyString.h"
 #include "PhasorAPI/PhasorAPI.h"
+#include "ScriptingEvents.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()
@@ -53,14 +54,16 @@ namespace scripting
 		try
 		{
 			std::string file = abs_file.str();
-			std::unique_ptr<ScriptState> state_ = Manager::OpenScript(file.c_str());
+			std::unique_ptr<ScriptState> state_ = Manager::CreateScript();
 			std::unique_ptr<PhasorScript> phasor_state(
 				new PhasorScript(state_));  
 			
-			phasor_state->SetInfo(file, script);
-
-			CheckScriptCompatibility(*phasor_state->state, script);
+			// load api then file so Phasor's funcs don't override any script ones
 			PhasorAPI::Register(*phasor_state->state);
+			phasor_state->state->DoFile(file.c_str());
+
+			phasor_state->SetInfo(file, script);
+			CheckScriptCompatibility(*phasor_state->state, script);
 
 			// Notify the script that it's been loaded.
 			bool fexists = false;
@@ -72,6 +75,13 @@ namespace scripting
 				throw std::exception("function 'OnScriptLoad' undefined.");
 			}
 
+			// Blacklist all functions that aren't defined
+			const std::string* events = events::GetEventTable();
+			size_t count = events::GetEventTableElementCount();
+			for (size_t x = 0; x < count; x++) {
+				if (!phasor_state->state->HasFunction(events[x].c_str()))
+					phasor_state->BlockFunction(events[x]);
+			}
 			scripts[script] = std::move(phasor_state);
 		}
 		catch (std::exception& e)
@@ -223,8 +233,18 @@ namespace scripting
 		for (auto itr = s.scripts.begin(); itr != s.scripts.end(); ++itr)
 		{
 			PhasorScript& phasor_state = *itr->second;
-			if (!phasor_state.FunctionAllowed(function)) continue;
+			LARGE_INTEGER start1;
+			QueryPerformanceCounter(&start1);
 
+			if (!phasor_state.FunctionAllowed(function)) {
+				LARGE_INTEGER end;
+				QueryPerformanceCounter(&end);
+				printf("blocked %i\n", end.QuadPart-start1.QuadPart);
+				continue;
+			}
+
+			LARGE_INTEGER start;
+			QueryPerformanceCounter(&start);
 			try
 			{				
 				Manager::ScriptState& state = *phasor_state.state;
@@ -260,6 +280,9 @@ namespace scripting
 			{
 				s.HandleError(phasor_state, e.what());
 			}
+			LARGE_INTEGER end;
+			QueryPerformanceCounter(&end);
+			printf("%s %i\n", function.c_str(), end.QuadPart-start.QuadPart);
 		}
 
 		this->Clear();

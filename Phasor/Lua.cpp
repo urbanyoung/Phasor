@@ -10,25 +10,17 @@ namespace Lua
 	// Lua state wrapper
 	//
 	// Creates a new state
-	State::State(const char* file)
+	State::State()
 	{
 		// Create a new Lua state
 		this->L = luaL_newstate();
 
 		// Check if an error occured
 		if (!this->L)
-			throw std::exception("can't open lua state.");
+			throw std::exception("can't create new lua state.");
 
 		// Load the Lua libraries into the state
 		luaL_openlibs(this->L);
-
-		if (luaL_dofile(this->L, file))
-		{
-			std::string error = lua_tostring(this->L, -1);
-			lua_pop(this->L, 1);
-			lua_close(this->L);
-			throw std::exception(error.c_str());
-		}		
 	}
 
 	// Destroys the state
@@ -36,6 +28,17 @@ namespace Lua
 	{
 		// Destroy the Lua state
 		lua_close(this->L);
+	}
+
+	void State::DoFile(const char* file)
+	{
+		if (luaL_dofile(this->L, file))
+		{
+			std::string error = lua_tostring(this->L, -1);
+			lua_pop(this->L, 1);
+			lua_close(this->L);
+			throw std::exception(error.c_str());
+		}
 	}
 
 	// Loads and runs a string
@@ -52,7 +55,6 @@ namespace Lua
 
 	std::unique_ptr<MObjTable> State::peek_table(int indx)
 	{
-		printf("peeking at table\n");
 		std::unique_ptr<MObjTable> table(new MObjTable());
 		lua_pushnil(L); // so we get first key
 

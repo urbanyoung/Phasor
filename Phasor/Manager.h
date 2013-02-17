@@ -53,9 +53,8 @@ namespace Manager
 
 	// --------------------------------------------------------------------
 
-	// Opens the script specified, relative to the scripts directory
-	// May throw an exception <todo: add specific info>
-	std::unique_ptr<ScriptState> OpenScript(const char* file);
+	// Creates a new script, doesn't load any files.
+	std::unique_ptr<ScriptState> CreateScript();
 
 	void CloseScript(std::unique_ptr<ScriptState>& state);
 
@@ -111,6 +110,9 @@ namespace Manager
 
 		void PushCall(const std::string& func, bool scriptInvoked);
 		void PopCall();
+
+		// Loads the specified file
+		virtual void DoFile(const char* file) = 0;
 
 		// Checks if the specified function is defined in the script
 		virtual bool HasFunction(const char* name) = 0;

@@ -4,6 +4,28 @@
 
 namespace scripting { namespace events {
 
+	static const std::string events[] = 
+	{
+		"OnScriptUnload",
+		"OnTeamChange",
+		"OnServerCommand",
+		"OnNewGame",
+		"OnGameEnd",
+		"OnBanCheck",
+		"OnClientUpdate",
+		"OnPlayerJoin",
+		"OnPlayerLeave",
+		"OnTeamDecision",
+		"OnPlayerSpawn",
+		"OnPlayerSpawnEnd",
+		"OnObjectCreation", 
+		"OnObjectCreationAttempt",
+		"OnWeaponAssignment"
+	};
+
+	const std::string* GetEventTable() { return events;	}
+	size_t GetEventTableElementCount() { return sizeof(events) / sizeof(events[0]); }
+
 	static const results_t result_bool = {Common::TYPE_BOOL};
 	static const results_t result_number = {Common::TYPE_NUMBER};
 

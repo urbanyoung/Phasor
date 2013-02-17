@@ -7,11 +7,9 @@ using namespace Common;
 
 namespace Manager
 {
-	std::unique_ptr<ScriptState> OpenScript(const char* file)
+	std::unique_ptr<ScriptState> CreateScript()
 	{	
-		//todo: if support other languages, add handlers here
-		std::unique_ptr<ScriptState> state(new Lua::State(file));
-		return state;
+		return std::unique_ptr<ScriptState>(new Lua::State());
 	}
 
 	void CloseScript(std::unique_ptr<ScriptState>& state)

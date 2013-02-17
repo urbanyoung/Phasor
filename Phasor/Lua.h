@@ -99,10 +99,12 @@ namespace Lua
 		
 	public:
 
-		State(const char* file);
+		State();
 		~State();	
 
 		lua_State* GetState() { return L; }
+
+		void DoFile(const char* file) override;
 
 		// Loads and runs a string
 		void DoString(const char* str);

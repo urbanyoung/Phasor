@@ -38,6 +38,9 @@ namespace halo
 namespace scripting {
 	namespace events {
 
+		const std::string* GetEventTable();
+		size_t GetEventTableElementCount();
+
 		/*! \brief Called when a player has changed team.
 		 *
 		 *	\param player The player who is changing team.
@@ -227,8 +230,8 @@ namespace scripting {
 		 *	\return The map id of the weapon you wish to assign.
 		 *	
 		 *	\remarks
-		 *		- \c player is \nil when assigning weapons to vehicles.
-		 *		- \c The value returned should be either:
+		 *		- \c player is \c nil when assigning weapons to vehicles.
+		 *		- The value returned should be either:
 		 *			- \c nil if you don't want to change the assigned weapon.
 		 *			- \em or The map id of the weapon you wish to assign
 		 *			- \em or -1 if you don't want the weapon to be assigned.
