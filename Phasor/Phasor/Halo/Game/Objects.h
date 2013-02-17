@@ -26,7 +26,7 @@ namespace halo { namespace objects
 		vect3d location; // 0x005c
 		vect3d velocity; // 0x0068
 		vect3d rotation; // 0x0074
-		UNKNOWN(sizeof(vect3d)); // some vector
+		vect3d someVector;
 		UNKNOWN(sizeof(vect3d)); // some vector
 		UNKNOWN(0x28);
 		ident ownerPlayer; // 0x00c0 (index of owner (if has one))
@@ -124,6 +124,8 @@ namespace halo { namespace objects
 		UNKNOWN(4);
 		ident player_ident;
 		ident parent;
+		UNKNOWN(8);
+		vect3d pos;
 		// rest unknown.. 
 	};
 	
@@ -135,9 +137,9 @@ namespace halo { namespace objects
 	// Events
 	
 	// Called when an object is being checked to see if it should respawn
-	int __stdcall ObjectRespawnCheck(DWORD m_objId, LPBYTE m_obj);
+	int __stdcall ObjectRespawnCheck(ident m_objId, s_halo_object* obj);
 
 	// This is called when weapons/equipment are going to be destroyed.
 	// todo: check ticks should be signed
-	bool __stdcall EquipmentDestroyCheck(int checkTicks, DWORD m_objId, LPBYTE m_obj);
+	bool __stdcall EquipmentDestroyCheck(int checkTicks, ident m_objId, s_halo_object* obj);
 }}

@@ -14,6 +14,16 @@ namespace halo
 		unsigned short slot;
 		unsigned short id;		
 
+		bool operator<(const ident& other)
+		{
+			return (unsigned long)*this < (unsigned long)other;
+		}
+
+		bool operator>(const ident& other)
+		{
+			return (unsigned long)*this > (unsigned long)other;
+		}
+
 		operator unsigned long() const
 		{
 			unsigned long result = id << 16 | (slot & 0xffff);

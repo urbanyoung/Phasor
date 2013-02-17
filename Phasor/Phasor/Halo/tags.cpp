@@ -13,6 +13,11 @@ namespace halo
 			(tmp << 24);
 	}
 
+	bool s_tag_type::operator==(const s_tag_type& other)
+	{
+		return other.val == val;
+	}
+
 	// -------------------------------------------------------------------
 	//
 	std::map<std::string, s_tag_entry*> tag_cache;

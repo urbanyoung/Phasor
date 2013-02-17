@@ -142,6 +142,9 @@ namespace server
 		\return The server struct.*/
 	s_server_info* GetServerStruct();
 
+	DWORD GetServerTicks();
+	DWORD GetRespawnTicks();
+
 
 	// --------------------------------------------------------------------
 	// Events

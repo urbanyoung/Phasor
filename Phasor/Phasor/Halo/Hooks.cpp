@@ -4,6 +4,7 @@
 #include "Server/Server.h"
 #include "Game/Game.h"
 #include "Server/MapLoader.h"
+#include "Game/Objects.h"
 
 using namespace halo;
 
@@ -738,7 +739,7 @@ ALLOW_RELOAD:
 		ret
 	}
 }
-/*
+
 // used to control object respawning
 DWORD objres_ret = 0;
 __declspec(naked) void OnObjectRespawn_CC()
@@ -792,7 +793,7 @@ __declspec(naked) void OnEquipmentDestroy_CC()
 		ret
 	}
 }
-*/
+
 DWORD vehfeject_ret = 0;
 __declspec(naked) void OnVehicleForceEject_CC()
 {
@@ -1011,9 +1012,9 @@ namespace halo
 		CreateCodeCave(CC_KILLMULTIPLIER, 5, OnKillMultiplier_CC);
 
 		// used to control whether or not objects respawn
-		/*CreateCodeCave(CC_OBJECTRESPAWN, 32, OnObjectRespawn_CC);
+		CreateCodeCave(CC_OBJECTRESPAWN, 32, OnObjectRespawn_CC);
 		CreateCodeCave(CC_EQUIPMENTDESTROY, 6, OnEquipmentDestroy_CC);
-		*/
+		
 		// Codecaves for detecting vehicle ejections
 		CreateCodeCave(CC_VEHICLEFORCEEJECT, 8, OnVehicleForceEject_CC);
 		CreateCodeCave(CC_VEHICLEUSEREJECT, 7, OnVehicleUserEject_CC);

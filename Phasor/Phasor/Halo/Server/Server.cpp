@@ -365,6 +365,19 @@ namespace halo { namespace server
 
 		return true;
 	}
+
+	/*! \todo parse these structures */
+	DWORD GetServerTicks()
+	{
+		return *(DWORD*)(ADDR_GAMETYPE + OFFSET_RESPAWNTICKS);
+	}
+
+	DWORD GetRespawnTicks()
+	{
+		DWORD server_base = *(DWORD*)ADDR_SERVERINFO;
+		DWORD ticks = *(DWORD*)(server_base + 0x0C);
+		return ticks;
+	}
 	
 	// --------------------------------------------------------------------
 	// Server message.
