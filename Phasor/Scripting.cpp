@@ -40,12 +40,12 @@ namespace scripting
 	{
 	}
 
-	void Scripts::OpenScript(const char* script)
+	bool Scripts::OpenScript(const char* script)
 	{		
 		// Make sure the script isn't already loaded
 		if (scripts.find(script) != scripts.end()) {
 			errstream << script << " is already loaded." << endl;
-			return;
+			return false;
 		}
 
 		std::stringstream abs_file;
@@ -56,7 +56,7 @@ namespace scripting
 			std::string file = abs_file.str();
 			std::unique_ptr<ScriptState> state_ = Manager::CreateScript();
 			std::unique_ptr<PhasorScript> phasor_state(
-				new PhasorScript(state_));  
+				new PhasorScript(std::move(state_)));  
 			
 			// load api then file so Phasor's funcs don't override any script ones
 			PhasorAPI::Register(*phasor_state->state);
@@ -90,7 +90,9 @@ namespace scripting
 			NoFlush _(errstream);
 			errstream << L"script '" << script << "' cannot be loaded." <<
 				endl << log_prefix << e.what() << endl;
+			return false;
 		}
+		return true;
 	}
 
 	Scripts::scripts_t::iterator Scripts::CloseScript(scripts_t::iterator itr)
@@ -122,6 +124,27 @@ namespace scripting
 		auto itr = scripts.begin();
 		while (itr != scripts.end())
 			itr = CloseScript(itr);
+	}
+
+	void Scripts::ReloadScripts()
+	{
+		std::list<std::string> reload_scripts;
+		for(auto itr = scripts.begin(); itr != scripts.end(); ++itr)
+			reload_scripts.push_back(itr->first);
+
+		CloseAllScripts();
+
+		for (auto itr = reload_scripts.begin(); itr != reload_scripts.end(); ++itr)
+			OpenScript(itr->c_str());
+	}
+
+	bool Scripts::ReloadScript(const std::string& script)
+	{
+		auto itr = scripts.find(script);
+		if (itr == scripts.end()) return false;
+		CloseScript(itr);
+		OpenScript(script.c_str());
+		return true;
 	}
 
 	// Returns true if compatible with current api, false if compatible with deprecated

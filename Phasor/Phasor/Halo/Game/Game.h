@@ -23,6 +23,7 @@ namespace halo {
 	s_player* GetPlayerFromRconId(unsigned int playerNum);
 	s_player* GetPlayerFromAddress(s_player_structure* player);
 	s_player* GetPlayerFromObject(objects::s_halo_biped* obj);
+	s_player* GetPlayerFromHash(const std::string& hash);
 
 	// --------------------------------------------------------------------
 	// Events

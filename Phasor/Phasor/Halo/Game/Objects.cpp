@@ -14,7 +14,7 @@ namespace halo { namespace objects {
 		vect3d pos, velocity, rotation, other;
 		DWORD respawnTime, creationTicks;
 
-		s_phasor_managed_obj(ident objid, bool bRecycle, vect3d& pos, 
+		s_phasor_managed_obj(ident objid, bool bRecycle, const vect3d& pos, 
 			DWORD respawnTime, s_object_creation_disposition* creation_disposition)
 			: objid(objid), bRecycle(bRecycle), pos(pos), respawnTime(respawnTime)
 		{
@@ -64,14 +64,14 @@ namespace halo { namespace objects {
 	// Called when an object is being checked to see if it should respawn
 	int __stdcall ObjectRespawnCheck(ident m_objId, s_halo_object* obj)
 	{
-
+		return false;
 	}
 
 	// This is called when weapons/equipment are going to be destroyed.
 	// todo: check ticks should be signed
 	bool __stdcall EquipmentDestroyCheck(int checkTicks, ident m_objId, s_halo_object* obj)
 	{
-
+		return false;
 	}
 
 	bool SpawnObject(ident mapid, ident parentId, int respawnTime, bool bRecycle,

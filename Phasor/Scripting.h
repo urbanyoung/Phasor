@@ -30,7 +30,7 @@ namespace scripting
 	public:
 		std::unique_ptr<Manager::ScriptState> state;
 
-		PhasorScript(std::unique_ptr<Manager::ScriptState>& state)
+		PhasorScript(std::unique_ptr<Manager::ScriptState> state)
 			: state(std::move(state)) {}
 		virtual ~PhasorScript() {}
 
@@ -66,11 +66,14 @@ namespace scripting
 		Scripts(COutStream& errstream, const std::wstring& scriptsDir);
 
 		// Opens the script specified, relative to the scripts directory
-		void OpenScript(const char* script);
+		bool OpenScript(const char* script);
 
 		// Closes the specified script, if it exists.
 		void CloseScript(const char* script);
 		void CloseAllScripts();
+
+		void ReloadScripts();
+		bool ReloadScript(const std::string& script);
 
 		friend class PhasorCaller;
 	};

@@ -138,3 +138,21 @@ public:
 	// False indicated an error, otherwise keep calling.
 	bool WriteSome(BYTE* data, DWORD size, DWORD* written);
 };
+
+template <class T>
+class CTempFile : public T
+{
+private:
+	bool do_delete;
+
+public:
+	CTempFile() : T(), do_delete(true) {}
+	virtual ~CTempFile() {
+		if (do_delete) {
+			Close();
+			CFile::Delete(file_name);
+		}
+	}
+
+	void success() { do_delete = false; }
+};

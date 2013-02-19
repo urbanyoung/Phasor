@@ -2,6 +2,8 @@
 #include "Directory.h"
 #include "../Common/MyString.h"
 #include "../Common/FileIO.h"
+#include "Commands.h"
+#include "Halo/Game/Game.h"
 #include <map>
 #include <set>
 #include <vector>
@@ -11,6 +13,9 @@
  */
 namespace Admin
 {
+	std::wstring adminPath;
+	std::wstring accessPath;
+
 	namespace access
 	{
 		static const std::string kAllAccess = "-1";
@@ -99,6 +104,7 @@ namespace Admin
 					if (out) *out = &itr->second;
 					return true;
 				}
+				itr++;
 			}
 			return false;
 		}
@@ -202,14 +208,52 @@ namespace Admin
 		}
 	}
 
+	bool SaveAdminList(COutStream& stream)
+	{
+		std::string data;
+		data.reserve(1 << 12); // 4kb
+
+		for (auto itr = admin::adminList.cbegin(); itr != admin::adminList.cend();
+			++itr)
+		{
+			data += itr->second.name + ",";
+			data += itr->second.hash + ",";
+			data += m_sprintf("%i\r\n", itr->second.accessLevel.get_level());
+		}
+
+		std::wstring adminPathTmp = adminPath + L".tmp";
+
+		CTempFile<COutFile> file;
+		if (!file.Open(adminPathTmp, GENERIC_READ | GENERIC_WRITE, 
+			FILE_SHARE_READ, OPEN_ALWAYS)) {
+			stream << L"can't open admin file : " << adminPath << endl;
+			return false;
+		}
+
+		DWORD written;
+		if (!file.Write((BYTE*)data.c_str(), data.size(), &written)) {
+			stream << "can't write to new admin file" << endl;
+			return false;
+		}
+
+		file.Close();
+
+		if (!CFile::Move(adminPathTmp, adminPath, true)) {
+			stream << "can't replace old admin file " << adminPath << endl;
+			return false;
+		}
+		file.success();
+		return true;
+	}
+
 	void Initialize(COutStream* out)
 	{
 		// read from files
 		admin::clear();
 		access::clear();
 
-		std::wstring adminPath = g_ProfileDirectory + L"admin.txt";
-		std::wstring accessPath = g_ProfileDirectory + L"access.ini";
+		adminPath = g_ProfileDirectory + L"admin.txt";
+		accessPath = g_ProfileDirectory + L"access.ini";
 
 		LoadAccessList(accessPath);
 		LoadAdminList(adminPath, out);
@@ -219,4 +263,110 @@ namespace Admin
 	{
 		Initialize(NULL);
 	}
+
+	// --------------------------------------------------------------------
+	//
+	void MarkPlayerAdmin(const std::string& hash, bool is_admin)
+	{
+		halo::s_player* player = halo::game::GetPlayerFromHash(hash);
+		if (!player) return;
+		player->is_admin = is_admin;
+		*player->console_stream << "You're " << (is_admin ? "an admin now." : "no longer an admin.")
+			<< endl;
+	}
+
+	e_command_result sv_admin_add(void*, commands::CArgParser& args, COutStream& out)
+	{
+		std::string hash = args.ReadPlayerOrHash();
+		std::string name = args.ReadString();
+		int level = args.ReadInt();
+
+		result_t result = Add(hash, name, level);
+		switch (result)
+		{
+		case E_HASH_INUSE:
+			{
+				out << L"That hash is already in use." << endl;
+			} break;
+		case E_NAME_INUSE:
+			{
+				out << L"That name is already in use." << endl;
+			} break;
+		case E_LEVEL_NOT_EXIST:
+			{
+				out << level << L" is not a valid access level." << endl;
+			} break;
+		default:
+			{
+				if (!SaveAdminList(out)) {
+					out << name << " will be an admin until the server restarts, because the file wasn't saved." << endl;
+				} else {
+					out << name << " can now use admin at level " << level << endl;
+					MarkPlayerAdmin(hash, true);
+				}
+			} break;
+		}
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_admin_del(void*, commands::CArgParser& args, COutStream& out)
+	{
+		std::string name = args.ReadString();
+		admin::s_admin* admin;
+		
+		if (admin::find_admin_by_name(name, &admin)) {
+			std::string hash = admin->hash;
+			admin::remove(hash);
+			if (!SaveAdminList(out)) {
+				out << name << " will still be an until once the server restarts because the file wasn't saved." << endl;
+			} else {
+				out << name << " is no longer an admin. " << endl;
+				MarkPlayerAdmin(hash, false);
+			}
+		} else out << name << " isn't an admin." << endl;
+
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_admin_list(void*, commands::CArgParser& args, COutStream& out)
+	{
+		out << "List of current admins: " << endl;
+		for (auto itr = admin::adminList.cbegin(); itr != admin::adminList.cend();
+			++itr)
+		{
+			out.print("%-19s Level: %i", itr->second.name.c_str(), itr->second.accessLevel.get_level());
+		}
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_admin_cur(void*, commands::CArgParser& args, COutStream& out)
+	{
+		out << "Admins currently in the server: " << endl;
+		for (int i = 0; i < 16; i++) {
+			halo::s_player* player = halo::game::GetPlayer(i);
+			if (player && player->is_admin) {
+				admin::s_admin* admin;
+				if (admin::find_admin_by_hash(player->hash, &admin)) {
+					out << player->mem->playerName << " authed as '" << 
+						admin->name << "'" << endl;
+				} else {
+					out << player->mem->playerName << " (temporary admin)." << endl;
+				}
+			}
+		}
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_admin_reload(void*, commands::CArgParser& args, COutStream& out)
+	{
+		Initialize(&out);
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_commands(void*, commands::CArgParser& args, COutStream& out)
+	{
+		out << "not yet implemented" << endl;
+		return e_command_result::kProcessed;
+	}
+
 }

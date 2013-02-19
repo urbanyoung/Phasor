@@ -6,10 +6,12 @@
 #include "Halo/Server/Server.h"
 #include "Halo/Game/Game.h"
 #include "Halo/Server/Maploader.h"
+#include "Halo/Server/ScriptLoader.h"
 #include "Halo/AFKDetection.h"
 #include "Halo/Alias.h"
 #include "../Scripting.h"
 #include "LogHandler.h"
+#include "Admin.h"
 #include <map>
 #include <assert.h>
 #include "Globals.h"
@@ -32,13 +34,27 @@ namespace commands
 		cmd["sv_mapcycle"]			= &server::maploader::sv_mapcycle;
 		cmd["sv_map"]				= &server::maploader::sv_map;
 		cmd["sv_end_game"]			= &server::maploader::sv_end_game;
+
+		/*! \todo change Open/Close/Reload script to take an output stream. */
+		cmd["sv_script_reload"]		= &server::scriptloader::sv_script_reload;
+		cmd["sv_script_load"]		= &server::scriptloader::sv_script_load;
+		
 		cmd["sv_kickafk"]			= &afk_detection::sv_kickafk;
+
 		cmd["sv_logname"]			= &logging::sv_logname;
 		cmd["sv_loglimit"]			= &logging::sv_loglimit;
 		cmd["sv_logmovedir"]		= &logging::sv_logmovedir;
+
 		cmd["sv_alias_enable"]		= &alias::sv_alias_enable;
 		cmd["sv_alias_hash"]		= &alias::sv_alias_hash;
 		cmd["sv_alias_search"]		= &alias::sv_alias_search;
+
+		cmd["sv_admin_add"]			= &Admin::sv_admin_add;
+		cmd["sv_admin_del"]			= &Admin::sv_admin_del;
+		cmd["sv_admin_list"]		= &Admin::sv_admin_list;
+		cmd["sv_admin_cur"]			= &Admin::sv_admin_cur;
+		cmd["sv_admin_reload"]		= &Admin::sv_admin_reload;
+		cmd["sv_admin_commands"]	= &Admin::sv_commands;
 		return cmd;
 	}();
 
@@ -59,6 +75,12 @@ namespace commands
 		usage["sv_alias_enable"]	= "<status>";
 		usage["sv_alias_hash"]		= "<hash or player index>";
 		usage["sv_alias_search"]	= "<partial name to find>";
+		usage["sv_admin_add"]		= "<player number or hash> <auth name> <level>";
+		usage["sv_admin_del"]		= "<admin's name>";
+		usage["sv_admin_list"]		= "";
+		usage["sv_admin_cur"]		= "";
+		usage["sv_admin_reload"]	= "";
+		usage["sv_admin_commands"]	= "";
 		return usage;
 	}();
 
@@ -205,7 +227,7 @@ namespace commands
 		if (str.size() == 32) return str; // they entered the hash
 		unsigned int playerIndex;
 		if (!::StringToNumber<unsigned int>(str, playerIndex)) RaiseError(kPlayerOrHash);
-		halo::s_player* player = halo::game::GetPlayerFromRconId(playerIndex);
+		halo::s_player* player = halo::game::GetPlayerFromRconId(playerIndex-1);
 		if (!player) RaiseError(kPlayerOrHash);
 		return player->hash;
 	}

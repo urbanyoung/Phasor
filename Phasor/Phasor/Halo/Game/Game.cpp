@@ -58,6 +58,15 @@ namespace halo { namespace game {
 		return NULL;
 	}
 
+	s_player* GetPlayerFromHash(const std::string& hash)
+	{
+		for (int i = 0; i < 16; i++) {
+			if (PlayerList[i] && PlayerList[i]->hash == hash)
+				return PlayerList[i].get();
+		}
+		return NULL;
+	}
+
 	// Called when a game stage ends
 	void OnGameEnd(DWORD mode)
 	{

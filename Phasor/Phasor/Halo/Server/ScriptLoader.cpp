@@ -26,4 +26,33 @@ namespace halo { namespace server { namespace scriptloader
 		std::wstring path = g_ScriptsDirectory + WidenString(script) + L".lua";
 		return NDirectory::IsValidFile(path);		
 	}
+
+	e_command_result sv_script_reload(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		if (args.size() == 1) {
+			std::string script = args.ReadString();
+
+			if (g_Scripts->ReloadScript(script))
+				out << script << " has been reloaded." << endl;
+			else
+				out << script << " isn't currently loaded." << endl;
+		} else {
+			g_Scripts->ReloadScripts();
+			out << "All scripts have been reloaded." << endl;
+		}
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_script_load(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		std::string script = args.ReadString();
+		
+		if (g_Scripts->OpenScript(script.c_str()))
+			out << script << " has been loaded." << endl;
+		else
+			out << script << " couldn't be loaded." << endl;
+		return e_command_result::kProcessed;
+	}
 }}}

@@ -100,7 +100,7 @@ namespace Lua
 	public:
 
 		State();
-		~State();	
+		virtual ~State();	
 
 		lua_State* GetState() { return L; }
 

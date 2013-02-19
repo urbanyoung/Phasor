@@ -3,6 +3,13 @@
 #include <string>
 #include "../Common/Streams.h"
 
+enum e_command_result;
+
+namespace commands
+{
+	class CArgParser;
+}
+
 namespace Admin
 {
 	enum result_t
@@ -35,4 +42,48 @@ namespace Admin
 
 	// Reloads the admin/access files
 	void Reload();
+
+	// -------------------------------------------------------------------
+	//
+	/*! \brief Make the specified player (or hash) an admin.
+	 * 
+	 *	\param player_or_hash Either the player's in game id or their hash.
+	 *	\param authname The name to auth the player under.
+	 *	\param level The level the player should have access to.
+	 *
+	 *	Example usage: sv_admin_add 1 Oxide 0
+	 */
+	e_command_result sv_admin_add(void*, commands::CArgParser& args, COutStream& out);
+
+	/*! \brief Revoke a current admin's status.
+	 *
+	 *	\param name The name of the admin to remove.
+	 *
+	 *	Example usage: sv_admin_del Oxide
+	 */
+	e_command_result sv_admin_del(void*, commands::CArgParser& args, COutStream& out);
+
+	/*! \brief Lists all admins.
+	 *
+	 *	Example usage: sv_admin_list
+	 */
+	e_command_result sv_admin_list(void*, commands::CArgParser& args, COutStream& out);
+
+	/*! \brief Lists all admins who are currently in the server.
+	 *
+	 *	Example usage: sv_admin_cur
+	 */
+	e_command_result sv_admin_cur(void*, commands::CArgParser& args, COutStream& out);
+
+	/*! \brief Reload both the access and admin files.
+	 *
+	 *	Example usage: sv_admin_reload
+	 */
+	e_command_result sv_admin_reload(void*, commands::CArgParser& args, COutStream& out);
+
+	/*! \brief Lists the commands you have permission to use.
+	 *
+	 *	Example usage: sv_commands
+	 */
+	e_command_result sv_commands(void*, commands::CArgParser& args, COutStream& out);
 }
