@@ -7,6 +7,7 @@
 #include "Halo/Game/Game.h"
 #include "Halo/Server/Maploader.h"
 #include "Halo/Server/ScriptLoader.h"
+#include "Halo/Server/MapVote.h"
 #include "Halo/AFKDetection.h"
 #include "Halo/Alias.h"
 #include "../Scripting.h"
@@ -34,6 +35,13 @@ namespace commands
 		cmd["sv_mapcycle"]			= &server::maploader::sv_mapcycle;
 		cmd["sv_map"]				= &server::maploader::sv_map;
 		cmd["sv_end_game"]			= &server::maploader::sv_end_game;
+
+		cmd["sv_mapvote"]			= &server::mapvote::sv_mapvote;
+		cmd["sv_mapvote_size"]		= &server::mapvote::sv_mapvote_size;
+		cmd["sv_mapvote_begin"]		= &server::mapvote::sv_mapvote_begin;
+		cmd["sv_mapvote_add"]		= &server::mapvote::sv_mapvote_add;
+		cmd["sv_mapvote_del"]		= &server::mapvote::sv_mapvote_del;
+		cmd["sv_mapvote_list"]		= &server::mapvote::sv_mapvote_list;
 
 		/*! \todo change Open/Close/Reload script to take an output stream. */
 		cmd["sv_script_reload"]		= &server::scriptloader::sv_script_reload;
@@ -63,11 +71,19 @@ namespace commands
 	{
 		std::map<std::string, std::string> usage;
 		usage["sv_mapcycle_begin"]	= "";
-		usage["sv_mapcycle_add"]	= "<map> <gametype> opt: <script1> <script2> ...";
+		usage["sv_mapcycle_add"]	= "<map> <gametype> opt: [script1] [script2] ...";
 		usage["sv_mapcycle_del"]	= "<index>";
 		usage["sv_mapcycle"]		= "";
 		usage["sv_map"]				= usage["sv_mapcycle_add"];
 		usage["sv_end_game"]		= "";
+
+		usage["sv_mapvote"]			= "<true of false>";
+		usage["sv_mapvote_size"]	= "<number of options to show>";
+		usage["sv_mapvote_begin"]	= "";
+		usage["sv_mapvote_add"]		= "<map> <gametype> <description> opt: [script1] [script2] ...";
+		usage["sv_mapvote_del"]		= "<index from sv_mapvote_list>";
+		usage["sv_mapvote_list"]	= "";
+
 		usage["sv_kickafk"]			= "<time in minutes>";
 		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
 		usage["sv_loglimit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";

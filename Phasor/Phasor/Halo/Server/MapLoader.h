@@ -10,38 +10,14 @@ enum e_command_result;
 
 namespace halo { namespace server { namespace maploader 
 {
-	void Initialize(COutStream& out);
+	struct s_phasor_mapcycle_entry
+	{
+		std::string map;
+		std::wstring gametype;
+		std::vector<std::string> scripts;
+	};
 
-	//Non-default map loading
-	// --------------------------------------------------------------------
-#ifdef PHASOR_PC
-	// Returns the address of the loading buffer Halo should use
-	char* GetLoadingMapBuffer();
-
-	// Generates the map list
-	// todo: fix for ce
-	void BuildMapList(COutStream& out);
-
-	// This function returns the address of our map table
-	DWORD GetMapTable();
-
-	// Checks if a map exists
-	bool IsValidMap(const std::string& map);
-
-	// Called when a map is being loaded.
-	void OnMapLoad(char* map);
-
-	// Called to fix the loaded map name
-	void OnNewGame();
-
-	// Returns the base name for a map (ie bloodgulch1 -> bloodgulch)
-	bool GetBaseMapName(const char* actual_map, const char** out);
-#endif	
-
-	// Script loading
-	// --------------------------------------------------------------------
-	// 
-	#pragma pack(push, 1)
+#pragma pack(push, 1)
 	struct s_script_list
 	{
 		DWORD count;
@@ -64,7 +40,45 @@ namespace halo { namespace server { namespace maploader
 		DWORD allocated_count;
 		DWORD current; // index of game being executed
 	};
-	#pragma pack(pop)
+#pragma pack(pop)
+
+	void Initialize(COutStream& out);
+
+	// Checks if the map, gametype and all scripts are valid.
+	bool ValidateUserInput(const s_phasor_mapcycle_entry& entry, COutStream& out);
+
+	// Effectively executes sv_map to run a new game
+	bool LoadGame(const s_phasor_mapcycle_entry& game, COutStream& out);
+
+	bool ReplaceHaloMapEntry(s_mapcycle_entry* old, 
+		const s_phasor_mapcycle_entry& new_entry,
+		COutStream& out);
+
+	//Non-default map loading
+	// --------------------------------------------------------------------
+#ifdef PHASOR_PC
+	// Returns the address of the loading buffer Halo should use
+	char* GetLoadingMapBuffer();
+
+	// Generates the map list
+	//! \todo fix for ce
+	void BuildMapList(COutStream& out);
+
+	// This function returns the address of our map table
+	DWORD GetMapTable();
+
+	// Checks if a map exists
+	bool IsValidMap(const std::string& map);
+
+	// Called when a map is being loaded.
+	void OnMapLoad(char* map);
+
+	// Called to fix the loaded map name
+	void OnNewGame();
+
+	// Returns the base name for a map (ie bloodgulch1 -> bloodgulch)
+	bool GetBaseMapName(const char* actual_map, const char** out);
+#endif	
 
 	// Get a pointer to the current map in the playlist
 	s_mapcycle_entry* GetCurrentMapcycleEntry();

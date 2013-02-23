@@ -49,6 +49,7 @@ void LoadEarlyInit(COutStream& out);
 // Called when the dll is loaded
 extern "C" __declspec(dllexport) void OnLoad()
 {
+	srand(GetTickCount());
 	g_PrintStream.reset(new halo::CHaloPrintStream());
 	*g_PrintStream << L"44656469636174656420746f206d756d2e2049206d69737320796f752e" << endl;
 	LocateDirectories();

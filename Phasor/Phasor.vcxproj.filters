@@ -143,6 +143,9 @@
     <ClCompile Include="Phasor\Halo\tags.cpp">
       <Filter>Phasor\Halo</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\MapVote.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">

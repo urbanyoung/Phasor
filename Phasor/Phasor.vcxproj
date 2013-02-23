@@ -135,6 +135,7 @@
     <ClCompile Include="Phasor\Halo\Server\Chat.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Gametypes.cpp" />
     <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\MapVote.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Packet.cpp" />
     <ClCompile Include="Phasor\Halo\Server\ScriptLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Server.cpp" />

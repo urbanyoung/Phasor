@@ -9,6 +9,7 @@
 #include "../../../ScriptingEvents.h"
 #include "../tags.h"
 #include "../Server/Chat.h"
+#include "../Server/MapVote.h"
 #include <vector>
 
 namespace halo { namespace game {
@@ -247,13 +248,15 @@ namespace halo { namespace game {
 		int length = wcslen(chat->msg);
 		if (length > 64)
 			return;
-
+		
 		sender->afk->MarkPlayerActive();
 
 		bool allow = scripting::events::OnServerChat(*sender, chat->type,
 			NarrowString(chat->msg));
 
 		if (!allow) return;
+
+		if (!server::mapvote::OnServerChat(*sender, chat->msg)) return;
 
 		g_GameLog->WriteLog(kPlayerChat, L"[%s] %s: %s", typeValues[chat->type], 
 			sender->mem->playerName, chat->msg);

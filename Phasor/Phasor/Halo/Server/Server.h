@@ -101,10 +101,6 @@ namespace server
 	//! Stream used for server messages.
 	extern SayStream say_stream;
 
-	/*! \brief Starts a new game on the specified map.
-	 * \param map The map to player. */
-	void StartGame(const char* map);
-
 	/*! \brief Send a chat message to the player
 	 *	\param player The player to send the message to
 	 *	\param str The message to send.	 */
