@@ -146,6 +146,12 @@
     <ClCompile Include="Phasor\Halo\Server\MapVote.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
+    <ClCompile Include="PhasorAPI\scripttimers.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="CallHelper.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -361,6 +367,12 @@
       <Filter>Phasor\Halo</Filter>
     </ClInclude>
     <ClInclude Include="main.h" />
+    <ClInclude Include="PhasorAPI\scripttimers.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="CallHelper.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phasor_includes.props" />

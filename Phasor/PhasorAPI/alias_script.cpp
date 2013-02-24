@@ -1,6 +1,5 @@
 #include "api_readers.h"
 #include "../Phasor/Halo/Alias.h"
-#include "../Manager.h"
 #include "../Scripting.h"
 #include "../Common/MyString.h"
 #include <list>
@@ -58,9 +57,9 @@ public:
 			x += i - x;
 		}
 		
-		Manager::Caller caller;
+		scripting::PhasorCaller caller;
 		caller.AddArg(std::move(result_obj));
-		caller.Call(*state, callback, DEFAULT_TIMEOUT);
+		caller.Call(*state, callback);
 	}
 };
 

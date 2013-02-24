@@ -56,8 +56,7 @@ namespace Lua
 	std::unique_ptr<MObjTable> State::peek_table(int indx)
 	{
 		std::unique_ptr<MObjTable> table(new MObjTable());
-		lua_pushnil(L); // so we get first key
-
+		lua_pushnil(L); // so we get first key		
 		while(lua_next(L, indx - 1)) { 
 			auto value = pop();
 			auto key = peek();
@@ -68,30 +67,30 @@ namespace Lua
 		return table;
 	}
 
-	std::unique_ptr<LuaObject> State::peek()
+	std::unique_ptr<LuaObject> State::peek(int indx)
 	{
 		std::unique_ptr<LuaObject> object;
-		LuaType type = (LuaType)lua_type(L, -1);
+		LuaType type = (LuaType)lua_type(L, indx);
 		switch (type)
 		{
 		case Type_Boolean:
 			{
-				bool value = lua_toboolean(L, -1) == 1;
+				bool value = lua_toboolean(L, indx) == 1;
 				object.reset(new LuaObject(value));
 			} break;
 		case Type_Number:
 			{
-				double value = lua_tonumber(L, -1);
+				double value = lua_tonumber(L, indx);
 				object.reset(new LuaObject(value));
 			} break;
 		case Type_String:
 			{
-				const char* value = lua_tostring(L, -1);
+				const char* value = lua_tostring(L, indx);
 				object.reset(new LuaObject(value));
 			} break;
 		case Type_Table:
 			{			
-				object.reset(new LuaObject(peek_table()));
+				object.reset(new LuaObject(peek_table(indx)));
 
 			} break;
 		case Type_Nil:
@@ -100,7 +99,7 @@ namespace Lua
 			} break;
 		default:
 			{
-				lua_pushvalue(L, -1); // luaL_ref pops so copy it
+				lua_pushvalue(L, indx); // luaL_ref pops so copy it
 				int ref = luaL_ref(L, LUA_REGISTRYINDEX); // this pops
 
 				// can't handle the value so store its ref
@@ -197,13 +196,13 @@ namespace Lua
 		for (auto itr = args.begin(); itr != args.end(); ++itr)	push(**itr);
 
 		// Call the Lua function
-		if (lua_pcall_t(L, args.size(), LUA_MULTRET, 0, timeout))
+		if (lua_pcall(L, args.size(), LUA_MULTRET, 0))
 		{
 			std::string error = lua_tostring(L, -1);
 			lua_pop(L, -1);
 			throw std::exception(error.c_str());
 		}
-
+		
 		MObject::unique_deque results;
 
 		// Pop the results off the stack
@@ -240,8 +239,9 @@ namespace Lua
 		// expected type an error should be described and raised through 
 		// RaiseError. 
 		std::unique_ptr<MObject> GetArgument(Common::obj_type expected) override
-		{
+		{		
 			lua_State* L = luaState.GetState();
+			int indx_from_top = (-1 * lua_gettop(L)) + cur_arg;
 			int indx = ++cur_arg;
 
 			std::unique_ptr<MObject> obj;
@@ -274,16 +274,18 @@ namespace Lua
 				} break;
 			case Common::TYPE_TABLE:
 				{
-					/*! \todo
-					 * add proper formatting to this error message
-					 */
-					/*! \todo
-					 * also test peek_table works correctly when not 
-					 * at top of stack.
-					 */
-					if (lua_type(L, indx) != Type_Table)
-						RaiseError("Expected table.");
-					obj.reset(luaState.peek_table(indx).release());
+					if (lua_type(L, indx) != Type_Table) {
+						std::stringstream ss;
+						ss << "bad argument #" << cur_arg << " to '" << cb->name
+							<< "' (table expected, got " << lua_typename(L, indx) 
+							<< ")";
+						RaiseError(ss.str());
+					}
+					obj.reset(luaState.peek_table(indx_from_top).release());
+				} break;
+			case Common::TYPE_ANY:
+				{
+					obj = luaState.peek(indx_from_top)->release_object();
 				} break;
 			}
 			return obj;
@@ -368,7 +370,6 @@ namespace Lua
 	CFunction::CFunction(State& state, const Manager::ScriptCallback* cb)
 		: LuaObject(Type_Function), state(state), cb(cb)
 	{
-
 	}
 
 	void CFunction::push(State& state)

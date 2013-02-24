@@ -75,11 +75,12 @@ namespace Manager
 	class CallHandler
 	{
 	private:
-		const ScriptCallback* cb;
-		int nargs;		
+		int nargs;	
 
 	protected:
 
+		const ScriptCallback* cb;
+		
 		// Get the next argument for the function, if it's not of the
 		// expected type an error should be described and raised through 
 		// RaiseError. 

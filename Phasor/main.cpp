@@ -119,16 +119,17 @@ extern "C" __declspec(dllexport) void OnLoad()
 
 void OnServerClose()
 {
-	*g_PhasorLog << "Closing the server..." << endl;	
-	
+	*g_PhasorLog << "Closing the server..." << endl;		
+
 	g_Scripts.reset();
+	g_Timers.RemoveAllTimers();
 
 	g_Thread.close();
 	for (int i = 0; i < 100; i++) {
 		if (g_Thread.has_closed()) break;
 		Sleep(10);
 	}
-	
+
 	scriptOutput.reset();
 	g_PhasorLog.reset();
 	g_ScriptsLog.reset();

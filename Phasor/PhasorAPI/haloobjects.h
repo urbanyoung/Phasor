@@ -2,7 +2,7 @@
  *	\brief Object related functions for scripts.
  *	
  *	\b Important: If you pass an invalid object id to any of these functions,
- *	except for \c getobject a Lua error is raised.
+ *	except for \c getobject or \c gettagid a Lua error is raised.
  */
 #pragma once
 #include "PhasorAPI.h"
@@ -86,7 +86,6 @@ void l_objecttoplayer(PHASOR_API_ARGS);
  */
 void l_createobject(PHASOR_API_ARGS);
 
-
 /*! \brief Destroys the specified objects.
  *
  *	\param objid The id of the object to destroy.
@@ -158,7 +157,6 @@ void l_isinvehicle(PHASOR_API_ARGS);
  */
 void l_exitvehicle(PHASOR_API_ARGS);
 
-
 /*! \brief Moves the specified object to the specified coordinates.
  * 
  *  \param objid The id of the object to move.
@@ -175,3 +173,38 @@ void l_exitvehicle(PHASOR_API_ARGS);
  * \endcode
  */
 void l_movobjectcoords(PHASOR_API_ARGS);
+
+/*! \brief Gets the map id of the specified tag.
+ * 
+ *	\param tagType The type of the tag
+ *	\param tagName The name of the tag
+ *	\return The tag's map id or \c nil if not found.
+ *	
+ *	\remark 
+ *	You should lookup all tags (via this function) in OnNewGame
+ *	and store the results globally. Looking up tags based on their name
+ *	is slow.
+ *	
+ *	Example usage:
+ *	\code
+ *		function OnNewGame(map)
+ *			global ar_tag_id = gettagid("weap", "weapons\\assault rifle\\assault rifle")
+ *		end
+ * \endcode
+ */
+void l_gettagid(PHASOR_API_ARGS);
+
+/*! \brief Gets the specified tag's memory address.
+ *
+ *	\param tagid The id of the tag whose address is to be found.
+ *	\return The tag's memory address
+ *	
+ *	\remark
+ *	This is similar to \c lookuptag which has been deprecated.
+ *	
+ *	Example usage:
+ *	\code
+ *		local tag_data = gettagaddress(ar_tag_id)
+ *	\endcode
+ */
+void l_gettagaddress(PHASOR_API_ARGS);

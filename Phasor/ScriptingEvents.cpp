@@ -2,9 +2,10 @@
 #include "Scripting.h"
 #include "Phasor/Halo/Player.h"
 #include "Phasor/Halo/tags.h"
-
+#include "CallHelper.h"
 namespace scripting { namespace events {
 
+	/*! \todo all all functions to this table */
 	static const std::string events[] = 
 	{
 		"OnScriptUnload",
@@ -27,35 +28,6 @@ namespace scripting { namespace events {
 	const std::string* GetEventTable() { return events;	}
 	size_t GetEventTableElementCount() { return sizeof(events) / sizeof(events[0]); }
 
-	static const results_t result_bool = {Common::TYPE_BOOL};
-	static const results_t result_number = {Common::TYPE_NUMBER};
-
-	/*! \todo make something so that scripts can return different types of data
-	 *
-	 * will be useful for OnServerChat where they can return the new string.
-	 * either that or make a new function for OnServerChat which sets
-	 * its return value. Also need be think about how this should interact with
-	 * other scripts.
-	 */
-	void AddPlayerArg(const halo::s_player* player, PhasorCaller& caller)
-	{
-		if (player) caller.AddArg(player->memory_id);
-		else caller.AddArgNil();
-	}
-
-	void AddArgIdent(const halo::ident id, PhasorCaller& caller)
-	{
-		if (!id.valid()) caller.AddArgNil();
-		else caller.AddArg(id);
-	}
-
-	template <class T> T HandleResult(Result& result);
-
-	template <> bool HandleResult<bool>(Result& result)
-	{
-		return !result.size() || result.ReadBool().GetValue();
-	}
-
 	bool OnTeamChange(const halo::s_player& player, bool relevant, DWORD old_team,
 		DWORD new_team)
 	{
@@ -65,7 +37,7 @@ namespace scripting { namespace events {
 		AddPlayerArg(&player, caller);
 		caller.AddArg(old_team);
 		caller.AddArg(new_team);
-		return HandleResult<bool>(caller.Call("OnTeamChange", result_bool));
+		return HandleResult<bool>(caller.Call("OnTeamChange", result_bool), true);
 	}
 
 	bool OnServerCommand(const halo::s_player* player, const std::string& command)
@@ -73,7 +45,7 @@ namespace scripting { namespace events {
 		PhasorCaller caller;
 		AddPlayerArg(player, caller);
 		caller.AddArg(command);
-		return HandleResult<bool>(caller.Call("OnServerCommand", result_bool));
+		return HandleResult<bool>(caller.Call("OnServerCommand", result_bool), true);
 	}
 
 	void OnNewGame(const std::string& map)
@@ -96,7 +68,7 @@ namespace scripting { namespace events {
 		PhasorCaller caller;
 		caller.AddArg(hash);
 		caller.AddArg(ip);
-		return HandleResult<bool>(caller.Call("OnBanCheck", result_bool));
+		return HandleResult<bool>(caller.Call("OnBanCheck", result_bool), true);
 	}
 
 	void OnClientUpdate(const halo::s_player& player)
@@ -159,7 +131,7 @@ namespace scripting { namespace events {
 		AddArgIdent(info->parent, caller);
 		if (info->player_ident.valid()) caller.AddArg((DWORD)info->player_ident.slot);
 		else caller.AddArgNil();
-		return HandleResult<bool>(caller.Call("OnObjectCreationAttempt", result_bool));
+		return HandleResult<bool>(caller.Call("OnObjectCreationAttempt", result_bool), true);
 	}
 
 	bool OnWeaponAssignment(halo::s_player* player, halo::ident owner, DWORD order,
@@ -183,7 +155,7 @@ namespace scripting { namespace events {
 		AddPlayerArg(&player, caller);
 		AddArgIdent(objid, caller);
 		AddArgIdent(mapid, caller);
-		return HandleResult<bool>(caller.Call("OnObjectInteraction", result_bool));
+		return HandleResult<bool>(caller.Call("OnObjectInteraction", result_bool), true);
 	}
 
 	void OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag)
@@ -202,7 +174,7 @@ namespace scripting { namespace events {
 		AddPlayerArg(&sender, caller);
 		caller.AddArg(type);
 		caller.AddArg(msg);
-		return HandleResult<bool>(caller.Call("OnServerChat", result_bool));
+		return HandleResult<bool>(caller.Call("OnServerChat", result_bool), true);
 	}
 
 	bool OnVehicleEntry(const halo::s_player& player, halo::ident veh_id,
@@ -218,7 +190,7 @@ namespace scripting { namespace events {
 		caller.AddArg(seat);		
 		AddArgIdent(obj->map_id, caller);
 		if (!relevant) caller.ReturnValueIgnored();
-		return HandleResult<bool>(caller.Call("OnVehicleEntry", result_bool));
+		return HandleResult<bool>(caller.Call("OnVehicleEntry", result_bool), true);
 	}
 
 	bool OnVehicleEject(const halo::s_player& player, bool forceEjected)
@@ -226,7 +198,7 @@ namespace scripting { namespace events {
 		PhasorCaller caller;
 		AddPlayerArg(&player, caller);
 		if (forceEjected) caller.ReturnValueIgnored();
-		return HandleResult<bool>(caller.Call("OnVehicleEject", result_bool));
+		return HandleResult<bool>(caller.Call("OnVehicleEject", result_bool), true);
 	}
 
 	void OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,
@@ -252,7 +224,7 @@ namespace scripting { namespace events {
 		PhasorCaller caller;
 		AddPlayerArg(player, caller);
 		AddArgIdent(weap, caller);
-		return HandleResult<bool>(caller.Call("OnWeaponReload", result_bool));
+		return HandleResult<bool>(caller.Call("OnWeaponReload", result_bool), true);
 	}
 
 }}

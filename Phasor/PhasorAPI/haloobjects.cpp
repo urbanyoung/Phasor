@@ -122,3 +122,21 @@ void l_movobjectcoords(CallHandler& handler, Object::unique_deque& args, Object:
 	if (!obj) handler.RaiseError("movobjectcoords : invalid object id.");
 	MoveObject(*obj, pos);
 }
+
+void l_gettagid(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	std::string tagtype = ReadRawString(*args[0]);
+	std::string tagname = ReadRawString(*args[1]);
+	s_tag_entry* tag = LookupTag(s_tag_type(tagtype.c_str()), tagname);
+	if (!tag) AddResultNil(results);
+	else
+		AddResultNumber(tag->id, results);
+}
+
+void l_gettagaddress(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	ident tagid = make_ident(ReadNumber<DWORD>(*args[0]));
+	s_tag_entry* tag = LookupTag(tagid);
+	if (!tag) handler.RaiseError("gettagaddress : invalid tag id");
+	AddResultPtr(tag, results);
+}

@@ -111,7 +111,7 @@ namespace Lua
 
 		// Push handled types to the stack (those that MObject can use)
 		void push(const MObject& object);
-		std::unique_ptr<LuaObject> peek();
+		std::unique_ptr<LuaObject> peek(int indx=-1);
 		std::unique_ptr<LuaObject> pop();
 		std::unique_ptr<MObjTable> peek_table(int indx=-1);
 

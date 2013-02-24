@@ -60,8 +60,9 @@ namespace scripting
 		{
 			std::string file = abs_file.str();
 			std::unique_ptr<ScriptState> state_ = Manager::CreateScript();
-			std::unique_ptr<PhasorScript> phasor_state(
+			scripts[script] = std::unique_ptr<PhasorScript>(
 				new PhasorScript(std::move(state_)));  
+			PhasorScript* phasor_state = scripts[script].get();
 			
 			// load api then file so Phasor's funcs don't override any script ones
 			PhasorAPI::Register(*phasor_state->state);
@@ -86,12 +87,13 @@ namespace scripting
 			for (size_t x = 0; x < count; x++) {
 				if (!phasor_state->state->HasFunction(events[x].c_str()))
 					phasor_state->BlockFunction(events[x]);
-			}
-
-			scripts[script] = std::move(phasor_state);
+			}			
 		}
 		catch (std::exception& e)
 		{
+			auto itr = scripts.find(script);
+			if (itr != scripts.end()) scripts.erase(itr);
+			
 			NoFlush _(errstream);
 			errstream << L"script '" << script << "' cannot be loaded." <<
 				endl << log_prefix << e.what() << endl;
@@ -113,8 +115,7 @@ namespace scripting
 			HandleError(*phasor_state, e.what());
 		}
 
-		Manager::ScriptState* man_state = static_cast<Manager::ScriptState*>(phasor_state->state.get());
-		CheckedScriptReference::ScriptBeingClosed(man_state);
+		CheckedScriptReference::ScriptBeingClosed(phasor_state.get());
 		return itr;
 	}
 
@@ -215,7 +216,10 @@ namespace scripting
 		return std::list<CheckedScriptReference*>();
 	}
 
-	void CheckedScriptReference::ScriptBeingClosed(Manager::ScriptState* state)
+	std::list<CheckedScriptReference*> CheckedScriptReference::refed_list = CheckedScriptReference::make_list();
+
+
+	void CheckedScriptReference::ScriptBeingClosed(PhasorScript* state)
 	{
 		for (auto itr = refed_list.begin(); itr != refed_list.end(); ++itr) {		
 			if ((*itr)->state == state) (*itr)->valid = false;
@@ -223,8 +227,18 @@ namespace scripting
 	}
 
 	CheckedScriptReference::CheckedScriptReference(Manager::ScriptState* state)
-		: state(state)
 	{
+		bool found = false;
+		auto itr = g_Scripts->scripts.begin();
+		while (itr != g_Scripts->scripts.end())	{
+			if (itr->second->state.get() == state) {
+				this->state = itr->second.get();
+				found = true;
+				break;
+			}
+			itr++;
+		}
+		if (!found) throw std::runtime_error("CheckedScriptReference unknown Manager::ScriptState");		
 		refed_list.push_back(this);
 	}
 
@@ -233,7 +247,7 @@ namespace scripting
 		auto itr = refed_list.begin();
 		while (itr != refed_list.end()) {
 			if (*itr == this) {
-				refed_list.erase(itr);
+				itr = refed_list.erase(itr);
 				break;
 			}
 			itr++;
@@ -244,14 +258,52 @@ namespace scripting
 		return valid;
 	}
 
-	std::list<CheckedScriptReference*> CheckedScriptReference::refed_list = CheckedScriptReference::make_list();
-
-
 	// --------------------------------------------------------------------
 	// 
-	Result PhasorCaller::Call(const std::string& function, 
-		std::array<Common::obj_type, 5> expected_types, Scripts& s)
+	bool PhasorCaller::Call(PhasorScript& phasor_state, 
+		const std::string& function, const results_t& expected_types,
+		Result& out_result)
 	{
+		if (!phasor_state.FunctionAllowed(function)) return false;
+
+		try
+		{				
+			Manager::ScriptState& state = *phasor_state.state;
+			bool found = false;
+			out_result = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
+
+			// The first result matching the expected types is used
+			if (!result_set && out_result.size()) {
+				size_t nloop = expected_types.size() < out_result.size() ?
+					expected_types.size() : out_result.size();
+
+				bool use_result = true;
+				Manager::MObject& obj = out_result.ReadObject();
+				for (size_t i = 0; i < nloop; i++) {
+					if (expected_types[i] != obj.GetType()) {
+						std::unique_ptr<Manager::MObject> converted;
+						if (!obj.ConvertTo(expected_types[i], &converted)) {
+							use_result = false;
+							break;
+						} else out_result.Replace(i, std::move(converted));
+					}
+				}
+
+				return true;
+			}
+		} 
+		catch (std::exception & e)
+		{
+			scripts.HandleError(phasor_state, e.what());
+			
+		}
+		return false;
+	}
+
+	Result PhasorCaller::Call(const std::string& function, 
+		results_t expected_types)
+	{
+		result_set = false;
 		// This is the argument which indicates if a scripts' return value is used.
 		this->AddArg(!ignore_ret);
 		ObjBool& using_param = (ObjBool&)**args.rbegin();
@@ -259,53 +311,29 @@ namespace scripting
 		Result result;
 		bool result_set = ignore_ret;
 
-		for (auto itr = s.scripts.begin(); itr != s.scripts.end(); ++itr)
+		for (auto itr = scripts.scripts.begin(); itr != scripts.scripts.end(); ++itr)
 		{
-			PhasorScript& phasor_state = *itr->second;
-
-			if (!phasor_state.FunctionAllowed(function))
-				continue;
-
-			try
-			{				
-				Manager::ScriptState& state = *phasor_state.state;
-				bool found = false;
-				Result r = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
-			
-				// The first result matching the expected types is used
-				if (r.size() && !result_set) {
-					size_t nloop = expected_types.size() < r.size() ?
-						expected_types.size() : r.size();
-					
-					bool use_result = true;
-					Manager::MObject& obj = r.ReadObject();
-					for (size_t i = 0; i < nloop; i++) {
-						if (expected_types[i] != obj.GetType()) {
-							std::unique_ptr<Manager::MObject> converted;
-							if (!obj.ConvertTo(expected_types[i], &converted)) {
-								use_result = false;
-								break;
-							} else r.Replace(i, std::move(converted));
-						}
-					}
-					if (use_result) {
-						result = r;
-						result_set = true;
-						// Change the 'using' argument so other scripts know
-						// they won't be considered
-						using_param = false;
-					}
-				}
-			} 
-			catch (std::exception & e)
+			Result r;
+			if (Call(*itr->second, function, expected_types, 
+				!result_set ? result : r))
 			{
-				s.HandleError(phasor_state, e.what());
+				result_set = true;
+				using_param = true;
 			}
 		}
 
+		result_set = false;
 		this->Clear();
 
 		return result;
+	}
+
+	Result PhasorCaller::Call(PhasorScript& script, const std::string& function, 
+		results_t expected_types)
+	{
+		Result r;
+		Call(script, function, expected_types, r);
+		return r;
 	}
 
 	// -------------------------------------------------------------------

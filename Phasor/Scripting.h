@@ -43,7 +43,7 @@ namespace scripting
 		// Checks if the specified script function is allowed to be called.
 		bool FunctionAllowed(const std::string& func);
 	};
-
+	class CheckedScriptReference;
 	// --------------------------------------------------------------------
 	// Only reason this is a class is to ensure the errstream is set.
 	class Scripts
@@ -77,13 +77,12 @@ namespace scripting
 		bool ReloadScript(const std::string& script);
 
 		friend class PhasorCaller;
+		friend class CheckedScriptReference;
 	};
 
 	/*! \class CheckedScriptReference
 	 *	\brief Inherit this class if you plan on storing any script states,
 	 *	it can be used to determine if they're still valid.
-	 *	
-	 *	\todo check this actually works.
 	 */
 	class CheckedScriptReference
 	{
@@ -91,11 +90,11 @@ namespace scripting
 		bool valid;
 
 		static std::list<CheckedScriptReference*> make_list();
-		static void ScriptBeingClosed(Manager::ScriptState* state);
+		static void ScriptBeingClosed(PhasorScript* state);
 		static std::list<CheckedScriptReference*> refed_list;
 
 	protected:
-		Manager::ScriptState* state;
+		PhasorScript* state;
 	public:
 		CheckedScriptReference(Manager::ScriptState* state);
 		virtual ~CheckedScriptReference();
@@ -111,18 +110,26 @@ namespace scripting
 	typedef std::array<Common::obj_type, 5> results_t;
 	class PhasorCaller : public Manager::Caller
 	{
-		bool ignore_ret;
+		bool ignore_ret, result_set;
+		Scripts& scripts;
+
+		bool Call(PhasorScript& phasor_state,
+			const std::string& function, const results_t& expected_types,
+			Result& out_result);
+
 	public:
-		PhasorCaller::PhasorCaller() : Manager::Caller(), ignore_ret(false)
-		{
-		}
+		PhasorCaller::PhasorCaller(Scripts& scripts=*g_Scripts) 
+			: Manager::Caller(), scripts(scripts), ignore_ret(false),
+			result_set(false) {}
 
 		void ReturnValueIgnored() { ignore_ret = true; }
 		
 		// Calls the specified function on all loaded scripts.
 		Result Call(const std::string& function, 
-			results_t expected_types = results_t(),
-			Scripts& s=*g_Scripts);
+			results_t expected_types = results_t());
+		// Calls the specified function on the specific script.
+		Result Call(PhasorScript& script, const std::string& function, 
+			results_t expected_types = results_t());
 	};
 
 }

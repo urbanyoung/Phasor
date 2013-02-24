@@ -43,7 +43,7 @@ private:
 public:
 	Timers();
 	virtual ~Timers();
-
+	
 	// Should be called periodically to process complete timers
 	void Process();
 
@@ -51,5 +51,6 @@ public:
 	DWORD AddTimer(timer_ptr e);
 
 	// Removes a timer
-	void RemoveTimer(DWORD id);
+	bool RemoveTimer(DWORD id);
+	void RemoveAllTimers();
 };

@@ -48,17 +48,24 @@ DWORD Timers::AddTimer(std::unique_ptr<TimerEvent> e)
 	return (DWORD)timerlist.back().get();
 }
 
-void Timers::RemoveTimer(DWORD id)
+bool Timers::RemoveTimer(DWORD id)
 {
-	if (id == currentId) return;
+	if (id == currentId) return false;
 	auto itr = timerlist.begin();
 	while (itr != timerlist.end()) {
 		if ((*itr)->GetID() == id) {
 			itr = timerlist.erase(itr);
-			break;
+			return true;
 		}
 		itr++;
 	}
+	return false;
+}
+
+
+void Timers::RemoveAllTimers()
+{
+	timerlist.clear();
 }
 
 void Timers::Process()

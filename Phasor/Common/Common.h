@@ -18,7 +18,8 @@ namespace Common
 		TYPE_NUMBER,
 		TYPE_STRING,
 		TYPE_TABLE,
-		TYPE_BLOB
+		TYPE_BLOB,
+		TYPE_ANY
 	};
 
 

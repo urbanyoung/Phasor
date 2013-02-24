@@ -97,6 +97,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CallHelper.cpp" />
     <ClCompile Include="Common\Common.cpp" />
     <ClCompile Include="Common\FileIO.cpp" />
     <ClCompile Include="Common\MyString.cpp" />
@@ -117,6 +118,7 @@
     <ClCompile Include="PhasorAPI\output.cpp" />
     <ClCompile Include="PhasorAPI\PhasorAPI.cpp" />
     <ClCompile Include="PhasorAPI\playerinfo.cpp" />
+    <ClCompile Include="PhasorAPI\scripttimers.cpp" />
     <ClCompile Include="PhasorAPI\string.cpp" />
     <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />
@@ -148,6 +150,7 @@
     <ClCompile Include="ScriptingEvents.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CallHelper.h" />
     <ClInclude Include="Common\Common.h" />
     <ClInclude Include="Common\FileIO.h" />
     <ClInclude Include="Common\MyException.h" />
@@ -172,6 +175,7 @@
     <ClInclude Include="PhasorAPI\output.h" />
     <ClInclude Include="PhasorAPI\PhasorAPI.h" />
     <ClInclude Include="PhasorAPI\playerinfo.h" />
+    <ClInclude Include="PhasorAPI\scripttimers.h" />
     <ClInclude Include="PhasorAPI\string.h" />
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />

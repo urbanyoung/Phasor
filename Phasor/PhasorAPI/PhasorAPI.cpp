@@ -10,6 +10,7 @@
 #include "misc_halo.h"
 #include "haloobjects.h"
 #include "alias_script.h"
+#include "scripttimers.h"
 
 using namespace Common;
 using namespace Manager;
@@ -93,9 +94,14 @@ namespace PhasorAPI
 		{&l_exitvehicle, "exitvehicle", 1, {TYPE_NUMBER}},
 		{&l_movobjectcoords, "movobjectcoords", 4, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_movobjectcoords, "moveobjectcoords", 4, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_gettagid, "gettagid", 2, {TYPE_STRING, TYPE_STRING}},
+		{&l_gettagaddress, "gettagaddress", 1, {TYPE_NUMBER}},
 		// Alias related functions: see alias_script.h
 		{&l_alias_search, "alias_search", 2, {TYPE_STRING, TYPE_STRING}},
 		{&l_alias_hash, "alias_hash", 2, {TYPE_STRING, TYPE_STRING}},
+		// Timer related functions: see scripttimers.h
+		{&l_registertimer, "registertimer", 2, {TYPE_NUMBER, TYPE_STRING, TYPE_ANY}},
+		{&l_removetimer, "removetimer", 1, {TYPE_NUMBER}},
 
 	};
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
