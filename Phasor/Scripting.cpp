@@ -40,6 +40,11 @@ namespace scripting
 	{
 	}
 
+	Scripts::~Scripts()
+	{
+		CloseAllScripts();
+	}
+
 	bool Scripts::OpenScript(const char* script)
 	{		
 		// Make sure the script isn't already loaded

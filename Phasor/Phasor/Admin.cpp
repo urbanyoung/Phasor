@@ -8,9 +8,6 @@
 #include <set>
 #include <vector>
 
-/*! \todo
- * when adding sv_admin_add etc force a recheck of players in the server
- */
 namespace Admin
 {
 	std::wstring adminPath;

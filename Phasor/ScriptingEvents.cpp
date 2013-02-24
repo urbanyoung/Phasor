@@ -205,7 +205,6 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnServerChat", result_bool));
 	}
 
-	/*! \todo set forceEntered */
 	bool OnVehicleEntry(const halo::s_player& player, halo::ident veh_id,
 		DWORD seat, bool relevant)
 	{

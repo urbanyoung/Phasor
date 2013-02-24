@@ -40,7 +40,7 @@ namespace Manager
 			Common::Object::unique_list&);
 		const char* name;
 		int minargs;
-		std::array<Common::obj_type, 5> fmt; // change max args as needed
+		std::array<Common::obj_type, 10> fmt; // change max args as needed
 	};
 
 	typedef Common::Object MObject;

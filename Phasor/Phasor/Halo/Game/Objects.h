@@ -4,7 +4,9 @@
 #include "../../../Common/vect3d.h"
 #include "../Halo.h"
 
-namespace halo { namespace objects
+namespace halo { 
+	struct s_player;
+	namespace objects
 {
 	#pragma pack(push, 1)
 
@@ -118,6 +120,17 @@ namespace halo { namespace objects
 	};
 	static_assert(sizeof(s_halo_weapon) == 0x350, "bad");
 
+	struct s_halo_vehicle
+	{
+		s_halo_object base;
+		UNKNOWN(0x3b8);
+		DWORD idle_timer;
+		UNKNOWN(0x010);
+		// rest of vehi is composed of other tags, with these tags
+		// its size is 0xE00
+	};
+	static_assert(sizeof(s_halo_vehicle) == 0x5c0, "bad");
+
 	struct s_object_creation_disposition
 	{
 		ident map_id;
@@ -132,14 +145,34 @@ namespace halo { namespace objects
 	#pragma pack(pop)
 
 	void* GetObjectAddress(ident objectId);
+	bool DestroyObject(ident objid);
 
-	// --------------------------------------------------------------------\
+	void ClearManagedObjects();
+
+	bool CreateObject(ident mapid, ident parentId, int respawnTime, bool bRecycle,
+		const vect3d* location, ident& out_objid);
+
+	bool AssignPlayerWeapon(s_player& player, ident weaponid);
+
+	// Forces a player into a vehicle
+	// Seat numbers: 0 (driver) 1 (passenger) 2 (gunner)
+	bool EnterVehicle(s_player& player, ident m_vehicleId, DWORD seat);
+
+	// Forces a player to exit a vehicle
+	bool ExitVehicle(s_player& player);
+
+	void MoveObject(s_halo_object& object, const vect3d& pos);
+
+	// --------------------------------------------------------------------
 	// Events
 	
 	// Called when an object is being checked to see if it should respawn
-	int __stdcall ObjectRespawnCheck(ident m_objId, s_halo_object* obj);
+	int __stdcall VehicleRespawnCheck(ident m_objId, s_halo_vehicle* obj);
 
 	// This is called when weapons/equipment are going to be destroyed.
 	// todo: check ticks should be signed
 	bool __stdcall EquipmentDestroyCheck(int checkTicks, ident m_objId, s_halo_object* obj);
+
+	// Called when an object is being destroyed
+	void __stdcall OnObjectDestroy(ident m_objid);
 }}

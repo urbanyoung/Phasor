@@ -161,6 +161,7 @@
     <ClInclude Include="Libraries\Curl.h" />
     <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="Lua.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="PhasorAPI\alias_script.h" />
     <ClInclude Include="PhasorAPI\api_readers.h" />

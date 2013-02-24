@@ -49,3 +49,129 @@ void l_getobjectcoords(PHASOR_API_ARGS);
  */
 void l_objecttoplayer(PHASOR_API_ARGS);
 
+/*! \brief Creates an ingame object.
+ *
+ *	\param tagType The type of the object to create (ie weap, eqip etc)
+ *	\param tag The object to create
+ *	\param parentId The object id to assign as the new one's parent.
+ *	\param respawnTime Number of seconds to wait before respawning the object.
+ *	\param do_respawn Boolean indicating whether or not the object should respawn.
+ *	\param x The object's x coordinate.
+ *	\param y The object's y coordinate.
+ *	\param z The object's z coordinate.
+ *	\return The created object's id or \c nil on failure.
+ *	
+ *	\remark
+ *		- If you don't what a parent, set \c parentId to 0. You won't care about this most of the time.
+ *		- \c do_respawn indicates whether or not the object should respawn (go to spawn
+ *		coordinates) or whether it should be destroyed.
+ *		- \c do_respawn is ignored when creating equipment or weapons. They are
+ *		always destroyed.
+ *		
+ *	Example usage:
+ *	\code
+ *		function OnNewGame(map)
+ *			global assault_rifle_id = LookupTag("weap", "weapons\\assault rifle\\assault rifle")
+ *		end
+ *		
+ *		... (somewhere else in the code) ...
+ *		
+ *		objid = createobject(assault_rifle_id, 0, 10, false, 1,2,3)
+ *		
+ *		-- or you can use the tag id, but you should use the method above.
+ *		objid = createobject("weap", "weapons\\assault rifle\\assault rifle", 0, 10,
+ *		false, 1,2,3)
+ *		if (objid == nil) then hprintf("failed to make object") end
+ *	\endcode
+ */
+void l_createobject(PHASOR_API_ARGS);
+
+
+/*! \brief Destroys the specified objects.
+ *
+ *	\param objid The id of the object to destroy.
+ *	
+ *	\remark if \c objid is not a valid object id, an error is raised.
+ *	
+ *	Example usage:
+ *	\code
+ *		destroyobject(objid)
+ *	\endcode
+*/
+void l_destroyobject(PHASOR_API_ARGS);
+
+/*! \brief Gives and equips the specified weapon to the specified player.
+ *
+ *	\param player The player to assign the weapon to.
+ *	\param weapId The id of the weapon to assign.
+ *	\return Boolean indicating whether or not the assignment was successful.
+ *	
+ *	Example usage:
+ *	\code
+ *		assignweapon(player, weaponid)
+ *	\endcode
+ */
+void l_assignweapon(PHASOR_API_ARGS);
+
+/*! \brief Forces the specified player into the specified vehicle.
+ *
+ *	\param player The player to make enter the vehicle.
+ *	\param vehicleid The object id of the vehicle the player is to enter.
+ *	\param seat The seat the player should enter.
+ *	
+ *	\remark
+ *	Possible seat values:
+ *		- 0 Driver
+ *		- 1 Passenger
+ *		- 2 Gunner
+ *	
+ *	Example usage:
+ *	\code
+ *		entervehicle(player, vehicleid, 0)
+ *	\endcode
+ */
+void l_entervehicle(PHASOR_API_ARGS);
+
+/*! \brief Checks whether the specified player is in a vehicle.
+ *
+ *	\param player The player to check.
+ *	\return Boolean indicating whether or not the player is in a vehicle.
+ *	
+ *	Example usage:
+ *	\code
+ *		local in_vehicle = isinvehicle(player)
+ *		if (in_vehicle) then hprintf("in vehicle")
+ *		else hprintf("not in vehicle")
+ *		end
+ *	\endcode
+ */
+void l_isinvehicle(PHASOR_API_ARGS);
+
+/*! \brief Forces the specified player to leave their current vehicle.
+ *
+ *	\param player The player to eject from their vehicle.
+ *	
+ *	Example usage:
+ *	\code
+ *		exitvehicle(player)
+ *	\endcode
+ */
+void l_exitvehicle(PHASOR_API_ARGS);
+
+
+/*! \brief Moves the specified object to the specified coordinates.
+ * 
+ *  \param objid The id of the object to move.
+ *  \param x The x coordinate to move the object to.
+ *  \param y The y coordinate to move the object to.
+ *  \param z The z coordinate to move the object to.
+ *  
+ *  Example usage:
+ *  \code
+ *		local playerobjid = getplayerobjectid(player)
+ *		if (playerobjid ~= nil) then
+ *			movobjectcoords(playerobjid, 5, 10, 15)
+ *		end
+ * \endcode
+ */
+void l_movobjectcoords(PHASOR_API_ARGS);

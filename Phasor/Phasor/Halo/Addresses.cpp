@@ -96,12 +96,13 @@ unsigned long CC_OBJECTCREATION = 0x0052CA1B; // all objects??
 unsigned long CC_MAPCYCLEADD = 0x005191CE;
 unsigned long CC_CLIENTUPDATE = 0x00578D6D;
 unsigned long CC_EXCEPTION_HANDLER = 0x005B036C;
-unsigned long CC_OBJECTRESPAWN = 0x00586D81;
+unsigned long CC_VEHICLERESPAWN = 0x00586D81;
 unsigned long CC_EQUIPMENTDESTROY = 0x0047E61C;
 unsigned long CC_VEHICLEFORCEEJECT = 0x0056E6CD;
 unsigned long CC_VEHICLEUSEREJECT = 0x0056E107;
 unsigned long CC_HALOPRINT = 0x004BA3F0;
 unsigned long CC_HALOBANCHECK = 0x00518820;
+unsigned long CC_OBJECTDESTROY = FUNC_DESTROYOBJECT + 6;
 
 // ------------------------------------------------------------------------
 //
@@ -425,7 +426,7 @@ namespace Addresses
 		FUNC_CREATEOBJECTQUERY = FindAddress("FUNC_CREATEOBJECTQUERY", codeSection, codeSize, sig66, sizeof(sig66), 0, -6);
 
 		BYTE sig67[] = { 0x8B, 0x54, 0x08, 0x14, 0x57, 0x33, 0xFF };
-		CC_OBJECTRESPAWN = FindAddress("CC_OBJECTRESPAWN", codeSection, codeSize, sig67, sizeof(sig67), 0, 21);
+		CC_VEHICLERESPAWN = FindAddress("CC_VEHICLERESPAWN", codeSection, codeSize, sig67, sizeof(sig67), 0, 21);
 
 		BYTE sig68[] = {0x8B, 0xD7, 0x83, 0xEA, 0x02, 0xB1, 0x01};
 		ADDR_SERVERINFO = FindPtrAddress("ADDR_SERVERINFO", codeSection, codeSize, sig68, sizeof(sig68), 0, -14);
@@ -435,6 +436,7 @@ namespace Addresses
 
 		BYTE sig70[] = {0x8B, 0xF8, 0x25, 0xFF, 0xFF, 0x00, 0x00, 0x8D, 0x04, 0x40, 0x8B, 0x44, 0x82, 0x08, 0x8B, 0x40, 0x04};
 		FUNC_DESTROYOBJECT = FindAddress("FUNC_DESTROYOBJECT", codeSection, codeSize, sig70, sizeof(sig70), 0, -10);
+		CC_OBJECTDESTROY = FUNC_DESTROYOBJECT + 6;
 
 		BYTE sig71[] = {0x83, 0xEC, 0x08, 0x53, 0x55, 0x56, 0x57, 0x6A, 0x03};
 		FUNC_PLAYERASSIGNWEAPON = FindAddress("FUNC_PLAYERASSIGNWEAPON", codeSection, codeSize, sig71, sizeof(sig71), 0, 0);

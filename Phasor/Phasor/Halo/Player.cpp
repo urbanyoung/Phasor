@@ -17,7 +17,8 @@ namespace halo
 		s_player_structure players[16];
 
 	};
-	s_player::s_player(int memory_id) : memory_id(memory_id), sv_killed(false)
+	s_player::s_player(int memory_id) : memory_id(memory_id), sv_killed(false),
+		force_entered(false)
 	{
 		*g_PrintStream << "New player " << memory_id << endl;
 		mem = GetPlayerMemory(memory_id);
@@ -41,7 +42,8 @@ namespace halo
 
 	void s_player::Kick() const
 	{
-		*g_PrintStream << "todo: kick player" << endl;
+		std::string cmd = m_sprintf("sv_kick %i", mem->playerNum + 1);
+		server::ExecuteServerCommand(cmd);
 	}
 
 	void s_player::ChangeTeam(BYTE new_team, bool forcekill)
@@ -124,6 +126,13 @@ namespace halo
 	void s_player::SetSpeed(float speed) const
 	{
 		mem->speed = speed;
+	}
+
+	bool s_player::InVehicle() const
+	{
+		auto biped = get_object();
+		if (!biped) return false;
+		return biped->base.vehicleId.valid();
 	}
 
 	s_player_structure* GetPlayerMemory(int index)

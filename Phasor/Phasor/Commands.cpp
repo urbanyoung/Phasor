@@ -29,6 +29,7 @@ namespace commands
 	{
 		typedef e_command_result (*cmd_func)(void*, commands::CArgParser&, COutStream&);
 		std::map<std::string, cmd_func> cmd;
+		cmd["quit"]					= &server::sv_quit;
 		cmd["sv_mapcycle_begin"]	= &server::maploader::sv_mapcycle_begin;
 		cmd["sv_mapcycle_add"]		= &server::maploader::sv_mapcycle_add;
 		cmd["sv_mapcycle_del"]		= &server::maploader::sv_mapcycle_del;

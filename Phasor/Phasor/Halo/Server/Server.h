@@ -141,6 +141,8 @@ namespace server
 	DWORD GetServerTicks();
 	DWORD GetRespawnTicks();
 
+	e_command_result sv_quit(void*, 
+		commands::CArgParser&, COutStream&);
 
 	// --------------------------------------------------------------------
 	// Events

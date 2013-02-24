@@ -8,7 +8,8 @@
 
 // defined in main.cpp
 extern PhasorThread g_Thread;
-extern Timers g_Timers;
+/*! \todo decide if this should be manually destructed */
+extern Timers g_Timers; 
 extern std::unique_ptr<CGameLog> g_GameLog;
 extern std::unique_ptr<CScriptsLog> g_ScriptsLog;
 extern std::unique_ptr<CPhasorLog> g_PhasorLog;

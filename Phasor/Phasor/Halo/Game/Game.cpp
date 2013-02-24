@@ -80,6 +80,11 @@ namespace halo { namespace game {
 				*g_PrintStream << "The game is ending..." << endl;
 
 			} break;
+
+		case 2:
+			{
+				objects::ClearManagedObjects();
+			} break;
 		}	
 
 		scripting::events::OnGameEnd(mode);
@@ -213,8 +218,6 @@ namespace halo { namespace game {
 		return allow;
 	}
 	
-	/*! \todo make phasor go through a script to detect which functions
-	 *! it has when loading, then blacklist the rest of the expected ones. */
 	void OnClientUpdate(s_player& player)
 	{
 		// scripts called from server
@@ -274,7 +277,7 @@ namespace halo { namespace game {
 		if (!obj) return true;
 
 		return scripting::events::OnVehicleEntry(*player, player->mem->m_interactionObject,
-			player->mem->interactionType, true);
+			player->mem->interactionType, player->force_entered);
 	}
 
 	// Called when a player is being ejected from a vehicle

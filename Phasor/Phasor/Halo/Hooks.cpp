@@ -33,7 +33,7 @@ __declspec(naked) void OnConsoleProcessing_CC()
 }
 
 // Codecave for hooking console events (closing etc)
-/*DWORD conHandler_ret = 0;
+DWORD conHandler_ret = 0;
 __declspec(naked) void ConsoleHandler_CC()
 {	
 	__asm
@@ -52,7 +52,7 @@ __declspec(naked) void ConsoleHandler_CC()
 		ret
 	}
 }
-*/
+
 // Codecave for intercepting server commands
 DWORD cmd_ret = 0;
 static const BYTE COMMAND_PROCESSED = e_command_result::kProcessed;
@@ -435,6 +435,30 @@ ALLOW_CREATION:
 	}
 }
 
+DWORD objdestroy_ret = 0;
+__declspec(naked) void OnObjectDestroy_CC()
+{
+	__asm
+	{
+		pop objdestroy_ret
+
+		pushad
+
+		push eax
+		call objects::OnObjectDestroy
+
+		popad
+
+		MOV EDX,DWORD PTR DS:[ECX+0x34]
+		PUSH EDI
+		MOV EDI,EAX
+
+		push objdestroy_ret
+		ret
+	}
+}
+
+
 DWORD wepassignment_ret = 0, wepassign_val = 0;
 
 // Codecave for handling weapon assignment to spawning players
@@ -741,22 +765,22 @@ ALLOW_RELOAD:
 }
 
 // used to control object respawning
-DWORD objres_ret = 0;
-__declspec(naked) void OnObjectRespawn_CC()
+DWORD vehires_ret = 0;
+__declspec(naked) void OnVehicleRespawn_CC()
 {
 	__asm
 	{
-		pop objres_ret
+		pop vehires_ret
 
 		pushad
 		push ebx // object's memory address
 		push esi // object's id
-		call objects::ObjectRespawnCheck // returns true if we should respawn, false if not
+		call objects::VehicleRespawnCheck // returns true if we should respawn, false if not
 		cmp al, 2
 		je OBJECT_DESTROYED
 		cmp al, 1 // return to a JL statement, jump if not respawn
 		popad
-		push objres_ret
+		push vehires_ret
 		ret
 
 OBJECT_DESTROYED:
@@ -943,7 +967,7 @@ namespace halo
 		CreateCodeCave(CC_CONSOLEPROC, 5, OnConsoleProcessing_CC);
 
 		// Codecave for hooking console events (closing etc)
-		/*CreateCodeCave(CC_CONSOLEHANDLER, 5, ConsoleHandler_CC);*/
+		CreateCodeCave(CC_CONSOLEHANDLER, 5, ConsoleHandler_CC);
 
 		// Codecave to intercept server commands
 		CreateCodeCave(CC_SERVERCMD, 8, OnServerCommand);
@@ -983,6 +1007,7 @@ namespace halo
 		// Codecave called when a weapon is created
 		CreateCodeCave(CC_OBJECTCREATION, 5, OnObjectCreation_CC);
 		CreateCodeCave(CC_OBJECTCREATIONATTEMPT, 6, OnObjectCreationAttempt_CC);
+		CreateCodeCave(CC_OBJECTDESTROY, 6, OnObjectDestroy_CC);
 
 		// Codecave for handling weapon assignment to spawning players
 		CreateCodeCave(CC_WEAPONASSIGN, 6, OnWeaponAssignment_CC);
@@ -1012,7 +1037,7 @@ namespace halo
 		CreateCodeCave(CC_KILLMULTIPLIER, 5, OnKillMultiplier_CC);
 
 		// used to control whether or not objects respawn
-		CreateCodeCave(CC_OBJECTRESPAWN, 32, OnObjectRespawn_CC);
+		CreateCodeCave(CC_VEHICLERESPAWN, 32, OnVehicleRespawn_CC);
 		CreateCodeCave(CC_EQUIPMENTDESTROY, 6, OnEquipmentDestroy_CC);
 		
 		// Codecaves for detecting vehicle ejections

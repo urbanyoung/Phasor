@@ -32,7 +32,6 @@ void l_applycamo(CallHandler& handler, Object::unique_deque& args, Object::uniqu
 	player->ApplyCamo(duration);
 }
 
-/*! \todo maybe make a separate command for alias stuff */
 void l_svcmd(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 { 
 	std::string cmd = ReadRawString(*args[0]);

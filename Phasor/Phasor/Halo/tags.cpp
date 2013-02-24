@@ -13,11 +13,17 @@ namespace halo
 			(tmp << 24);
 	}
 
-	bool s_tag_type::operator==(const s_tag_type& other)
-	{
-		return other.val == val;
-	}
+	bool s_tag_type::operator==(const s_tag_type& other) {	return other.val == val; }
+	bool s_tag_type::operator==(e_tag_types type) { return (unsigned long)type == val; }
+	bool s_tag_type::operator!=(const s_tag_type& other) { return !(*this == other); }
+	bool s_tag_type::operator!=(e_tag_types type){ return !(*this == type); }
 
+	char* s_tag_type::GetString(char out[5])
+	{
+		*(unsigned long*)out = val;
+		out[4] = '\0';
+		return out;
+	}
 	// -------------------------------------------------------------------
 	//
 	std::map<std::string, s_tag_entry*> tag_cache;
@@ -31,7 +37,7 @@ namespace halo
 	std::string GetTagCacheKey(s_tag_type type, const std::string& tag_name)
 	{
 		char tag_str[6];
-		*(unsigned long*)tag_str = type.val;
+		type.GetString(tag_str);
 		tag_str[4] = '\\';
 		tag_str[5] = 0;
 

@@ -11,6 +11,7 @@
 #include "Mapvote.h"
 #include "Packet.h"
 #include "Chat.h"
+#include "../../../Main.h"
 
 namespace halo { namespace server
 {
@@ -58,10 +59,20 @@ namespace halo { namespace server
 		return NULL;
 	}
 
-/*	void __stdcall ConsoleHandler(DWORD fdwCtrlType)
+	void __stdcall ConsoleHandler(DWORD fdwCtrlType)
 	{
+		switch(fdwCtrlType) 
+		{ 
+		case CTRL_CLOSE_EVENT: 
+		case CTRL_SHUTDOWN_EVENT: 
+		case CTRL_LOGOFF_EVENT: 
+			{
+				// cleanup everything
+				OnServerClose();
 
-	}*/
+			} break;
+		}
+	}
 
 	// Called periodically by Halo to check for console input, I use for timers
 	void __stdcall OnConsoleProcessing()
@@ -346,16 +357,23 @@ namespace halo { namespace server
 	}
 
 	/*! \todo parse these structures */
-	DWORD GetServerTicks()
+	DWORD GetRespawnTicks()
 	{
 		return *(DWORD*)(ADDR_GAMETYPE + OFFSET_RESPAWNTICKS);
 	}
 
-	DWORD GetRespawnTicks()
+	DWORD GetServerTicks()
 	{
 		DWORD server_base = *(DWORD*)ADDR_SERVERINFO;
 		DWORD ticks = *(DWORD*)(server_base + 0x0C);
 		return ticks;
+	}
+
+	e_command_result sv_quit(void*, 
+		commands::CArgParser&, COutStream&)
+	{
+		OnServerClose();
+		return e_command_result::kProcessed;
 	}
 	
 	// --------------------------------------------------------------------

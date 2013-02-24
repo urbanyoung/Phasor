@@ -360,6 +360,7 @@
     <ClInclude Include="Phasor\Halo\tags.h">
       <Filter>Phasor\Halo</Filter>
     </ClInclude>
+    <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="phasor_includes.props" />

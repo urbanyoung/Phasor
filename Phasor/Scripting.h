@@ -64,6 +64,7 @@ namespace scripting
 
 	public:
 		Scripts(COutStream& errstream, const std::wstring& scriptsDir);
+		~Scripts();
 
 		// Opens the script specified, relative to the scripts directory
 		bool OpenScript(const char* script);

@@ -101,6 +101,7 @@ extern unsigned long CC_WEAPONASSIGN;
 //extern unsigned long CC_WEAPONCREATION;
 //extern unsigned long CC_WEAPONCREATION;
 extern unsigned long CC_OBJECTCREATION; // all objects??
+extern unsigned long CC_OBJECTDESTROY;
 extern unsigned long CC_MAPCYCLEADD;
 extern unsigned long CC_CLIENTUPDATE;
 extern unsigned long CC_EXCEPTION_HANDLER;
@@ -119,7 +120,7 @@ extern unsigned long PATCH_TEAMSELECTION;
 // TO FIND SIGNATURES FOR
 extern unsigned long FUNC_CREATEOBJECTQUERY;
 extern unsigned long FUNC_CREATEOBJECT;
-extern unsigned long CC_OBJECTRESPAWN;
+extern unsigned long CC_VEHICLERESPAWN;
 extern unsigned long ADDR_SERVERINFO;
 extern unsigned long CC_EQUIPMENTDESTROY;
 extern unsigned long FUNC_DESTROYOBJECT;

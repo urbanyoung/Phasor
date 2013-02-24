@@ -1,8 +1,6 @@
 #include <windows.h>
 #include <stdio.h>
-#ifdef BUILD_DEBUG
-//#include <vld.h>
-#endif
+#include "main.h"
 #include "Phasor/Logging.h"
 #include "Phasor/ThreadedLogging.h"
 #include "Phasor/GameLogging.h"
@@ -21,7 +19,6 @@
 #include "Phasor/Halo/HaloStreams.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
-//#define WAIT_AND_QUIT Sleep(10000); return 1;
 
 // Globals through Phasor's lifetime
 PhasorThread g_Thread; // must be above all other objects
@@ -118,12 +115,28 @@ extern "C" __declspec(dllexport) void OnLoad()
 		*g_PrintStream << err << endl;
 		WAIT_AND_QUIT
 	}
-	
-	/*thread.close();
+}
 
-	while (!thread.has_closed()) {
+void OnServerClose()
+{
+	*g_PhasorLog << "Closing the server..." << endl;	
+	
+	g_Scripts.reset();
+
+	g_Thread.close();
+	for (int i = 0; i < 100; i++) {
+		if (g_Thread.has_closed()) break;
 		Sleep(10);
-	}	*/
+	}
+	
+	scriptOutput.reset();
+	g_PhasorLog.reset();
+	g_ScriptsLog.reset();
+	g_GameLog.reset();
+	g_RconLog.reset();
+	g_PrintStream.reset();
+
+	ExitProcess(0);
 }
 
 // Locate and create all directories Phasor will use. If an error occurs
