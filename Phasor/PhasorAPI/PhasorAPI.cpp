@@ -86,7 +86,7 @@ namespace PhasorAPI
 		{&l_getobject, "getobject", 1, {TYPE_NUMBER}},
 		{&l_getobjectcoords, "getobjectcoords", 1, {TYPE_NUMBER}},
 		{&l_objecttoplayer, "objecttoplayer", 1, {TYPE_NUMBER}},
-		{&l_createobject, "createobject", 8, {TYPE_STRING, TYPE_STRING, TYPE_NUMBER, TYPE_NUMBER, TYPE_BOOL, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_createobject, "createobject", 7, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_BOOL, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_destroyobject, "destroyobject", 1, {TYPE_NUMBER}},
 		{&l_assignweapon, "assignweapon", 2, {TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_entervehicle, "entervehicle", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},

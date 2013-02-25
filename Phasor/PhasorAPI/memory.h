@@ -25,6 +25,9 @@
  *		
  * \remark
  * All string operations are limited to 80 characters at max.
+ * 
+ *	\addtogroup PhasorAPI
+ *	@{
 */
 #include "../Common/Common.h"
 #include "PhasorAPI.h"
@@ -334,3 +337,5 @@ void l_writestring(PHASOR_API_ARGS);
  * narrow string to wide before writing it. 
  */
 void l_writewidestring(PHASOR_API_ARGS);
+
+//! }@

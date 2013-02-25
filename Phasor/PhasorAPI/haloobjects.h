@@ -3,6 +3,13 @@
  *	
  *	\b Important: If you pass an invalid object id to any of these functions,
  *	except for \c getobject or \c gettagid a Lua error is raised.
+ *	
+ *	##Changes:
+ *		- \c createobject now takes the tag id, not tag type and name. You can
+ *			use \c gettagid to get a tag's id.
+ *			
+ *	\addtogroup PhasorAPI
+ *	@{
  */
 #pragma once
 #include "PhasorAPI.h"
@@ -51,8 +58,7 @@ void l_objecttoplayer(PHASOR_API_ARGS);
 
 /*! \brief Creates an ingame object.
  *
- *	\param tagType The type of the object to create (ie weap, eqip etc)
- *	\param tag The object to create
+ *	\param tag_id The id of the tag describing the object to create.
  *	\param parentId The object id to assign as the new one's parent.
  *	\param respawnTime Number of seconds to wait before respawning the object.
  *	\param do_respawn Boolean indicating whether or not the object should respawn.
@@ -77,10 +83,6 @@ void l_objecttoplayer(PHASOR_API_ARGS);
  *		... (somewhere else in the code) ...
  *		
  *		objid = createobject(assault_rifle_id, 0, 10, false, 1,2,3)
- *		
- *		-- or you can use the tag id, but you should use the method above.
- *		objid = createobject("weap", "weapons\\assault rifle\\assault rifle", 0, 10,
- *		false, 1,2,3)
  *		if (objid == nil) then hprintf("failed to make object") end
  *	\endcode
  */
@@ -208,3 +210,5 @@ void l_gettagid(PHASOR_API_ARGS);
  *	\endcode
  */
 void l_gettagaddress(PHASOR_API_ARGS);
+
+//! }@

@@ -5,7 +5,6 @@
 #include "CallHelper.h"
 namespace scripting { namespace events {
 
-	/*! \todo all all functions to this table */
 	static const std::string events[] = 
 	{
 		"OnScriptUnload",
@@ -22,7 +21,15 @@ namespace scripting { namespace events {
 		"OnPlayerSpawnEnd",
 		"OnObjectCreation", 
 		"OnObjectCreationAttempt",
-		"OnWeaponAssignment"
+		"OnWeaponAssignment",
+		"OnObjectInteraction",
+		"OnDamageLookup",
+		"OnServerChat",
+		"OnVehicleEntry",
+		"OnVehicleEject",
+		"OnPlayerKill",
+		"OnKillMultiplier",
+		"OnWeaponReload"
 	};
 
 	const std::string* GetEventTable() { return events;	}

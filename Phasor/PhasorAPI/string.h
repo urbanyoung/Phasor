@@ -5,6 +5,9 @@
  * Both \c tokenizestring and \c tokenizecmdstring return an array of strings
  * and as such \c gettoken, \c getcmdtoken, \c gettokencount, \c getcmdtokencount have
  * been removed.
+ * 
+ *	\addtogroup PhasorAPI
+ *	@{
  */
 
 #pragma once
@@ -61,3 +64,5 @@ void l_tokenizestring(PHASOR_API_ARGS);
  \endverbatim
  */
 void l_tokenizecmdstring(PHASOR_API_ARGS);
+
+//! }@

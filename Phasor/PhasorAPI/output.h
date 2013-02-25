@@ -24,6 +24,9 @@
  *	\endcode
  * 
  * The purpose of this is to fix broken player names from previous versions.
+ * 
+ *	\addtogroup PhasorAPI
+ *	@{
  */
 
 #include "PhasorAPI.h"
@@ -111,3 +114,5 @@ void l_respond(PHASOR_API_ARGS);
  * saved. 
  */
 void l_log_msg(PHASOR_API_ARGS);
+
+//! }@

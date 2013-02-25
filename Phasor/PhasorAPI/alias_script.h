@@ -7,6 +7,9 @@
  *	
  *	\b Important: You should use these functions and not \c svcmd if you
  *	want alias results.
+ *	
+ *	\addtogroup PhasorAPI
+ *	@{
  */
 #pragma once
 
@@ -55,3 +58,5 @@ void l_alias_search(PHASOR_API_ARGS);
  *	\endcode
  */	
 void l_alias_hash(PHASOR_API_ARGS);
+
+//! }@

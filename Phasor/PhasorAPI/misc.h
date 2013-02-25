@@ -1,5 +1,8 @@
 /*! \file misc.h
  * \brief Miscellaneous scripting functions that aren't Halo related.
+ * 
+ *	\addtogroup PhasorAPI
+ *	@{
  */
 #pragma once
 
@@ -28,3 +31,5 @@ void l_getticks(PHASOR_API_ARGS);
  *	\endcode
  */
 void l_getrandomnumber(PHASOR_API_ARGS);
+
+//! }@

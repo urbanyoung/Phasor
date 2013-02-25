@@ -1,3 +1,7 @@
+/* \file Commands.h
+ * \brief Functions used for parsing server commands.
+ */
+
 #pragma once
 
 #include <string>

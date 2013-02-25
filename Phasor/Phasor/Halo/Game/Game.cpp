@@ -188,9 +188,7 @@ namespace halo { namespace game {
 		/*! \todo make sure the player is correct */
 		return scripting::events::OnObjectCreationAttempt(creation_info);
 	}
-	/*! \todo lookuptag : tag -> memory address
-	 *		  gettagid: tag -> tag (map) id
-	 */
+
 	ident __stdcall OnWeaponAssignment(DWORD playerId, ident owningObjectId,
 		s_object_info* curWeapon, DWORD order)
 	{

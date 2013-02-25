@@ -299,6 +299,8 @@ namespace scripting {
 		 *	\code
 		 *		function OnServerChat(player, type, msg)
 		 *	\endcode
+		 *	
+		 *	\todo let it return string for new message
 		 */
 		bool OnServerChat(const halo::s_player& sender, DWORD type, const std::string& msg);
 

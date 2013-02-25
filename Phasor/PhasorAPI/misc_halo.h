@@ -1,5 +1,8 @@
 /*! \file misc_halo.h
  *	\brief Miscellaneous halo related functions.
+ *	
+ *	\addtogroup PhasorAPI
+ *	@{
  */
 #pragma once
 
@@ -109,3 +112,5 @@ void l_setspeed(PHASOR_API_ARGS);
  *	\endcode
  *	*/
 void l_getprofilepath(PHASOR_API_ARGS);
+
+//! }@

@@ -1,5 +1,8 @@
 /*! \file scripttimers.h
  *	\brief Timer related functions for scripts.
+ * 
+ *	\addtogroup PhasorAPI
+ *	@{
  */
 #pragma once
 #include "PhasorAPI.h"
@@ -47,3 +50,5 @@ void l_registertimer(PHASOR_API_ARGS);
  *	\endcode
  */
 void l_removetimer(PHASOR_API_ARGS);
+
+//! }@

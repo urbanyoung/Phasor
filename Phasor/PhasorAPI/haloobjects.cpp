@@ -45,16 +45,8 @@ void l_createobject(CallHandler& handler, Object::unique_deque& args, Object::un
 	s_tag_entry* tag;
 
 	size_t i = 0;
-	if (args.size() == 8) {
-		std::string tagtype = ReadRawString(*args[i++]);
-		std::string tagname = ReadRawString(*args[i++]);
-		tag = LookupTag(s_tag_type(tagtype.c_str()), tagname);
-	} else {
-		// never used atm.. need to add type overloading first.
-		/*! \todo add type overloading to phasorapi args */
-		DWORD tag_id = ReadNumber<DWORD>(*args[i++]);
-		tag = LookupTag(make_ident(tag_id));
-	}
+	DWORD tag_id = ReadNumber<DWORD>(*args[i++]);
+	tag = LookupTag(make_ident(tag_id));
 
 	DWORD parentId = ReadNumber<DWORD>(*args[i++]);
 	if (parentId == 0) parentId = 0xFFFFFFFF;

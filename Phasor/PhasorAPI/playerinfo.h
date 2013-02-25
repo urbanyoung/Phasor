@@ -4,6 +4,9 @@
  * \b Important: All functions, other than \c getplayer, will raise a Lua error if
  * you send an invalid player. \c getplayer will return nil and can be used
  * to determine if a particular player is valid.
+ * 
+ *	\addtogroup PhasorAPI
+ *	@{
  */
 
 #pragma once
@@ -165,3 +168,5 @@ void l_isadmin(PHASOR_API_ARGS);
  * \endcode
  */
 void l_setadmin(PHASOR_API_ARGS);
+
+//! }@
