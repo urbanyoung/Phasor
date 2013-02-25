@@ -4,13 +4,15 @@
 
 namespace halo
 {
+#define ENDIAN_SWAP32(tmp) (tmp >> 24) |\
+	((tmp >> 8) & 0x0000ff00) |\
+		((tmp << 8) & 0x00ff0000) | \
+		(tmp << 24)
+
 	s_tag_type::s_tag_type(const char* str)
 	{
 		unsigned long tmp = *(unsigned long*)str;
-		val =	(tmp >> 24) |
-			((tmp >> 8) & 0x0000ff00) |
-			((tmp << 8) & 0x00ff0000) | 
-			(tmp << 24);
+		val = ENDIAN_SWAP32(tmp);
 	}
 
 	bool s_tag_type::operator==(const s_tag_type& other) {	return other.val == val; }
@@ -20,7 +22,7 @@ namespace halo
 
 	char* s_tag_type::GetString(char out[5])
 	{
-		*(unsigned long*)out = val;
+		*(unsigned long*)out = ENDIAN_SWAP32(val);
 		out[4] = '\0';
 		return out;
 	}

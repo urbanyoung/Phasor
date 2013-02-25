@@ -381,6 +381,11 @@ namespace scripting {
 		 *	
 		 *	\remark
 		 *	I think the w/ score ones happen in Slayer.
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnKillMultiplier(player, multiplier)
+		 *	\endcode
 		 */
 		void OnKillMultiplier(const halo::s_player& player, DWORD multiplier);
 

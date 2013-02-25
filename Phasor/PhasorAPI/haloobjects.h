@@ -49,7 +49,7 @@ void l_getobjectcoords(PHASOR_API_ARGS);
  *		if (player ~= nil) then
  *			hprintf("object belongs to " .. player)
  *		end
- *	\end
+ *	\endcode
  *
  * \remark This only works for player objects, not objects created by the player,
  * ie bullets.
@@ -195,6 +195,21 @@ void l_movobjectcoords(PHASOR_API_ARGS);
  * \endcode
  */
 void l_gettagid(PHASOR_API_ARGS);
+
+/*! \brief Gets the tag type and tag name of the specified tag (map) id.
+ *
+ *	\param tagid The tag id to lookup.
+ *	\return \c tag_name, \c tag_type
+ *	
+ *	\remark
+ *	You shouldn't compare tag names, look up the ones you want in \c OnNewGame
+ *	
+ *	Example usage:
+ *	\code
+ *		local tag_name, tag_type = gettaginfo(some_tag_id)
+ *	\endcode
+ */
+void l_gettaginfo(PHASOR_API_ARGS);
 
 /*! \brief Gets the specified tag's memory address.
  *

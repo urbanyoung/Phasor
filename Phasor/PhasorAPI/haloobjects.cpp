@@ -125,6 +125,16 @@ void l_gettagid(CallHandler& handler, Object::unique_deque& args, Object::unique
 		AddResultNumber(tag->id, results);
 }
 
+void l_gettaginfo(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	ident tagid = make_ident(ReadNumber<DWORD>(*args[0]));
+	s_tag_entry* tag = LookupTag(tagid);
+	if (!tag) handler.RaiseError("gettaginfo : invalid tag id");
+	AddResultString(tag->tagName, results);
+	char tagType[5];
+	AddResultString(tag->tagType.GetString(tagType), results);
+}
+
 void l_gettagaddress(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	ident tagid = make_ident(ReadNumber<DWORD>(*args[0]));
