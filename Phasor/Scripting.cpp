@@ -165,8 +165,10 @@ namespace scripting
 			throw std::exception("function 'GetRequiredVersion' undefined.");
 		}
 
-		if (result.GetType(0) != TYPE_NUMBER) throw std::exception("function 'GetRequiredVersion' should return a number.");
-		DWORD requiredVersion = (DWORD)result.ReadNumber().GetValue();
+		if (!result.size() || result.GetType(0) != TYPE_NUMBER) 
+			throw std::exception("function 'GetRequiredVersion' should return a number.");
+
+		DWORD requiredVersion = (DWORD)result.ReadNumber(0).GetValue();
 
 		if (CompatibleWithCurrent(requiredVersion)) return true;
 		else throw std::exception("Not compatible with this version of Phasor.");
@@ -278,8 +280,9 @@ namespace scripting
 					expected_types.size() : out_result.size();
 
 				bool use_result = true;
-				Manager::MObject& obj = out_result.ReadObject();
+				
 				for (size_t i = 0; i < nloop; i++) {
+					Manager::MObject& obj = out_result.ReadObject(i);
 					if (expected_types[i] != obj.GetType()) {
 						std::unique_ptr<Manager::MObject> converted;
 						if (!obj.ConvertTo(expected_types[i], &converted)) {
@@ -324,7 +327,6 @@ namespace scripting
 
 		result_set = false;
 		this->Clear();
-
 		return result;
 	}
 

@@ -92,11 +92,11 @@ namespace Manager
 	// Class: Result
 	// Provides an interface for retrieving values from scripts
 	//
-	Result::Result() : index(0)
+	Result::Result()
 	{
 	}
 
-	Result::Result(const Result& other) : index(0)
+	Result::Result(const Result& other)
 	{
 		SetData(other);
 	}

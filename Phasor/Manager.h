@@ -132,9 +132,6 @@ namespace Manager
 	// Provides an interface for retrieving values from scripts
 	class Result
 	{
-	private:
-		size_t index;
-
 	protected:
 		
 		Common::Object::unique_deque result;
@@ -156,13 +153,15 @@ namespace Manager
 
 		// Read the next result
 		template <class T>
-		T& ReadResult() { return (T&)*result[index++];}
+		T& ReadResult(size_t index) { 
+			return static_cast<T&>(*result[index]);
+		}
 
-		MObject& ReadObject() { return ReadResult<MObject>(); }
-		MObjBool& ReadBool() { return ReadResult<MObjBool>(); }
-		MObjNumber& ReadNumber() { return ReadResult<MObjNumber>(); }
-		MObjString& ReadString() { return ReadResult<MObjString>(); }
-		MObjTable& ReadTable() { return ReadResult<MObjTable>(); }
+		MObject& ReadObject(size_t index) { return ReadResult<MObject>(index); }
+		MObjBool& ReadBool(size_t index) { return ReadResult<MObjBool>(index); }
+		MObjNumber& ReadNumber(size_t index) { return ReadResult<MObjNumber>(index); }
+		MObjString& ReadString(size_t index) { return ReadResult<MObjString>(index); }
+		MObjTable& ReadTable(size_t index) { return ReadResult<MObjTable>(index); }
 
 		obj_type GetType(size_t index);
 		void Replace(size_t index, std::unique_ptr<Common::Object> obj);

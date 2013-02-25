@@ -17,6 +17,6 @@ namespace scripting {
 
 	template <> bool HandleResult<bool>(Result& result, const bool& default_value)
 	{
-		return result.size() ? result.ReadBool().GetValue() : default_value;
+		return result.size() ? result.ReadBool(0).GetValue() : default_value;
 	}
 }

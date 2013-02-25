@@ -196,7 +196,7 @@ namespace Lua
 		for (auto itr = args.begin(); itr != args.end(); ++itr)	push(**itr);
 
 		// Call the Lua function
-		if (lua_pcall(L, args.size(), LUA_MULTRET, 0))
+		if (lua_pcall_t(L, args.size(), LUA_MULTRET, 0, timeout))
 		{
 			std::string error = lua_tostring(L, -1);
 			lua_pop(L, -1);
@@ -216,7 +216,7 @@ namespace Lua
 	// Caller is responsible for memory management of return vector
 	MObject::unique_deque State::Call(const char* name, int timeout)
 	{
-		const MObject::unique_list args;
+		static const MObject::unique_list args;
 		return this->Call(name, args, timeout);
 	}
 	

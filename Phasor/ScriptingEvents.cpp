@@ -104,7 +104,7 @@ namespace scripting { namespace events {
 		PhasorCaller caller;
 		caller.AddArg(in_team);
 		Result r = caller.Call("OnTeamDecision", result_number);
-		if (r.size()) out_team = (DWORD)r.ReadNumber().GetValue();
+		if (r.size()) out_team = (DWORD)r.ReadNumber(0).GetValue();
 		return r.size() != 0;
 	}
 
@@ -151,7 +151,7 @@ namespace scripting { namespace events {
 		AddArgIdent(weap_id, caller);
 		Result r = caller.Call("OnWeaponAssignment", result_number);
 		if (!r.size()) return false; // no results
-		out = halo::make_ident((unsigned long)r.ReadNumber().GetValue());
+		out = halo::make_ident((unsigned long)r.ReadNumber(0).GetValue());
 		return true;
 	}
 
