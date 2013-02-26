@@ -177,14 +177,7 @@ namespace halo { namespace server
 		s_player* exec_player = GetPlayerExecutingCommand();
 		bool can_execute = exec_player == NULL;
 
-		if (can_execute) { // server console executing
-			// save the command for memory (arrow keys)
-			s_command_cache* cache = (s_command_cache*)ADDR_CMDCACHE;
-			cache->count = (cache->count + 1) % 8;
-			strcpy_s(cache->commands[cache->count], sizeof(cache->commands[cache->count]),
-				command);
-			cache->cur = 0xFFFF;
-		} else {
+		if (!can_execute) {
 			TempForwarder echo(*g_PrintStream, 
 				TempForwarder::end_point(*g_RconLog));
 
@@ -220,16 +213,27 @@ namespace halo { namespace server
 				} break;
 			}
 
-			if (!can_execute) *(exec_player->console_stream) << L" ** Access denied **" << endl;
+			*(exec_player->console_stream) << L" ** Access denied **" << endl;
 		}
 
-		COutStream& outStream = (exec_player == NULL) ? 
-								static_cast<COutStream&>(*g_PrintStream) : 
-								static_cast<COutStream&>(*exec_player->console_stream);
-		
-		return	can_execute ? 
-				commands::ProcessCommand(command, outStream, exec_player) :
-				e_command_result::kProcessed;
+		e_command_result result = e_command_result::kProcessed;
+		if (can_execute) {
+			COutStream& outStream = (exec_player == NULL) ? 
+					static_cast<COutStream&>(*g_PrintStream) : 
+					static_cast<COutStream&>(*exec_player->console_stream);
+
+			result = commands::ProcessCommand(command, outStream, exec_player);
+		}
+
+		if (exec_player == NULL && result == e_command_result::kProcessed) {
+			// save the command for memory (arrow keys)
+			s_command_cache* cache = (s_command_cache*)ADDR_CMDCACHE;
+			cache->count = (cache->count + 1) % 8;
+			strcpy_s(cache->commands[cache->count], sizeof(cache->commands[cache->count]),
+				command);
+			cache->cur = 0xFFFF;
+		}
+		return result;
 	}
 
 	// --------------------------------------------------------------------

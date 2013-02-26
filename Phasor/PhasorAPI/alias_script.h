@@ -54,7 +54,7 @@ void l_alias_search(PHASOR_API_ARGS);
  *		end
  *		
  *		-- search for all names matching the hash
- *		alias_search("put some hash here", "alias_callback")
+ *		alias_hash("put some hash here", "alias_callback")
  *	\endcode
  */	
 void l_alias_hash(PHASOR_API_ARGS);
