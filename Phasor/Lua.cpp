@@ -207,7 +207,10 @@ namespace Lua
 
 		// Pop the results off the stack
 		int n = lua_gettop(L);
-		for (int i = 0; i < n; i++)	results.push_front(pop()->release_object());
+		for (int i = 0; i < n; i++)	{
+			if (lua_type(L, n) == Type_Nil) continue;
+			results.push_front(pop()->release_object());
+		}
 
 		return results;
 	}
