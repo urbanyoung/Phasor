@@ -393,7 +393,7 @@ namespace scripting {
 		 *
 		 *	\param player The player who is reloading.
 		 *	\param objid The object id of the weapon being reloaded.
-		 *	\reload Boolean indicating whether or not they can reload.
+		 *	\return Boolean indicating whether or not they can reload.
 		 *	
 		 *	\remark
 		 *	\c player can be nil if a vehicle's weapon is being reloaded.

@@ -275,7 +275,7 @@ namespace halo { namespace game {
 		if (!obj) return true;
 
 		return scripting::events::OnVehicleEntry(*player, player->mem->m_interactionObject,
-			player->mem->interactionType, player->force_entered);
+			player->mem->interactionType, !player->force_entered);
 	}
 
 	// Called when a player is being ejected from a vehicle
