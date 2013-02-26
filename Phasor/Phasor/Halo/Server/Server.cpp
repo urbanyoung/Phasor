@@ -213,7 +213,7 @@ namespace halo { namespace server
 				} break;
 			}
 
-			*(exec_player->console_stream) << L" ** Access denied **" << endl;
+			if (!can_execute) *(exec_player->console_stream) << L" ** Access denied **" << endl;
 		}
 
 		e_command_result result = e_command_result::kProcessed;
