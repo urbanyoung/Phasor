@@ -197,6 +197,7 @@ namespace halo { namespace game {
 
 		bool b = scripting::events::OnWeaponAssignment(player, owningObjectId, order, weap_id,
 			result_id);
+
 		
 		if (!b) return weap_id;
 		return result_id;
