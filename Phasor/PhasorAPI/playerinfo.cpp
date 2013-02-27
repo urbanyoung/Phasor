@@ -14,8 +14,8 @@ void l_rresolveplayer(CallHandler& handler, Object::unique_deque& args, Object::
 {
 	DWORD machine_id = ReadNumber<DWORD>(*args[0]) - 1;
 	halo::s_player* player = halo::game::GetPlayerFromRconId(machine_id);
-	if (!player) RaisePlayerError(handler, machine_id);
-	AddResultNumber(player->memory_id, results);
+	if (!player) AddResultNil(results);
+	else AddResultNumber(player->memory_id, results);
 }
 
 void l_getplayer(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
