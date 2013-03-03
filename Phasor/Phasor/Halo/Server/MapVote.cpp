@@ -99,8 +99,8 @@ namespace halo { namespace server { namespace mapvote {
 		if (size == 1)
 			StringToNumber<int>(NarrowString(tokens[0]), vote);
 		else if (size == 2) {
-			if (tokens[1] == L"vote" || tokens[1] == L"vtoe" || tokens[1] == L"voet")
-				StringToNumber<int>(NarrowString(tokens[0]), vote);
+			if (tokens[0] == L"vote" || tokens[0] == L"vtoe" || tokens[0] == L"voet")
+				StringToNumber<int>(NarrowString(tokens[1]), vote);
 		}
 
 		if (is_valid_vote_index(vote))	{
