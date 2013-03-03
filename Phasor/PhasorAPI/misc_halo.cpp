@@ -67,7 +67,7 @@ void l_updateammo(CallHandler& handler, Object::unique_deque& args, Object::uniq
 {
 	ident weapon_id = make_ident(ReadNumber<DWORD>(*args[0]));
 	s_halo_weapon* weapon = (s_halo_weapon*)GetObjectAddress(weapon_id);
-	if (weapon) handler.RaiseError("updateammo: invalid weapon id!");
+	if (!weapon) handler.RaiseError("updateammo: invalid weapon id!");
 	weapon->SyncAmmo(weapon_id);
 }
 
