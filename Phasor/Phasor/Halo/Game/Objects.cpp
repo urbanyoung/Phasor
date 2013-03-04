@@ -226,7 +226,10 @@ namespace halo { namespace objects {
 			popad
 		}
 		out_objid = make_ident(objid);
-		if (!out_objid.valid()) return false;
+		if (!out_objid.valid()) {
+			*g_PrintStream << "invalid obj" << endl;
+			return false;
+		}
 
 		// resolve the respawn timer
 		if (respawnTime == -1) // use gametype's value

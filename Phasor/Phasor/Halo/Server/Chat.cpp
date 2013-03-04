@@ -54,7 +54,7 @@ namespace halo { namespace server { namespace chat {
 				{
 					for (int i = 0; i < 16; i++) {
 						s_player* player = game::GetPlayer(i);
-						if (player && player->mem->team) 
+						if (player && player->mem->team == from->mem->team) 
 							AddPacketToPlayerQueue(player->mem->playerNum, PACKET_QUEUE_PARAMS);
 					}
 				} break;

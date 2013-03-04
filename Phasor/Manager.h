@@ -139,9 +139,6 @@ namespace Manager
 		// Copy the other result into this one
 		void SetData(const Result& other);
 
-		// Clear the current data
-		void Clear();
-
 	public:
 		Result();
 		Result(const Result& other);
@@ -156,6 +153,9 @@ namespace Manager
 		T& ReadResult(size_t index) { 
 			return static_cast<T&>(*result[index]);
 		}
+
+		// Clear the current data
+		void Clear();
 
 		MObject& ReadObject(size_t index) { return ReadResult<MObject>(index); }
 		MObjBool& ReadBool(size_t index) { return ReadResult<MObjBool>(index); }

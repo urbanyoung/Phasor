@@ -286,13 +286,13 @@ namespace scripting
 					if (expected_types[i] != obj.GetType()) {
 						std::unique_ptr<Manager::MObject> converted;
 						if (!obj.ConvertTo(expected_types[i], &converted)) {
+							out_result.Clear();
 							use_result = false;
 							break;
 						} else out_result.Replace(i, std::move(converted));
 					}
 				}
-
-				return true;
+				return use_result;
 			}
 		} 
 		catch (std::exception & e)

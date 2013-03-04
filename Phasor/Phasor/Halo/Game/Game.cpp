@@ -43,11 +43,14 @@ namespace halo { namespace game {
 
 	s_player* GetPlayerFromAddress(s_player_structure* player)
 	{
+		int indx = ((DWORD)player - *(DWORD*)ADDR_PLAYERBASE) / sizeof(s_player_structure);
+		return GetPlayer(indx);
+	/*	g_PrintStream->print("indx %i", indx);
 		for (int i = 0; i < 16; i++) {
 			if (PlayerList[i] && PlayerList[i]->mem == player)
 				return PlayerList[i].get();
 		}
-		return NULL;
+		return NULL;*/
 	}
 
 	s_player* GetPlayerFromObject(objects::s_halo_biped* obj)
@@ -198,9 +201,11 @@ namespace halo { namespace game {
 		bool b = scripting::events::OnWeaponAssignment(player, owningObjectId, order, weap_id,
 			result_id);
 
+		if (b) {
+			if (LookupTag(result_id)) return result_id;
+		} 
 		
-		if (!b) return weap_id;
-		return result_id;
+		return weap_id;		
 	}
 
 	// Called when a player can interact with an object
