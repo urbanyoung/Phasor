@@ -150,7 +150,6 @@ namespace scripting { namespace events {
 		caller.AddArg(order);
 		AddArgIdent(weap_id, caller);
 		Result r = caller.Call("OnWeaponAssignment", result_number);
-		printf("%i results\n", r.size());
 		if (!r.size()) return false; // no results
 		out = halo::make_ident((unsigned long)r.ReadNumber(0).GetValue());
 		return true;
