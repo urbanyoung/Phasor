@@ -229,6 +229,7 @@ namespace scripting
 	}
 
 	CheckedScriptReference::CheckedScriptReference(Manager::ScriptState* state)
+		: valid(true)
 	{
 		bool found = false;
 		auto itr = g_Scripts->scripts.begin();
