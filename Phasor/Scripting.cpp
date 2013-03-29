@@ -92,7 +92,10 @@ namespace scripting
 		catch (std::exception& e)
 		{
 			auto itr = scripts.find(script);
-			if (itr != scripts.end()) scripts.erase(itr);
+			if (itr != scripts.end()) {
+				CheckedScriptReference::ScriptBeingClosed(itr->second.get());
+				scripts.erase(itr);
+			}
 			
 			NoFlush _(errstream);
 			errstream << L"script '" << script << "' cannot be loaded." <<
