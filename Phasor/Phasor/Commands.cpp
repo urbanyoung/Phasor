@@ -85,13 +85,19 @@ namespace commands
 		usage["sv_mapvote_del"]		= "<index from sv_mapvote_list>";
 		usage["sv_mapvote_list"]	= "";
 
+		usage["sv_script_reload"]		= "<script to reload>";
+		usage["sv_script_load"]		= "<script to load>";
+
 		usage["sv_kickafk"]			= "<time in minutes>";
+
 		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
 		usage["sv_loglimit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";
 		usage["sv_logmovedir"]		= "<directory>";
+
 		usage["sv_alias_enable"]	= "<status>";
 		usage["sv_alias_hash"]		= "<hash or player index>";
 		usage["sv_alias_search"]	= "<partial name to find>";
+
 		usage["sv_admin_add"]		= "<player number or hash> <auth name> <level>";
 		usage["sv_admin_del"]		= "<admin's name>";
 		usage["sv_admin_list"]		= "";
@@ -101,7 +107,7 @@ namespace commands
 		return usage;
 	}();
 
-	//assert(CommandUsage.size() == CommandList.size());
+	assert(CommandUsage.size() == CommandList.size());
 
 	class CArgParserException
 	{
@@ -135,7 +141,10 @@ namespace commands
 			} catch (CArgParserException& e) {
 				if (e.has_msg()) out << e.what() << endl;
 				auto itr = CommandUsage.find(command_name);
-				out << "usage: " << command_name << " " << itr->second << endl;
+				if (itr != CommandUsage.end())
+					out << "usage: " << command_name << " " << itr->second << endl;
+				else 
+					out << "bug: implement usage help for " << command_name << endl;
 				return e_command_result::kProcessed;
 			}
 		}
