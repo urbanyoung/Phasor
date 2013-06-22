@@ -74,8 +74,15 @@ namespace CrashHandler
 
 		HANDLE hFile = CreateFileW(CrashDumpW, GENERIC_READ | GENERIC_WRITE,
 			NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+#ifdef BUILD_DEBUG
+		MINIDUMP_TYPE dwDumpType = MiniDumpWithFullMemory;
+#else
+		MINIDUMP_TYPE dwDumpType = MiniDumpScanMemory;
+#endif
+
 		MiniDumpWriteDump(GetCurrentProcess(), dwProcessId, hFile, 
-			MiniDumpScanMemory, &ei, NULL, NULL);
+			dwDumpType, &ei, NULL, NULL);
 		CloseHandle(hFile);
 
 		return EXCEPTION_EXECUTE_HANDLER;

@@ -25,7 +25,7 @@ namespace commands
 	// Command handlers
 
 	typedef e_command_result (*cmd_func)(void*, CArgParser&, COutStream&);
-	static const std::map<std::string, cmd_func> CommandList = []() -> std::map<std::string, cmd_func>
+	static const std::map<std::string, cmd_func> commandList = []() -> std::map<std::string, cmd_func>
 	{
 		typedef e_command_result (*cmd_func)(void*, commands::CArgParser&, COutStream&);
 		std::map<std::string, cmd_func> cmd;
@@ -68,7 +68,7 @@ namespace commands
 	}();
 
 	// Basic usage description for commands
-	static const std::map<std::string, std::string> CommandUsage = []() -> std::map<std::string, std::string>
+	static const std::map<std::string, std::string> commandUsage = []() -> std::map<std::string, std::string>
 	{
 		std::map<std::string, std::string> usage;
 		usage["sv_mapcycle_begin"]	= "";
@@ -107,8 +107,6 @@ namespace commands
 		return usage;
 	}();
 
-	assert(CommandUsage.size() == CommandList.size());
-
 	class CArgParserException
 	{
 	private:
@@ -133,15 +131,15 @@ namespace commands
 				
 		// Attempt to execute the command, catching any errors resulting
 		// from user input.
-		auto itr = CommandList.find(command_name);
-		if (itr != CommandList.end()) {
+		auto itr = commandList.find(command_name);
+		if (itr != commandList.end()) {
 			try {				
 				CArgParser args(tokens, command_name, 1);
 				return itr->second(exec_player, args, out);
 			} catch (CArgParserException& e) {
 				if (e.has_msg()) out << e.what() << endl;
-				auto itr = CommandUsage.find(command_name);
-				if (itr != CommandUsage.end())
+				auto itr = commandUsage.find(command_name);
+				if (itr != commandUsage.end())
 					out << "usage: " << command_name << " " << itr->second << endl;
 				else 
 					out << "bug: implement usage help for " << command_name << endl;

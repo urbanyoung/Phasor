@@ -61,11 +61,12 @@ namespace halo { namespace server { namespace mapvote {
 	{
 		if (!mapvote_in_progress) return false;
 
-		std::vector<int> votes(mapvote_option_count, 0);
+		std::vector<int> votes(current_vote_options.size(), 0);
 
 		for (auto itr = player_votes.begin(); itr != player_votes.end(); ++itr)
 			if (itr->vote != -1) votes[itr->vote]++;
 		
+		// Make a list of all options that were voted for the most
 		std::vector<int> max_voted;
 		for (size_t x = 0; x < votes.size(); x++)
 		{
