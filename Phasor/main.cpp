@@ -95,7 +95,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		LoadEarlyInit(PhasorLog);
 
 		PhasorLog << L"Initializing admin system" << endl;
-		Admin::Initialize(&PhasorLog);
+		Admin::initialize(&PhasorLog);
 
 		PhasorLog << L"Initializing alias system" << endl;
 		halo::alias::Initialize();

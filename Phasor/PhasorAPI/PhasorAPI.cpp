@@ -66,6 +66,7 @@ namespace PhasorAPI
 		{&l_getteamsize, "getteamsize", 1, {TYPE_NUMBER}},
 		{&l_getplayerobjectid, "getplayerobjectid", 1, {TYPE_NUMBER}},
 		{&l_isadmin, "isadmin", 1, {TYPE_NUMBER}},
+		{&l_getadminlvl, "getadminlvl", 1, {TYPE_NUMBER}},
 		{&l_setadmin, "setadmin", 1, {TYPE_NUMBER}},
 		// String related functions: see string.h
 		{&l_tokenizestring, "tokenizestring", 2, {TYPE_STRING, TYPE_STRING}},

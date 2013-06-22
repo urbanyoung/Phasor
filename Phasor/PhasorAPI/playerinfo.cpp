@@ -1,5 +1,6 @@
 #include "playerinfo.h"
 #include "api_readers.h"
+#include "../Phasor/Admin.h"
 
 using namespace Common;
 using namespace Manager;
@@ -79,6 +80,15 @@ void l_isadmin(CallHandler& handler, Object::unique_deque& args, Object::unique_
 {
 	halo::s_player* player = ReadPlayer(handler, *args[0], true);
 	AddResultBool(player->is_admin, results);
+}
+
+void l_getadminlvl(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	halo::s_player* player = ReadPlayer(handler, *args[0], true);
+	int level;
+	if (Admin::getLevel(player->hash, &level))
+		AddResultNumber(level, results);
+	else AddResultNil(results);
 }
 
 void l_setadmin(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)

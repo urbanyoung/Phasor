@@ -116,7 +116,7 @@ namespace Admin
 
 	// --------------------------------------------------------------------
 	//
-	result_t Add(const std::string& hash, const std::string& authname, int level)
+	result_t add(const std::string& hash, const std::string& authname, int level)
 	{
 		access::s_access_level* accessLevel = 0;
 
@@ -129,17 +129,25 @@ namespace Admin
 		return E_OK;
 	}
 
-	void Remove(const std::string& hash)
+	void remove(const std::string& hash)
 	{
 		admin::remove(hash);
 	}
 
-	bool IsAdmin(const std::string& hash)
+	bool isAdmin(const std::string& hash)
 	{
 		return admin::find_admin_by_hash(hash, NULL);
 	}
 
-	result_t CanUseCommand(const std::string& hash, const std::string& command,
+	bool getLevel(const std::string& hash, int* level)
+	{
+		Admin::admin::s_admin* admin = 0;
+		if (!admin::find_admin_by_hash(hash, &admin)) return false;
+		*level = admin->accessLevel.get_level();
+		return true;
+	}
+
+	result_t canUseCommand(const std::string& hash, const std::string& command,
 		std::string* authName)
 	{
 		if (admin::size() == 0) return E_OK; // hash system inactive
@@ -192,7 +200,7 @@ namespace Admin
 			std::vector<std::string> tokens = Tokenize<std::string>(line,",");
 			if (tokens.size() == 3) {
 				int level = atoi(tokens[2].c_str());
-				result_t result = Add(tokens[1], tokens[0], level);
+				result_t result = add(tokens[1], tokens[0], level);
 				if (result == E_LEVEL_NOT_EXIST && out != NULL) {
 					*out << adminPath << L" : invalid access level (line "
 						<< n << L")" << endl; 
@@ -243,7 +251,7 @@ namespace Admin
 		return true;
 	}
 
-	void Initialize(COutStream* out)
+	void initialize(COutStream* out)
 	{
 		// read from files
 		admin::clear();
@@ -256,9 +264,9 @@ namespace Admin
 		LoadAdminList(adminPath, out);
 	}
 
-	void Reload()
+	void reload()
 	{
-		Initialize(NULL);
+		initialize(NULL);
 	}
 
 	// --------------------------------------------------------------------
@@ -278,7 +286,7 @@ namespace Admin
 		std::string name = args.ReadString();
 		int level = args.ReadInt();
 
-		result_t result = Add(hash, name, level);
+		result_t result = add(hash, name, level);
 		switch (result)
 		{
 		case E_HASH_INUSE:
@@ -356,7 +364,7 @@ namespace Admin
 
 	e_command_result sv_admin_reload(void*, commands::CArgParser& args, COutStream& out)
 	{
-		Initialize(&out);
+		initialize(&out);
 		return e_command_result::kProcessed;
 	}
 

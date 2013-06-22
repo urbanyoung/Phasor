@@ -27,7 +27,7 @@ namespace halo
 		chat_stream.reset(new PlayerChatStream(*this));
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
-		is_admin = Admin::IsAdmin(hash);
+		is_admin = Admin::isAdmin(hash);
 	}
 
 	s_player::~s_player()

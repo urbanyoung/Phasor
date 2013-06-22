@@ -154,6 +154,21 @@ void l_getplayerobjectid(PHASOR_API_ARGS);
  */
 void l_isadmin(PHASOR_API_ARGS);
 
+/*! \brief Returns the admins level, or \c nil if not an admin.
+ *
+ * \param player The player's memory id.
+ * \return integer representing the player's level, or \c nil if not admin.
+ * 
+ * Example usage:
+ * \code
+ *		local admin_lvl = getadminlvl(0)
+ *		if (admin_lvl ~= nil) then 
+ *			hprintf("{0} is admin at level " .. admin_lvl)
+ *		end
+ *	\endcode
+ */
+void l_getadminlvl(PHASOR_API_ARGS);
+
 /*! \brief Sets the specified player as an admin for the duration of the
  * current game, or until the player leaves.
  *

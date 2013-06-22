@@ -182,7 +182,7 @@ namespace halo { namespace server
 				TempForwarder::end_point(*g_RconLog));
 
 			std::string authName;
-			Admin::result_t result = Admin::CanUseCommand(exec_player->hash,
+			Admin::result_t result = Admin::canUseCommand(exec_player->hash,
 				command, &authName);
 
 			e_command_result do_process = e_command_result::kProcessed;
