@@ -23,4 +23,12 @@ namespace scripting {
 	void AddArgIdent(const halo::ident id, PhasorCaller& caller);
 
 	template <class T> T HandleResult(Result& result, const T& default_value);
+	
+	enum e_ident_bool_empty {
+		kIdentSet = 0,
+		kBoolSet,
+		kEmptySet
+	};
+	
+	e_ident_bool_empty HandleResultIdentOrBool(Result& result, halo::ident& id, bool& b);
 }

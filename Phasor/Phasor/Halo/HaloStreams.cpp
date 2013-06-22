@@ -78,7 +78,7 @@ namespace halo
 			// slot and that the hashes match.
 			// GetPlayer will always return the same ptr for the same 
 			// slot so we only need to check if its non-null
-			s_player* player = game::GetPlayer(memory_id);
+			s_player* player = game::getPlayer(memory_id);
 			if (player != &this->player || player->hash != hash) 
 				return false; // player is now invalid. ignore.
 		}

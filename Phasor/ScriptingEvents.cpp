@@ -3,6 +3,10 @@
 #include "Phasor/Halo/Player.h"
 #include "Phasor/Halo/tags.h"
 #include "CallHelper.h"
+
+// stupid enum warning
+#pragma warning( disable : 4482)
+
 namespace scripting { namespace events {
 
 	static const std::string events[] = 
@@ -131,14 +135,27 @@ namespace scripting { namespace events {
 		caller.Call("OnObjectCreation");
 	}
 
-	bool OnObjectCreationAttempt(halo::objects::s_object_creation_disposition* info)
+	e_ident_or_bool OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
+		halo::ident& change_id, bool& allow)
 	{
 		PhasorCaller caller;
 		AddArgIdent(info->map_id, caller);
 		AddArgIdent(info->parent, caller);
 		if (info->player_ident.valid()) caller.AddArg((DWORD)info->player_ident.slot);
 		else caller.AddArgNil();
-		return HandleResult<bool>(caller.Call("OnObjectCreationAttempt", result_bool), true);
+
+		e_ident_bool_empty r =  HandleResultIdentOrBool(
+			caller.Call("OnObjectCreationAttempt", result_number),
+			change_id, allow);
+
+		if (r == e_ident_bool_empty::kEmptySet){
+			allow = true;
+			return e_ident_or_bool::kBool;
+		} else if (r == e_ident_bool_empty::kBoolSet) {
+			return e_ident_or_bool::kBool;
+		} else {
+			return e_ident_or_bool::kIdent;
+		}
 	}
 
 	bool OnWeaponAssignment(halo::s_player* player, halo::ident owner, DWORD order,
@@ -148,7 +165,7 @@ namespace scripting { namespace events {
 		AddPlayerArg(player, caller);
 		AddArgIdent(owner, caller);
 		caller.AddArg(order);
-		AddArgIdent(weap_id, caller);
+		AddArgIdent(weap_id, caller); 
 		Result r = caller.Call("OnWeaponAssignment", result_number);
 		if (!r.size()) return false; // no results
 		out = halo::make_ident((unsigned long)r.ReadNumber(0).GetValue());

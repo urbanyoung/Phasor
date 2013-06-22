@@ -61,7 +61,7 @@ void l_getteamsize(CallHandler& handler, Object::unique_deque& args, Object::uni
 	DWORD team = ReadNumber<DWORD>(*args[0]);
 	DWORD team_size = 0;
 	for (int i = 0; i < 16; i++) {
-		halo::s_player* player = halo::game::GetPlayer(i);
+		halo::s_player* player = halo::game::getPlayer(i);
 		if (player && player->mem->team == team) team_size++;
 	}
 	AddResultNumber(team_size, results);

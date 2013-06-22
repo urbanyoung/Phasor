@@ -122,7 +122,7 @@ namespace halo { namespace server { namespace mapvote {
 		current_vote_options.clear();
 
 		for (int i = 0; i < 16; i++) {
-			s_player* player = game::GetPlayer(i);
+			s_player* player = game::getPlayer(i);
 			if (player) player_votes.push_back(PlayerVoteHandler(player));
 		}
 

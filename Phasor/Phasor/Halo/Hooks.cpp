@@ -474,10 +474,10 @@ __declspec(naked) void OnWeaponAssignment_CC()
 		and edi, 0xff
 
 		mov ecx, [esp + 0x2c]
-		push ecx
-		push eax
-		push esi
-		push edi
+		push ecx // order
+		push eax // curweapon
+		push esi // owner
+		push edi // player
 		call game::OnWeaponAssignment
 		mov wepassign_val, eax
 

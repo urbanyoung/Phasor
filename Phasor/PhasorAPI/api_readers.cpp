@@ -22,7 +22,7 @@ std::vector<std::wstring> ReadString(Object& obj)
 				std::string str = NarrowString(itr->substr(brace_pos + 1, diff - 1));
 				int id;
 				if (StringToNumber<int>(str, id)) {
-					halo::s_player* player = halo::game::GetPlayer(id);
+					halo::s_player* player = halo::game::getPlayer(id);
 					if (player) {
 						itr->erase(brace_pos, diff + 1);
 						itr->insert(brace_pos, player->mem->playerName);
@@ -56,7 +56,7 @@ void RaisePlayerError(Manager::CallHandler& handler, int player_id)
 halo::s_player* ReadPlayer(CallHandler& handler, Object& playerObj, bool strict)
 {
 	int player_id = ReadNumber<int>(playerObj);
-	halo::s_player* player = halo::game::GetPlayer(player_id);
+	halo::s_player* player = halo::game::getPlayer(player_id);
 	if (!player && strict) RaisePlayerError(handler, player_id);
 	return player;
 }

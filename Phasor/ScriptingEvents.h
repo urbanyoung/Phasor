@@ -39,6 +39,11 @@ namespace halo
 namespace scripting {
 	namespace events {
 
+		enum e_ident_or_bool {
+			kIdent = 0,
+			kBool
+		};
+
 		const std::string* GetEventTable();
 		size_t GetEventTableElementCount();
 
@@ -209,18 +214,24 @@ namespace scripting {
 		 *	\param mapid The id of the object being created.
 		 *	\param parentid The object id of the to be created object's parent.
 		 *	\param player The memory id of the owning player.
-		 *	\return Boolean indicating whether or not the object should be created.
+		 *	\return boolean indicating whether or not the object should be created 
+		 *	\b OR map id of object to create instead.
 		 *	
 		 *	\remark
 		 *	Both \c parent and \c player can be nil if the object doesn't
 		 *	have a parent or isn't owned by a player.
+		 *	
+		 *	\remark
+		 *	If you return a map id, it must be of the same class as the input
+		 *	(ie weap) or it is ignored, and the object is created.
 		 *	
 		 *	Definition:
 		 *	\code
 		 *		function OnObjectCreationAttempt(mapid, parentid, player)
 		 *	\endcode
 		 */
-		bool OnObjectCreationAttempt(halo::objects::s_object_creation_disposition* info);
+		e_ident_or_bool OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
+			halo::ident& change_id, bool& allow);
 
 		/*! \brief Called when an object is being assigned their spawn weapons.
 		 * 

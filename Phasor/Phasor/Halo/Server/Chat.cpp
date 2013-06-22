@@ -53,7 +53,7 @@ namespace halo { namespace server { namespace chat {
 			case kChatTeam:
 				{
 					for (int i = 0; i < 16; i++) {
-						s_player* player = game::GetPlayer(i);
+						s_player* player = game::getPlayer(i);
 						if (player && player->mem->team == from->mem->team) 
 							AddPacketToPlayerQueue(player->mem->playerNum, PACKET_QUEUE_PARAMS);
 					}
@@ -65,7 +65,7 @@ namespace halo { namespace server { namespace chat {
 					if (from_obj && from_obj->base.vehicleId.valid()) {
 						// send to players in this vehicle
 						for (int i = 0; i < 16; i++) {
-							s_player* player = game::GetPlayer(i);
+							s_player* player = game::getPlayer(i);
 							if (!player) continue;
 							halo::objects::s_halo_biped* obj = player->get_object();
 							if (obj && obj->base.vehicleId == from_obj->base.vehicleId)

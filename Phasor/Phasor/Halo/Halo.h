@@ -1,5 +1,5 @@
 #pragma once
-
+#include <stdio.h>
 namespace halo
 {
 #define STR_CAT(a,b)            a##b
@@ -13,6 +13,11 @@ namespace halo
 	{
 		unsigned short slot;
 		unsigned short id;		
+
+		explicit ident() {
+			slot = 0xFFFF;
+			id = 0xFFFF;
+		}
 
 		bool operator<(const ident& other)
 		{
@@ -30,7 +35,7 @@ namespace halo
 			return result;
 		}
 
-		bool valid() const { return (unsigned long)*this != 0xFFFFFFFF; }
+		bool valid() const { return id != 0xFFFF || slot != 0xFFFF; }
 	};
 	static_assert(sizeof(ident) == 4, "bad");
 

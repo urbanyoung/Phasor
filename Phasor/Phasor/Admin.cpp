@@ -348,7 +348,7 @@ namespace Admin
 	{
 		out << "Admins currently in the server: " << endl;
 		for (int i = 0; i < 16; i++) {
-			halo::s_player* player = halo::game::GetPlayer(i);
+			halo::s_player* player = halo::game::getPlayer(i);
 			if (player && player->is_admin) {
 				admin::s_admin* admin;
 				if (admin::find_admin_by_hash(player->hash, &admin)) {

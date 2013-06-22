@@ -25,7 +25,7 @@ namespace halo { namespace game {
 	}
 
 	// Find the player based on their memory id.
-	s_player* GetPlayer(int index)
+	s_player* getPlayer(int index)
 	{
 		if (!valid_index(index)) return NULL;
 		return PlayerList[index] ? PlayerList[index].get() : NULL;
@@ -44,7 +44,7 @@ namespace halo { namespace game {
 	s_player* GetPlayerFromAddress(s_player_structure* player)
 	{
 		int indx = ((DWORD)player - *(DWORD*)ADDR_PLAYERBASE) / sizeof(s_player_structure);
-		return GetPlayer(indx);
+		return getPlayer(indx);
 	/*	g_PrintStream->print("indx %i", indx);
 		for (int i = 0; i < 16; i++) {
 			if (PlayerList[i] && PlayerList[i]->mem == player)
@@ -114,7 +114,7 @@ namespace halo { namespace game {
 			return;
 		}
 		PlayerList[playerId].reset(new s_player(playerId));
-		s_player* player = GetPlayer(playerId);	
+		s_player* player = getPlayer(playerId);	
 		g_GameLog->WriteLog(kPlayerJoin, L"%s (%s ip: %s:%i)", 
 			player->mem->playerName, WidenString(player->hash).c_str(),
 			WidenString(player->ip).c_str(), player->port);
@@ -129,7 +129,7 @@ namespace halo { namespace game {
 			*g_PhasorLog << "Player left with invalid index??" << endl;
 			return;
 		}
-		s_player* player = GetPlayer(playerId);
+		s_player* player = getPlayer(playerId);
 
 		if (player) {			
 			g_GameLog->WriteLog(kPlayerLeave, L"%s (%s)", 
@@ -151,23 +151,26 @@ namespace halo { namespace game {
 	/*! \todo add checks when sv_teams_change or w/e is enabled */
 	bool __stdcall OnTeamChange(DWORD playerId, DWORD new_team)
 	{
-		s_player* player = GetPlayer(playerId);
+		s_player* player = getPlayer(playerId);
 		bool allow = true;
 
 		if (player && new_team != player->mem->team) {
 			allow = scripting::events::OnTeamChange(*player, true, new_team,
 				player->mem->team);
+		}
 
+		if (!allow) {
 			g_GameLog->WriteLog(kPlayerChange, L"Blocked %s from changing team.", 
 				player->mem->playerName);
 		}
+
 		return allow;
 	}
 
 	// Called when a player is about to spawn (object already created)
 	void __stdcall OnPlayerSpawn(DWORD playerId, ident m_objectId)
 	{
-		halo::s_player* player = GetPlayer(playerId);
+		halo::s_player* player = getPlayer(playerId);
 		if (!player) return;
 		scripting::events::OnPlayerSpawn(*player, m_objectId);
 	}
@@ -175,7 +178,7 @@ namespace halo { namespace game {
 	// Called after the server has been notified of a player spawn
 	void __stdcall OnPlayerSpawnEnd(DWORD playerId, ident m_objectId)
 	{
-		halo::s_player* player = GetPlayer(playerId);
+		halo::s_player* player = getPlayer(playerId);
 		if (!player) return;
 		scripting::events::OnPlayerSpawnEnd(*player, m_objectId);
 	}
@@ -189,28 +192,42 @@ namespace halo { namespace game {
 	bool __stdcall OnObjectCreationAttempt(objects::s_object_creation_disposition* creation_info)
 	{
 		/*! \todo make sure the player is correct */
-		return scripting::events::OnObjectCreationAttempt(creation_info);
-	}
+		halo::ident change_id;
+		bool allow;
 
-	ident __stdcall OnWeaponAssignment(DWORD playerId, ident owningObjectId,
+		scripting::events::e_ident_or_bool r = scripting::events::OnObjectCreationAttempt(creation_info, change_id, allow);
+
+		if (r == scripting::events::e_ident_or_bool::kBool) return allow;
+		else {
+			
+			halo::s_tag_entry* change_tag = LookupTag(change_id);
+			halo::s_tag_entry* default_tag = LookupTag(creation_info->map_id);
+
+			if (change_tag && default_tag && change_tag->tagType == default_tag->tagType) {
+				creation_info->map_id = change_id;
+			}
+			return true;
+		}		
+	}
+	
+	DWORD __stdcall OnWeaponAssignment(DWORD playerId, ident owningObjectId,
 		s_object_info* curWeapon, DWORD order)
 	{
-		halo::s_player* player = game::GetPlayer(playerId);
+		halo::s_player* player = game::getPlayer(playerId);
 		ident weap_id = curWeapon->id, result_id;
 
 		bool b = scripting::events::OnWeaponAssignment(player, owningObjectId, order, weap_id,
 			result_id);
 
-		if (b && (!result_id.valid() || LookupTag(result_id))) return result_id;
-		
-		return weap_id;		
+		if (b && LookupTag(result_id)) return result_id;
+		else return weap_id;	
 	}
 
 	// Called when a player can interact with an object
 	bool __stdcall OnObjectInteraction(DWORD playerId, ident m_ObjId)
 	{
 		bool allow = true;
-		halo::s_player* player = game::GetPlayer(playerId);
+		halo::s_player* player = game::getPlayer(playerId);
 		if (player) {
 			objects::s_halo_object* obj = (objects::s_halo_object*)
 				objects::GetObjectAddress(m_ObjId);
@@ -247,7 +264,7 @@ namespace halo { namespace game {
 	{
 		using namespace server::chat;
 		static const wchar_t* typeValues[] = {L"GLOBAL", L"TEAM", L"VEHICLE"};
-		s_player* sender = GetPlayer(chat->player);
+		s_player* sender = getPlayer(chat->player);
 		if (!sender || chat->type < kChatAll || chat->type > kChatVehicle) return;
 
 		int length = wcslen(chat->msg);
@@ -272,7 +289,7 @@ namespace halo { namespace game {
 	// Called when a player attempts to enter a vehicle
 	bool __stdcall OnVehicleEntry(DWORD playerId)
 	{
-		s_player* player = GetPlayer(playerId);
+		s_player* player = getPlayer(playerId);
 		if (!player) return true;
 
 		objects::s_halo_biped* obj = (objects::s_halo_biped*)objects::GetObjectAddress(player->mem->object_id);
@@ -293,8 +310,8 @@ namespace halo { namespace game {
 	// Called when a player dies
 	void __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode)
 	{
-		s_player* victim = GetPlayer(victimId);
-		s_player* killer = GetPlayer(killerId);
+		s_player* victim = getPlayer(victimId);
+		s_player* killer = getPlayer(killerId);
 
 		if (!victim) return;
 
@@ -351,7 +368,7 @@ namespace halo { namespace game {
 	// Called when a player gets a double kill, spree etc
 	void __stdcall OnKillMultiplier(DWORD playerId, DWORD multiplier)
 	{
-		halo::s_player* player = GetPlayer(playerId);
+		halo::s_player* player = getPlayer(playerId);
 		if (!player) return;
 		scripting::events::OnKillMultiplier(*player, multiplier);
 	}
@@ -361,7 +378,7 @@ namespace halo { namespace game {
 	{
 		objects::s_halo_weapon* weap = (objects::s_halo_weapon*)objects::GetObjectAddress(m_WeaponId);
 		if (!weap) return true;
-		halo::s_player* player = GetPlayer(weap->base.ownerPlayer.slot);
+		halo::s_player* player = getPlayer(weap->base.ownerPlayer.slot);
 		return scripting::events::OnWeaponReload(player, m_WeaponId);
 	}
 }}

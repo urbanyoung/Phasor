@@ -19,7 +19,7 @@ namespace halo {
 	namespace game {
 		struct s_chat_data;
 
-	s_player* GetPlayer(int index);
+	s_player* getPlayer(int index);
 	s_player* GetPlayerFromRconId(unsigned int playerNum);
 	s_player* GetPlayerFromAddress(s_player_structure* player);
 	s_player* GetPlayerFromObject(objects::s_halo_biped* obj);
@@ -58,7 +58,7 @@ namespace halo {
 	bool __stdcall OnObjectCreationAttempt(objects::s_object_creation_disposition* creation_info);
 
 	// Called when a weapon is assigned to an object
-	ident __stdcall OnWeaponAssignment(DWORD playerId, ident owningObjectId,
+	DWORD __stdcall OnWeaponAssignment(DWORD playerId, ident owningObjectId,
 		s_object_info* curWeapon, DWORD order);
 
 	// Called when a player can interact with an object

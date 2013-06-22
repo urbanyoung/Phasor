@@ -19,4 +19,17 @@ namespace scripting {
 	{
 		return result.size() ? result.ReadBool(0).GetValue() : default_value;
 	}
+
+	e_ident_bool_empty HandleResultIdentOrBool(Result& result, halo::ident& id, bool& b)
+	{
+		if (!result.size()) return kEmptySet;
+		DWORD value = (DWORD)result.ReadNumber(0).GetValue();
+		if (value == 1 || value == 0) {
+			b = value == 1;
+			return kBoolSet;
+		} else {
+			id = halo::make_ident(value);
+			return kIdentSet;
+		}
+	}
 }
