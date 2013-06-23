@@ -1,5 +1,5 @@
 #pragma once
-#include <stdio.h>
+
 namespace halo
 {
 #define STR_CAT(a,b)            a##b

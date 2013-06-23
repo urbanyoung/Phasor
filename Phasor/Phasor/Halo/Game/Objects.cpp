@@ -141,7 +141,7 @@ namespace halo { namespace objects {
 					result = 2;					
 				}
 			}
-		} else { // default processing
+		} else if (respawn_ticks != 0) { // default processing
 			DWORD expiration = obj->idle_timer + respawn_ticks;
 			if (expiration < server_ticks) result = 1;
 		}
