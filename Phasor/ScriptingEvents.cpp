@@ -182,14 +182,14 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnObjectInteraction", result_bool), true);
 	}
 
-	void OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag)
+	bool OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag)
 	{
 		PhasorCaller caller;
 		AddArgIdent(receiving, caller);
 		AddArgIdent(causing, caller);
 		caller.AddArg((DWORD)tag->metaData);
 		AddArgIdent(tag->id, caller);
-		caller.Call("OnDamageLookup");
+		return HandleResult<bool>(caller.Call("OnDamageLookup", result_bool), false);
 	}
 
 	bool OnServerChat(const halo::s_player& sender, DWORD type, const std::string& msg)

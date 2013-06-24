@@ -608,9 +608,14 @@ __declspec(naked) void OnDamageLookup_CC()
 
 		pushad
 
-		mov esi, [ebp + 0x0C] // object causing the damage
+	//	mov esi, [ebp + 0x0C] // object causing the damage
+	//	lea ecx, dword ptr ds:[edx + eax] // table entry for the damage tag
+	//	mov edi, [esp + 0xcc] // object taking the damage
+	//	
+		lea esi, [ebp + 0x0C] // object causing the damage
 		lea ecx, dword ptr ds:[edx + eax] // table entry for the damage tag
-		mov edi, [esp + 0xcc] // object taking the damage
+		lea edi, [esp + 0xcc] // object taking the damage
+
 
 		push ecx // damage tag		
 		push esi // object causing damage

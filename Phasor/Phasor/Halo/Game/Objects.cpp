@@ -152,6 +152,8 @@ namespace halo { namespace objects {
 	// todo: check ticks should be signed
 	bool __stdcall EquipmentDestroyCheck(int checkTicks, ident m_objId, s_halo_object* obj)
 	{
+		s_tag_entry* tag =  LookupTag(obj->map_id);
+
 		bool bDestroy = false;
 
 		int objTicks = *(int*)((LPBYTE)obj + 0x204);
@@ -168,13 +170,11 @@ namespace halo { namespace objects {
 			}
 			else if (phasor_obj->respawnTicks == -1) // use default value
 			{
-				int objTicks = *(int*)((LPBYTE)obj + 0x204);
-
 				if (checkTicks > objTicks)
 					bDestroy = true;
 			}
 		} else {
-			if (checkTicks > objTicks)
+			if (checkTicks > objTicks) 
 				bDestroy = true;
 		}
 

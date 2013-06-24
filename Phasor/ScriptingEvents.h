@@ -291,7 +291,7 @@ namespace scripting {
 		 *		function OnDamageLookup(receiving_objid, causing_objid, tagdata, mapid)
 		 *	\endcode
 		 */
-		void OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag);
+		bool OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag);
 
 		/*! \brief Called when a player chats in the server.
 		 * 

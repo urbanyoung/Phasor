@@ -219,7 +219,8 @@ namespace halo { namespace game {
 		bool b = scripting::events::OnWeaponAssignment(player, owningObjectId, order, weap_id,
 			result_id);
 
-		if (b && LookupTag(result_id)) return result_id;
+		// can return 0xFFFFFFFF to not assign a weapon
+		if (b && (!result_id.valid() || LookupTag(result_id))) return result_id;
 		else return weap_id;	
 	}
 
@@ -244,19 +245,26 @@ namespace halo { namespace game {
 	}
 
 	// Called when an object's damage is being looked up
-	void __stdcall OnDamageLookup(ident receivingObj, ident causingObj, s_tag_entry* tag)
+	void __stdcall OnDamageLookup(ident* p_receiver, ident* p_causer, s_tag_entry* tag)
 	{
-		static BYTE m_dmg_info[0x2A0];
+		ident receivingObj = *p_receiver;
+		ident causingObj = *p_causer;
 
-		// Overwrite previous tag (with orig)
-		if (dmgInfo_addr)
+		static BYTE m_dmg_info[0x2A0];
+		static bool bTagChanged = false;
+
+		// Overwrite previous tag (with orig) only if it got changed
+		if (bTagChanged && dmgInfo_addr)
 			memcpy(dmgInfo_addr, m_dmg_info, sizeof(m_dmg_info));
 		
 		// Save info for rewriting the tag
 		dmgInfo_addr = tag->metaData;
 		memcpy(m_dmg_info, tag->metaData, sizeof(m_dmg_info));
 
-		scripting::events::OnDamageLookup(receivingObj, causingObj, tag);
+		bTagChanged = scripting::events::OnDamageLookup(receivingObj, causingObj, tag);
+
+		//*p_receiver = causingObj;
+		//*p_causer = receivingObj;
 	}
 
 	// Called when someone chats in the server
