@@ -265,6 +265,18 @@ namespace halo { namespace game {
 
 		//*p_receiver = causingObj;
 		//*p_causer = receivingObj;
+		//* 
+		/*bullet: 4e3e58
+		explosion: 524c20
+		melee: 58545d
+		server_kill (when leaving): 523fda
+		fall damage: 5736be
+
+		if 0x40 < 0 it does less damage, == 1.0 then max?
+
+		0x44 is a damage multiplier
+		input is 0x50 long
+		*/
 	}
 
 	// Called when someone chats in the server

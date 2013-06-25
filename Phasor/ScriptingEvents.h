@@ -285,6 +285,12 @@ namespace scripting {
 		 *	\param causing_objid Object id of the object that is causing the damage.
 		 *	\param tagdata Memory address of the tag data. Overwrite as required.
 		 *	\param mapid The map id of the damage tag being used.
+		 *	\return true if you modify the damage tag, nothing otherwise.
+		 *	
+		 *	\remark
+		 *	Behaviour change: If you modify the tagdata in anyway, you must
+		 *	return true. If you don't modify it, don't return anything (ie 
+		 *	do NOT return false).
 		 *	
 		 *	Definition:
 		 *	\code

@@ -718,8 +718,8 @@ __declspec(naked) void OnKillMultiplier_CC()
 		pushad
 
 		push esi // muliplier
-		and ebp, 0xff
-		push ebp // player
+		and edi, 0xff
+		push edi // player
 		call game::OnKillMultiplier
 
 		popad
