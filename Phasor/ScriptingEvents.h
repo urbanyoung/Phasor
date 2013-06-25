@@ -31,6 +31,9 @@ namespace halo
 	struct s_player;
 	struct s_tag_entry;
 
+	struct s_damage_info;
+	struct damage_script_options;
+
 	namespace objects {
 		struct s_object_creation_disposition;
 	}
@@ -281,23 +284,19 @@ namespace scripting {
 
 		/*! \brief Called when the server needs to apply damage to an object.
 		 *
-		 *	\param receiving_objid Object id of the object that is to receive the damage.
-		 *	\param causing_objid Object id of the object that is causing the damage.
-		 *	\param tagdata Memory address of the tag data. Overwrite as required.
-		 *	\param mapid The map id of the damage tag being used.
-		 *	\return true if you modify the damage tag, nothing otherwise.
-		 *	
-		 *	\remark
-		 *	Behaviour change: If you modify the tagdata in anyway, you must
-		 *	return true. If you don't modify it, don't return anything (ie 
-		 *	do NOT return false).
+		 *	\param receiving object id of the object that is to receive the damage.
+		 *	\param causing object id of the object that is causing the damage.
+		 *	\param tagid tag id of damage tag which is being used.
+		 
+		 *	\return boolean indicating whether or not to allow the damage.
 		 *	
 		 *	Definition:
 		 *	\code
-		 *		function OnDamageLookup(receiving_objid, causing_objid, tagdata, mapid)
+		 *		function OnDamageLookup(receiving, causing, tagid)
 		 *	\endcode
 		 */
-		bool OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag);
+		bool OnDamageLookup(halo::s_damage_info* dmg, halo::ident receiver, 
+			halo::damage_script_options& out);
 
 		/*! \brief Called when a player chats in the server.
 		 * 

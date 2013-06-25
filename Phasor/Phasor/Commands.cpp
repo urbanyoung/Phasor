@@ -230,7 +230,7 @@ namespace commands
 	halo::s_player& CArgParser::ReadPlayer()
 	{
 		unsigned int playerIndex = ReadUInt()-1;
-		halo::s_player* player = halo::game::GetPlayerFromRconId(playerIndex);
+		halo::s_player* player = halo::game::getPlayerFromRconId(playerIndex);
 		if (!player) {
 			index--; // incremented on success in ReadInt
 			RaiseError(kPlayer);
@@ -251,7 +251,7 @@ namespace commands
 		if (str.size() == 32) return str; // they entered the hash
 		unsigned int playerIndex;
 		if (!::StringToNumber<unsigned int>(str, playerIndex)) RaiseError(kPlayerOrHash);
-		halo::s_player* player = halo::game::GetPlayerFromRconId(playerIndex-1);
+		halo::s_player* player = halo::game::getPlayerFromRconId(playerIndex-1);
 		if (!player) RaiseError(kPlayerOrHash);
 		return player->hash;
 	}

@@ -273,7 +273,7 @@ namespace Admin
 	//
 	void MarkPlayerAdmin(const std::string& hash, bool is_admin)
 	{
-		halo::s_player* player = halo::game::GetPlayerFromHash(hash);
+		halo::s_player* player = halo::game::getPlayerFromHash(hash);
 		if (!player) return;
 		player->is_admin = is_admin;
 		*player->console_stream << "You're " << (is_admin ? "an admin now." : "no longer an admin.")

@@ -84,7 +84,7 @@ namespace halo { namespace server
 	/*! \todo make this more efficient.. shouldn't need to GetPlayerFromAddress */
 	void __stdcall OnClientUpdate(s_player_structure* m_player)
 	{
-		s_player* player = game::GetPlayerFromAddress(m_player);
+		s_player* player = game::getPlayerFromAddress(m_player);
 
 		if (player)	{
 			game::OnClientUpdate(*player);
@@ -315,7 +315,7 @@ namespace halo { namespace server
 	halo::s_player* GetPlayerExecutingCommand()
 	{
 		DWORD execPlayerNumber = *(DWORD*)UlongToPtr(ADDR_RCONPLAYER);
-		return game::GetPlayerFromRconId(execPlayerNumber);
+		return game::getPlayerFromRconId(execPlayerNumber);
 	}
 
 	bool GetPlayerHash(const s_player& player, std::string& hash)

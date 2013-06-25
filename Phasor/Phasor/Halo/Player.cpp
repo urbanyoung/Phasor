@@ -15,8 +15,8 @@ namespace halo
 	{
 		s_table_header header;
 		s_player_structure players[16];
-
 	};
+
 	s_player::s_player(int memory_id) : memory_id(memory_id), sv_killed(false),
 		force_entered(false)
 	{
@@ -75,7 +75,7 @@ namespace halo
 		sv_killed = true; // used later for detecting what killed the player
 	
 		if (mem->object_id.valid()) {
-			DWORD playerMask = (mem->playerJoinCount << 0x10) | memory_id;
+			DWORD playerMask = getPlayerIdent();
 			DWORD playerObj = mem->object_id;
 			__asm
 			{
@@ -105,7 +105,7 @@ namespace halo
 
 	void s_player::ApplyCamo(float duration) const
 	{
-		DWORD playerMask = (mem->playerJoinCount << 0x10) | memory_id;
+		DWORD playerMask = getPlayerIdent();
 		DWORD count = 0x8000; // count >= 0x8000 == infinite
 
 		if (duration != 0)
@@ -133,6 +133,11 @@ namespace halo
 		auto biped = get_object();
 		if (!biped) return false;
 		return biped->base.vehicleId.valid();
+	}
+
+	ident s_player::getPlayerIdent() const
+	{
+		return make_ident((mem->playerJoinCount << 0x10) | memory_id);
 	}
 
 	s_player_structure* GetPlayerMemory(int index)

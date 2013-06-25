@@ -16,8 +16,12 @@ namespace halo { namespace game {
 	typedef std::unique_ptr<s_player> s_player_ptr;
 	s_player_ptr PlayerList[16];
 
-	// used by OnDamageLookup to replace dmg tag.. shitty method but meh
-	void* dmgInfo_addr = 0;
+	void cleanupPlayers()
+	{
+		for (int i = 0; i < 16; i++) {
+			if (PlayerList[i]) PlayerList[i].reset();
+		}
+	}
 
 	inline bool valid_index(DWORD playerIndex)
 	{
@@ -32,7 +36,7 @@ namespace halo { namespace game {
 	}
 
 	// Find the player based on their player/rcon/machine id.
-	s_player* GetPlayerFromRconId(unsigned int playerNum)
+	s_player* getPlayerFromRconId(unsigned int playerNum)
 	{
 		for (int i = 0; i < 16; i++) {
 			if (PlayerList[i] && PlayerList[i]->mem->playerNum == playerNum)
@@ -41,7 +45,7 @@ namespace halo { namespace game {
 		return NULL;
 	}
 
-	s_player* GetPlayerFromAddress(s_player_structure* player)
+	s_player* getPlayerFromAddress(s_player_structure* player)
 	{
 		int indx = ((DWORD)player - *(DWORD*)ADDR_PLAYERBASE) / sizeof(s_player_structure);
 		return getPlayer(indx);
@@ -53,7 +57,7 @@ namespace halo { namespace game {
 		return NULL;*/
 	}
 
-	s_player* GetPlayerFromObject(objects::s_halo_biped* obj)
+	s_player* getPlayerFromObject(objects::s_halo_biped* obj)
 	{
 		for (int i = 0; i < 16; i++) {
 			if (PlayerList[i] && PlayerList[i]->get_object() == (void*)obj)
@@ -62,7 +66,16 @@ namespace halo { namespace game {
 		return NULL;
 	}
 
-	s_player* GetPlayerFromHash(const std::string& hash)
+	s_player* getPlayerFromObjectId(ident id)
+	{
+		for (int i = 0; i < 16; i++) {
+			if (PlayerList[i] && PlayerList[i]->mem->object_id == id)
+				return PlayerList[i].get();
+		}
+		return NULL;
+	}
+
+	s_player* getPlayerFromHash(const std::string& hash)
 	{
 		for (int i = 0; i < 16; i++) {
 			if (PlayerList[i] && PlayerList[i]->hash == hash)
@@ -96,7 +109,6 @@ namespace halo { namespace game {
 	// Called when a new game starts
 	void OnNewGame(const char* map)
 	{
-		dmgInfo_addr = 0;
 		afk_detection::Enable();
 		halo::BuildTagCache();
 
@@ -244,40 +256,6 @@ namespace halo { namespace game {
 		player.afk->CheckPlayerActivity();
 	}
 
-	// Called when an object's damage is being looked up
-	void __stdcall OnDamageLookup(ident* p_receiver, ident* p_causer, s_tag_entry* tag)
-	{
-		ident receivingObj = *p_receiver;
-		ident causingObj = *p_causer;
-
-		static BYTE m_dmg_info[0x2A0];
-		static bool bTagChanged = false;
-
-		// Overwrite previous tag (with orig) only if it got changed
-		if (bTagChanged && dmgInfo_addr)
-			memcpy(dmgInfo_addr, m_dmg_info, sizeof(m_dmg_info));
-		
-		// Save info for rewriting the tag
-		dmgInfo_addr = tag->metaData;
-		memcpy(m_dmg_info, tag->metaData, sizeof(m_dmg_info));
-
-		bTagChanged = scripting::events::OnDamageLookup(receivingObj, causingObj, tag);
-
-		//*p_receiver = causingObj;
-		//*p_causer = receivingObj;
-		//* 
-		/*bullet: 4e3e58
-		explosion: 524c20
-		melee: 58545d
-		server_kill (when leaving): 523fda
-		fall damage: 5736be
-
-		if 0x40 < 0 it does less damage, == 1.0 then max?
-
-		0x44 is a damage multiplier
-		input is 0x50 long
-		*/
-	}
 
 	// Called when someone chats in the server
 	void __stdcall OnChat(server::chat::s_chat_data* chat)
@@ -322,7 +300,7 @@ namespace halo { namespace game {
 	// Called when a player is being ejected from a vehicle
 	bool __stdcall OnVehicleEject(objects::s_halo_biped* player_obj, bool forceEjected)
 	{
-		s_player* player = GetPlayerFromObject(player_obj);
+		s_player* player = getPlayerFromObject(player_obj);
 		if (!player) return true;
 		return scripting::events::OnVehicleEject(*player, forceEjected);
 	}

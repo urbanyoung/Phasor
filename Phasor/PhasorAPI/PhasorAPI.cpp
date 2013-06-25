@@ -11,6 +11,7 @@
 #include "haloobjects.h"
 #include "alias_script.h"
 #include "scripttimers.h"
+#include "damagelookup.h"
 
 using namespace Common;
 using namespace Manager;
@@ -104,8 +105,15 @@ namespace PhasorAPI
 		// Timer related functions: see scripttimers.h
 		{&l_registertimer, "registertimer", 2, {TYPE_NUMBER, TYPE_STRING, TYPE_ANY}},
 		{&l_removetimer, "removetimer", 1, {TYPE_NUMBER}},
-
+		// Damage related functions: see damagelookup.h
+		{&l_odl_causer, "odl_causer", 1, {TYPE_NUMBER}},
+		{&l_odl_receiver, "odl_receiver", 1, {TYPE_NUMBER}},
+		{&l_odl_tag, "odl_tag", 1, {TYPE_NUMBER}},
+		{&l_odl_multiplier, "odl_multiplier", 1, {TYPE_NUMBER}},
+		{&l_odl_flags_instantkill, "odl_flags_instantkill", 1, {TYPE_BOOL}},
+		{&l_odl_flags_suicide, "odl_flags_suicide", 1, {TYPE_BOOL}},
 	};
+
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);
 
 	void Register(Manager::ScriptState& state)

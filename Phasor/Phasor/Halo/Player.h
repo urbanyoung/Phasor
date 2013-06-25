@@ -79,10 +79,11 @@ namespace halo
 		void ApplyCamo(float duration) const;
 		void SetSpeed(float speed) const;
 		bool InVehicle() const; 
+		ident getPlayerIdent() const;
 	};
 
 	s_player_structure* GetPlayerMemory(int index);
-
+	
 	// -----------------------------------------------------------------
 
 }

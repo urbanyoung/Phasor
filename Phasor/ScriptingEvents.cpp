@@ -2,6 +2,8 @@
 #include "Scripting.h"
 #include "Phasor/Halo/Player.h"
 #include "Phasor/Halo/tags.h"
+#include "Phasor/Halo/Game/Damage.h"
+#include "PhasorAPI/damagelookup.h"
 #include "CallHelper.h"
 
 // stupid enum warning
@@ -182,14 +184,15 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnObjectInteraction", result_bool), true);
 	}
 
-	bool OnDamageLookup(halo::ident receiving, halo::ident causing, halo::s_tag_entry* tag)
+	bool OnDamageLookup(halo::s_damage_info* dmg, halo::ident receiver, 
+		halo::damage_script_options& out)
 	{
+		odl::resetData(&out, dmg, receiver);
 		PhasorCaller caller;
-		AddArgIdent(receiving, caller);
-		AddArgIdent(causing, caller);
-		caller.AddArg((DWORD)tag->metaData);
-		AddArgIdent(tag->id, caller);
-		return HandleResult<bool>(caller.Call("OnDamageLookup", result_bool), false);
+		AddArgIdent(receiver, caller);
+		AddArgIdent(dmg->causer, caller);
+		AddArgIdent(dmg->tag_id, caller);
+		return HandleResult<bool>(caller.Call("OnDamageLookup", result_bool), true);
 	}
 
 	bool OnServerChat(const halo::s_player& sender, DWORD type, const std::string& msg)

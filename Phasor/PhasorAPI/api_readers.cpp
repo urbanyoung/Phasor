@@ -1,5 +1,6 @@
 #include "api_readers.h"
 #include "../Common/MyString.h"
+#include "../Phasor/Halo/Game/Objects.h"
 
 using namespace Common;
 using namespace Manager;
@@ -66,6 +67,21 @@ bool ReadBoolean(const Common::Object& obj)
 {
 	ObjBool& b = (ObjBool&)obj;
 	return b.GetValue();
+}
+
+// Reads an object id and validates it
+void* ReadHaloObject(CallHandler& handler, const Common::Object& obj, 
+	bool allow_invalid, halo::ident& objid)
+{
+	halo::ident id = halo::make_ident(ReadNumber<DWORD>(obj));
+	void* addr = halo::objects::GetObjectAddress(id);
+	if (!addr && (!allow_invalid || id.valid())) {
+		std::string err = m_sprintf("valid object required: object %08X doesn't exist.",
+			(DWORD)id);
+		handler.RaiseError(err);
+	}
+	objid = id;
+	return addr;
 }
 
 void AddResultNil(Common::Object::unique_list& results)

@@ -5,6 +5,7 @@
 #include "Game/Game.h"
 #include "Server/MapLoader.h"
 #include "Game/Objects.h"
+#include "Game/Damage.h"
 
 using namespace halo;
 
@@ -612,19 +613,22 @@ __declspec(naked) void OnDamageLookup_CC()
 	//	lea ecx, dword ptr ds:[edx + eax] // table entry for the damage tag
 	//	mov edi, [esp + 0xcc] // object taking the damage
 	//	
-		lea esi, [ebp + 0x0C] // object causing the damage
-		lea ecx, dword ptr ds:[edx + eax] // table entry for the damage tag
-		lea edi, [esp + 0xcc] // object taking the damage
+		mov esi, [esp + 0x24]
+		lea edi, [esp + 0x28]
 
+		push edi
+		push esi
+		call OnDamageLookup
 
-		push ecx // damage tag		
-		push esi // object causing damage
-		push edi // object taking damage
-		call game::OnDamageLookup
+		cmp al, 1
+		je ALLOW_DAMAGE
 
 		popad
+		ret
+ALLOW_DAMAGE:
+		popad
 
-		ADD EDI,0x1C4
+		SUB ESP,0x94
 		push dmglookup_ret
 		ret
 	}

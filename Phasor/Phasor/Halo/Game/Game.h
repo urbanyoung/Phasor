@@ -20,10 +20,13 @@ namespace halo {
 		struct s_chat_data;
 
 	s_player* getPlayer(int index);
-	s_player* GetPlayerFromRconId(unsigned int playerNum);
-	s_player* GetPlayerFromAddress(s_player_structure* player);
-	s_player* GetPlayerFromObject(objects::s_halo_biped* obj);
-	s_player* GetPlayerFromHash(const std::string& hash);
+	s_player* getPlayerFromRconId(unsigned int playerNum);
+	s_player* getPlayerFromAddress(s_player_structure* player);
+	s_player* getPlayerFromObject(objects::s_halo_biped* obj);
+	s_player* getPlayerFromObjectId(ident id);
+	s_player* getPlayerFromHash(const std::string& hash);
+
+	void cleanupPlayers();
 
 	// --------------------------------------------------------------------
 	// Events
@@ -66,9 +69,6 @@ namespace halo {
 
 	// Called when a player's position is updated
 	void OnClientUpdate(s_player& player);
-
-	// Called when an object's damage is being looked up
-	void __stdcall OnDamageLookup(ident* receivingObj, ident* causingObj, s_tag_entry* tag);
 
 	// Called when someone chats in the server
 	void __stdcall OnChat(server::chat::s_chat_data* chat);

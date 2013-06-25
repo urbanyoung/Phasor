@@ -17,6 +17,7 @@
 #include "Phasor/Globals.h"
 #include "Common/FileIO.h"
 #include "Phasor/Halo/HaloStreams.h"
+#include "Phasor/Halo/Game/Game.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 
@@ -120,6 +121,8 @@ extern "C" __declspec(dllexport) void OnLoad()
 void OnServerClose()
 {
 	*g_PhasorLog << "Closing the server..." << endl;		
+
+	halo::game::cleanupPlayers();
 
 	g_Scripts.reset();
 	g_Timers.RemoveAllTimers();

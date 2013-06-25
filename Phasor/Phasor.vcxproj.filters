@@ -152,6 +152,12 @@
     <ClCompile Include="CallHelper.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="PhasorAPI\damagelookup.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Game\Damage.cpp">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -372,6 +378,12 @@
     </ClInclude>
     <ClInclude Include="CallHelper.h">
       <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\damagelookup.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Damage.h">
+      <Filter>Phasor\Halo\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

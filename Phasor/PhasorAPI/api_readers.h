@@ -20,6 +20,10 @@ std::string ReadRawString(Common::Object& obj);
 // exist.
 halo::s_player* ReadPlayer(Manager::CallHandler& handler, Common::Object& playerObj, bool strict);
 
+// Reads an object id and validates it
+void* ReadHaloObject(Manager::CallHandler& handler, const Common::Object& obj, 
+	bool allow_invalid, halo::ident& objid);
+
 // Read number of specified type.
 template <typename T> T ReadNumber(const Common::Object& obj)
 {

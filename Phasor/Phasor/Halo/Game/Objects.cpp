@@ -266,7 +266,7 @@ namespace halo { namespace objects {
 			s_tag_entry* weap_tag = LookupTag(weapon->base.map_id);
 			if (weap_tag->tagType != TAG_WEAP) return false;
 
-			DWORD mask = (player.mem->playerJoinCount << 0x10)|player.memory_id;
+			DWORD mask = player.getPlayerIdent();
 			ident playerObj = player.mem->object_id;
 
 			__asm
@@ -308,7 +308,7 @@ ASSIGNMENT_FAILED:
 		player.mem->interactionType = 8; // vehicle interaction
 		player.mem->interactionSpecifier = (WORD)seat;
 		player.force_entered = true; // so scripts cant stop them entering
-		DWORD mask = (player.mem->playerJoinCount << 0x10)|player.memory_id;
+		DWORD mask = player.getPlayerIdent();
 
 		// enter the vehicle (if seat is free)
 		__asm

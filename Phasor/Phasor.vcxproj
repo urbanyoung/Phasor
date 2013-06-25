@@ -111,6 +111,7 @@
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="PhasorAPI\alias_script.cpp" />
     <ClCompile Include="PhasorAPI\api_readers.cpp" />
+    <ClCompile Include="PhasorAPI\damagelookup.cpp" />
     <ClCompile Include="PhasorAPI\memory.cpp" />
     <ClCompile Include="PhasorAPI\misc.cpp" />
     <ClCompile Include="PhasorAPI\misc_halo.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="Phasor\Halo\Addresses.cpp" />
     <ClCompile Include="Phasor\Halo\AFKDetection.cpp" />
     <ClCompile Include="Phasor\Halo\Alias.cpp" />
+    <ClCompile Include="Phasor\Halo\Game\Damage.cpp" />
     <ClCompile Include="Phasor\Halo\Game\Game.cpp" />
     <ClCompile Include="Phasor\Halo\Game\Objects.cpp" />
     <ClCompile Include="Phasor\Halo\Halo.cpp" />
@@ -168,6 +170,7 @@
     <ClInclude Include="Manager.h" />
     <ClInclude Include="PhasorAPI\alias_script.h" />
     <ClInclude Include="PhasorAPI\api_readers.h" />
+    <ClInclude Include="PhasorAPI\damagelookup.h" />
     <ClInclude Include="PhasorAPI\memory.h" />
     <ClInclude Include="PhasorAPI\misc.h" />
     <ClInclude Include="PhasorAPI\misc_halo.h" />
@@ -187,6 +190,7 @@
     <ClInclude Include="Phasor\Halo\AFKDetection.h" />
     <ClInclude Include="Phasor\Halo\Alias.h" />
     <ClInclude Include="Phasor\Halo\Game\Chat.h" />
+    <ClInclude Include="Phasor\Halo\Game\Damage.h" />
     <ClInclude Include="Phasor\Halo\Game\Game.h" />
     <ClInclude Include="Phasor\Halo\Game\Objects.h" />
     <ClInclude Include="Phasor\Halo\Halo.h" />
