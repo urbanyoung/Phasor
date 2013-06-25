@@ -74,39 +74,26 @@ void l_odl_tag(PHASOR_API_ARGS);
  */
 void l_odl_multiplier(PHASOR_API_ARGS);
 
-/*! \brief Specifies that this damage, regardless of its intensity, should
- * instantly kill the target.
+/*! \brief Read/Write data to the flags used in damage lookup.
  * 
- * \param [boolean] whether or not instant kill should be enabled (true/false).
- * \return The previous value.
- * 
+ * \param bit_offset The offset (starting at 0) to access.
+ * \param [new_value] The new value for the specified bit.
+ * \return The value of the bit, if new_value is not specified, or \c nil otherwise.
+ *  
+ *  \remark
+ *	Here are some bit offsets I found:
+ *		0 - Hits on player's vehicle don't do damage, only player hits do.
+ *		2 - Instant kill.
+ *		5 - Ignore shields.
+ *		
+ *		
  * Example usage:
  *  \code
- *		local is_instant_kill = odl_flags_instantkill()
+ *		local instant_kill = odl_flags(2)
  *		-- or alternatively, to set it...
- *		odl_flags_instantkill(true)
+ *		odl_flags(2, 1)
  *  \endcode
  */
-void l_odl_flags_instantkill(PHASOR_API_ARGS);
-
-/*! \brief Specifies that this damage should be treated as self-inflicted
- * if the player dies.
- * 
- * \param [boolean] whether or not suicide should be enabled (true/false).
- * \return The previous value.
- * 
- * \remark
- * Halo does not apply suicides in this way, you should still check if
- * the causer is the same as the receiver. This is just an optional
- * flag which ignores the causer.
- * 
- * Example usage:
- *  \code
- *		local is_suicide = odl_flags_suicide()
- *		-- or alternatively, to set it...
- *		odl_flags_suicide(true)
- *  \endcode
- */
-void l_odl_flags_suicide(PHASOR_API_ARGS);
+void l_odl_flags(PHASOR_API_ARGS);
 
 //! }@

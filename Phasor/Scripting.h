@@ -55,7 +55,7 @@ namespace scripting
 		COutStream& errstream;
 
 		// Checks if the script is compatible with this version of Phasor.
-		bool CheckScriptCompatibility(ScriptState& state, const char* script);
+		bool CheckScriptCompatibility(Manager::ScriptState& state, const char* script);
 
 		// Called when an error is raised by a script.
 		void HandleError(PhasorScript& state, const std::string& desc);

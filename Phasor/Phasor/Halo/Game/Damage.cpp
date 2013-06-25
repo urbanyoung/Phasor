@@ -16,6 +16,7 @@ namespace halo {
 			dmg->tag_id = opts.tag;
 			dmg->modifier1 = opts.modifier;
 			*receiver = opts.receiver;
+
 		}
 		return allow;
 		//*p_receiver = causingObj;

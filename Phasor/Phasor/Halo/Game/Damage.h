@@ -19,9 +19,8 @@ namespace halo {
 
 	namespace damage_flags {
 		static const int kNone =		0x00;
-		static const int kIdk =			0x02;
+		static const int kRespawn =		0x02;
 		static const int kInstantKill = 0x04;
-		static const int kSuicide =		0x40;
 	}
 
 	struct damage_script_options

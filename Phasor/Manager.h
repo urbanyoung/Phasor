@@ -21,7 +21,7 @@ namespace Manager
 	class ScriptState;
 }
 
-typedef Manager::ScriptState ScriptState;	
+//typedef Manager::ScriptState ScriptState;	
 
 // Namespace: Manager
 // Provides an interface for managing scripts of different types.

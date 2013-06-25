@@ -110,8 +110,7 @@ namespace PhasorAPI
 		{&l_odl_receiver, "odl_receiver", 1, {TYPE_NUMBER}},
 		{&l_odl_tag, "odl_tag", 1, {TYPE_NUMBER}},
 		{&l_odl_multiplier, "odl_multiplier", 1, {TYPE_NUMBER}},
-		{&l_odl_flags_instantkill, "odl_flags_instantkill", 1, {TYPE_BOOL}},
-		{&l_odl_flags_suicide, "odl_flags_suicide", 1, {TYPE_BOOL}},
+		{&l_odl_flags, "odl_flags", 1, {TYPE_NUMBER, TYPE_NUMBER}},
 	};
 
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);

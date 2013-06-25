@@ -1,6 +1,7 @@
 #include "api_readers.h"
 #include "../Common/MyString.h"
 #include "../Phasor/Halo/Game/Objects.h"
+#include "../Phasor/Halo/tags.h"
 
 using namespace Common;
 using namespace Manager;
@@ -81,6 +82,21 @@ void* ReadHaloObject(CallHandler& handler, const Common::Object& obj,
 		handler.RaiseError(err);
 	}
 	objid = id;
+	return addr;
+}
+
+// Reads an tag id and validates it
+void* ReadHaloTag(CallHandler& handler, const Common::Object& obj, 
+	halo::ident& tagid)
+{
+	halo::ident id = halo::make_ident(ReadNumber<DWORD>(obj));
+	void* addr = halo::LookupTag(id);
+	if (!addr) {
+		std::string err = m_sprintf("valid tag required: tag %08X doesn't exist.",
+			(DWORD)id);
+		handler.RaiseError(err);
+	}
+	tagid = id;
 	return addr;
 }
 

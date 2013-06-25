@@ -59,7 +59,7 @@ namespace scripting
 		try
 		{
 			std::string file = abs_file.str();
-			std::unique_ptr<ScriptState> state_ = Manager::CreateScript();
+			std::unique_ptr<Manager::ScriptState> state_ = Manager::CreateScript();
 			scripts[script] = std::unique_ptr<PhasorScript>(
 				new PhasorScript(std::move(state_)));  
 			PhasorScript* phasor_state = scripts[script].get();
@@ -158,7 +158,7 @@ namespace scripting
 
 	// Returns true if compatible with current api, false if compatible with deprecated
 	// or throws an exception otherwise.
-	bool Scripts::CheckScriptCompatibility(ScriptState& state, const char* script) 
+	bool Scripts::CheckScriptCompatibility(Manager::ScriptState& state, const char* script) 
 	{
 		bool funcExists = false;
 		Manager::Caller caller;

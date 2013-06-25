@@ -24,6 +24,10 @@ halo::s_player* ReadPlayer(Manager::CallHandler& handler, Common::Object& player
 void* ReadHaloObject(Manager::CallHandler& handler, const Common::Object& obj, 
 	bool allow_invalid, halo::ident& objid);
 
+// Reads an tag id and validates it
+void* ReadHaloTag(Manager::CallHandler& handler, const Common::Object& obj, 
+	halo::ident& tagid);
+
 // Read number of specified type.
 template <typename T> T ReadNumber(const Common::Object& obj)
 {
