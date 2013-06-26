@@ -89,6 +89,7 @@ unsigned long CC_PLAYERSPAWNEND = 0x004990DF;
 unsigned long CC_VEHICLEENTRY = 0x0049A395;
 unsigned long CC_WEAPONRELOAD = 0x004E8303;
 unsigned long CC_DAMAGELOOKUP = 0x00524fd0;
+unsigned long CC_DAMAGEAPPLICATION = 0x00525864;
 unsigned long CC_WEAPONASSIGN = 0x005827AC;
 //unsigned long CC_WEAPONCREATION = 0x004E5F3F;
 //unsigned long CC_WEAPONCREATION = 0x0052CA29;
@@ -382,6 +383,9 @@ namespace Addresses
 
 		BYTE sig54[] = {0x81, 0xC7, 0xC4, 0x01, 0x00, 0x00, 0x81, 0xC1, 0x5F, 0xF3, 0x6E, 0x3C};
 		CC_DAMAGELOOKUP = FindAddress("CC_DAMAGELOOKUP", codeSection, codeSize, sig54, sizeof(sig54), 0, -177);
+
+		BYTE damappsig[] = {0x8B, 0x44, 0x24, 0x38, 0x66, 0x83, 0x38, 0x02};
+		CC_DAMAGEAPPLICATION = FindAddress("CC_DAMAGEAPPLICATION", codeSection, codeSize, damappsig, sizeof(damappsig), 0, 0x29);
 
 		BYTE sig55[] = {0x8D, 0x04, 0xC0, 0x8D, 0x04, 0x81, 0x8B, 0x40, 0x0C};
 		CC_WEAPONASSIGN = FindAddress("CC_WEAPONASSIGN", codeSection, codeSize, sig55, sizeof(sig55), 0, 6);

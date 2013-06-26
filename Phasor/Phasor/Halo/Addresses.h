@@ -97,6 +97,7 @@ extern unsigned long CC_PLAYERSPAWNEND;
 extern unsigned long CC_VEHICLEENTRY;
 extern unsigned long CC_WEAPONRELOAD;
 extern unsigned long CC_DAMAGELOOKUP;
+extern unsigned long CC_DAMAGEAPPLICATION;
 extern unsigned long CC_WEAPONASSIGN;
 //extern unsigned long CC_WEAPONCREATION;
 //extern unsigned long CC_WEAPONCREATION;

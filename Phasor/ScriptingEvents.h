@@ -33,6 +33,7 @@ namespace halo
 
 	struct s_damage_info;
 	struct damage_script_options;
+	struct s_hit_info;
 
 	namespace objects {
 		struct s_object_creation_disposition;
@@ -295,8 +296,11 @@ namespace scripting {
 		 *		function OnDamageLookup(receiving, causing, tagid)
 		 *	\endcode
 		 */
-		bool OnDamageLookup(halo::s_damage_info* dmg, halo::ident receiver, 
-			halo::damage_script_options& out);
+		bool OnDamageLookup(halo::s_damage_info* dmg, void* metaData, 
+			halo::ident receiver, halo::damage_script_options& out);
+
+		bool OnDamageApplication(const halo::s_damage_info* dmg, halo::ident receiver, 
+			const halo::s_hit_info* hit, bool backtap);
 
 		/*! \brief Called when a player chats in the server.
 		 * 

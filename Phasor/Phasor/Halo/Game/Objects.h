@@ -51,6 +51,9 @@ namespace halo {
 		UNKNOWN(4);
 		float flashlightCharge1; // 0x0134
 		UNKNOWN(0xBC);
+
+		//immune to backtap: 0xB4 (boolean)
+		//	0x107 | 8 == immune to all damage
 	};
 	static_assert (sizeof(s_halo_object) == 0x1f4, "bad");
 

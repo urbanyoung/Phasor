@@ -184,15 +184,30 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnObjectInteraction", result_bool), true);
 	}
 
-	bool OnDamageLookup(halo::s_damage_info* dmg, halo::ident receiver, 
-		halo::damage_script_options& out)
+	bool OnDamageLookup(halo::s_damage_info* dmg, void* metaData,
+		halo::ident receiver, halo::damage_script_options& out)
 	{
-		odl::resetData(&out, dmg, receiver);
+		odl::setData(&out, dmg, receiver);
 		PhasorCaller caller;
 		AddArgIdent(receiver, caller);
 		AddArgIdent(dmg->causer, caller);
 		AddArgIdent(dmg->tag_id, caller);
-		return HandleResult<bool>(caller.Call("OnDamageLookup", result_bool), true);
+		caller.AddArg((DWORD)metaData);
+		bool b = HandleResult<bool>(caller.Call("OnDamageLookup", result_bool), true);
+		odl::reset();
+		return b;
+	}
+
+	bool OnDamageApplication(const halo::s_damage_info* dmg, halo::ident receiver, 
+		const halo::s_hit_info* hit, bool backtap)
+	{
+		PhasorCaller caller;
+		AddArgIdent(receiver, caller);
+		AddArgIdent(dmg->causer, caller);
+		AddArgIdent(dmg->tag_id, caller);
+		caller.AddArg(std::string(hit->desc));
+		caller.AddArg(backtap);
+		return HandleResult<bool>(caller.Call("OnDamageApplication", result_bool), true);
 	}
 
 	bool OnServerChat(const halo::s_player& sender, DWORD type, const std::string& msg)

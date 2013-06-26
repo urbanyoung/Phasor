@@ -18,8 +18,9 @@
 namespace halo { struct s_damage_info; struct damage_script_options; }
 namespace odl {
 	
-	void resetData(halo::damage_script_options* opts_, 
+	void setData(halo::damage_script_options* opts_, 
 		halo::s_damage_info* dmg, const halo::ident& receiver);
+	void reset();
 }
 
 /*! \brief Sets the casuer of the damage to the specified object.

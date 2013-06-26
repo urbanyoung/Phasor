@@ -634,6 +634,56 @@ ALLOW_DAMAGE:
 	}
 }
 
+DWORD dmgapplication_ret = 0;
+__declspec(naked) void OnDamageApplication_CC()
+{
+	__asm
+	{
+		pop dmgapplication_ret
+
+		pushad
+
+		mov edi, [esp + 0x58]
+		mov dl, byte ptr ds:[edi]
+
+		// only a backtap if it's melee damage.
+		cmp dl, 2
+		je POSSIBLE_BACKTAP
+		mov al, 0 // can't be a backtap, not melee damage
+
+POSSIBLE_BACKTAP:
+		movzx eax, al
+		mov ecx, [esp + 0x3c] // receiver
+
+		push eax // backtap?
+		push esi // hit location
+		push ecx // receiver
+		push ebp // dmg info
+		call OnDamageApplication
+
+		cmp al, 1
+		je ALLOW_DMG_APP
+
+		popad
+
+		POP EDI
+		POP ESI
+		POP EBP
+		POP EBX
+		ADD ESP,0x94
+		RETN
+
+
+ALLOW_DMG_APP:
+		popad
+		// orig code
+		CMP BYTE PTR SS:[ESP+0x40],1
+
+		push dmgapplication_ret
+		ret
+	}
+}
+
 DWORD OnVehicleEntry_ret = 0;
 __declspec(naked) void OnVehicleEntry_CC()
 {
@@ -1029,6 +1079,7 @@ namespace halo
 
 		// Codecave for handling damage being done
 		CreateCodeCave(CC_DAMAGELOOKUP, 6, OnDamageLookup_CC);
+		CreateCodeCave(CC_DAMAGEAPPLICATION, 5, OnDamageApplication_CC);
 
 		// Codecave for server chat
 		CreateCodeCave(CC_CHAT, 7, OnChat_CC);

@@ -1,13 +1,16 @@
 #include "Damage.h"
 #include "../../../ScriptingEvents.h"
+#include "../tags.h"
+#include "../../Globals.h"
 
 namespace halo {
 
 	// Called when an object's damage is being looked up
 	bool __stdcall OnDamageLookup(s_damage_info* dmg, ident* receiver)
 	{
+		s_tag_entry* tag = LookupTag(dmg->tag_id);
 		damage_script_options opts;
-		bool allow = scripting::events::OnDamageLookup(dmg, *receiver, opts);
+		bool allow = scripting::events::OnDamageLookup(dmg, tag->metaData, *receiver, opts);
 
 		if (allow) {
 			dmg->causer = opts.causer;
@@ -33,6 +36,13 @@ namespace halo {
 		0x44 is a damage multiplier
 		input is 0x50 long
 		*/
+	}
+
+	// Called when damage is being applied to an object
+	bool __stdcall OnDamageApplication(const s_damage_info* dmg, ident receiver,
+		s_hit_info* hit, bool backtap)
+	{
+		return scripting::events::OnDamageApplication(dmg, receiver, hit, backtap);
 	}
 
 }
