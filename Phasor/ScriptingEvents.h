@@ -288,6 +288,7 @@ namespace scripting {
 		 *	\param receiving object id of the object that is to receive the damage.
 		 *	\param causing object id of the object that is causing the damage.
 		 *	\param tagid tag id of damage tag which is being used.
+		 *	\param tagdata Memory address of the tag's meta data.
 		 
 		 *	\return boolean indicating whether or not to allow the damage.
 		 *	
@@ -299,6 +300,29 @@ namespace scripting {
 		bool OnDamageLookup(halo::s_damage_info* dmg, void* metaData, 
 			halo::ident receiver, halo::damage_script_options& out);
 
+		/*! \brief Called when the server is about to apply damage to an object.
+		 *
+		 *	\param receiving object id of the object that is to receive the damage.
+		 *	\param causing object id of the object that is causing the damage.
+		 *	\param tagid tag id of damage tag which is being used.
+		 *	\param hit string describing the hit location (eg head, legs)
+		 *	\param backtap true if damage is a melee from behind, false otherwise.		 
+		 *	\return boolean indicating whether or not to allow the damage.
+		 *	
+		 *	\remark
+		 *	You cannot modify the amount of damage done because it's already
+		 *	been calculated. The only action you can take is to block the
+		 *	damage. 
+		 *	
+		 *	\remark
+		 *	There are many possible hit strings, including but not limited to:
+		 *	head, legs, body, metal, rubber, trunk, stock, ...
+		 *	
+		 *	Definition:
+		 *	\code
+		 *		function OnDamageApplication(receiving, causing, tagid, hit, backtap)
+		 *	\endcode
+		 */
 		bool OnDamageApplication(const halo::s_damage_info* dmg, halo::ident receiver, 
 			const halo::s_hit_info* hit, bool backtap);
 

@@ -653,7 +653,7 @@ __declspec(naked) void OnDamageApplication_CC()
 
 POSSIBLE_BACKTAP:
 		movzx eax, al
-		mov ecx, [esp + 0x3c] // receiver
+		mov ecx, [esp + 0x5c] // receiver
 
 		push eax // backtap?
 		push esi // hit location

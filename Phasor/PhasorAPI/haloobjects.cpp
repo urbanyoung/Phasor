@@ -31,10 +31,9 @@ void l_objecttoplayer(CallHandler& handler, Object::unique_deque& args, Object::
 {
 	void* obj_addr = (void*)ReadNumber<DWORD>(*args[0]);
 	for (int i = 0; i < 16; i++) {
-		s_player* player = game::getPlayer(0);
+		s_player* player = game::getPlayer(i);
 		if (player && GetObjectAddress(player->mem->object_id) == obj_addr) {
-			AddResultNumber(i, results);
-			return;
+			return AddResultNumber(i, results);
 		}
 	}
 	AddResultNil(results);
