@@ -237,13 +237,13 @@ namespace Manager
 		args.push_back(std::move(obj));
 	}
 
-	Result Caller::Call(ScriptState& state, const std::string& function, bool* found, int timeout)
+	Result Caller::Call(ScriptState& state, const std::string& function, bool* found)
 	{
 		Result result;
 		if (state.HasFunction(function.c_str()))
 		{
 			state.PushCall(function, false);
-			result.result = state.Call(function.c_str(), args, timeout);
+			result.result = state.Call(function.c_str(), args);
 			state.PopCall();
 			if (found) *found = true;
 		}
@@ -251,8 +251,8 @@ namespace Manager
 		return result;
 	}
 
-	Result Caller::Call(ScriptState& state, const std::string& function, int timeout)
+	Result Caller::Call(ScriptState& state, const std::string& function)
 	{
-		return Call(state, function, NULL, timeout);
+		return Call(state, function, NULL);
 	}
 }

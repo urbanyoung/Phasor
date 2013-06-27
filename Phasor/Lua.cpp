@@ -184,7 +184,7 @@ namespace Lua
 
 	// Calls a Lua function from C
 	MObject::unique_deque State::Call(const char* name,
-		const MObject::unique_list& args, int timeout)
+		const MObject::unique_list& args)
 	{
 		auto func = get_global(name);
 		if (func->get_type() != Type_Function)
@@ -196,7 +196,7 @@ namespace Lua
 		for (auto itr = args.begin(); itr != args.end(); ++itr)	push(**itr);
 
 		// Call the Lua function
-		if (lua_pcall_t(L, args.size(), LUA_MULTRET, 0, timeout))
+		if (lua_pcall(L, args.size(), LUA_MULTRET, 0))
 		{
 			std::string error = lua_tostring(L, -1);
 			lua_pop(L, -1);
@@ -217,10 +217,10 @@ namespace Lua
 
 	// Calls a function
 	// Caller is responsible for memory management of return vector
-	MObject::unique_deque State::Call(const char* name, int timeout)
+	MObject::unique_deque State::Call(const char* name)
 	{
 		static const MObject::unique_list args;
-		return this->Call(name, args, timeout);
+		return this->Call(name, args);
 	}
 	
 	// -------------------------------------------------------------------

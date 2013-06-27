@@ -123,8 +123,8 @@ namespace Manager
 
 		// Calls a function with an optional timeout
 		virtual MObject::unique_deque Call(const char* name,
-			const MObject::unique_list& args, int timeout = 0) = 0;
-		virtual MObject::unique_deque Call(const char* name, int timeout = 0) = 0;
+			const MObject::unique_list& args) = 0;
+		virtual MObject::unique_deque Call(const char* name) = 0;
 	};
 
 	// --------------------------------------------------------------------
@@ -201,8 +201,8 @@ namespace Manager
 		void Clear();
 
 		// Calls the specified function on the specified script.
-		Result Call(ScriptState& state, const std::string& function, bool* found, int timeout);
-		Result Call(ScriptState& state, const std::string& function, int timeout);
+		Result Call(ScriptState& state, const std::string& function, bool* found);
+		Result Call(ScriptState& state, const std::string& function);
 	};
 }
 

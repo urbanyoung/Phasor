@@ -122,7 +122,7 @@ namespace Lua
 		void RegisterFunction(const Manager::ScriptCallback* cb);
 		bool HasFunction(const char* name);
 		MObject::unique_deque Call(const char* name,
-			const MObject::unique_list& args, int timeout = 0);
-		MObject::unique_deque Call(const char* name, int timeout = 0);
+			const MObject::unique_list& args);
+		MObject::unique_deque Call(const char* name);
 	};
 }

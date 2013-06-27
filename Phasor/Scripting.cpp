@@ -75,7 +75,7 @@ namespace scripting
 			bool fexists = false;
 			Manager::Caller caller;
 			caller.AddArg(GetCurrentProcessId());
-			caller.Call(*phasor_state->state, "OnScriptLoad", &fexists, DEFAULT_TIMEOUT);
+			caller.Call(*phasor_state->state, "OnScriptLoad", &fexists);
 
 			if (!fexists) {
 				throw std::exception("function 'OnScriptLoad' undefined.");
@@ -113,7 +113,7 @@ namespace scripting
 
 		try {
 			Manager::Caller caller;
-			caller.Call(*phasor_state->state, "OnScriptUnload", DEFAULT_TIMEOUT);
+			caller.Call(*phasor_state->state, "OnScriptUnload");
 		} catch (std::exception & e) {
 			HandleError(*phasor_state, e.what());
 		}
@@ -176,7 +176,7 @@ namespace scripting
 	{
 		bool funcExists = false;
 		Manager::Caller caller;
-		Result result = caller.Call(state, "GetRequiredVersion", &funcExists, DEFAULT_TIMEOUT);
+		Result result = caller.Call(state, "GetRequiredVersion", &funcExists);
 
 		if (!funcExists) {
 			throw std::exception("function 'GetRequiredVersion' undefined.");
@@ -290,7 +290,7 @@ namespace scripting
 		{				
 			Manager::ScriptState& state = *phasor_state.state;
 			bool found = false;
-			out_result = Caller::Call(state, function, &found, DEFAULT_TIMEOUT);
+			out_result = Caller::Call(state, function, &found);
 
 			// The first result matching the expected types is used
 			if (!result_set && out_result.size()) {
