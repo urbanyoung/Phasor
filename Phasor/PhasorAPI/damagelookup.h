@@ -82,10 +82,10 @@ void l_odl_multiplier(PHASOR_API_ARGS);
  * \return The value of the bit, if new_value is not specified, or \c nil otherwise.
  *  
  *  \remark
- *	Here are some bit offsets I found:
- *		0 - Hits on player's vehicle don't do damage, only player hits do.
- *		2 - Instant kill.
- *		5 - Ignore shields.
+ *	Here are some bit offsets I found:\n
+ *		0 - Hits on player's vehicle don't do damage, only player hits do.\n
+ *		2 - Instant kill.\n
+ *		5 - Ignore shields.\n
  *		
  *		
  * Example usage:

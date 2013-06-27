@@ -16,10 +16,13 @@ namespace halo { namespace game {
 	typedef std::unique_ptr<s_player> s_player_ptr;
 	s_player_ptr PlayerList[16];
 
-	void cleanupPlayers()
+	void cleanupPlayers(bool notify_scripts)
 	{
 		for (int i = 0; i < 16; i++) {
-			if (PlayerList[i]) PlayerList[i].reset();
+			if (PlayerList[i]) {
+				if (notify_scripts) scripting::events::OnPlayerLeave(*PlayerList[i]);
+				PlayerList[i].reset();
+			}
 		}
 	}
 
@@ -111,8 +114,7 @@ namespace halo { namespace game {
 	{
 		afk_detection::Enable();
 		halo::BuildTagCache();
-
-		for (int i = 0; i < 16; i++) PlayerList[i].reset();
+		
 		g_GameLog->WriteLog(kGameStart, "A new game has started on map %s", map);
 
 		scripting::events::OnNewGame(map);

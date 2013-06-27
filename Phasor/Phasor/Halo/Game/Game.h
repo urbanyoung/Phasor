@@ -26,7 +26,7 @@ namespace halo {
 	s_player* getPlayerFromObjectId(ident id);
 	s_player* getPlayerFromHash(const std::string& hash);
 
-	void cleanupPlayers();
+	void cleanupPlayers(bool notify_scripts);
 
 	// --------------------------------------------------------------------
 	// Events

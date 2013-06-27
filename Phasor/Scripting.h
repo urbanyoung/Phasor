@@ -26,12 +26,13 @@ namespace scripting
 	private:
 		std::set<std::string> blockedFunctions;
 		std::string name, path;
+		bool persistent;
 
 	public:
 		std::unique_ptr<Manager::ScriptState> state;
 
-		PhasorScript(std::unique_ptr<Manager::ScriptState> state)
-			: state(std::move(state)) {}
+		PhasorScript(std::unique_ptr<Manager::ScriptState> state, bool persistent)
+			: state(std::move(state)), persistent(persistent) {}
 		virtual ~PhasorScript() {}
 
 		void BlockFunction(const std::string& func);
@@ -39,11 +40,22 @@ namespace scripting
 
 		const std::string& GetName();
 		const std::string& GetPath();
+		bool isPersistent() { return persistent; }
 
 		// Checks if the specified script function is allowed to be called.
 		bool FunctionAllowed(const std::string& func);
 	};
 	class CheckedScriptReference;
+	
+	struct ScriptInfo
+	{
+		std::string script;
+		bool persistent;
+		ScriptInfo(const std::string & script, bool persistent) 
+			: script(script), persistent(persistent)
+		{}
+	};
+
 	// --------------------------------------------------------------------
 	// Only reason this is a class is to ensure the errstream is set.
 	class Scripts
@@ -67,14 +79,17 @@ namespace scripting
 		~Scripts();
 
 		// Opens the script specified, relative to the scripts directory
-		bool OpenScript(const char* script);
+		bool OpenScript(const char* script, bool persistent);
 
 		// Closes the specified script, if it exists.
 		void CloseScript(const char* script);
-		void CloseAllScripts();
+		void CloseAllScripts(bool include_persistent);
 
-		void ReloadScripts();
+		void ReloadScripts(bool include_persistent);
 		bool ReloadScript(const std::string& script);
+
+		// Returns a list of the loaded scripts
+		std::list<ScriptInfo> getLoadedScripts() const;
 
 		friend class PhasorCaller;
 		friend class CheckedScriptReference;

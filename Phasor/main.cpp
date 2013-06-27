@@ -122,7 +122,7 @@ void OnServerClose()
 {
 	*g_PhasorLog << "Closing the server..." << endl;		
 
-	halo::game::cleanupPlayers();
+	halo::game::cleanupPlayers(true);
 
 	g_Scripts.reset();
 	g_Timers.RemoveAllTimers();

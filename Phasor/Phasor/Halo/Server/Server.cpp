@@ -128,6 +128,9 @@ namespace halo { namespace server
 		// Fix the map name
 		maploader::OnNewGame();
 #endif
+		// from previous game
+		game::cleanupPlayers(true);
+
 		scriptloader::LoadScripts();
 		game::OnNewGame(map);
 	}

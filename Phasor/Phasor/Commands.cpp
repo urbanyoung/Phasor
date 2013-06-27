@@ -47,6 +47,8 @@ namespace commands
 		/*! \todo change Open/Close/Reload script to take an output stream. */
 		cmd["sv_script_reload"]		= &server::scriptloader::sv_script_reload;
 		cmd["sv_script_load"]		= &server::scriptloader::sv_script_load;
+		cmd["sv_script_unload"]		= &server::scriptloader::sv_script_unload;
+		cmd["sv_script_list"]		= &server::scriptloader::sv_script_list;
 		
 		cmd["sv_kickafk"]			= &afk_detection::sv_kickafk;
 
@@ -85,8 +87,10 @@ namespace commands
 		usage["sv_mapvote_del"]		= "<index from sv_mapvote_list>";
 		usage["sv_mapvote_list"]	= "";
 
-		usage["sv_script_reload"]		= "<script to reload>";
-		usage["sv_script_load"]		= "<script to load>";
+		usage["sv_script_reload"]	= "[script to reload]";
+		usage["sv_script_load"]		= "<script to load> <persistent>";
+		usage["sv_script_unload"]	= "<script>";
+		usage["sv_script_list"]		= "";
 
 		usage["sv_kickafk"]			= "<time in minutes>";
 

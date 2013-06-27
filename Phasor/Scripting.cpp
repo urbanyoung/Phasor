@@ -42,10 +42,10 @@ namespace scripting
 
 	Scripts::~Scripts()
 	{
-		CloseAllScripts();
+		CloseAllScripts(true);
 	}
 
-	bool Scripts::OpenScript(const char* script)
+	bool Scripts::OpenScript(const char* script, bool persistent)
 	{		
 		// Make sure the script isn't already loaded
 		if (scripts.find(script) != scripts.end()) {
@@ -61,7 +61,7 @@ namespace scripting
 			std::string file = abs_file.str();
 			std::unique_ptr<Manager::ScriptState> state_ = Manager::CreateScript();
 			scripts[script] = std::unique_ptr<PhasorScript>(
-				new PhasorScript(std::move(state_)));  
+				new PhasorScript(std::move(state_), persistent));  
 			PhasorScript* phasor_state = scripts[script].get();
 			
 			// load api then file so Phasor's funcs don't override any script ones
@@ -128,32 +128,46 @@ namespace scripting
 		CloseScript(itr);
 	}
 
-	void Scripts::CloseAllScripts()
+	void Scripts::CloseAllScripts(bool include_persistent)
 	{
 		auto itr = scripts.begin();
-		while (itr != scripts.end())
-			itr = CloseScript(itr);
+		while (itr != scripts.end()) {
+			if (include_persistent || !itr->second->isPersistent()) itr = CloseScript(itr);
+			else itr++;
+		}
 	}
 
-	void Scripts::ReloadScripts()
+	void Scripts::ReloadScripts(bool include_persistent)
 	{
-		std::list<std::string> reload_scripts;
-		for(auto itr = scripts.begin(); itr != scripts.end(); ++itr)
-			reload_scripts.push_back(itr->first);
+		std::list<ScriptInfo> reload_scripts;
+		for(auto itr = scripts.begin(); itr != scripts.end(); ++itr) {
+			if (include_persistent || !itr->second->isPersistent()) {
+				reload_scripts.push_back(ScriptInfo(itr->first, itr->second->isPersistent()));
+			}
+		}
 
-		CloseAllScripts();
+		CloseAllScripts(include_persistent);
 
 		for (auto itr = reload_scripts.begin(); itr != reload_scripts.end(); ++itr)
-			OpenScript(itr->c_str());
+			OpenScript(itr->script.c_str(), itr->persistent);
 	}
 
 	bool Scripts::ReloadScript(const std::string& script)
 	{
 		auto itr = scripts.find(script);
 		if (itr == scripts.end()) return false;
+		bool persistent = itr->second->isPersistent();
 		CloseScript(itr);
-		OpenScript(script.c_str());
+		OpenScript(script.c_str(), persistent);
 		return true;
+	}
+
+	std::list<ScriptInfo> Scripts::getLoadedScripts() const
+	{
+		std::list<ScriptInfo> loaded;
+		for (auto itr = scripts.cbegin(); itr != scripts.cend(); ++itr)
+			loaded.push_back(ScriptInfo(itr->first, itr->second->isPersistent()));
+		return loaded;
 	}
 
 	// Returns true if compatible with current api, false if compatible with deprecated
