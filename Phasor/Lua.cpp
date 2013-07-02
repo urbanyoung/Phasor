@@ -3,6 +3,8 @@
 #include <sstream>
 #include <assert.h>
 
+//#pragma comment(lib, "../Debug/lua.lib")
+
 namespace Lua
 {		
 	//-----------------------------------------------------------------------------------------
