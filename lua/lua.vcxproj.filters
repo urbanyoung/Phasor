@@ -98,9 +98,6 @@
     <ClCompile Include="ltm.c">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="lua.c">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="lundump.c">
       <Filter>Header Files</Filter>
     </ClCompile>

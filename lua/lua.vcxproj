@@ -40,7 +40,6 @@
     <ClCompile Include="ltable.c" />
     <ClCompile Include="ltablib.c" />
     <ClCompile Include="ltm.c" />
-    <ClCompile Include="lua.c" />
     <ClCompile Include="lundump.c" />
     <ClCompile Include="lvm.c" />
     <ClCompile Include="lzio.c" />
@@ -75,6 +74,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D55AF885-7878-4C5B-A0D1-B69E062FFF40}</ProjectGuid>
     <RootNamespace>lua</RootNamespace>
+    <ProjectName>lua5.22</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
