@@ -16,6 +16,7 @@
 namespace halo { namespace server
 {
 	SayStream say_stream;
+	SayStreamRaw say_stream_raw;
 
 	#pragma pack(push, 1)
 	struct s_hash_data
@@ -172,6 +173,30 @@ namespace halo { namespace server
 		return allow;
 	}
 
+	void __stdcall ProcessCommandAttempt(s_command_input* input, int playerNum)
+	{
+		// Make sure strings are null terminated
+		input->command[sizeof(input->command)-1] = 0;
+		input->password[sizeof(input->password)-1] = 0;
+
+		if (input->command[0] == 0) return; // empty command
+
+		const char* password = (const char*)ADDR_RCONPASSWORD;
+		bool bCorrect = !strcmp(password, input->password);
+
+		s_player* player = game::getPlayerFromRconId(playerNum);
+
+		// Asks scripts if we should allow it.
+		if (!bCorrect) 
+			bCorrect = scripting::events::OnServerCommandAttempt(*player, input->command, input->password);
+
+		if (bCorrect) {			
+			SetExecutingPlayer(player);
+			ExecuteServerCommand(input->command, false);
+			SetExecutingPlayer(NULL);
+		}
+	}
+
 	// Called when a console command is to be executed
 	// kProcessed: Event has been handled, don't pass to server
 	// kGiveToHalo: Not handled, pass to server.
@@ -292,9 +317,11 @@ namespace halo { namespace server
 		server::AddPacketToGlobalQueue(buffer, retval, 1, 1, 0, 1, 3);
 	}
 
-	void ExecuteServerCommand(const std::string& command)
+	void ExecuteServerCommand(const std::string& command, s_player* execute_as)
 	{
 		halo::s_player* old_exec_player = GetPlayerExecutingCommand();
+		SetExecutingPlayer(execute_as);
+
 		const char* cmd = command.c_str();
 		__asm
 		{
@@ -385,10 +412,17 @@ namespace halo { namespace server
 	
 	// --------------------------------------------------------------------
 	// Server message.
+	// 
+	bool SayStreamRaw::Write(const std::wstring& str)
+	{
+		//scripting::events::OnServerSay()
+		chat::DispatchChat(chat::kChatServer, str.c_str());
+		return true;
+	}
+
 	bool SayStream::Write(const std::wstring& str)
 	{
 		std::wstring msg = L"** SERVER ** " + StripTrailingEndl(str);
-		chat::DispatchChat(chat::kChatServer, msg.c_str());
-		return true;
+		return SayStreamRaw::Write(msg);
 	}
 }}

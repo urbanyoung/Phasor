@@ -40,24 +40,22 @@ void l_sendconsoletext(CallHandler& handler, Object::unique_deque& args, Object:
 	return sendconsoletext(handler, *args[1], *args[0], true);
 }
 
-// Send message to the specified player
-void privatesay(halo::s_player& player, Object& msgObj)
-{
-	WriteMessageToStream(*player.chat_stream, msgObj);
-}
-
 // Send message to specified player, raising an error if player not found.
 void l_privatesay(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	//player never null because strict = true
+	bool prepend = true;
+	if (args.size() == 3) prepend = ReadBoolean(*args[2]);
 	halo::s_player* player = ReadPlayer(handler, *args[0], true); 
-	privatesay(*player, *args[1]);
+
+	WriteMessageToStream(prepend ? halo::server::say_stream : halo::server::say_stream_raw, *args[1]);
 }
 
 // Send message to entire server
 void l_say(CallHandler& handler, Object::unique_deque& args, Object::unique_list&)
 {
-	WriteMessageToStream(halo::server::say_stream, *args[0]);
+	bool prepend = true;
+	if (args.size() == 2) prepend = ReadBoolean(*args[1]);
+	WriteMessageToStream(prepend ? halo::server::say_stream : halo::server::say_stream_raw,*args[0]);
 }
 
 // Respond to person executing the server command or hprintf if no player.

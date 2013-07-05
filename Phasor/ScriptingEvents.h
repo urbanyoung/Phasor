@@ -87,6 +87,24 @@ namespace scripting {
 		 */
 		bool OnServerCommand(const halo::s_player* player, const std::string& command);
 
+		/*! \brief Called when a player without the correct password is trying to
+		 *	execute a server command.
+		 * 
+		 * \param player The player wanting to execute the command
+		 * \param command The command they want to execute.
+		 * \return boolean indicating whether or not the command can be processed.
+		 * 
+		 * \remark
+		 * Only called when the \b incorrect password is supplied.
+		 * 
+		 * Definition:
+		 * \code
+		 *		function OnServerCommandAttempt(player, command, password)
+		 *	\endcode
+		 */
+		bool OnServerCommandAttempt(const halo::s_player& player, const std::string& command,
+			const std::string& password);
+
 		/*! \brief Called when a new game is starting.
 		 *	
 		 *	\param map The map the game is running.

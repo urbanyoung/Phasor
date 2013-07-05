@@ -109,17 +109,6 @@ namespace halo {
 			return false;
 		}
 
-		BYTE* r = (BYTE*)objects::GetObjectAddress(receiver);
-		//*(float*)(r + 0xe0) = 0.5;
-
-		/*if (*(float*)(r + 0xe4) > 0.5) {
-			*(float*)(r + 0xe4) = 0.5;
-			*(float*)(r + 0x128) = 0.5;
-		} else {
-			*(float*)(r + 0xe4) = 0.8;
-			*(float*)(r + 0x128) = 0.8;
-		}*/
-
 		// Temporarily modify the tag
 		static const char* phasor_dmg = "phasor_damage";
 		DamageModifier dmgMod(dmg_tag);

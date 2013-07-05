@@ -43,7 +43,7 @@ namespace halo
 	void s_player::Kick() const
 	{
 		std::string cmd = m_sprintf("sv_kick %i", mem->playerNum + 1);
-		server::ExecuteServerCommand(cmd);
+		server::ExecuteServerCommand(cmd, NULL);
 	}
 
 	void s_player::ChangeTeam(BYTE new_team, bool forcekill)

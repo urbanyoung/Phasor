@@ -81,10 +81,31 @@ namespace server
 		BYTE unk5[14];
 		s_machine_info machine_table[16];
 	};
+
+	struct s_command_input {
+		char password[9]; // don't forget to ensure null-termination
+		char command[65];
+	};
+	static_assert(sizeof(s_command_input) == 74, "incorrect s_command_input");
+
 	#pragma pack(pop)
 
-	// Stream for sending server messages
-	class SayStream : public COutStream
+	class SayStreamRaw : public COutStream
+	{
+	protected:
+		virtual bool Write(const std::wstring& str);
+
+	public:
+		SayStreamRaw() {}
+
+		virtual std::unique_ptr<COutStream> clone() const override
+		{
+			return std::unique_ptr<COutStream>(new SayStreamRaw());
+		}
+	};
+
+	// Stream for sending server messages with **SERVER** prepended
+	class SayStream : public SayStreamRaw
 	{
 	protected:
 		virtual bool Write(const std::wstring& str);
@@ -100,6 +121,7 @@ namespace server
 
 	//! Stream used for server messages.
 	extern SayStream say_stream;
+	extern SayStreamRaw say_stream_raw;
 
 	/*! \brief Send a chat message to the player
 	 *	\param player The player to send the message to
@@ -115,7 +137,7 @@ namespace server
 	 *	\param player The player who changed team. */
 	void NotifyServerOfTeamChange(const halo::s_player& player);
 
-	void ExecuteServerCommand(const std::string& command);
+	void ExecuteServerCommand(const std::string& command, s_player* execute_as);
 
 	// Gets the player's ip
 	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port);
@@ -163,6 +185,8 @@ namespace server
 	 *	\param command The command being executed.
 	 *	\return Value indicating whether or not Halo should process the event.*/
 	e_command_result __stdcall ProcessCommand(char* command);
+
+	void __stdcall ProcessCommandAttempt(s_command_input* input, int playerNum);
 
 	/*! \brief Called when a new game starts.
 	 *	\param map The map the game is running.*/

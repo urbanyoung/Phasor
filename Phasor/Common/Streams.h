@@ -5,6 +5,7 @@
 #include <memory>
 #include <assert.h>
 #include <list>
+#include <set>
 #include "noncopyable.h"
 #include "Types.h"
 
@@ -17,8 +18,6 @@ static const wchar_t* NEW_LINE_CHAR = L"\r\n";
 
 struct endl_tag {};
 static const endl_tag endl;
-
-class CStreamModifier;
 
 class COutStream : private noncopyable
 {
@@ -37,6 +36,11 @@ protected:
 
 public: // stream modifiers
 	bool no_flush;
+	std::set<COutStream*> masters;
+
+	// masters should be valid for the duration of this stream
+	void Notify(COutStream& master);
+	void DontNotify(COutStream& master);
 
 public:
 	COutStream();
@@ -81,6 +85,24 @@ public:
 	~NoFlush()
 	{
 		if (!(stream.no_flush = prev)) stream.Flush();		
+	}
+};
+
+class NotifyStream
+{
+private:
+	COutStream& slave, &master;
+
+public:
+	NotifyStream(COutStream& slave, COutStream& master)
+		: slave(slave), master(master)
+	{
+		slave.Notify(master);
+	}
+
+	~NotifyStream()
+	{
+		slave.DontNotify(master);
 	}
 };
 
@@ -176,6 +198,7 @@ private:
 	Forwarder() {}
 };
 
+
 // ignores all input
 class SinkStream : public COutStream
 {
@@ -193,29 +216,27 @@ public:
 
 };
 
-template <class BaseStream>
-class ProxyRecordStream : public BaseStream
+class RecordStream : public COutStream
 {
 private:
-	std::list<std::wstring>& output;
+	std::list<std::wstring> output;
 
 protected:
 	virtual bool Write(const std::wstring& str)
 	{
-		if (str.size() == 0) return true;
-		output.push_back(str);
-		return BaseStream::Write(str);
+		if (str.size() != 0) output.push_back(str);
+		return true;
 	}
 
 public:
-	ProxyRecordStream(std::list<std::wstring>& output)
-		: output(output) {}
+	RecordStream() {}
 
-	// not a good idea to clone this because we don't know if output will
-	// stick around. So if this stream needs to be cloned, it just clones
-	// the BaseStream
+	const std::list<std::wstring>& getRecord() const {
+		return output;
+	}
+
 	virtual std::unique_ptr<COutStream> clone() const override
 	{
-		return std::unique_ptr<COutStream>(new BaseStream());
+		return std::unique_ptr<COutStream>(new RecordStream());
 	}
 };

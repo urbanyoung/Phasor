@@ -140,6 +140,9 @@ extern unsigned long FUNC_HALOEXCEPTIONHANDLER;
 extern unsigned long ADDR_HASHLIST;
 extern unsigned long ADDR_SERVERSTRUCT;
 extern unsigned long CC_OBJECTCREATIONATTEMPT;
+extern unsigned long ADDR_RCONPASSWORD;
+extern unsigned long CC_SERVERCMDATTEMPT;
+
 namespace Addresses
 {
 	// Called to find all the above addresses

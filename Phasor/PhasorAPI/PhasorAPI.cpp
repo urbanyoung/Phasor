@@ -50,8 +50,8 @@ namespace PhasorAPI
 		{&l_writewidestring, "writewidestring", 2, {TYPE_NUMBER, TYPE_STRING}},
 		// Output related functions: see output.h
 		{&l_hprintf, "hprintf", 1, {TYPE_STRING}},
-		{&l_say, "say", 1, {TYPE_STRING}},
-		{&l_privatesay, "privatesay", 2, {TYPE_NUMBER, TYPE_STRING}},
+		{&l_say, "say", 1, {TYPE_STRING, TYPE_BOOL}},
+		{&l_privatesay, "privatesay", 2, {TYPE_NUMBER, TYPE_STRING, TYPE_BOOL}},
 		{&l_sendconsoletext, "sendconsoletext", 2, {TYPE_NUMBER, TYPE_STRING}},
 		{&l_respond, "respond", 1, {TYPE_STRING}},
 		{&l_log_msg, "log_msg", 2, {TYPE_NUMBER, TYPE_STRING}},
@@ -80,6 +80,7 @@ namespace PhasorAPI
 		{&l_kill, "kill", 1, {TYPE_NUMBER}},
 		{&l_applycamo, "applycamo", 2, {TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_svcmd, "svcmd", 1, {TYPE_STRING, TYPE_BOOL}},
+		{&l_svcmdplayer, "svcmdplayer", 2, {TYPE_STRING, TYPE_NUMBER, TYPE_BOOL}},
 		{&l_updateammo, "updateammo", 1, {TYPE_NUMBER}},
 		{&l_setammo, "setammo", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_setspeed, "setspeed", 2, {TYPE_NUMBER, TYPE_NUMBER}},

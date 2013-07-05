@@ -123,6 +123,8 @@ unsigned long ADDR_BROADCASTVERSION = 0x005df840;
 unsigned long ADDR_HASHLIST = 0x006A2AE4;
 unsigned long ADDR_SERVERSTRUCT = 0x00745BA0;
 unsigned long CC_OBJECTCREATIONATTEMPT = 0x52c600;
+unsigned long ADDR_RCONPASSWORD = 0x0069ba5c;
+unsigned long CC_SERVERCMDATTEMPT = 0x0051a26a;
 
 namespace Addresses
 {

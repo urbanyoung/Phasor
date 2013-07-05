@@ -61,6 +61,16 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnServerCommand", result_bool), true);
 	}
 
+	bool OnServerCommandAttempt(const halo::s_player& player, const std::string& command,
+		const std::string& password)
+	{
+		PhasorCaller caller;
+		AddPlayerArg(&player, caller);
+		caller.AddArg(command);
+		caller.AddArg(password);
+		return HandleResult<bool>(caller.Call("OnServerCommandAttempt", result_bool), false);
+	}
+
 	void OnNewGame(const std::string& map)
 	{
 		PhasorCaller caller;

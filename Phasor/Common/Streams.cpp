@@ -23,10 +23,24 @@ void COutStream::Reserve(size_t size)
 void COutStream::Flush()
 {
 	if (!length_to_write) return;
+	for (auto itr = masters.begin(); itr != masters.end(); ++itr)
+		(*itr)->Write(str);
+
 	if (Write(str) || length_to_write > (1 << 16)) {
 		// clear the string on success or if it's > 64kb
 		Reserve(kDefaultBufferSize);
 	}
+}
+
+void COutStream::Notify(COutStream& master)
+{
+	masters.insert(&master);
+}
+
+void COutStream::DontNotify(COutStream& master)
+{
+	auto itr = masters.find(&master);
+	if (itr != masters.end()) masters.erase(itr);
 }
 
 void COutStream::AppendData(const std::wstring& str)

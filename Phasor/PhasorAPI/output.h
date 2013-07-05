@@ -44,11 +44,13 @@ void l_hprintf(PHASOR_API_ARGS);
 /*! \brief Sends a chat message to the entire server.
  *
  * \param str The message to send.
+ * \param [prepend] boolean indicating whether or not to prepend ** SERVER ** (default true)
  * 
  * Example usage:
  * \code
  *		say("This is a single line message.")
  *		say("This is the first line of another.\nThis is the second.\nAnd so on")
+ *		say("Don't include ** SERVER **", false)
  *	\endcode
  */
 void l_say(PHASOR_API_ARGS);
@@ -57,10 +59,12 @@ void l_say(PHASOR_API_ARGS);
  *
  * \param player_id The memory id of the player to message.
  * \param str The message to send.
+ * \param [prepend] boolean indicating whether or not to prepend ** SERVER ** (default true)
  * 
  * Example usage:
  * \code
  *		privatesay(1, "Hello") -- message player with id 1
+ *		privatesay(1, "Hello", false) -- don't include ** SERVER **
  *	\endcode
  */
 void l_privatesay(PHASOR_API_ARGS);

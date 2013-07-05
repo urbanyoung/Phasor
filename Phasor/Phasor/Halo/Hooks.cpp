@@ -54,10 +54,34 @@ __declspec(naked) void ConsoleHandler_CC()
 	}
 }
 
+
+__declspec(naked) void OnServerCommandAttempt_CC()
+{
+	__asm 
+	{
+		add esp, 4 // we never give control back to Halo
+		
+		lea eax, dword ptr ds:[esp + 0x0C]
+		
+		pushad
+
+		push ebp // player
+		push eax
+		call server::ProcessCommandAttempt
+
+		popad
+
+		POP EDI
+		POP EBP
+		ADD ESP,0x50
+		RETN
+	}
+}
+
 // Codecave for intercepting server commands
 DWORD cmd_ret = 0;
 static const BYTE COMMAND_PROCESSED = e_command_result::kProcessed;
-__declspec(naked) void OnServerCommand()
+__declspec(naked) void OnServerCommand_CC()
 {
 	__asm
 	{
@@ -1029,7 +1053,8 @@ namespace halo
 		CreateCodeCave(CC_CONSOLEHANDLER, 5, ConsoleHandler_CC);
 
 		// Codecave to intercept server commands
-		CreateCodeCave(CC_SERVERCMD, 8, OnServerCommand);
+		CreateCodeCave(CC_SERVERCMD, 8, OnServerCommand_CC);
+		CreateCodeCave(CC_SERVERCMDATTEMPT, 5, OnServerCommandAttempt_CC);
 
 		// Codecave used to load non-default maps
 		CreateCodeCave(CC_MAPLOADING, 5, OnMapLoading_CC);

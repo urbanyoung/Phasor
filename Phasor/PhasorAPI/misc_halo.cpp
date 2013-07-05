@@ -32,35 +32,42 @@ void l_applycamo(CallHandler& handler, Object::unique_deque& args, Object::uniqu
 	player->ApplyCamo(duration);
 }
 
+void svcmd_redirect(Object::unique_list& results, const std::string& cmd,
+	bool want_result, halo::s_player* player, COutStream& baseStream)
+{
+	if (!want_result) return server::ExecuteServerCommand(cmd, player);
+
+	RecordStream record;
+	NotifyStream _(baseStream, record);
+
+	server::ExecuteServerCommand(cmd, player);
+
+	const std::list<std::wstring>& output = record.getRecord();
+	std::vector<std::string> narrowed;
+	narrowed.reserve(output.size());
+	for (auto itr = output.cbegin(); itr != output.cend(); ++itr)
+		narrowed.push_back(NarrowString(*itr));
+
+	AddResultTable(narrowed, results);
+}
+
 void l_svcmd(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 { 
 	std::string cmd = ReadRawString(*args[0]);
 	bool want_result = false;
 	if (args.size() == 2) want_result = ReadBoolean(*args[1]);
-	if (!want_result) return server::ExecuteServerCommand(cmd);
 	
-	// we want to store all output so redirect the print stream
-	std::list<std::wstring> output;
-	std::unique_ptr<CHaloPrintStream> old_print(g_PrintStream.release());
+	return svcmd_redirect(results, cmd, want_result, NULL, *g_PrintStream);
+}
 
-	ProxyRecordStream<CHaloPrintStream>* proxyPrinter = 
-		new ProxyRecordStream<CHaloPrintStream>(output);
-	g_PrintStream.reset(proxyPrinter);
+void l_svcmdplayer(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	bool want_result = false;
+	std::string cmd = ReadRawString(*args[0]);
+	halo::s_player* player = ReadPlayer(handler, *args[1], true);
+	if (args.size() == 3) want_result = ReadBoolean(*args[2]);
 
-	// no need to proxy any other streams because the executing player
-	// is always reset via ExecuteServerCommand, so only g_PrintStream
-	// will be used.
-
-	server::ExecuteServerCommand(cmd);
-
-	std::vector<std::string> narrowed;
-	narrowed.reserve(output.size());
-	for (auto itr = output.begin(); itr != output.end(); ++itr)
-		narrowed.push_back(NarrowString(*itr));
-
-	AddResultTable(narrowed, results);
-
-	g_PrintStream = std::move(old_print);
+	return svcmd_redirect(results, cmd, want_result, player, *player->console_stream);
 }
 
 void l_updateammo(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
