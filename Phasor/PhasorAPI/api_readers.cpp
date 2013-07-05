@@ -86,18 +86,18 @@ void* ReadHaloObject(CallHandler& handler, const Common::Object& obj,
 }
 
 // Reads an tag id and validates it
-void* ReadHaloTag(CallHandler& handler, const Common::Object& obj, 
+halo::s_tag_entry* ReadHaloTag(CallHandler& handler, const Common::Object& obj, 
 	halo::ident& tagid)
 {
 	halo::ident id = halo::make_ident(ReadNumber<DWORD>(obj));
-	void* addr = halo::LookupTag(id);
-	if (!addr) {
+	halo::s_tag_entry* tag = halo::LookupTag(id);
+	if (!tag) {
 		std::string err = m_sprintf("valid tag required: tag %08X doesn't exist.",
 			(DWORD)id);
 		handler.RaiseError(err);
 	}
 	tagid = id;
-	return addr;
+	return tag;
 }
 
 void AddResultNil(Common::Object::unique_list& results)

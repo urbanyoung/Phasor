@@ -111,6 +111,9 @@ namespace PhasorAPI
 		{&l_odl_tag, "odl_tag", 1, {TYPE_NUMBER}},
 		{&l_odl_multiplier, "odl_multiplier", 1, {TYPE_NUMBER}},
 		{&l_odl_flags, "odl_flags", 1, {TYPE_NUMBER, TYPE_NUMBER}},
+		// Damage application, see haloobjects.h
+		{&l_applydmg, "applydmg", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		{&l_applydmgtag, "applydmgtag", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 	};
 
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);

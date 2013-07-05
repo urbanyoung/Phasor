@@ -87,7 +87,7 @@ namespace halo
 		s_tag_type tagType; // ie weap
 		UNKNOWN(8);
 		ident id; // unique id for map
-		char* tagName; // name of tag
+		const char* tagName; // name of tag
 		void* metaData; // data for this tag
 		UNKNOWN(8);
 	};

@@ -3,6 +3,8 @@
 #include "../Phasor/Halo/Game/Objects.h"
 #include "../Phasor/Halo/Game/Game.h"
 #include "../Phasor/Halo/tags.h"
+#include "../Phasor/Halo/Game/Damage.h"
+#include "../Common/MyString.h"
 
 using namespace Common;
 using namespace Manager;
@@ -140,4 +142,40 @@ void l_gettagaddress(CallHandler& handler, Object::unique_deque& args, Object::u
 	s_tag_entry* tag = LookupTag(tagid);
 	if (!tag) handler.RaiseError("gettagaddress : invalid tag id");
 	AddResultPtr(tag, results);
+}
+
+void l_applydmg(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	ident receiver, causer;
+	int flags = 0;
+	float multiplier;
+
+	ReadHaloObject(handler, *args[0], false, receiver);
+	multiplier = ReadNumber<float>(*args[1]);
+	if (args.size() > 2) ReadHaloObject(handler, *args[2], true, causer);
+	if (args.size() > 3) flags = ReadNumber<int>(*args[3]);
+
+	bool b = ApplyDamage(receiver, causer, multiplier, flags);
+	AddResultBool(b, results);
+}
+
+void l_applydmgtag(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	ident receiver, causer, tagid;
+	int flags = 0;
+	float multiplier = 1;
+	halo::s_tag_entry* tag = 0;
+
+	ReadHaloObject(handler, *args[0], false, receiver);
+	tag = ReadHaloTag(handler, *args[1], tagid);
+	if (args.size() > 2) multiplier = ReadNumber<float>(*args[2]);
+	if (args.size() > 3) ReadHaloObject(handler, *args[3], true, causer);
+	if (args.size() > 4) flags = ReadNumber<int>(*args[4]);
+
+	if (tag->tagType != TAG_JPT) {
+		std::string err = m_sprintf("tag %08X is not a damage tag.", (unsigned long)tagid);
+		return handler.RaiseError(err);
+	}
+
+	ApplyDamage(receiver, causer, *tag, multiplier, flags);
 }

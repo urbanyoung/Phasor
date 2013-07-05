@@ -22,7 +22,7 @@ namespace odl {
 		opts_->receiver = receiver;
 		opts_->tag = dmg->tag_id;
 		opts_->flags = dmg->flags;
-		opts_->modifier = 1.0f;
+		opts_->modifier = dmg->modifier1;
 
 		//causer_set = receiver_set = tag_set = instakill_set =  modifier_set = flags_set = false;
 		flags_state = causer_state = receiver_state = tag_state = modifier_state = NULL;

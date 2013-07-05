@@ -25,7 +25,7 @@ void* ReadHaloObject(Manager::CallHandler& handler, const Common::Object& obj,
 	bool allow_invalid, halo::ident& objid);
 
 // Reads an tag id and validates it
-void* ReadHaloTag(Manager::CallHandler& handler, const Common::Object& obj, 
+halo::s_tag_entry* ReadHaloTag(Manager::CallHandler& handler, const Common::Object& obj, 
 	halo::ident& tagid);
 
 // Read number of specified type.

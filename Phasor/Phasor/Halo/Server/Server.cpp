@@ -42,7 +42,7 @@ namespace halo { namespace server
 		WORD cur;
 	};
 	#pragma pack(pop)
-	std::string current_map_base;
+	std::string current_map;
 
 	s_server_info* GetServerStruct()
 	{
@@ -108,6 +108,7 @@ namespace halo { namespace server
 		}
 
 		char* map = loading_map->map;
+		current_map = map;
 		char* gametype = loading_map->gametype;
 #ifdef PHASOR_PC		
 		maploader::OnMapLoad(map);
@@ -117,7 +118,6 @@ namespace halo { namespace server
 		}
 #endif
 
-		current_map_base = map;
 		return bMapUnchanged;
 	}
 
