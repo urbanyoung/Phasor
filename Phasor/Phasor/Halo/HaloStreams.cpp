@@ -108,22 +108,37 @@ namespace halo
 
 	// -------------------------------------------------------------------
 	//
-	PlayerChatStream::PlayerChatStream(const s_player& player)
+	PlayerChatStreamRaw::PlayerChatStreamRaw(const s_player& player)
 		: CPlayerBaseStream(player) 
 	{
 	}
 
 	//use checking
-	PlayerChatStream::PlayerChatStream(const s_player& player, bool)
+	PlayerChatStreamRaw::PlayerChatStreamRaw(const s_player& player, bool)
 		: CPlayerBaseStream(player, true)
+	{
+	}
+
+	bool PlayerChatStreamRaw::Write(const std::wstring& str)
+	{
+		if (!ValidatePlayer()) return true; // invalid now
+		server::MessagePlayer(player, StripTrailingEndl(str));
+		return true;
+	}
+
+	PlayerChatStream::PlayerChatStream(const s_player& player)
+		: PlayerChatStreamRaw(player) 
+	{
+	}
+
+	//use checking
+	PlayerChatStream::PlayerChatStream(const s_player& player, bool)
+		: PlayerChatStreamRaw(player, true)
 	{
 	}
 
 	bool PlayerChatStream::Write(const std::wstring& str)
 	{
-		if (!ValidatePlayer()) return true; // invalid now
-		std::wstring msg = L"** SERVER ** " + StripTrailingEndl(str);
-		server::MessagePlayer(player, msg);
-		return true;
+		return PlayerChatStreamRaw::Write(L"** SERVER ** " + str);
 	}
 }

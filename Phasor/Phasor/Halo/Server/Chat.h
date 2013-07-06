@@ -12,7 +12,8 @@ namespace halo {
 		kChatAll = 0,
 		kChatTeam,
 		kChatVehicle,
-		kChatServer
+		kChatServer, // phasor only
+		kChatPrivate, // phasor only
 	};
 
 #pragma pack(push, 1)

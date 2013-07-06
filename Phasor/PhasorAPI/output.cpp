@@ -46,8 +46,8 @@ void l_privatesay(CallHandler& handler, Object::unique_deque& args, Object::uniq
 	bool prepend = true;
 	if (args.size() == 3) prepend = ReadBoolean(*args[2]);
 	halo::s_player* player = ReadPlayer(handler, *args[0], true); 
-
-	WriteMessageToStream(prepend ? halo::server::say_stream : halo::server::say_stream_raw, *args[1]);
+	halo::PlayerChatStreamRaw raw(*player);
+	WriteMessageToStream(prepend ? *player->chat_stream : raw, *args[1]);
 }
 
 // Send message to entire server

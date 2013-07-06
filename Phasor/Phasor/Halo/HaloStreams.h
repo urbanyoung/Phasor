@@ -62,7 +62,25 @@ namespace halo {
 		}
 	};	
 
-	class PlayerChatStream : public CPlayerBaseStream
+	class PlayerChatStreamRaw : public CPlayerBaseStream
+	{
+	protected:		
+		virtual bool Write(const std::wstring& str) override;
+
+		// used when cloning. forces checks to be made before each Write.
+		PlayerChatStreamRaw(const s_player& player, bool);
+
+	public:
+		PlayerChatStreamRaw(const s_player& player);
+
+		virtual std::unique_ptr<COutStream> clone() const override
+		{
+			return std::unique_ptr<COutStream>(new PlayerChatStreamRaw(player,true));
+		}
+	};
+
+
+	class PlayerChatStream : public PlayerChatStreamRaw
 	{
 	private:	
 		// used when cloning. forces checks to be made before each Write.

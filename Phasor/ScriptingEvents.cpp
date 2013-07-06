@@ -5,6 +5,7 @@
 #include "Phasor/Halo/Game/Damage.h"
 #include "PhasorAPI/damagelookup.h"
 #include "CallHelper.h"
+#include "Phasor/Halo/Server/Chat.h"
 
 // stupid enum warning
 #pragma warning( disable : 4482)
@@ -220,13 +221,27 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnDamageApplication", result_bool), true);
 	}
 
-	bool OnServerChat(const halo::s_player& sender, DWORD type, const std::string& msg)
+	bool OnServerChat(const halo::s_player* sender, const std::string& msg,
+		halo::server::chat::e_chat_types& type, std::string& change_msg)
 	{
+		using namespace Common;
+		static const scripting::results_t expected = {TYPE_BOOL, TYPE_STRING, TYPE_NUMBER};
+		
 		PhasorCaller caller;
-		AddPlayerArg(&sender, caller);
+		AddPlayerArg(sender, caller);
 		caller.AddArg(type);
 		caller.AddArg(msg);
-		return HandleResult<bool>(caller.Call("OnServerChat", result_bool), true);
+		Result r = caller.Call("OnServerChat", expected);
+		if (r.size() == 0) return true; // no scripts returned anything, use defualt
+		if (r.size() > 1) change_msg = r.ReadString(1).GetValue();
+		if (r.size() > 2 && type != halo::server::chat::e_chat_types::kChatServer) {
+			using namespace halo::server::chat;
+			int chat_type = (int)r.ReadNumber(2).GetValue();
+			if (chat_type >= (int)e_chat_types::kChatAll && 
+				chat_type < (int)e_chat_types::kChatPrivate)
+				type = (e_chat_types)chat_type;
+		}
+		return r.ReadBool(0).GetValue();
 	}
 
 	bool OnVehicleEntry(const halo::s_player& player, halo::ident veh_id,

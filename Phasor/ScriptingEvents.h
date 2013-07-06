@@ -38,6 +38,10 @@ namespace halo
 	namespace objects {
 		struct s_object_creation_disposition;
 	}
+
+	namespace server { namespace chat {
+		enum e_chat_types;
+	}}
 }
 
 namespace scripting {
@@ -349,22 +353,41 @@ namespace scripting {
 		 *	\param player The chatting player's memory id
 		 *	\param type The type of chat
 		 *	\param msg The message being sent.
-		 *	\return Boolean indicating whether or not the msg should be sent.
+		 *	\return allow, msg, type
 		 *	
 		 *	\remark
 		 *	Valid type values:
 		 *		- 0 All chat
 		 *		- 1 Team chat
 		 *		- 2 Vehicle chat
+		 *		- 3 Server message
+		 *		- 4 Private server message
+		 *		
+		 *	\remark
+		 *	return value: you can include (or not) any of the three return
+		 *	values. Note: you cannot change a server message into a player 
+		 *	messag. Below are some examples:
+		 *	\code 
+		 *		return false -- block the message
+		 *	\endcode		 *	
+		 *	\code 
+		 *		return true, "Hello" -- change the message to Hello
+		 *	\endcode		 *	
+		 *	\code 
+		 *		function OnServerChat(player, type, msg)
+		 *			if (type == 4) then return end
+		 *			return true, msg, 1 -- don't change the message, but make it team-only
+		 *		end
+		 *	\endcode
 		 *	
 		 *	Definition:
 		 *	\code
 		 *		function OnServerChat(player, type, msg)
 		 *	\endcode
 		 *	
-		 *	\todo let it return string for new message
 		 */
-		bool OnServerChat(const halo::s_player& sender, DWORD type, const std::string& msg);
+		bool OnServerChat(const halo::s_player* sender, const std::string& msg,
+			halo::server::chat::e_chat_types& type, std::string& change_msg);
 
 		/*! \brief Called when a player is wanting to enter a vehicle.
 		 * 

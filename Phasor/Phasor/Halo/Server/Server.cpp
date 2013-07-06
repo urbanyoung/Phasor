@@ -192,7 +192,7 @@ namespace halo { namespace server
 
 		if (bCorrect) {			
 			SetExecutingPlayer(player);
-			ExecuteServerCommand(input->command, false);
+			ExecuteServerCommand(input->command, player);
 			SetExecutingPlayer(NULL);
 		}
 	}
@@ -270,6 +270,11 @@ namespace halo { namespace server
 	void MessagePlayer(const s_player& player, const std::wstring& str)
 	{
 		if (str.size() > 150) return;
+		chat::e_chat_types type = chat::e_chat_types::kChatPrivate;
+		std::string change_msg;
+		bool allow = scripting::events::OnServerChat(&player, NarrowString(str),
+			type, change_msg);
+
 		chat::DispatchChat(chat::kChatServer, str.c_str(), NULL, &player);
 	}
 
@@ -415,8 +420,15 @@ namespace halo { namespace server
 	// 
 	bool SayStreamRaw::Write(const std::wstring& str)
 	{
-		//scripting::events::OnServerSay()
-		chat::DispatchChat(chat::kChatServer, str.c_str());
+		chat::e_chat_types type = chat::e_chat_types::kChatServer;
+		std::string change;
+		bool allow = scripting::events::OnServerChat(NULL, NarrowString(str),
+			type, change);
+		if (allow) {
+			std::wstring msg = str;
+			if (change.size()) msg = WidenString(change);
+			chat::DispatchChat(type, msg.c_str());
+		}
 		return true;
 	}
 

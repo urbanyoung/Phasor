@@ -291,7 +291,6 @@ namespace scripting
 			Manager::ScriptState& state = *phasor_state.state;
 			bool found = false;
 			out_result = Caller::Call(state, function, &found);
-
 			// The first result matching the expected types is used
 			if (!result_set && out_result.size()) {
 				size_t nloop = expected_types.size() < out_result.size() ?

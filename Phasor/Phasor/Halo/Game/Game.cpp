@@ -268,22 +268,24 @@ namespace halo { namespace game {
 		if (!sender || chat->type < kChatAll || chat->type > kChatVehicle) return;
 
 		int length = wcslen(chat->msg);
-		if (length > 64)
-			return;
+		if (length > 64) return;
+
+		std::wstring send_msg = chat->msg;
 		
 		sender->afk->MarkPlayerActive();
 
-		bool allow = scripting::events::OnServerChat(*sender, chat->type,
-			NarrowString(chat->msg));
+		std::string change_msg;
+		bool allow = scripting::events::OnServerChat(sender, NarrowString(chat->msg),
+			chat->type, change_msg);
 
 		if (!allow) return;
-
+		if (change_msg.size()) send_msg = WidenString(change_msg);
 		if (!server::mapvote::OnServerChat(*sender, chat->msg)) return;
 
 		g_GameLog->WriteLog(kPlayerChat, L"[%s] %s: %s", typeValues[chat->type], 
-			sender->mem->playerName, chat->msg);
+			sender->mem->playerName, send_msg.c_str());
 
-		DispatchChat(chat->type, chat->msg, sender);
+		DispatchChat(chat->type, send_msg.c_str(), sender);
 	}
 
 	// Called when a player attempts to enter a vehicle

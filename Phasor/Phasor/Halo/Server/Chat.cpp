@@ -19,6 +19,7 @@ namespace halo { namespace server { namespace chat {
 			{
 				chat_data.player = -1;
 			} break;
+
 		case kChatAll:
 		case kChatTeam:
 		case kChatVehicle:
