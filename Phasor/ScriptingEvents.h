@@ -356,6 +356,11 @@ namespace scripting {
 		 *	\return allow, msg, type
 		 *	
 		 *	\remark
+		 *	\c player is \c nil if it's a server message. If it's a private 
+		 *	server message then \c player is the player who will receive
+		 *	the message.
+		 *	
+		 *	\remark
 		 *	Valid type values:
 		 *		- 0 All chat
 		 *		- 1 Team chat
@@ -366,7 +371,7 @@ namespace scripting {
 		 *	\remark
 		 *	return value: you can include (or not) any of the three return
 		 *	values. Note: you cannot change a server message into a player 
-		 *	messag. Below are some examples:
+		 *	message. Below are some examples:
 		 *	\code 
 		 *		return false -- block the message
 		 *	\endcode		 *	

@@ -305,7 +305,7 @@ namespace Common
 
 	// --------------------------------------------------------------------
 	// Memory commands
-	BOOL WriteBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount)
+	BOOL WriteBytes(DWORD dwAddress, const LPVOID lpBuffer, DWORD dwCount)
 	{
 		BOOL bResult = TRUE;
 
@@ -320,6 +320,17 @@ namespace Common
 		bResult &= VirtualProtect(lpAddress, dwCount, dwOldProtect, &dwNewProtect);		// Restore original access
 		bResult &= FlushInstructionCache(hProcess, lpAddress, dwCount);					// Update instruction cache
 
+		return bResult;
+	}
+
+	BOOL WriteString(DWORD dwAddress, const char* str)
+	{
+		BOOL bResult = TRUE;
+		BYTE terminator[] = {0};
+		int len = strlen(str);
+
+		bResult = WriteBytes(dwAddress, (const LPVOID)str, strlen(str));		
+		bResult &= WriteBytes(dwAddress + len, &terminator, 1);
 		return bResult;
 	}
 

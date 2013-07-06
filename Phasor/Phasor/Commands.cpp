@@ -8,6 +8,7 @@
 #include "Halo/Server/Maploader.h"
 #include "Halo/Server/ScriptLoader.h"
 #include "Halo/Server/MapVote.h"
+#include "Halo/Server/misc_cmds.h"
 #include "Halo/AFKDetection.h"
 #include "Halo/Alias.h"
 #include "../Scripting.h"
@@ -52,6 +53,10 @@ namespace commands
 		
 		cmd["sv_kickafk"]			= &afk_detection::sv_kickafk;
 
+		// misc
+		cmd["sv_version"]			= &server::misc::sv_version;
+		cmd["sv_version_check"]		= &server::misc::sv_version_check;
+
 		cmd["sv_logname"]			= &logging::sv_logname;
 		cmd["sv_loglimit"]			= &logging::sv_loglimit;
 		cmd["sv_logmovedir"]		= &logging::sv_logmovedir;
@@ -80,7 +85,7 @@ namespace commands
 		usage["sv_map"]				= usage["sv_mapcycle_add"];
 		usage["sv_end_game"]		= "";
 
-		usage["sv_mapvote"]			= "<true of false>";
+		usage["sv_mapvote"]			= "<true or false>";
 		usage["sv_mapvote_size"]	= "<number of options to show>";
 		usage["sv_mapvote_begin"]	= "";
 		usage["sv_mapvote_add"]		= "<map> <gametype> <description> opt: [script1] [script2] ...";
@@ -93,6 +98,9 @@ namespace commands
 		usage["sv_script_list"]		= "";
 
 		usage["sv_kickafk"]			= "<time in minutes>";
+
+		usage["sv_version"]			= "<version> see `sv_version` for list of versions.";
+		usage["sv_version_check"]	= "<true or false>";
 
 		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
 		usage["sv_loglimit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";

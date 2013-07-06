@@ -1043,6 +1043,11 @@ namespace halo
 		memset(nopPatch, 0x90, sizeof(nopPatch));
 		WriteBytes(PATCH_MAPTABLEALLOCATION, &nopPatch, sizeof(nopPatch));	
 #endif
+
+		BYTE nopServerName[] = {0x90, 0x90};
+		WriteBytes(PATCH_SERVERNAME1, nopServerName, sizeof(nopServerName));
+		WriteBytes(PATCH_SERVERNAME2, nopServerName, sizeof(nopServerName));
+		
 		// Server hooks
 		// ----------------------------------------------------------------
 		// 

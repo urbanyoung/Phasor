@@ -158,6 +158,9 @@
     <ClCompile Include="Phasor\Halo\Game\Damage.cpp">
       <Filter>Phasor\Halo\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\misc_cmds.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -384,6 +387,9 @@
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Game\Damage.h">
       <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\misc_cmds.h">
+      <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

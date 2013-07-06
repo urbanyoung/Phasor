@@ -142,6 +142,11 @@ extern unsigned long ADDR_SERVERSTRUCT;
 extern unsigned long CC_OBJECTCREATIONATTEMPT;
 extern unsigned long ADDR_RCONPASSWORD;
 extern unsigned long CC_SERVERCMDATTEMPT;
+extern unsigned long PATCH_SERVERNAME1;
+extern unsigned long PATCH_SERVERNAME2;
+extern unsigned long PATCH_CURRENTVERSION;
+extern unsigned long PATCH_ANYVERSIONCHECK1;
+extern unsigned long PATCH_ANYVERSIONCHECK2;
 
 namespace Addresses
 {

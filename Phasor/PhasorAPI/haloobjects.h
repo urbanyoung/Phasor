@@ -232,6 +232,14 @@ void l_gettagaddress(PHASOR_API_ARGS);
  * \param multiplier real number indicating how much damage to apply.
  * \param [causer] object id of the object to attribute the damage to.
  * \param [flags] damage flags to use (see odl_flags)
+ * 
+ * \remarks
+ * flags is a bitfield, the same as described in odl_flags. However, applydmg
+ * requires the actual flags value - you don't set each bit, like in odl_flags.
+ * So, to calculate the actual value use the following eqn:
+ * local flags = 2^0 + 2^2 + 2^5 
+ * That will activate bits 0, 2 and 5, which indicates vehicle hits, instant
+ * kill and ignore shields.
  *
  * Example usage:
  * \code

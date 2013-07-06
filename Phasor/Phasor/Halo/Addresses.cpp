@@ -125,6 +125,11 @@ unsigned long ADDR_SERVERSTRUCT = 0x00745BA0;
 unsigned long CC_OBJECTCREATIONATTEMPT = 0x52c600;
 unsigned long ADDR_RCONPASSWORD = 0x0069ba5c;
 unsigned long CC_SERVERCMDATTEMPT = 0x0051a26a;
+unsigned long PATCH_SERVERNAME1 = 0x00517d59;
+unsigned long PATCH_SERVERNAME2 = PATCH_SERVERNAME1 + 0x12;
+unsigned long PATCH_CURRENTVERSION =  0x005152e3;
+unsigned long PATCH_ANYVERSIONCHECK1 = PATCH_CURRENTVERSION + 4;
+unsigned long PATCH_ANYVERSIONCHECK2 = PATCH_ANYVERSIONCHECK1 + 0x0B;
 
 namespace Addresses
 {
@@ -476,7 +481,7 @@ namespace Addresses
 		BYTE instPatch[] = {0x68, 0x6C, 0x03, 0x5B, 0x00, 0x64, 0xA1, 0x00, 0x00, 0x00, 0x00, 0x50, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
 		std::vector<DWORD> locations = FindSignatures(instSig, 0, sizeof(instSig), codeSection, codeSize);
 			
-		// apply all the patches
+		// apply all the exception patches
 		for (size_t x = 0; x < locations.size(); x++)
 			WriteBytes((DWORD)codeSection+locations[x], instPatch, sizeof(instPatch));
 	}

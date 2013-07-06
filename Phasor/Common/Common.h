@@ -260,7 +260,8 @@ namespace Common
 
 	// --------------------------------------------------------------------
 	// Memory commands
-	BOOL WriteBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount);
+	BOOL WriteBytes(DWORD dwAddress, const LPVOID lpBuffer, DWORD dwCount);
+	BOOL WriteString(DWORD dwAddress, const char* str);
 	BOOL ReadBytes(DWORD dwAddress, LPVOID lpBuffer, DWORD dwCount);
 	std::vector<DWORD> FindSignatures(LPBYTE sigBuffer, LPBYTE sigWildCard,
 		DWORD sigSize, LPBYTE pBuffer, DWORD size);
