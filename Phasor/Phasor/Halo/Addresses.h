@@ -131,7 +131,7 @@ extern unsigned long PATCH_NOMAPPROCESS;
 extern unsigned long PATCH_TEAMSELECTION;
 
 // TO FIND SIGNATURES FOR
-
+extern unsigned long ADDR_BROADCASTVERSION; 
 extern unsigned long ADDR_HASHLIST;
 extern unsigned long ADDR_SERVERSTRUCT;
 extern unsigned long CC_OBJECTCREATIONATTEMPT;

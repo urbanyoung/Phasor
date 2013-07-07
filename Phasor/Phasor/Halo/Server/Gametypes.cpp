@@ -8,6 +8,13 @@
 namespace halo { namespace server { namespace gametypes {
 	std::map<std::wstring, std::wstring> gametypes;
 
+	std::wstring normalizeGametype(const std::wstring& gametype)
+	{
+		std::wstring lower = gametype;
+		ToLowercase(lower);
+		return lower;
+	}
+
 	bool BuildGametypeList()
 	{
 		std::wstring hdmuPath = g_ProfileDirectory + L"saved\\hdmu.map";
@@ -47,7 +54,7 @@ namespace halo { namespace server { namespace gametypes {
 	bool ReadGametypeData(const std::wstring& gametype, BYTE* out,
 		DWORD outSize)
 	{
-		auto itr = gametypes.find(gametype);
+		auto itr = gametypes.find(normalizeGametype(gametype));
 		if (itr == gametypes.end()) return false;
 		std::wstring& gametypePath = itr->second;
 		CInFile file;
@@ -58,7 +65,7 @@ namespace halo { namespace server { namespace gametypes {
 
 	bool IsValidGametype(const std::wstring& gametype)
 	{
-		return gametypes.find(gametype) != gametypes.end();
+		return gametypes.find(normalizeGametype(gametype)) != gametypes.end();
 	}
 
 }}}
