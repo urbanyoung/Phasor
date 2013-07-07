@@ -265,7 +265,22 @@ namespace halo { namespace server { namespace maploader
 	// Checks if a map exists
 	bool IsValidMap(const std::string& map)
 	{
-		//return true;
+		const char* map_cstr = map.c_str();
+		bool valid = false;
+		__asm
+		{
+			pushad
+
+			mov eax, map_cstr
+			call dword ptr ds:[FUNC_VERIFYMAP_CE]
+			cmp eax, -1
+			je MAP_NOT_FOUND
+			mov valid, 1
+MAP_NOT_FOUND:
+			popad
+
+		}
+		return valid;
 	}
 	
 #endif

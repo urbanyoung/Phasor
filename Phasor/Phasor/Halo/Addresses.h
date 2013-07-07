@@ -45,7 +45,7 @@ extern unsigned long ADDR_GAMETYPE;
 extern unsigned long ADDR_PORT;
 extern unsigned long ADDR_SERVERNAME;
 extern unsigned long ADDR_CONSOLEREADY;
-
+extern unsigned long ADDR_SERVERINFO;
 
 // ------------------------------------------------------------------------
 //
@@ -72,6 +72,14 @@ extern unsigned long FUNC_PREPAREGAME_TWO;
 extern unsigned long FUNC_BANPLAYER;
 extern unsigned long FUNC_SAVEBANLIST;
 extern unsigned long FUNC_UPDATEAMMO;
+extern unsigned long FUNC_CREATEOBJECTQUERY;
+extern unsigned long FUNC_CREATEOBJECT;
+extern unsigned long FUNC_DESTROYOBJECT;
+extern unsigned long FUNC_PLAYERASSIGNWEAPON;
+extern unsigned long FUNC_NOTIFY_WEAPONPICKUP;
+extern unsigned long FUNC_ENTERVEHICLE;
+extern unsigned long FUNC_EJECTVEHICLE;
+extern unsigned long FUNC_HALOEXCEPTIONHANDLER;
 
 // ------------------------------------------------------------------------
 //
@@ -99,13 +107,17 @@ extern unsigned long CC_WEAPONRELOAD;
 extern unsigned long CC_DAMAGELOOKUP;
 extern unsigned long CC_DAMAGEAPPLICATION;
 extern unsigned long CC_WEAPONASSIGN;
-//extern unsigned long CC_WEAPONCREATION;
-//extern unsigned long CC_WEAPONCREATION;
-extern unsigned long CC_OBJECTCREATION; // all objects??
+extern unsigned long CC_OBJECTCREATION;
 extern unsigned long CC_OBJECTDESTROY;
 extern unsigned long CC_MAPCYCLEADD;
 extern unsigned long CC_CLIENTUPDATE;
 extern unsigned long CC_EXCEPTION_HANDLER;
+extern unsigned long CC_VEHICLERESPAWN;
+extern unsigned long CC_VEHICLEFORCEEJECT;
+extern unsigned long CC_VEHICLEUSEREJECT;
+extern unsigned long CC_HALOPRINT;
+extern unsigned long CC_HALOBANCHECK;
+extern unsigned long CC_EQUIPMENTDESTROY;
 
 // ------------------------------------------------------------------------
 //
@@ -119,24 +131,7 @@ extern unsigned long PATCH_NOMAPPROCESS;
 extern unsigned long PATCH_TEAMSELECTION;
 
 // TO FIND SIGNATURES FOR
-extern unsigned long FUNC_CREATEOBJECTQUERY;
-extern unsigned long FUNC_CREATEOBJECT;
-extern unsigned long CC_VEHICLERESPAWN;
-extern unsigned long ADDR_SERVERINFO;
-extern unsigned long CC_EQUIPMENTDESTROY;
-extern unsigned long FUNC_DESTROYOBJECT;
-extern unsigned long FUNC_PLAYERASSIGNWEAPON;
-extern unsigned long FUNC_NOTIFY_WEAPONPICKUP;
-extern unsigned long FUNC_ENTERVEHICLE;
-extern unsigned long FUNC_EJECTVEHICLE;
-extern unsigned long CC_VEHICLEFORCEEJECT;
-extern unsigned long CC_VEHICLEUSEREJECT;
-extern unsigned long CC_HALOPRINT;
-extern unsigned long CC_HALOBANCHECK;
-extern unsigned long CC_VERSIONBROADCAST;
-extern unsigned long FUNC_INITVERSIONBROADCAST;
-extern unsigned long ADDR_BROADCASTVERSION;
-extern unsigned long FUNC_HALOEXCEPTIONHANDLER;
+
 extern unsigned long ADDR_HASHLIST;
 extern unsigned long ADDR_SERVERSTRUCT;
 extern unsigned long CC_OBJECTCREATIONATTEMPT;
@@ -148,6 +143,7 @@ extern unsigned long PATCH_CURRENTVERSION;
 extern unsigned long PATCH_ANYVERSIONCHECK1;
 extern unsigned long PATCH_ANYVERSIONCHECK2;
 extern unsigned long CC_HASHVALIDATE;
+extern unsigned long FUNC_VERIFYMAP_CE;
 
 namespace Addresses
 {
