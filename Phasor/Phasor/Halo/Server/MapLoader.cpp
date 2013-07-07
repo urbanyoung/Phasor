@@ -260,6 +260,16 @@ namespace halo { namespace server { namespace maploader
 	}
 #endif
 
+#ifdef PHASOR_CE
+
+	// Checks if a map exists
+	bool IsValidMap(const std::string& map)
+	{
+		//return true;
+	}
+	
+#endif
+
 	// This function is effectively sv_map_next
 	void StartGame(const char* map)
 	{
@@ -550,6 +560,7 @@ namespace halo { namespace server { namespace maploader
 			out << entry.map << L" isn't a valid map." << endl;
 			return false;
 		}
+
 		if (!gametypes::IsValidGametype(entry.gametype)) {
 			out << entry.gametype << L" isn't a valid gametype." << endl;
 			return false;

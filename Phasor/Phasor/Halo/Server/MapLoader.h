@@ -54,6 +54,9 @@ namespace halo { namespace server { namespace maploader
 		const s_phasor_mapcycle_entry& new_entry,
 		COutStream& out);
 
+	// Checks if a map exists
+	bool IsValidMap(const std::string& map);
+
 	//Non-default map loading
 	// --------------------------------------------------------------------
 #ifdef PHASOR_PC
@@ -66,9 +69,6 @@ namespace halo { namespace server { namespace maploader
 
 	// This function returns the address of our map table
 	DWORD GetMapTable();
-
-	// Checks if a map exists
-	bool IsValidMap(const std::string& map);
 
 	// Called when a map is being loaded.
 	void OnMapLoad(char* map);

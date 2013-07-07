@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "lua\lua.vcxproj", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Phasor", "Phasor\Phasor.vcxproj", "{FFC23927-B528-4548-A4E4-A8DEBDD449C0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhasorCE", "PhasorCE\PhasorCE.vcxproj", "{B082631C-F1EB-4FBA-8830-0E1E0684EC2E}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strings", "strings\strings.vcxproj", "{F0FAD873-6B69-4C38-9B03-53EF6866052A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl_test", "libcurl_test\libcurl_test.vcxproj", "{AD8C25D9-498E-4122-9681-6F028ABFABB5}"
@@ -20,6 +18,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sql_test", "sql_test\sql_test.vcxproj", "{28396E85-70FE-4928-9349-95F4235A1F46}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phasor_test", "phasor_test\phasor_test.vcxproj", "{F1B5508F-52B4-4107-BFAB-8E82021B12E1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhasorCE", "Phasor\PhasorCE.vcxproj", "{F70F475A-E558-41C7-BAA4-8E2F6389ED68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +43,6 @@ Global
 		{FFC23927-B528-4548-A4E4-A8DEBDD449C0}.Debug|Win32.Build.0 = Debug|Win32
 		{FFC23927-B528-4548-A4E4-A8DEBDD449C0}.Release|Win32.ActiveCfg = Release|Win32
 		{FFC23927-B528-4548-A4E4-A8DEBDD449C0}.Release|Win32.Build.0 = Release|Win32
-		{B082631C-F1EB-4FBA-8830-0E1E0684EC2E}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B082631C-F1EB-4FBA-8830-0E1E0684EC2E}.Debug|Win32.Build.0 = Debug|Win32
-		{B082631C-F1EB-4FBA-8830-0E1E0684EC2E}.Release|Win32.ActiveCfg = Release|Win32
-		{B082631C-F1EB-4FBA-8830-0E1E0684EC2E}.Release|Win32.Build.0 = Release|Win32
 		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Debug|Win32.Build.0 = Debug|Win32
 		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Release|Win32.ActiveCfg = Release|Win32
@@ -67,6 +63,10 @@ Global
 		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Debug|Win32.Build.0 = Debug|Win32
 		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Release|Win32.ActiveCfg = Release|Win32
 		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Release|Win32.Build.0 = Release|Win32
+		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Debug|Win32.Build.0 = Debug|Win32
+		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Release|Win32.ActiveCfg = Release|Win32
+		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

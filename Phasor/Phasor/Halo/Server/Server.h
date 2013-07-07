@@ -43,10 +43,10 @@ namespace server
 			return **con_info_ptr;
 		}
 #ifdef PHASOR_CE
-		char unk1[0x20]
-		char ip[0x20]
+		char unk1[0x20];
+		char ip[0x20];
 		char cd_key_hash[0x20];
-		char unk2[0x2c]
+		char unk2[0x2c];
 #endif
 	};
 	static_assert(sizeof(s_machine_info) == MACHINE_ENTRY_SIZE, "incorrect s_machine_info");
