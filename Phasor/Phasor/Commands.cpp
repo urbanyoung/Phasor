@@ -56,6 +56,7 @@ namespace commands
 		// misc
 		cmd["sv_version"]			= &server::misc::sv_version;
 		cmd["sv_version_check"]		= &server::misc::sv_version_check;
+		cmd["sv_hash_check"]		= &server::misc::sv_hash_check;
 
 		cmd["sv_logname"]			= &logging::sv_logname;
 		cmd["sv_loglimit"]			= &logging::sv_loglimit;
@@ -101,6 +102,7 @@ namespace commands
 
 		usage["sv_version"]			= "<version> see `sv_version` for list of versions.";
 		usage["sv_version_check"]	= "<true or false>";
+		usage["sv_hash_check"]		= "<true or false>";
 
 		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
 		usage["sv_loglimit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";

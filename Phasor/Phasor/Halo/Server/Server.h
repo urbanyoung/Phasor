@@ -57,7 +57,7 @@ namespace server
 		wchar_t name[12];
 		DWORD idk;
 		BYTE machineId;
-		BYTE status;
+		BYTE status; // 1 = ok, 2 = invalid hash (or auth, or w/e)
 		BYTE team;
 		BYTE playerId;
 	};
@@ -87,6 +87,15 @@ namespace server
 		char command[65];
 	};
 	static_assert(sizeof(s_command_input) == 74, "incorrect s_command_input");
+
+	struct s_hash_validation {
+		DWORD machineId;
+		char hash[32];
+		DWORD empty;
+		DWORD requestId;
+		UNKNOWN(0x0C);
+		DWORD status;
+	};
 
 	#pragma pack(pop)
 
@@ -122,6 +131,9 @@ namespace server
 	//! Stream used for server messages.
 	extern SayStream say_stream;
 	extern SayStreamRaw say_stream_raw;
+
+	void acceptInvalidHashes(bool state);
+	bool getInvalidHashState();
 
 	/*! \brief Send a chat message to the player
 	 *	\param player The player to send the message to
@@ -208,6 +220,9 @@ namespace server
 	 *	\param hash The hash being checked.
 	 *	\return Boolean indicating whether or not the player is allowed to join.*/
 	bool __stdcall OnHaloBanCheck(char* hash, s_machine_info* machine);
+
+	// Called once Halo has received the hash-checking response from gamespy
+	void __stdcall OnHashValidation(s_hash_validation* info, const char* status);
 
 	// Called when the server info is about to be broadcast
 	//bool __stdcall OnVersionBroadcast(DWORD arg1, DWORD arg2);

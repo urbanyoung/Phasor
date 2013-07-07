@@ -1012,6 +1012,30 @@ PLAYER_NOT_BANNED:
 	}
 }
 
+DWORD hashcheck_ret = 0;
+__declspec(naked) void OnHaloHashCheck_CC() 
+{
+	__asm
+	{
+		pop halobancheck_ret
+
+			pushad
+
+			push eax // errmsg
+			push esi // request struct
+			call server::OnHashValidation
+
+			popad
+
+			ADD ESP,0x0C
+			MOV DWORD PTR DS:[ESI+0x44],EAX
+
+
+			push halobancheck_ret
+			ret
+	}
+}
+
 namespace halo
 {
 	using namespace Common;
@@ -1137,6 +1161,7 @@ namespace halo
 		// Generic codecaves
 		CreateCodeCave(CC_HALOPRINT, 6, OnHaloPrint_CC);
 		CreateCodeCave(CC_HALOBANCHECK, 6, OnHaloBanCheck_CC);
+		CreateCodeCave(CC_HASHVALIDATE, 6, OnHaloHashCheck_CC);
 		//CreateCodeCave(CC_VERSIONBROADCAST, 6, OnVersionBroadcast_CC);
 
 		//CreateCodeCave(0x005112d4, 5, OnJoinCheck_CC);

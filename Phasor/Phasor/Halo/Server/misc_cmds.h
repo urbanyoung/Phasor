@@ -9,4 +9,8 @@ namespace halo { namespace server { namespace misc {
 
 	e_command_result sv_version_check(void*, 
 		commands::CArgParser& args, COutStream& out);
+
+	// Hash checking
+	e_command_result sv_hash_check(void*, 
+		commands::CArgParser& args, COutStream& out);
 }}}

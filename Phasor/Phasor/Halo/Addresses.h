@@ -147,6 +147,7 @@ extern unsigned long PATCH_SERVERNAME2;
 extern unsigned long PATCH_CURRENTVERSION;
 extern unsigned long PATCH_ANYVERSIONCHECK1;
 extern unsigned long PATCH_ANYVERSIONCHECK2;
+extern unsigned long CC_HASHVALIDATE;
 
 namespace Addresses
 {

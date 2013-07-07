@@ -60,6 +60,16 @@ namespace halo { namespace server
 		return NULL;
 	}
 
+	s_machine_info* GetMachineData(DWORD id) {
+		s_server_info* server = GetServerStruct();
+		for (int i = 0; i < 16; i++) {
+			if (server->machine_table[i].id_hash == id)
+				return &server->machine_table[i];
+		}
+		return NULL;
+	}
+
+
 	void __stdcall ConsoleHandler(DWORD fdwCtrlType)
 	{
 		switch(fdwCtrlType) 
@@ -171,6 +181,23 @@ namespace halo { namespace server
 				" IP : " << ip << endl;
 		}
 		return allow;
+	}
+
+	
+	bool allow_invalid_hash = false;
+	void acceptInvalidHashes(bool state) { allow_invalid_hash = state; }
+	bool getInvalidHashState() { return allow_invalid_hash; }
+
+	// Called once Halo has received the hash-checking response from gamespy
+	void __stdcall OnHashValidation(s_hash_validation* info, const char* status)
+	{
+		// We still want to reject valid hashes with invalid challenges
+		// If we get such a case, someone is trying to steal a hash.
+		if (allow_invalid_hash && strcmp(status, "Invalid authentication") != 0) {
+			info->status = 1;
+		} else {
+			*g_PrintStream << "Machine " << info->machineId << " is being rejected because: " << status << endl;
+		}
 	}
 
 	void __stdcall ProcessCommandAttempt(s_command_input* input, int playerNum)

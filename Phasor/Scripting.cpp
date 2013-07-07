@@ -75,6 +75,7 @@ namespace scripting
 			bool fexists = false;
 			Manager::Caller caller;
 			caller.AddArg(GetCurrentProcessId());
+			caller.AddArg(persistent);
 			caller.Call(*phasor_state->state, "OnScriptLoad", &fexists);
 
 			if (!fexists) {

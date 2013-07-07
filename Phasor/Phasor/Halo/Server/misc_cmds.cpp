@@ -1,6 +1,7 @@
 #include "misc_cmds.h"
 #include "../Addresses.h"
 #include "../../../Common/Common.h"
+#include "Server.h"
 
 namespace halo { namespace server { namespace misc { 
 
@@ -95,6 +96,21 @@ namespace halo { namespace server { namespace misc {
 		}
 
 		out << "Version checking has been " << (enabled ? "enabled" : "disabled") << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_hash_check(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		if (!args.size()) {
+			out << "Hash checking is currently " << 
+				(getInvalidHashState() ? "disabled" : "enabled") << endl;
+			return e_command_result::kProcessed;
+		}
+		bool state = args.ReadBool();
+		server::acceptInvalidHashes(!state);
+
+		out << "Hash checking has been " << (state ? "enabled" : "disabled") << endl;
 		return e_command_result::kProcessed;
 	}
 
