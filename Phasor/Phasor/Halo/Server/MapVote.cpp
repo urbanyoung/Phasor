@@ -152,7 +152,12 @@ namespace halo { namespace server { namespace mapvote {
 	e_command_result sv_mapvote(void*, 
 		commands::CArgParser& args, COutStream& out)
 	{
-		mapvote_enabled = args.ReadBool();
+		bool enable = args.ReadBool();
+		if (enable && !mapvote_list.size()) {
+			out << "You need to add some options before enabling, see sv_mapvote_add." << endl;
+			return e_command_result::kProcessed;
+		}
+		mapvote_enabled = enable;
 		out << "Map voting has been " << (mapvote_enabled ? "enabled" : "disabled")
 			<< endl;
 		return e_command_result::kProcessed;
@@ -162,7 +167,7 @@ namespace halo { namespace server { namespace mapvote {
 		commands::CArgParser& args, COutStream& out)
 	{
 		if (mapvote_in_progress)
-			out << "You must wait until the current vote is over." << endl;
+			out << "You must wait until the current vote has finished." << endl;
 		else {
 			mapvote_option_count = args.ReadUInt(2);
 			out << "Only " << (int)mapvote_option_count << " options will be displayed." << endl;
