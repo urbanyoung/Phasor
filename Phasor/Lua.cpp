@@ -192,6 +192,8 @@ namespace Lua
 		if (func->get_type() != Type_Function)
 			throw std::exception("lua: Attempted function call on non-function entity.");
 		
+		int top = lua_gettop(L);
+
 		func->push(*this);
 
 		// Push the arguments on the stack
@@ -208,7 +210,7 @@ namespace Lua
 		MObject::unique_deque results;
 
 		// Pop the results off the stack
-		int n = lua_gettop(L);
+		int n = lua_gettop(L) - top;
 		for (int i = 0; i < n; i++)	{
 			if (lua_type(L, -1) == Type_Nil) lua_pop(L, 1);
 			else
