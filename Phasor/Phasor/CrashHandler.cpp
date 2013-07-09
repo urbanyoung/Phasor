@@ -66,8 +66,9 @@ namespace CrashHandler
 		GetLocalTime(&stLocalTime);
 		wchar_t CrashDumpW[1024];
 		swprintf_s(CrashDumpW, NELEMS(CrashDumpW), 
-				L"%s\\%s-%s-%04X-%04d%02d%02d-%02d%02d%02d-%ld-%ld.dmp", 
-				g_CrashDirectory.c_str(), L"Phasor", PHASOR_MAJOR_VERSION_STR, 
+				L"%s\\%s-%s-%s-%04X-%04d%02d%02d-%02d%02d%02d-%ld-%ld.dmp", 
+				g_CrashDirectory.c_str(), L"Phasor", PHASOR_HALO_BUILD,
+				PHASOR_MAJOR_VERSION_STR, 
 				PHASOR_INTERNAL_VERSION, stLocalTime.wYear, stLocalTime.wMonth,
 				stLocalTime.wDay, stLocalTime.wHour, stLocalTime.wMinute, 
 				stLocalTime.wSecond, dwProcessId, ei.ThreadId);
