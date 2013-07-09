@@ -293,16 +293,17 @@ MAP_NOT_FOUND:
 			__asm
 			{
 				pushad
-					MOV EDI,map
-					CALL dword ptr ds:[FUNC_PREPAREGAME_ONE]
+				MOV EDI,map
+				CALL dword ptr ds:[FUNC_PREPAREGAME_ONE]
 				push 0
 					push esi // we need a register for a bit
-					mov esi, dword ptr DS:[ADDR_PREPAREGAME_FLAG]
+				mov esi, dword ptr DS:[ADDR_PREPAREGAME_FLAG]
 				mov byte PTR ds:[esi], 1
 					pop esi
-					call dword ptr ds:[FUNC_PREPAREGAME_TWO]
+
+				call dword ptr ds:[FUNC_PREPAREGAME_TWO]
 				add esp, 4
-					popad
+				popad
 			}
 		}
 		else {

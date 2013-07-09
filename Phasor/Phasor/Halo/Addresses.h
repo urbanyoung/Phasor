@@ -131,7 +131,7 @@ extern unsigned long PATCH_NOMAPPROCESS;
 extern unsigned long PATCH_TEAMSELECTION;
 
 // TO FIND SIGNATURES FOR
-extern unsigned long ADDR_BROADCASTVERSION; 
+extern unsigned long ADDR_BROADCASTVERSION; //
 extern unsigned long ADDR_HASHLIST;
 extern unsigned long ADDR_SERVERSTRUCT;
 extern unsigned long CC_OBJECTCREATIONATTEMPT;
@@ -144,6 +144,20 @@ extern unsigned long PATCH_ANYVERSIONCHECK1;
 extern unsigned long PATCH_ANYVERSIONCHECK2;
 extern unsigned long CC_HASHVALIDATE;
 extern unsigned long FUNC_VERIFYMAP_CE;
+
+//unsigned long ADDR_BROADCASTVERSION = 0x005df840;
+//unsigned long ADDR_HASHLIST = 0x006A2AE4;
+//unsigned long ADDR_SERVERSTRUCT = 0x00745BA0;
+//unsigned long CC_OBJECTCREATIONATTEMPT = 0x52c600;
+//unsigned long ADDR_RCONPASSWORD = 0x0069ba5c;
+//unsigned long CC_SERVERCMDATTEMPT = 0x0051a26a;
+//unsigned long PATCH_SERVERNAME1 = 0x00517d59;
+//unsigned long PATCH_SERVERNAME2 = PATCH_SERVERNAME1 + 0x12;
+//unsigned long PATCH_CURRENTVERSION =  0x005152e3;
+//unsigned long PATCH_ANYVERSIONCHECK1 = PATCH_CURRENTVERSION + 4;
+//unsigned long PATCH_ANYVERSIONCHECK2 = PATCH_ANYVERSIONCHECK1 + 0x0B;
+//unsigned long CC_HASHVALIDATE = 0x0059BD97;
+//unsigned long FUNC_VERIFYMAP_CE = 0x0048d980;
 
 namespace Addresses
 {

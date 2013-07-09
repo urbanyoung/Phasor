@@ -13,7 +13,7 @@ std::wstring g_OldLogsDirectory;
 std::wstring g_MapDirectory;
 
 void ParseCommandLine(const std::wstring& commandline, // first is exe name
-	std::wstring& dataPath, std::wstring& mapPath);
+	std::wstring& dataPath, std::wstring& mapPath, std::wstring& scriptPath);
 
 void CreateSubDirectory(const std::wstring& name, std::wstring& out, 
 	const std::wstring& relative = g_ProfileDirectory)
@@ -29,7 +29,7 @@ void CreateSubDirectory(const std::wstring& name, std::wstring& out,
 
 void SetupDirectories()
 {
-	ParseCommandLine(GetCommandLineW(), g_ProfileDirectory, g_MapDirectory);
+	ParseCommandLine(GetCommandLineW(), g_ProfileDirectory, g_MapDirectory, g_ScriptsDirectory);
 
 	if (g_ProfileDirectory.empty())
 	{
@@ -48,16 +48,17 @@ void SetupDirectories()
 
 	NDirectory::NormalizeDirectory(g_ProfileDirectory);
 	NDirectory::NormalizeDirectory(g_MapDirectory);
+	if (g_ScriptsDirectory.size()) NDirectory::NormalizeDirectory(g_ScriptsDirectory);
 
 	CreateSubDirectory(L"data", g_DataDirectory);
-	CreateSubDirectory(L"scripts", g_ScriptsDirectory);
+	if (!g_ScriptsDirectory.size()) CreateSubDirectory(L"scripts", g_ScriptsDirectory);
 	CreateSubDirectory(L"logs", g_LogsDirectory);
 	CreateSubDirectory(L"old", g_OldLogsDirectory, g_LogsDirectory);
 	CreateSubDirectory(L"crash", g_CrashDirectory);
 }
 
 void ParseCommandLine(const std::wstring& commandline, // first is exe name
-	std::wstring& dataPath, std::wstring& mapPath)
+	std::wstring& dataPath, std::wstring& mapPath, std::wstring& scriptPath)
 {
 	using namespace std;
 	vector<wstring> tokens = TokenizeWArgs(commandline);
@@ -72,6 +73,10 @@ void ParseCommandLine(const std::wstring& commandline, // first is exe name
 			} else if (tokens[x] == L"-mappath") {
 				NDirectory::NormalizeDirectory(tokens[x+1]);
 				if (NDirectory::IsDirectory(tokens[x+1])) mapPath = tokens[x+1];
+				x++;
+			} else if (tokens[x] == L"-scriptpath") {
+				NDirectory::NormalizeDirectory(tokens[x+1]);
+				if (NDirectory::IsDirectory(tokens[x+1])) scriptPath = tokens[x+1];
 				x++;
 			}
 		}

@@ -35,34 +35,34 @@ unsigned long ADDR_SERVERINFO = 0x00671420;
 //
 // Function addresses
 //
-unsigned long FUNC_HALOGETHASH = 0x0059BBB0;
-unsigned long FUNC_EXECUTESVCMD = 0x004EB7E0;
-unsigned long FUNC_ONPLAYERDEATH = 0x00490050;
-unsigned long FUNC_ACTIONDEATH_1 = 0x00524410;
-unsigned long FUNC_ACTIONDEATH_2 = 0x0057D510;
-unsigned long FUNC_ACTIONDEATH_3 = 0x00495A10;
-unsigned long FUNC_DOINVIS = 0x0049AAA0;
-unsigned long FUNC_PLAYERJOINING = 0x00517290;
-unsigned long FUNC_TEAMSELECT = 0x00490940;
-unsigned long FUNC_GETMAPPATH = 0x0045FC20;
-unsigned long FUNC_VALIDATEGAMETYPE = 0x00481830;
-unsigned long FUNC_BUILDPACKET = 0x00522E30;
-unsigned long FUNC_ADDPACKETTOQUEUE = 0x00516610;
-unsigned long FUNC_ADDPACKETTOPQUEUE = 0x00516460;
-unsigned long FUNC_AFTERSPAWNROUTINE = 0x00498920;
-unsigned long FUNC_EXECUTEGAME = 0x0047F0E0;
-unsigned long FUNC_PREPAREGAME_ONE = 0x004ED240;
-unsigned long FUNC_PREPAREGAME_TWO = 0x005193F0;
-unsigned long FUNC_BANPLAYER = 0x00518890;
-unsigned long FUNC_SAVEBANLIST = 0x00518270;
-unsigned long FUNC_UPDATEAMMO = 0x004E83E0;
-unsigned long FUNC_CREATEOBJECTQUERY = 0x0052C4F0;
-unsigned long FUNC_CREATEOBJECT = 0x0052C600;
-unsigned long FUNC_DESTROYOBJECT = 0x0052CD20;
-unsigned long FUNC_PLAYERASSIGNWEAPON = 0x00582C60;
-unsigned long FUNC_NOTIFY_WEAPONPICKUP = 0x00499EF0;
-unsigned long FUNC_ENTERVEHICLE = 0x0049A2A0;
-unsigned long FUNC_EJECTVEHICLE = 0x00580B00;
+unsigned long FUNC_HALOGETHASH			= 0x0059BBB0;
+unsigned long FUNC_EXECUTESVCMD			= 0x004EB7E0;
+unsigned long FUNC_ONPLAYERDEATH		= 0x00490050;
+unsigned long FUNC_ACTIONDEATH_1		= 0x00524410;
+unsigned long FUNC_ACTIONDEATH_2		= 0x0057D510;
+unsigned long FUNC_ACTIONDEATH_3		= 0x00495A10;
+unsigned long FUNC_DOINVIS				= 0x0049AAA0;
+unsigned long FUNC_PLAYERJOINING		= 0x00517290;
+unsigned long FUNC_TEAMSELECT			= 0x00490940;
+unsigned long FUNC_GETMAPPATH			= 0x0045FC20;
+unsigned long FUNC_VALIDATEGAMETYPE		= 0x00481830;
+unsigned long FUNC_BUILDPACKET			= 0x00522E30;
+unsigned long FUNC_ADDPACKETTOQUEUE		= 0x00516610;
+unsigned long FUNC_ADDPACKETTOPQUEUE	= 0x00516460;
+unsigned long FUNC_AFTERSPAWNROUTINE	= 0x00498920;
+unsigned long FUNC_EXECUTEGAME			= 0x0047F0E0;
+unsigned long FUNC_PREPAREGAME_ONE		= 0x004ED240;
+unsigned long FUNC_PREPAREGAME_TWO		= 0x005193F0;
+unsigned long FUNC_BANPLAYER			= 0x00518890;
+unsigned long FUNC_SAVEBANLIST			= 0x00518270;
+unsigned long FUNC_UPDATEAMMO			= 0x004E83E0;
+unsigned long FUNC_CREATEOBJECTQUERY	= 0x0052C4F0;
+unsigned long FUNC_CREATEOBJECT			= 0x0052C600;
+unsigned long FUNC_DESTROYOBJECT		= 0x0052CD20;
+unsigned long FUNC_PLAYERASSIGNWEAPON	= 0x00582C60;
+unsigned long FUNC_NOTIFY_WEAPONPICKUP	= 0x00499EF0;
+unsigned long FUNC_ENTERVEHICLE			= 0x0049A2A0;
+unsigned long FUNC_EJECTVEHICLE			= 0x00580B00;
 unsigned long FUNC_HALOEXCEPTIONHANDLER = 0x005B036C;
 
 // ------------------------------------------------------------------------
@@ -196,7 +196,7 @@ namespace Addresses
 
 		BYTE sig6[] = {0x57, 0x33, 0xFF, 0x3B, 0xC7};
 		ADDR_MAPCYCLEINDEX = FindPtrAddress("ADDR_MAPCYCLEINDEX", codeSection, codeSize, sig6, sizeof(sig6), 0, 0x60);
-		ADDR_MAPCYCLELIST = FindPtrAddress("ADDR_CURRENTMAPDATA", codeSection, codeSize, sig6, sizeof(sig6), 0, 0x1C);
+		ADDR_MAPCYCLELIST = FindPtrAddress("ADDR_MAPCYCLELIST", codeSection, codeSize, sig6, sizeof(sig6), 0, 0x1C);
 		ADDR_MAPCYCLECOUNT = FindPtrAddress("ADDR_CURRENTMAPDATACOUNT", codeSection, codeSize, sig6, sizeof(sig6), 0, 9);
 
 		//BYTE sig7[] = {0x8B, 0x0C, 0xF0, 0x8D, 0x3C, 0xF0};
@@ -312,7 +312,7 @@ namespace Addresses
 #endif
 		DWORD call_offset = *(DWORD*)(call_addr + 1);
 		FUNC_EXECUTEGAME = call_addr + 5 + call_offset;
-		//printf("extern unsigned long FUNC_EXECUTEGAME = 0x%08X", FUNC_EXECUTEGAME);
+		printf("extern unsigned long FUNC_EXECUTEGAME = 0x%08X", FUNC_EXECUTEGAME);
 			
 		BYTE sig33[] = {0x56, 0x68, 0xFF, 0x00, 0x00, 0x00, 0x57};
 		FUNC_PREPAREGAME_ONE = FindAddress("FUNC_PREPAREGAME_ONE", codeSection, codeSize, sig33, sizeof(sig33), 0, 0);
@@ -475,6 +475,45 @@ namespace Addresses
 
 		BYTE sig79[] = {0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x08, 0x53, 0x56, 0x57, 0x55};
 		FUNC_HALOEXCEPTIONHANDLER = FindAddress("FUNC_HALOEXCEPTIONHANDLER", codeSection, codeSize, sig79, sizeof(sig79), 0, 0);
+
+		BYTE sig80[] = {0xB9, 0x53, 0x00, 0x00, 0x00, 0xF3, 0xAB};
+		ADDR_BROADCASTVERSION = FindPtrAddress("ADDR_BROADCASTVERSION", codeSection, codeSize, sig80, sizeof(sig80), 0, 0x36);
+
+		BYTE sig81[] = {0x83, 0xC8, 0xFF, 0xC3, 0x8B, 0xC1, 0xC1, 0xE0, 0x04};
+		ADDR_HASHLIST = FindPtrAddress("ADDR_HASHLIST", codeSection, codeSize, sig81, sizeof(sig81), 0, 0x0a);
+		ADDR_HASHLIST += 4;
+
+		BYTE sig82[] = {0x8A, 0x4E, 0x06, 0xC0, 0xE9, 0x02, 0xF6, 0xC1, 0x01};
+		ADDR_SERVERSTRUCT = FindPtrAddress("ADDR_SERVERSTRUCT", codeSection, codeSize, sig82, sizeof(sig82), 0, -26);
+		
+		BYTE sig83[] = {0x83, 0x7A, 0x10, 0xFF};
+		CC_OBJECTCREATIONATTEMPT = FindAddress("CC_OBJECTCREATIONATTEMPT", codeSection, codeSize, sig83, sizeof(sig83), 0, 0x21, 0);
+		
+#ifdef PHASOR_PC
+		BYTE sig84[] = {0xC6, 0x44, 0x24, 0x14, 0x00, 0xC6, 0x44, 0x24, 0x55, 0x00};
+#elif PHASOR_CE
+		BYTE sig85[] = {0x88, 0x5C, 0x24, 0x1C, 0x88, 0x5C, 0x24, 0x5D};
+#endif
+		CC_SERVERCMDATTEMPT = FindAddress("CC_SERVERCMDATTEMPT", codeSection, codeSize, sig85, sizeof(sig85), 0, -5, 0);
+		ReadBytes(CC_SERVERCMDATTEMPT + 1, &ADDR_RCONPASSWORD, sizeof(ADDR_RCONPASSWORD));
+
+		BYTE sig86[] = {0x3B, 0xC8, 0x0F, 0x94, 0xC0, 0x33, 0xDB};
+		PATCH_SERVERNAME1 = FindAddress("PATCH_SERVERNAME1", codeSection, codeSize, sig86, sizeof(sig86), 0, 0x12, 0);
+		PATCH_SERVERNAME2 = PATCH_SERVERNAME1 + 0x12;
+
+		BYTE sig87[] = {0x8B, 0x49, 0x08, 0x89, 0x74, 0x24, 0x08, 0x5E};
+		PATCH_CURRENTVERSION = FindAddress("PATCH_CURRENTVERSION", codeSection, codeSize, sig87, sizeof(sig87), 0, 0x10, 0);
+		PATCH_ANYVERSIONCHECK1 = PATCH_CURRENTVERSION + 4;
+		PATCH_ANYVERSIONCHECK2 = PATCH_ANYVERSIONCHECK1 + 0x0B;
+
+		BYTE sig88[] = {0xC6, 0x44, 0x24, 0x29, 0x67};
+		CC_HASHVALIDATE = FindAddress("CC_HASHVALIDATE", codeSection, codeSize, sig88, sizeof(sig88), 0, 0x8c, 0);
+
+#ifdef PHASOR_CE
+		BYTE sig89[] = {0xC6, 0x84, 0x24, 0x0B, 0x01, 0x00, 0x00, 0x00, 0x8D, 0x74, 0x24, 0x08};
+		FUNC_VERIFYMAP_CE = FindAddress("FUNC_VERIFYMAP_CE", codeSection, codeSize, sig89, sizeof(sig89), 0, -33, 0);
+#endif
+		// addrs should be reating the ptr... duh
 
 		// patch the installation of other exception handlers
 		BYTE instSig[] = {0x68, 0x6C, 0x03, 0x5B, 0x00, 0x64, 0xA1, 0x00, 0x00, 0x00, 0x00, 0x50, 0x64, 0x89, 0x25, 0x00, 0x00, 0x00, 0x00};

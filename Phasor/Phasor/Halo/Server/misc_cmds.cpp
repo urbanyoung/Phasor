@@ -85,7 +85,7 @@ namespace halo { namespace server { namespace misc {
 
 		enabled = args.ReadBool();
 	
-		if (enabled) {
+		if (!enabled) {
 			BYTE jmp[] = {0xEB};
 			Common::WriteBytes(PATCH_ANYVERSIONCHECK1, &jmp, sizeof(jmp));
 			Common::WriteBytes(PATCH_ANYVERSIONCHECK2, &jmp, sizeof(jmp));
