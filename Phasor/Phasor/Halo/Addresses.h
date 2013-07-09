@@ -144,6 +144,9 @@ extern unsigned long PATCH_ANYVERSIONCHECK1;
 extern unsigned long PATCH_ANYVERSIONCHECK2;
 extern unsigned long CC_HASHVALIDATE;
 extern unsigned long FUNC_VERIFYMAP_CE;
+extern unsigned long FUNC_VEHICLERESPAWN1;
+extern unsigned long FUNC_VEHICLERESPAWN2;
+
 
 //unsigned long ADDR_BROADCASTVERSION = 0x005df840;
 //unsigned long ADDR_HASHLIST = 0x006A2AE4;
@@ -158,6 +161,9 @@ extern unsigned long FUNC_VERIFYMAP_CE;
 //unsigned long PATCH_ANYVERSIONCHECK2 = PATCH_ANYVERSIONCHECK1 + 0x0B;
 //unsigned long CC_HASHVALIDATE = 0x0059BD97;
 //unsigned long FUNC_VERIFYMAP_CE = 0x0048d980;
+//unsigned long FUNC_VEHICLERESPAWN1 = 0x0052C310;
+//unsigned long FUNC_VEHICLERESPAWN2 = 0x0052C2B0;
+
 
 namespace Addresses
 {

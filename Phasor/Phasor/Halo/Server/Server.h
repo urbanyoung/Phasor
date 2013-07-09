@@ -73,7 +73,10 @@ namespace server
 		char map_name[0x80];
 		wchar_t gametype[0x18];
 		BYTE unk2[0x69];
-		BYTE max_players;
+#ifdef PHASOR_CE
+		BYTE unk_ce[0x40];
+#endif
+		BYTE max_players;//1e6 before this
 		WORD unk3;
 		BYTE cur_players;
 		BYTE unk4;

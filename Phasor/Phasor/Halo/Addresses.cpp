@@ -130,6 +130,9 @@ unsigned long PATCH_ANYVERSIONCHECK1 = PATCH_CURRENTVERSION + 4;
 unsigned long PATCH_ANYVERSIONCHECK2 = PATCH_ANYVERSIONCHECK1 + 0x0B;
 unsigned long CC_HASHVALIDATE = 0x0059BD97;
 unsigned long FUNC_VERIFYMAP_CE = 0x0048d980;
+unsigned long FUNC_VEHICLERESPAWN1 = 0x0052C310;
+unsigned long FUNC_VEHICLERESPAWN2 = 0x0052C2B0;
+
 
 namespace Addresses
 {
@@ -513,7 +516,11 @@ namespace Addresses
 		BYTE sig89[] = {0xC6, 0x84, 0x24, 0x0B, 0x01, 0x00, 0x00, 0x00, 0x8D, 0x74, 0x24, 0x08};
 		FUNC_VERIFYMAP_CE = FindAddress("FUNC_VERIFYMAP_CE", codeSection, codeSize, sig89, sizeof(sig89), 0, -33, 0);
 #endif
-		// addrs should be reating the ptr... duh
+
+		BYTE sig90[] = {0x83, 0x60, 0x10, 0xDF};
+		DWORD func_vehiclerespawn = FindAddress("FUNC_VEHICLERESPAWN1/2", codeSection, codeSize, sig90, sizeof(sig90), 0, 0, 0);
+		FUNC_VEHICLERESPAWN1 = func_vehiclerespawn + 0x11;
+		FUNC_VEHICLERESPAWN2 = func_vehiclerespawn - 0x4f;
 
 		// patch the installation of other exception handlers
 		BYTE instSig[] = {0x68, 0x6C, 0x03, 0x5B, 0x00, 0x64, 0xA1, 0x00, 0x00, 0x00, 0x00, 0x50, 0x64, 0x89, 0x25, 0x00, 0x00, 0x00, 0x00};

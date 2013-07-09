@@ -61,8 +61,11 @@ __declspec(naked) void OnServerCommandAttempt_CC()
 	{
 		add esp, 4 // we never give control back to Halo
 		
+#ifdef PHASOR_PC
 		lea eax, dword ptr ds:[esp + 0x0C]
-		
+#elif PHASOR_CE
+		lea eax, dword ptr ds:[esp + 0x14]
+#endif
 		pushad
 
 		push ebp // player
@@ -71,9 +74,16 @@ __declspec(naked) void OnServerCommandAttempt_CC()
 
 		popad
 
+#ifdef PHASOR_PC
 		POP EDI
 		POP EBP
 		ADD ESP,0x50
+#elif PHASOR_CE
+		pop edi // this will skip halo's logging, but meh
+		pop ebp
+		pop ebx
+		add esp, 0x54
+#endif
 		RETN
 	}
 }

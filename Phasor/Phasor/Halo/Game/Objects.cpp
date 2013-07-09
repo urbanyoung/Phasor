@@ -110,20 +110,17 @@ namespace halo { namespace objects {
 					void* v1 = &phasor_obj->other, *rotation = &phasor_obj->rotation,
 						*position = &phasor_obj->pos;
 
-					/*! \todo find signatures */
-					DWORD func = 0x0052C310, func1 = 0x0052C2B0;
-
 					__asm
 					{
 						pushad
 						push m_objId
-						call dword ptr ds:[func1] // set flags to let object fall, reset velocities etc
+						call dword ptr ds:[FUNC_VEHICLERESPAWN2] // set flags to let object fall, reset velocities etc
 						add esp, 4
 						push v1
 						push rotation
 						push m_objId
 						mov edi, position
-						call dword ptr ds:[func] // move the object (proper way)
+						call dword ptr ds:[FUNC_VEHICLERESPAWN1] // move the object (proper way)
 						add esp, 0x0c
 						popad
 					}

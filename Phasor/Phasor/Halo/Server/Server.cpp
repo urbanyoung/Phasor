@@ -62,6 +62,7 @@ namespace halo { namespace server
 
 	s_machine_info* GetMachineData(DWORD id) {
 		s_server_info* server = GetServerStruct();
+		
 		for (int i = 0; i < 16; i++) {
 			if (server->machine_table[i].id_hash == id)
 				return &server->machine_table[i];
