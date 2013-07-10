@@ -6,11 +6,7 @@
 namespace halo { 
 	struct s_player;
 
-#ifdef PHASOR_PC
 	extern const std::wstring MSG_PREFIX;
-#elif PHASOR_CE
-	extern const std::wstring MSG_PREFIX;
-#endif
 
 	// Writes to the server console.
 	class CHaloPrintStream : public COutStream

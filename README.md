@@ -1,7 +1,7 @@
 Phasor
 ======
 
-Phasor is a server extension for Halo PC which focuses on customization of gameplay.
+Phasor is a server extension for Halo PC/CE which focuses on customization of gameplay.
 
 Features:
   - Scripting system which allows deep customization of gameplay.

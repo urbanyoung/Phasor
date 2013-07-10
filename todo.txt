@@ -1,5 +1,0 @@
-Make Scripting handle (log) Lua errors.
-Add blacklisted functions for when a function fails to execute.
-Add function so a script can declare that its return value MUST BE CONSIDERED. If two scripts register
-a function, there is a conflict and the latter script won't be loaded. ofc this will be logged.
-

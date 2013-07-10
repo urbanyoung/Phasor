@@ -1,3 +1,0 @@
-Function registering:
- - Lua should check types match those expected (on any of the overloads)
- - Use lua_tox to convert types and lua_checkx to check types. 
