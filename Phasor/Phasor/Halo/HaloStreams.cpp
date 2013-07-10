@@ -7,6 +7,12 @@
 
 namespace halo
 {
+#ifdef PHASOR_PC
+	const std::wstring MSG_PREFIX = L"** SERVER ** ";
+#elif PHASOR_CE
+	const std::wstring MSG_PREFIX;
+#endif
+
 	bool CHaloPrintStream::Write(const std::wstring& str)// str usually has endl appended
 	{
 		if (str.size() == 0) return true;
@@ -139,6 +145,6 @@ namespace halo
 
 	bool PlayerChatStream::Write(const std::wstring& str)
 	{
-		return PlayerChatStreamRaw::Write(L"** SERVER ** " + str);
+		return PlayerChatStreamRaw::Write(MSG_PREFIX + str);
 	}
 }

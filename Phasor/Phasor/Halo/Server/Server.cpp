@@ -198,6 +198,10 @@ namespace halo { namespace server
 
 		if (info->status == 1) {
 			s_player* player = game::getPlayerFromHash(info->hash);
+			if (!player) { // not sure if this is still called after a player leaves.
+			//	info->status = 0;
+				return;
+			}
 			player->checkAndSetAdmin();
 		} else {
 			*g_PrintStream << "Machine " << info->machineId << " is being rejected because: " << status << endl;
@@ -469,7 +473,7 @@ namespace halo { namespace server
 
 	bool SayStream::Write(const std::wstring& str)
 	{
-		std::wstring msg = L"** SERVER ** " + StripTrailingEndl(str);
+		std::wstring msg = MSG_PREFIX + StripTrailingEndl(str);
 		return SayStreamRaw::Write(msg);
 	}
 }}
