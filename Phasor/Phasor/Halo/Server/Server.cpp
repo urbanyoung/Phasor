@@ -194,8 +194,11 @@ namespace halo { namespace server
 	{
 		// We still want to reject valid hashes with invalid challenges
 		// If we get such a case, someone is trying to steal a hash.
-		if (allow_invalid_hash && strcmp(status, "Invalid authentication") != 0) {
-			info->status = 1;
+		if (allow_invalid_hash && strcmp(status, "Invalid authentication") != 0) info->status = 1;
+
+		if (info->status == 1) {
+			s_player* player = game::getPlayerFromHash(info->hash);
+			player->checkAndSetAdmin();
 		} else {
 			*g_PrintStream << "Machine " << info->machineId << " is being rejected because: " << status << endl;
 		}
@@ -237,39 +240,43 @@ namespace halo { namespace server
 			TempForwarder echo(*g_PrintStream, 
 				TempForwarder::end_point(*g_RconLog));
 
-			std::string authName;
-			Admin::result_t result = Admin::canUseCommand(exec_player->hash,
-				command, &authName);
+			if (exec_player->authenticating_hash) {
+				*exec_player->console_stream << "Please wait while your hash is authenticated.." << endl;
+			} else {
+				std::string authName;
+				Admin::result_t result = Admin::canUseCommand(exec_player->hash,
+					command, &authName);
 
-			e_command_result do_process = e_command_result::kProcessed;
-			switch (result)
-			{
-			case Admin::E_NOT_ADMIN:
+				e_command_result do_process = e_command_result::kProcessed;
+				switch (result)
 				{
-					echo << L"An unauthorized player is attempting to use RCON:" << endl;
-					echo << L"Name: '" << exec_player->mem->playerName <<
-						L"' Hash: " << exec_player->hash << endl;
-				} break;
-			case Admin::E_NOT_ALLOWED:
-				{
-					echo << L"An authorized player is attempting to use an unauthorized command:" << endl;
-					echo << L"Name: '" << exec_player->mem->playerName <<
-						L"' Hash: " << exec_player->hash << " Authed as: '" 
-						<< authName << "'" << endl;
-					echo << "Command: '" << command << "'" << endl;
-				} break;
-			case Admin::E_OK:
-				{
-					can_execute = true;
-					echo << L"Executing ' " << command << L" ' from " <<
-						exec_player->mem->playerName;
-					if (authName.size())
-						echo << L" (authed as '" <<	authName << L"').";
-					echo << endl;
-				} break;
-			}
+				case Admin::E_NOT_ADMIN:
+					{
+						echo << L"An unauthorized player is attempting to use RCON:" << endl;
+						echo << L"Name: '" << exec_player->mem->playerName <<
+							L"' Hash: " << exec_player->hash << endl;
+					} break;
+				case Admin::E_NOT_ALLOWED:
+					{
+						echo << L"An authorized player is attempting to use an unauthorized command:" << endl;
+						echo << L"Name: '" << exec_player->mem->playerName <<
+							L"' Hash: " << exec_player->hash << " Authed as: '" 
+							<< authName << "'" << endl;
+						echo << "Command: '" << command << "'" << endl;
+					} break;
+				case Admin::E_OK:
+					{
+						can_execute = true;
+						echo << L"Executing ' " << command << L" ' from " <<
+							exec_player->mem->playerName;
+						if (authName.size())
+							echo << L" (authed as '" <<	authName << L"').";
+						echo << endl;
+					} break;
+				}
 
-			if (!can_execute) *(exec_player->console_stream) << L" ** Access denied **" << endl;
+				if (!can_execute) *(exec_player->console_stream) << L" ** Access denied **" << endl;
+			}			
 		}
 
 		e_command_result result = e_command_result::kProcessed;

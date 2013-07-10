@@ -143,6 +143,7 @@ extern unsigned long PATCH_CURRENTVERSION;
 extern unsigned long PATCH_ANYVERSIONCHECK1;
 extern unsigned long PATCH_ANYVERSIONCHECK2;
 extern unsigned long CC_HASHVALIDATE;
+extern unsigned long CC_HASHVALIDATE_VALID;
 extern unsigned long FUNC_VERIFYMAP_CE;
 extern unsigned long FUNC_VEHICLERESPAWN1;
 extern unsigned long FUNC_VEHICLERESPAWN2;

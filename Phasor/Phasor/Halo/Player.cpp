@@ -27,12 +27,21 @@ namespace halo
 		chat_stream.reset(new PlayerChatStream(*this));
 		server::GetPlayerIP(*this, &ip, &port);
 		server::GetPlayerHash(*this, hash);
-		is_admin = Admin::isAdmin(hash);
+
+		if (Admin::isChallengeEnabled()) {
+			authenticating_hash = true;
+			is_admin = false;
+		} else checkAndSetAdmin();
 	}
 
 	s_player::~s_player()
 	{
 		*g_PrintStream << "Player " << memory_id << " left" << endl;
+	}
+
+	void s_player::checkAndSetAdmin() {
+		is_admin = Admin::isAdmin(hash);
+		authenticating_hash = false;
 	}
 
 	objects::s_halo_biped* s_player::get_object() const

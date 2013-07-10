@@ -97,7 +97,7 @@ namespace server
 		DWORD empty;
 		DWORD requestId;
 		UNKNOWN(0x0C);
-		DWORD status;
+		DWORD status; // 1 = valid, 2 = invalid
 	};
 
 	#pragma pack(pop)

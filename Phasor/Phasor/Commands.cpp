@@ -72,6 +72,8 @@ namespace commands
 		cmd["sv_admin_cur"]			= &Admin::sv_admin_cur;
 		cmd["sv_admin_reload"]		= &Admin::sv_admin_reload;
 		cmd["sv_admin_commands"]	= &Admin::sv_commands;
+		cmd["sv_admin_check"]		= &Admin::sv_admin_check;
+		cmd["sv_public"]			= &Admin::sv_public;
 		return cmd;
 	}();
 
@@ -118,6 +120,8 @@ namespace commands
 		usage["sv_admin_cur"]		= "";
 		usage["sv_admin_reload"]	= "";
 		usage["sv_admin_commands"]	= "";
+		usage["sv_admin_check"]		= "<true or false>";
+		usage["sv_public"]			= "<true or false>";
 		return usage;
 	}();
 

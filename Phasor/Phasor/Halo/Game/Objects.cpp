@@ -317,7 +317,8 @@ ASSIGNMENT_FAILED:
 			popad
 		}
 
-		player.force_entered = false;		
+		player.force_entered = false;
+		return true;
 	}
 
 	// Forces a player to exit a vehicle

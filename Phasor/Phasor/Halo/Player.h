@@ -62,7 +62,7 @@ namespace halo
 		std::string hash, ip;
 		WORD port;
 		int memory_id;
-		bool is_admin, sv_killed, force_entered;
+		bool is_admin, authenticating_hash, sv_killed, force_entered;
 		s_player_structure* mem;
 		std::unique_ptr<afk_detection::CAFKDetection> afk;
 		std::unique_ptr<PlayerConsoleStream> console_stream;
@@ -78,6 +78,7 @@ namespace halo
 		void Kill();
 		void ApplyCamo(float duration) const;
 		void SetSpeed(float speed) const;
+		void checkAndSetAdmin();
 		bool InVehicle() const; 
 		ident getPlayerIdent() const;
 	};

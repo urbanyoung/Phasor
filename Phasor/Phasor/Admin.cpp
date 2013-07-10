@@ -12,6 +12,9 @@ namespace Admin
 {
 	std::wstring adminPath;
 	std::wstring accessPath;
+	bool challenge_admins = true;
+
+	bool isChallengeEnabled() { return challenge_admins; }
 
 	namespace access
 	{
@@ -372,6 +375,21 @@ namespace Admin
 	{
 		out << "not yet implemented" << endl;
 		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_admin_check(void*, commands::CArgParser& args, COutStream& out)
+	{
+		challenge_admins = args.ReadBool();
+		out << "admin challenging is " << (challenge_admins ? "enabled" : "disabled") << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_public(void*, commands::CArgParser& args, COutStream& out)
+	{
+		// sv_public only actually works before the server starts, but meh
+		bool enable = args.ReadBool();
+		if (!enable) challenge_admins = false;
+		return e_command_result::kGiveToHalo;
 	}
 
 }

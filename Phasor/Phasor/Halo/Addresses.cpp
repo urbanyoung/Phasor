@@ -129,6 +129,7 @@ unsigned long PATCH_CURRENTVERSION =  0x005152e3;
 unsigned long PATCH_ANYVERSIONCHECK1 = PATCH_CURRENTVERSION + 4;
 unsigned long PATCH_ANYVERSIONCHECK2 = PATCH_ANYVERSIONCHECK1 + 0x0B;
 unsigned long CC_HASHVALIDATE = 0x0059BD97;
+unsigned long CC_HASHVALIDATE_VALID = CC_HASHVALIDATE - 0x2f;
 unsigned long FUNC_VERIFYMAP_CE = 0x0048d980;
 unsigned long FUNC_VEHICLERESPAWN1 = 0x0052C310;
 unsigned long FUNC_VEHICLERESPAWN2 = 0x0052C2B0;
@@ -493,7 +494,7 @@ namespace Addresses
 		CC_OBJECTCREATIONATTEMPT = FindAddress("CC_OBJECTCREATIONATTEMPT", codeSection, codeSize, sig83, sizeof(sig83), 0, 0x21, 0);
 		
 #ifdef PHASOR_PC
-		BYTE sig84[] = {0xC6, 0x44, 0x24, 0x14, 0x00, 0xC6, 0x44, 0x24, 0x55, 0x00};
+		BYTE sig85[] = {0xC6, 0x44, 0x24, 0x14, 0x00, 0xC6, 0x44, 0x24, 0x55, 0x00};
 #elif PHASOR_CE
 		BYTE sig85[] = {0x88, 0x5C, 0x24, 0x1C, 0x88, 0x5C, 0x24, 0x5D};
 #endif
@@ -511,6 +512,7 @@ namespace Addresses
 
 		BYTE sig88[] = {0xC6, 0x44, 0x24, 0x29, 0x67};
 		CC_HASHVALIDATE = FindAddress("CC_HASHVALIDATE", codeSection, codeSize, sig88, sizeof(sig88), 0, 0x8c, 0);
+		CC_HASHVALIDATE_VALID = CC_HASHVALIDATE - 0x2f;
 
 #ifdef PHASOR_CE
 		BYTE sig89[] = {0xC6, 0x84, 0x24, 0x0B, 0x01, 0x00, 0x00, 0x00, 0x8D, 0x74, 0x24, 0x08};

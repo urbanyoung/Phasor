@@ -1027,7 +1027,7 @@ __declspec(naked) void OnHaloHashCheck_CC()
 {
 	__asm
 	{
-		pop halobancheck_ret
+		pop hashcheck_ret
 
 			pushad
 
@@ -1041,8 +1041,30 @@ __declspec(naked) void OnHaloHashCheck_CC()
 			MOV DWORD PTR DS:[ESI+0x44],EAX
 
 
-			push halobancheck_ret
+			push hashcheck_ret
 			ret
+	}
+}
+
+DWORD hashcheck_valid_ret = 0;
+__declspec(naked) void OnHaloHashCheckValid_CC() 
+{
+	__asm
+	{
+		pop hashcheck_valid_ret
+
+		MOV DWORD PTR DS:[ESI+0x38],1
+		
+		pushad
+
+		push eax // errmsg
+		push esi // request struct
+		call server::OnHashValidation
+		
+		popad
+
+		push hashcheck_valid_ret
+		ret
 	}
 }
 
@@ -1172,6 +1194,7 @@ namespace halo
 		CreateCodeCave(CC_HALOPRINT, 6, OnHaloPrint_CC);
 		CreateCodeCave(CC_HALOBANCHECK, 6, OnHaloBanCheck_CC);
 		CreateCodeCave(CC_HASHVALIDATE, 6, OnHaloHashCheck_CC);
+		CreateCodeCave(CC_HASHVALIDATE_VALID, 7, OnHaloHashCheckValid_CC);
 		//CreateCodeCave(CC_VERSIONBROADCAST, 6, OnVersionBroadcast_CC);
 
 		//CreateCodeCave(0x005112d4, 5, OnJoinCheck_CC);

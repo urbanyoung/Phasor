@@ -34,6 +34,9 @@ namespace Admin
 	// Gets an admin's access level.
 	bool getLevel(const std::string& hash, int* level);
 
+	// Checks if hash challenging is enabled (defaults to true)
+	bool isChallengeEnabled();
+
 	// Checks if a player can execute the specified command
 	// Returns E_OK if there are no admins (the system is inactive)
 	result_t canUseCommand(const std::string& hash, const std::string& command,
@@ -89,4 +92,11 @@ namespace Admin
 	 *	Example usage: sv_commands
 	 */
 	e_command_result sv_commands(void*, commands::CArgParser& args, COutStream& out);
+
+	/*! \brief Enables/Disables forced-hash checking. This protects against people
+	 *	attempting to steal an admin's hash, an admin won't be marked as such until
+	 *	the response from gamespy is received.
+	 */
+	e_command_result sv_admin_check(void*, commands::CArgParser& args, COutStream& out);
+	e_command_result sv_public(void*, commands::CArgParser& args, COutStream& out);
 }
