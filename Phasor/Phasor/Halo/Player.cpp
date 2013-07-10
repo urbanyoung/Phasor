@@ -25,12 +25,18 @@ namespace halo
 		afk.reset(new afk_detection::CAFKDetection(*this, g_Timers));
 		console_stream.reset(new PlayerConsoleStream(*this));	
 		chat_stream.reset(new PlayerChatStream(*this));
-		server::GetPlayerIP(*this, &ip, &port);
-		server::GetPlayerHash(*this, hash);
 
+		server::PhasorMachine* machine = server::FindMachine(*this);
+		// machine will never be null
+		server::GetMachineIP(*machine->machine, &ip, &port);
+		server::GetMachineHash(*machine->machine, hash);
+		
 		if (Admin::isChallengeEnabled()) {
-			authenticating_hash = true;
-			is_admin = false;
+			if (machine->hash_validated) checkAndSetAdmin();
+			else { // wait for response from gamespy
+				authenticating_hash = true;
+				is_admin = false;
+			}
 		} else checkAndSetAdmin();
 	}
 

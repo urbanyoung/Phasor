@@ -36,7 +36,7 @@ namespace server
 		WORD seven;
 		BYTE unk[0x42];
 		char key[10]; // only 7 chars long tho.. i think rest is padding
-		DWORD id_hash;
+		DWORD machineNum; // 0 - 0xFFFFFFFF increased for each connection in server's life
 
 		s_connection_info* get_con_info()
 		{
@@ -102,6 +102,15 @@ namespace server
 
 	#pragma pack(pop)
 
+	struct PhasorMachine
+	{
+		s_machine_info* machine;
+		bool hash_validated;
+
+		PhasorMachine(s_machine_info* machine);
+		~PhasorMachine();
+	};
+
 	class SayStreamRaw : public COutStream
 	{
 	protected:
@@ -160,11 +169,12 @@ namespace server
 	
 	// Gets the player's hash
 	bool GetPlayerHash(const s_player& player, std::string& hash);
-	bool GetMachineHash(s_machine_info& machine, std::string& hash);
+	bool GetMachineHash(const s_machine_info& machine, std::string& hash);
 	
-	// Get the player's machine info (ip struct etc)
-	s_machine_info* GetMachineData(const s_player& player);
-	
+	PhasorMachine* FindMachine(const s_player& player);
+	PhasorMachine* FindMachineById(DWORD machineId);
+	PhasorMachine* FindMachineByIndex(DWORD index);
+
 	/*! \brief Get the player executing the current command
 	 * \return The player executing the command, or NULL if no player. */
 	halo::s_player* GetPlayerExecutingCommand();
@@ -183,6 +193,10 @@ namespace server
 
 	// --------------------------------------------------------------------
 	// Events
+	// 
+
+	void __stdcall OnMachineConnect(DWORD machineIndex);
+	void __stdcall OnMachineDisconnect(DWORD machineIndex);
 	
 	// Called for console events (exit etc)
 	/*! \brief Called for Windows related console events (ie closing the server)

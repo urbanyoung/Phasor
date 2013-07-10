@@ -1068,6 +1068,56 @@ __declspec(naked) void OnHaloHashCheckValid_CC()
 	}
 }
 
+DWORD onmachineconnect_ret;
+__declspec(naked) void OnMachineConnect_CC()
+{
+	__asm
+	{
+		pop onmachineconnect_ret
+
+		pushad
+
+		push ebx // index in machine table
+		call server::OnMachineConnect
+
+		popad
+
+		MOV ECX,DWORD PTR DS:[EAX+0xA9C]
+
+		push onmachineconnect_ret
+		ret
+	}
+}
+
+DWORD onmachinedisconnect_ret;
+__declspec(naked) void OnMachineDisconnect_CC()
+{
+	__asm
+	{
+		pop onmachinedisconnect_ret
+
+		pushad
+
+#ifdef PHASOR_PC
+		push ebp // machine index in table
+#elif PHASOR_CE
+		push eax // machine index in table
+#endif
+		call server::OnMachineDisconnect
+		
+		popad
+
+#ifdef PHASOR_PC
+		LEA EAX,DWORD PTR SS:[EBP+EBP*0x02]
+		SHL EAX,0x05
+#elif PHASOR_CE
+		IMUL EAX,EAX,0x0EC
+#endif
+		push onmachinedisconnect_ret
+		ret
+	}
+}
+
 namespace halo
 {
 	using namespace Common;
@@ -1190,6 +1240,13 @@ namespace halo
 		CreateCodeCave(CC_VEHICLEFORCEEJECT, 8, OnVehicleForceEject_CC);
 		CreateCodeCave(CC_VEHICLEUSEREJECT, 7, OnVehicleUserEject_CC);
 	
+		// Machine connect/disconnect
+		CreateCodeCave(CC_MACHINECONNECT, 6, OnMachineConnect_CC);
+#ifdef PHASOR_PC
+		CreateCodeCave(CC_MACHINEDISCONNECT, 7, OnMachineDisconnect_CC);
+#elif PHASOR_CE
+		CreateCodeCave(CC_MACHINEDISCONNECT, 6, OnMachineDisconnect_CC);
+#endif
 		// Generic codecaves
 		CreateCodeCave(CC_HALOPRINT, 6, OnHaloPrint_CC);
 		CreateCodeCave(CC_HALOBANCHECK, 6, OnHaloBanCheck_CC);

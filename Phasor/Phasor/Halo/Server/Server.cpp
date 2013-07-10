@@ -43,33 +43,63 @@ namespace halo { namespace server
 		WORD cur;
 	};
 	#pragma pack(pop)
+
+	std::unique_ptr<PhasorMachine> machine_list[16];
 	std::string current_map;
+
+	// --------------------------------------------------------------------
+	PhasorMachine::PhasorMachine(s_machine_info* machine)
+		: machine(machine), hash_validated(false)
+	{
+		//*g_PrintStream << "Machine " << machine->machineNum << " is connecting.." << endl;
+	}
+
+	PhasorMachine::~PhasorMachine()
+	{
+		//*g_PrintStream << "Machine " << machine->machineNum << " has disconnected." << endl;
+	}
+
 
 	s_server_info* GetServerStruct()
 	{
 		return (s_server_info*)ADDR_SERVERSTRUCT; 
 	}
 
-	s_machine_info* GetMachineData(const s_player& player)
-	{		
-		s_server_info* server = GetServerStruct();
-		for (int i = 0;i < 16; i++) {
-			if (server->machine_table[i].playerNum == player.mem->playerNum)
-				return &server->machine_table[i];
-		}
-		return NULL;
-	}
-
-	s_machine_info* GetMachineData(DWORD id) {
-		s_server_info* server = GetServerStruct();
-		
+	PhasorMachine* FindMachineById(DWORD machineNum)
+	{
 		for (int i = 0; i < 16; i++) {
-			if (server->machine_table[i].id_hash == id)
-				return &server->machine_table[i];
+			if (machine_list[i] && machine_list[i]->machine->machineNum == machineNum)
+				return machine_list[i].get();
 		}
 		return NULL;
 	}
 
+	PhasorMachine* FindMachineByIndex(DWORD index)
+	{
+		if (index < 16 && index >= 0 && machine_list[index]) return machine_list[index].get();
+		return NULL;
+	}
+
+	PhasorMachine* FindMachine(const s_player& player)
+	{
+		for (int i = 0; i < 16; i++) {
+			if (machine_list[i] && machine_list[i]->machine->playerNum == player.mem->playerNum)
+				return machine_list[i].get();
+		}
+		return NULL;
+	}
+
+	void __stdcall OnMachineConnect(DWORD machineIndex)
+	{
+		s_server_info* server = GetServerStruct();
+		s_machine_info* machine = &server->machine_table[machineIndex];
+		machine_list[machineIndex].reset(new PhasorMachine(machine));
+	}
+
+	void __stdcall OnMachineDisconnect(DWORD machineIndex)
+	{
+		machine_list[machineIndex].reset();
+	}
 
 	void __stdcall ConsoleHandler(DWORD fdwCtrlType)
 	{
@@ -197,12 +227,11 @@ namespace halo { namespace server
 		if (allow_invalid_hash && strcmp(status, "Invalid authentication") != 0) info->status = 1;
 
 		if (info->status == 1) {
+			PhasorMachine* machine = FindMachineById(info->machineId);
+			machine->hash_validated = true;
+			
 			s_player* player = game::getPlayerFromHash(info->hash);
-			if (!player) { // not sure if this is still called after a player leaves.
-			//	info->status = 0;
-				return;
-			}
-			player->checkAndSetAdmin();
+			if (player) player->checkAndSetAdmin();
 		} else {
 			*g_PrintStream << "Machine " << info->machineId << " is being rejected because: " << status << endl;
 		}
@@ -394,17 +423,17 @@ namespace halo { namespace server
 
 	bool GetPlayerHash(const s_player& player, std::string& hash)
 	{
-		s_machine_info* machine = GetMachineData(player);
+		PhasorMachine* machine = FindMachine(player);
 		if (!machine) return false;
-		return GetMachineHash(*machine, hash);
+		return GetMachineHash(*machine->machine, hash);
 	}
 
-	bool GetMachineHash(s_machine_info& machine, std::string& hash)
+	bool GetMachineHash(const s_machine_info& machine, std::string& hash)
 	{
 		s_hash_list* hash_list = (s_hash_list*)ADDR_HASHLIST;
 		hash_list = hash_list->next;
 		while (hash_list && hash_list->data) {	
-			if (hash_list->data->id == machine.id_hash) {
+			if (hash_list->data->id == machine.machineNum) {
 				hash = hash_list->data->hash;
 				return true;
 			}
@@ -415,9 +444,9 @@ namespace halo { namespace server
 	
 	bool GetPlayerIP(const s_player& player, std::string* ip, WORD* port)
 	{
-		s_machine_info* machine = GetMachineData(player);
+		PhasorMachine* machine = FindMachine(player);
 		if (!machine) return false;
-		return GetMachineIP(*machine, ip, port);
+		return GetMachineIP(*machine->machine, ip, port);
 	}
 
 	bool GetMachineIP(s_machine_info& machine, std::string* ip, WORD* port)
