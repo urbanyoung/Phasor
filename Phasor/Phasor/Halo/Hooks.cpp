@@ -1280,8 +1280,11 @@ namespace halo
 		CreateCodeCave(CC_HALOBANCHECK, 6, OnHaloBanCheck_CC);
 		CreateCodeCave(CC_HASHVALIDATE, 6, OnHaloHashCheck_CC);
 		CreateCodeCave(CC_HASHVALIDATE_VALID, 7, OnHaloHashCheckValid_CC);
+#ifdef PHASOR_PC
 		CreateCodeCave(CC_MACHINEINFOFIX, 5, OnMachineInfoFix_CC);
-
+#elif PHASOR_CE
+		CreateCodeCave(CC_MACHINEINFOFIX, 8, OnMachineInfoFix_CC);
+#endif
 		//CreateCodeCave(CC_VERSIONBROADCAST, 6, OnVersionBroadcast_CC);
 
 		//CreateCodeCave(0x005112d4, 5, OnJoinCheck_CC);
