@@ -16,6 +16,7 @@
 #include "Phasor/CrashHandler.h"
 #include "Phasor/Globals.h"
 #include "Common/FileIO.h"
+#include "Common/MyString.h"
 #include "Phasor/Halo/HaloStreams.h"
 #include "Phasor/Halo/Game/Game.h"
 
@@ -67,9 +68,6 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Installing crash handler..." << endl;
 		CrashHandler::InstallCatchers();
 
-//#ifdef PHASOR_PC
-//		halo::server::maploader::BuildMapList(PhasorLog);
-//#endif
 		halo::server::maploader::Initialize(PhasorLog);
 		PhasorLog << L"Building gametype list..." << endl;
 		if (!halo::server::gametypes::BuildGametypeList())
@@ -88,9 +86,14 @@ extern "C" __declspec(dllexport) void OnLoad()
 	//	g_ScriptsLog->EnableTimestamp(false);
 		g_GameLog.reset(new CGameLog(g_LogsDirectory, L"GameLog", g_Thread));
 		g_RconLog.reset(new CThreadedLogging(g_LogsDirectory, L"RconLog", g_OldLogsDirectory, g_Thread));
-		
 		scriptOutput.reset(new Forwarder(*g_PrintStream, Forwarder::end_point(*g_ScriptsLog)));
+		
+		// Initialize scripting system
 		g_Scripts.reset(new scripting::Scripts(*scriptOutput,g_ScriptsDirectory));
+
+		// Load all scripts in scripts\\persistent
+		PhasorLog << "Loading persistent scripts" << endl; 
+		g_Scripts->LoadPersistentScripts();
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
 		LoadEarlyInit(PhasorLog);
@@ -101,7 +104,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Initializing alias system" << endl;
 		halo::alias::Initialize();
 
-		PhasorLog << L"Phasor was successfully initialized." << endl;	
+		PhasorLog << L"Phasor was successfully initialized." << endl;
 	}
 	catch (std::exception& e)
 	{

@@ -76,10 +76,11 @@ namespace NDirectory
 	// Gets the files (not any directories) within a directory matching
 	// the specified pattern
 	void FindFiles(const std::wstring& searchExp, 
-		std::vector<std::wstring>& files)
+		std::list<std::wstring>& files)
 	{
 		WIN32_FIND_DATAW data;
 		HANDLE hFind = FindFirstFileW(searchExp.c_str(), &data);
+		if (hFind == INVALID_HANDLE_VALUE) return;
 
 		try {
 			do {

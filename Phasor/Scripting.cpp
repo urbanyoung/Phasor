@@ -2,6 +2,7 @@
 #include "Manager.h"
 #include "Common/Common.h"
 #include "Common/MyString.h"
+#include "Common/FileIO.h"
 #include "PhasorAPI/PhasorAPI.h"
 #include "ScriptingEvents.h"
 #include "Phasor/Version.h"
@@ -44,6 +45,21 @@ namespace scripting
 	Scripts::~Scripts()
 	{
 		CloseAllScripts(true);
+	}
+
+	void Scripts::LoadPersistentScripts()
+	{
+		std::wstring persistent = WidenString(scriptsDir) + L"\\persistent\\*.lua";
+
+		std::list<std::wstring> files;
+		NDirectory::FindFiles(persistent, files);
+
+		for (auto itr = files.cbegin(); itr != files.cend(); ++itr) {
+			std::wstring script = L"persistent\\" + *itr;
+			// remove .lua
+			script = script.substr(0, script.size() - 4);
+			g_Scripts->OpenScript(NarrowString(script).c_str(), true);
+		}
 	}
 
 	bool Scripts::OpenScript(const char* script, bool persistent)

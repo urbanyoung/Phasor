@@ -77,8 +77,11 @@ namespace scripting
 		Scripts(COutStream& errstream, const std::wstring& scriptsDir);
 		~Scripts();
 
+		void LoadPersistentScripts();
+
 		// Opens the script specified, relative to the scripts directory
 		bool OpenScript(const char* script, bool persistent);
+		bool OpenScriptAbsolute(const char* script_path, bool persistent);
 
 		// Closes the specified script, if it exists.
 		void CloseScript(const char* script);

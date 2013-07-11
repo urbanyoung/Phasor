@@ -175,7 +175,7 @@ namespace halo { namespace server { namespace maploader
 		{
 			out << L"Building map list from : " << g_MapDirectory << endl;
 
-			std::vector<std::wstring> files;
+			std::list<std::wstring> files;
 			NDirectory::FindFiles(mapSearchExp, files);
 
 			if (table_count < files.size()) {
@@ -184,8 +184,8 @@ namespace halo { namespace server { namespace maploader
 					sizeof(mapTableInfo)*table_count, GMEM_ZEROINIT);
 			}
 
-			for (size_t x = 0; x < files.size(); x++) {
-				const std::wstring& file = files[x];
+			for (auto itr = files.cbegin(); itr != files.cend(); ++itr) {
+				const std::wstring& file = *itr;
 
 				if (file.size() < 0x20) { // halo imposed limit
 					std::wstring path_to_file = g_MapDirectory + file;
