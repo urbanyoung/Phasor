@@ -51,12 +51,21 @@ void svcmd_redirect(Object::unique_list& results, const std::string& cmd,
 	AddResultTable(narrowed, results);
 }
 
+// will change this when i rework the script system
+void check_script_reload(CallHandler& handler, const std::string& cmd)
+{
+	std::vector<std::string> tokens = TokenizeArgs(cmd);
+	if (tokens.size() && tokens[0] == "sv_script_reload")
+		handler.RaiseError("scripts cannot execute sv_script_reload.");
+
+}
 void l_svcmd(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 { 
 	std::string cmd = ReadRawString(*args[0]);
 	bool want_result = false;
 	if (args.size() == 2) want_result = ReadBoolean(*args[1]);
-	
+
+	check_script_reload(handler, cmd);
 	return svcmd_redirect(results, cmd, want_result, NULL, *g_PrintStream);
 }
 
@@ -66,7 +75,7 @@ void l_svcmdplayer(CallHandler& handler, Object::unique_deque& args, Object::uni
 	std::string cmd = ReadRawString(*args[0]);
 	halo::s_player* player = ReadPlayer(handler, *args[1], true);
 	if (args.size() == 3) want_result = ReadBoolean(*args[2]);
-
+	check_script_reload(handler, cmd);
 	return svcmd_redirect(results, cmd, want_result, player, *player->console_stream);
 }
 

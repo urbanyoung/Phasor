@@ -135,6 +135,7 @@ unsigned long FUNC_VEHICLERESPAWN1 = 0x0052C310;
 unsigned long FUNC_VEHICLERESPAWN2 = 0x0052C2B0;
 unsigned long CC_MACHINECONNECT = 0x0051596c;
 unsigned long CC_MACHINEDISCONNECT = 0x00515bd9;
+unsigned long CC_MACHINEINFOFIX = 0x00516e39;
 
 namespace Addresses
 {
@@ -534,6 +535,13 @@ namespace Addresses
 		BYTE sig92[] = {0x69, 0xC0, 0xEC, 0x00, 0x00, 0x00, 0x8D, 0x34, 0x18};
 #endif
 		CC_MACHINEDISCONNECT = FindAddress("CC_MACHINEDISCONNECT", codeSection, codeSize, sig92, sizeof(sig92), 0, 0, 0);
+
+#ifdef PHASOR_PC
+		BYTE sig93[] = {0x8D, 0x44, 0x24, 0x4E, 0x50};
+#elif PHASOR_CE
+		BYTE sig93[] = {0x8D, 0x84, 0x24, 0xC6, 0x00, 0x00, 0x00, 0x50};
+#endif
+		CC_MACHINEINFOFIX = FindAddress("CC_MACHINEINFOFIX", codeSection, codeSize, sig93, sizeof(sig93), 0, 0, 0);
 
 		// patch the installation of other exception handlers
 		BYTE instSig[] = {0x68, 0x6C, 0x03, 0x5B, 0x00, 0x64, 0xA1, 0x00, 0x00, 0x00, 0x00, 0x50, 0x64, 0x89, 0x25, 0x00, 0x00, 0x00, 0x00};

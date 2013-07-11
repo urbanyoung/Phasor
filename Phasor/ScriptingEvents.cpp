@@ -38,7 +38,8 @@ namespace scripting { namespace events {
 		"OnVehicleEject",
 		"OnPlayerKill",
 		"OnKillMultiplier",
-		"OnWeaponReload"
+		"OnWeaponReload",
+		"OnNameRequest"
 	};
 
 	const std::string* GetEventTable() { return events;	}
@@ -296,4 +297,20 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnWeaponReload", result_bool), true);
 	}
 
+	bool OnNameRequest(const std::string& hash, const std::string& name, 
+		std::string& change_name)
+	{
+		using namespace Common;
+		static const scripting::results_t expected = {TYPE_BOOL, TYPE_STRING};
+
+		PhasorCaller caller;
+		caller.AddArg(hash);
+		caller.AddArg(name);
+
+		Result r = caller.Call("OnNameRequest", expected);
+		if (r.size() == 0) return true; // no scripts returned anything
+		if (r.size() == 2) change_name = r.ReadString(1).GetValue();
+		
+		return r.ReadBool(0).GetValue();
+	}
 }}

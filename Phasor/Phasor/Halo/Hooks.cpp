@@ -1118,6 +1118,34 @@ __declspec(naked) void OnMachineDisconnect_CC()
 	}
 }
 
+// fixes halo bugs where it doesn't check hash/challenge and player name
+// is null terminated >.>
+DWORD machineinfofix_ret = 0;
+__declspec(naked) void OnMachineInfoFix_CC()
+{
+	__asm
+	{
+		pop machineinfofix_ret
+
+#ifdef PHASOR_PC
+		LEA EAX,DWORD PTR SS:[ESP+0x4E]
+#elif PHASOR_CE
+		LEA EAX,DWORD PTR SS:[ESP+0xC6]
+#endif
+		push eax
+
+		pushad
+
+		push eax
+		call server::OnMachineInfoFix
+
+		popad
+
+		push machineinfofix_ret
+		ret
+	}
+}
+
 namespace halo
 {
 	using namespace Common;
@@ -1252,6 +1280,8 @@ namespace halo
 		CreateCodeCave(CC_HALOBANCHECK, 6, OnHaloBanCheck_CC);
 		CreateCodeCave(CC_HASHVALIDATE, 6, OnHaloHashCheck_CC);
 		CreateCodeCave(CC_HASHVALIDATE_VALID, 7, OnHaloHashCheckValid_CC);
+		CreateCodeCave(CC_MACHINEINFOFIX, 5, OnMachineInfoFix_CC);
+
 		//CreateCodeCave(CC_VERSIONBROADCAST, 6, OnVersionBroadcast_CC);
 
 		//CreateCodeCave(0x005112d4, 5, OnJoinCheck_CC);

@@ -149,6 +149,7 @@ extern unsigned long FUNC_VEHICLERESPAWN1;
 extern unsigned long FUNC_VEHICLERESPAWN2;
 extern unsigned long CC_MACHINECONNECT;
 extern unsigned long CC_MACHINEDISCONNECT;
+extern unsigned long CC_MACHINEINFOFIX;
 
 //unsigned long ADDR_BROADCASTVERSION = 0x005df840;
 //unsigned long ADDR_HASHLIST = 0x006A2AE4;

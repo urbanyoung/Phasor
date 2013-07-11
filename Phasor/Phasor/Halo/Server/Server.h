@@ -100,6 +100,16 @@ namespace server
 		DWORD status; // 1 = valid, 2 = invalid
 	};
 
+	struct s_machinfo_info_partial_packet
+	{
+		char hash[32];
+		char challenge[32];
+		char clientKey[9]; // including null terminator
+		UNKNOWN(1); // only seen 1, halo uses it for something 
+		UNKNOWN(2); //probably padding
+		wchar_t name[12]; // including null terminator		
+	};
+
 	#pragma pack(pop)
 
 	struct PhasorMachine
@@ -197,6 +207,7 @@ namespace server
 
 	void __stdcall OnMachineConnect(DWORD machineIndex);
 	void __stdcall OnMachineDisconnect(DWORD machineIndex);
+	void __stdcall OnMachineInfoFix(s_machinfo_info_partial_packet* data);
 	
 	// Called for console events (exit etc)
 	/*! \brief Called for Windows related console events (ie closing the server)

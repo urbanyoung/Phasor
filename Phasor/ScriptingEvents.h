@@ -374,10 +374,10 @@ namespace scripting {
 		 *	message. Below are some examples:
 		 *	\code 
 		 *		return false -- block the message
-		 *	\endcode		 *	
+		 *	\endcode
 		 *	\code 
 		 *		return true, "Hello" -- change the message to Hello
-		 *	\endcode		 *	
+		 *	\endcode
 		 *	\code 
 		 *		function OnServerChat(player, type, msg)
 		 *			if (type == 4) then return end
@@ -495,6 +495,24 @@ namespace scripting {
 		 */
 		bool OnWeaponReload(const halo::s_player* player, halo::ident weap);
 		
+		/*! \brief Called when a player is requesting a certain name (during connection).
+		 *
+		 *	\param hash The hash of the requesting machine.
+		 *	\param name The requested name.
+		 *	\return allow, new_name
+		 *	
+		 *	\remark
+		 *	If \c allow is \c false then the player is assigned a random
+		 *	name. If \c new_name is specified, then \c allow is ignored and
+		 *	the player's name is changed to \c new_name
+		 *
+		 * Definition:
+		 * \code
+		 *		function OnNameRequest(hash, name)
+		 *	\endcode
+		 */
+		bool OnNameRequest(const std::string& hash, const std::string& name,
+			std::string& new_name);
 
 }}
 

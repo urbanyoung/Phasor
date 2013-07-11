@@ -101,6 +101,27 @@ namespace halo { namespace server
 		machine_list[machineIndex].reset();
 	}
 
+	void __stdcall OnMachineInfoFix(s_machinfo_info_partial_packet* data)
+	{
+		// ensure they're null terminated (halo is retarded)
+		data->clientKey[8] = '\0';
+		data->name[11] = L'\0';
+
+		// now let scripts change the player's name
+		std::string hash(data->hash, 32);
+		std::string name = NarrowString(data->name);
+		std::string new_name;
+
+		bool allow_name = scripting::events::OnNameRequest(hash, name, new_name);
+
+		if (new_name.size()) {
+			std::wstring wname = WidenString(new_name).substr(0, 11);
+			wcscpy_s(data->name, 12, wname.c_str());
+		} else if (!allow_name) {
+			data->name[0] = L'\0';
+		}
+	}
+
 	void __stdcall ConsoleHandler(DWORD fdwCtrlType)
 	{
 		switch(fdwCtrlType) 
