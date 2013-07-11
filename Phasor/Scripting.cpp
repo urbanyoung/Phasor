@@ -4,6 +4,7 @@
 #include "Common/MyString.h"
 #include "PhasorAPI/PhasorAPI.h"
 #include "ScriptingEvents.h"
+#include "Phasor/Version.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()
@@ -75,6 +76,7 @@ namespace scripting
 			bool fexists = false;
 			Manager::Caller caller;
 			caller.AddArg(GetCurrentProcessId());
+			caller.AddArg(NarrowString(PHASOR_HALO_BUILD));
 			caller.AddArg(persistent);
 			caller.Call(*phasor_state->state, "OnScriptLoad", &fexists);
 
