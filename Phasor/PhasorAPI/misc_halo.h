@@ -139,4 +139,15 @@ void l_setspeed(PHASOR_API_ARGS);
  *	*/
 void l_getprofilepath(PHASOR_API_ARGS);
 
+/*! \brief Gets the server's current name
+ *	\return The server's name
+ *	
+ *	Exampe usage:
+ *	\code
+ *		local servername = getservername()
+ *		hprintf(servername)
+ *	\endcode
+ */
+void l_getservername(PHASOR_API_ARGS);
+
 //! }@

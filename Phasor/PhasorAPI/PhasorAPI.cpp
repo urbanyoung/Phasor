@@ -85,6 +85,7 @@ namespace PhasorAPI
 		{&l_setammo, "setammo", 3, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_setspeed, "setspeed", 2, {TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_getprofilepath, "getprofilepath", 0, {}},
+		{&l_getservername, "getservername", 0, {}},
 		// Object related halo functions: see haloobjects.h
 		{&l_getobject, "getobject", 1, {TYPE_NUMBER}},
 		{&l_getobjectcoords, "getobjectcoords", 1, {TYPE_NUMBER}},

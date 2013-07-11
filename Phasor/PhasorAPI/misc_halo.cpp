@@ -101,3 +101,9 @@ void l_getprofilepath(CallHandler& handler, Object::unique_deque&, Object::uniqu
 {
 	AddResultString(g_ProfileDirectory, results);
 }
+
+void l_getservername(CallHandler& handler, Object::unique_deque&, Object::unique_list& results)
+{
+	halo::server::s_server_info* server = server::GetServerStruct();
+	AddResultString(server->server_name, results);
+}
