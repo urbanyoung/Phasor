@@ -179,3 +179,41 @@ void l_applydmgtag(CallHandler& handler, Object::unique_deque& args, Object::uni
 
 	ApplyDamage(receiver, causer, *tag, multiplier, flags);
 }
+
+void l_halointersect(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	int i = 0;
+	halo::objects::view_vector view;
+	halo::ident ignore_obj;
+
+	float dist = ReadNumber<float>(*args[i++]);
+	
+	view.pos.x = ReadNumber<float>(*args[i++]);
+	view.pos.y = ReadNumber<float>(*args[i++]);
+	view.pos.z = ReadNumber<float>(*args[i++]);
+	view.dir.x = ReadNumber<float>(*args[i++]);
+	view.dir.y = ReadNumber<float>(*args[i++]);
+	view.dir.z = ReadNumber<float>(*args[i++]);
+	if (args.size() == 8) ReadHaloObject(handler, *args[i++], false, ignore_obj);
+
+	// advance the start position along the ray a little
+//	view.pos.x += (float)(view.dir.x * 0.1);
+	//view.pos.y += (float)(view.dir.y * 0.1);
+	//view.pos.z += (float)(view.dir.z * 0.1);
+
+	view.dir *= dist;
+
+	// ad
+
+	vect3d hit;
+	hit.x = 0; hit.y = 0; hit.z = 0;
+	halo::ident obj;
+	bool intersected = halo::objects::FindIntersection(view, ignore_obj, hit, obj);
+
+	AddResultBool(intersected, results);
+	AddResultNumber(hit.x, results);
+	AddResultNumber(hit.y, results);
+	AddResultNumber(hit.z, results);
+	if (!obj.valid()) AddResultNil(results);
+	else AddResultNumber(obj, results);
+}

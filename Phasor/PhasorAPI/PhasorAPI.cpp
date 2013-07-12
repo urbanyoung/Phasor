@@ -101,6 +101,8 @@ namespace PhasorAPI
 		{&l_gettagid, "gettagid", 2, {TYPE_STRING, TYPE_STRING}},
 		{&l_gettaginfo, "gettaginfo", 1, {TYPE_NUMBER}},
 		{&l_gettagaddress, "gettagaddress", 1, {TYPE_NUMBER}},
+		{&l_halointersect, "halointersect", 7, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		
 		// Alias related functions: see alias_script.h
 		{&l_alias_search, "alias_search", 2, {TYPE_STRING, TYPE_STRING}},
 		{&l_alias_hash, "alias_hash", 2, {TYPE_STRING, TYPE_STRING}},

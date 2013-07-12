@@ -341,6 +341,49 @@ ASSIGNMENT_FAILED:
 		object.location = pos;
 	}
 
+	bool FindIntersection(const view_vector& view, const halo::ident& ignore_obj,
+		vect3d& hit_pos, ident& hit_obj)
+	{
+		struct s_intersection_output
+		{
+			BYTE mode; // only seen 2 (hit obj) 3 (didn't)
+			UNKNOWN(0x0f);
+			BYTE hit; // 0 = no hit, else hit.. i think
+			UNKNOWN(7);
+			vect3d hit_pos;
+			UNKNOWN(0x14);
+			ident hit_obj;
+			UNKNOWN(0x28);
+		};
+		static_assert(sizeof(s_intersection_output) == 0x64, "bad s_intersection_test");
+
+		const vect3d* dir = &view.dir, *pos = &view.pos;
+		s_intersection_output result;
+		bool hit;
+		DWORD ignore = ignore_obj;
+
+		__asm {
+			pushad
+
+			lea eax, result
+			push eax
+			push ignore
+			push dir
+			push pos
+			push 0x1000E9
+			call dword ptr ds:[FUNC_INTERSECT]
+			mov hit, al
+			add esp, 0x14
+
+			popad
+		}
+
+		hit_pos = result.hit_pos;
+		if (result.mode == 3) hit_obj = result.hit_obj;
+
+		return hit;
+	}
+
 
 	// --------------------------------------------------------------------
 	//

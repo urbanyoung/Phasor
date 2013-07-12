@@ -26,8 +26,17 @@ struct vect3d
 		z = rhs.z;
 		return *this;
 	}
+
+	vect3d& operator*=(float rhs)
+	{
+		x *= rhs;
+		y *= rhs;
+		z *= rhs;
+		return *this;
+	}
 };
 
+// only used to check if a vector hasn't changed (fpu comparisons are bad)
 inline bool operator==(const vect3d& lhs, const vect3d& rhs)
 {
 	return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;

@@ -272,4 +272,66 @@ void l_applydmg(PHASOR_API_ARGS);
  */
 void l_applydmgtag(PHASOR_API_ARGS);
 
+/*! \brief Checks if the specified vector intersects anything.
+ *
+ *	\param dist the direction vector is multiplied by this value, the intersection
+ *	test stops after the result of this product.
+ *	\param x x coordinate for start of ray.
+ *	\param y y coordinate for start of ray.
+ *	\param z z coordinate for start of ray.
+ *	\param vx x direction for ray.
+ *	\param vy y direction for ray.
+ *	\param vz z direction for ray.
+ *	\param [objid] id of object to ignore during collision tests
+ *	\return hit,x,y,z,obj
+ *	
+ *	\remark
+ *	If you are firing a ray from a player's perspective, you should supply
+ *	the optional argument \c objid as the player's object id. This will ensure
+ *	they are ignored from collision tests, and the ray will not intersect with
+ *	them (otherwise it will be trapped in their head).
+ *	
+ *	\remark
+ *	\c hit is set if the ray intersects with something (wall, obj etc)\n
+ *	\c x,y,z is the hit location.\n
+ *	\c obj is the object id of the first object hit, or \c nil if none.
+ *		
+ *	Example usage:
+ *	\code
+	 local player_objid = getplayerobjectid(player)	
+	 if (player_objid ~= nil) then
+		 local m_object = getobject(player_objid)
+		 local vx = readfloat(m_object + 0x230)
+		 local vy = readfloat(m_object + 0x234)
+		 local vz = readfloat(m_object + 0x238)
+		 local px, py, pz = getobjectcoords(player_objid)
+
+		 -- We want to fire the ray from the player's head
+		 -- So we need to find the standing/crouch height for the map
+		 -- You should move this little bit of code into OnNewGame and
+		 -- save the values.
+		 local bipd_id = readdword(m_object)
+		 local bipd_tag = gettagaddress(bipd_id)
+		 local bipd_data = readdword(bipd_tag + 0x14)
+		 local standing_height = readfloat(bipd_data + 0x400)
+		 local crouch_height = readfloat(bipd_data + 0x404)
+
+		 local crouch_state = readfloat(m_object + 0x50c)
+		 if (crouch_state == 0) then pz = pz + standing_height
+		 else pz = pz + (crouch_height * crouch_state) end
+
+		 local hit,x,y,z,objid = halointersect(1000, px, py, pz, vx, vy, vz, player_objid)		
+		 if (hit == true) then
+			 hprintf(string.format("The hit location is (%.2f, %.2f, %.2f)", x,y,z))
+			 if (objid ~= nil) then 
+				 hprintf(string.format("The player is looking at object %08X", objid))
+			 end			
+		 else
+			 hprintf("no hit")
+		 end
+	 end
+ *	\endcode
+ */
+void l_halointersect(PHASOR_API_ARGS);
+
 //! }@

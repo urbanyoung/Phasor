@@ -100,12 +100,14 @@ namespace halo {
 		UNKNOWN(0x1AA); // 0x322
 		BYTE isAirbourne; // 0x4CC (from jumping/falling, not when flying in vehicle)
 		UNKNOWN(0x33); // 0x4cd - 0x500
+		UNKNOWN(0x0c);
+		float crouch_percent;
 
 		// The rest of bipd is composed of other tags, such as
 		// mod2\characters\cyborg\cyborg
 		// with these tags its size is 0xDEC
 	};
-	static_assert(sizeof(s_halo_biped) == 0x500, "bad");
+	static_assert(sizeof(s_halo_biped) == 0x510, "bad");
 
 	struct s_halo_weapon
 	{
@@ -144,9 +146,14 @@ namespace halo {
 		vect3d pos;
 		// rest unknown.. 
 	};
-	
 	#pragma pack(pop)
 
+	struct view_vector
+	{
+		vect3d pos;
+		vect3d dir;
+	};
+	
 	void* GetObjectAddress(ident objectId);
 	bool DestroyObject(ident objid);
 
@@ -165,6 +172,11 @@ namespace halo {
 	bool ExitVehicle(s_player& player);
 
 	void MoveObject(s_halo_object& object, const vect3d& pos);
+	
+	// Finds an intersection between view and the environment. 
+	// Returns true if object intersected, false otherwise.
+	bool FindIntersection(const view_vector& view, const halo::ident& ignore_obj,
+		vect3d& hit_pos, ident& hit_obj);
 
 	// --------------------------------------------------------------------
 	// Events
