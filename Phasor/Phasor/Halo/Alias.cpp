@@ -159,11 +159,12 @@ namespace halo { namespace alias
 	// Interface with rest of Phasor.
 	void Initialize()
 	{
-		std::string alias_file = m_sprintf("%s\\alias.sqlite",
-			NarrowString(g_DataDirectory).c_str());
-		aliasdb.reset(new sqlite::SQLite(alias_file));
 		try 
 		{
+			std::string alias_file = m_sprintf("%s\\alias.sqlite",
+				NarrowString(g_DataDirectory).c_str());
+			aliasdb.reset(new sqlite::SQLite(alias_file));
+
 			std::unique_ptr<SQLiteQuery> query = aliasdb->NewQuery(
 				L"CREATE TABLE IF NOT EXISTS alias (hash CHAR(32), name VARCHAR(20))");
 			query->Execute();
