@@ -227,7 +227,6 @@ namespace scripting
 		while (!phasor_state.state->callstack.empty())
 		{
 			Manager::ScriptCallstack& entry = *phasor_state.state->callstack.top();
-
 			if (!blocked && !entry.scriptInvoked) { 
 				phasor_state.BlockFunction(entry.func);
 				blocked = true;

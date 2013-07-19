@@ -230,9 +230,9 @@ namespace halo { namespace server { namespace mapvote {
 		for (size_t x = 0; x < mapvote_list.size(); x++)
 		{
 			s_mapvote_entry& entry = mapvote_list[x];
-			out.wprint(fmt, x + 1, entry.game_info.map.c_str(),
-				NarrowString(entry.game_info.gametype.c_str()),
-				entry.desc.c_str());
+			out.wprint(fmt, x + 1, WidenString(entry.game_info.map).c_str(),
+				entry.game_info.gametype.c_str(),
+				WidenString(entry.desc).c_str());
 		}
 		return e_command_result::kProcessed;
 	}

@@ -77,6 +77,7 @@ namespace halo { namespace objects {
 			call dword ptr ds:[FUNC_DESTROYOBJECT]
 			popad
 		}
+		return true;
 	}
 
 

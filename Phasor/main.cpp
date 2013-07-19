@@ -32,6 +32,7 @@ std::unique_ptr<CRconLog> g_RconLog;
 std::unique_ptr<scripting::Scripts> g_Scripts;
 std::unique_ptr<halo::CHaloPrintStream> g_PrintStream;
 
+
 // todo: remove before release
 /*! \todo
  * before release change back to file output only
