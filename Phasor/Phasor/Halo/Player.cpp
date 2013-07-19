@@ -76,11 +76,8 @@ namespace halo
 				mem->team_Again = new_team;
 				player_entry->team = new_team;
 
-				// Only notify the server of the change if the player is being
-				// killed. Otherwise we assume the player is dead and all 
-				// is well. I think.
 				if (forcekill) 	Kill();
-					NotifyServerOfTeamChange(*this);
+				NotifyServerOfTeamChange(*this);
 				
 				scripting::events::OnTeamChange(*this, false, old_team, new_team);
 				break;
