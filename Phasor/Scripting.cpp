@@ -17,7 +17,7 @@ namespace scripting
 	const std::wstring log_prefix = L"  ";
 	
 	// Versions which should use the most up to date api
-	static const DWORD versions[] = {10059};
+	static const DWORD versions[] = {200};
 
 	// --------------------------------------------------------------------
 	bool CheckCompatibility(const DWORD* table, size_t n, DWORD version)

@@ -29,12 +29,24 @@ void l_getobjectcoords(CallHandler& handler, Object::unique_deque& args, Object:
 	AddResultNumber(obj->location.z, results);
 }
 
-void l_objecttoplayer(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+void l_objectaddrtoplayer(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
 {
 	void* obj_addr = (void*)ReadNumber<DWORD>(*args[0]);
 	for (int i = 0; i < 16; i++) {
 		s_player* player = game::getPlayer(i);
 		if (player && GetObjectAddress(player->mem->object_id) == obj_addr) {
+			return AddResultNumber(i, results);
+		}
+	}
+	AddResultNil(results);
+}
+
+void l_objectidtoplayer(CallHandler& handler, Object::unique_deque& args, Object::unique_list& results)
+{
+	ident id = make_ident(ReadNumber<DWORD>(*args[0]));
+	for (int i = 0; i < 16; i++) {
+		s_player* player = game::getPlayer(i);
+		if (player && player->mem->object_id == id) {
 			return AddResultNumber(i, results);
 		}
 	}

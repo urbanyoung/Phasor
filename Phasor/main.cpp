@@ -53,7 +53,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 	g_PrintStream.reset(new halo::CHaloPrintStream());
 	*g_PrintStream << L"44656469636174656420746f206d756d2e2049206d69737320796f752e" << endl;
 	LocateDirectories();
-
+	
 	// can't rename phasor log for startup errors via earlyinit
 	CLoggingStream PhasorLog(g_LogsDirectory, L"PhasorLog", g_OldLogsDirectory);
 

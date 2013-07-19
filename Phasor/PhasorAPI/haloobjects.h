@@ -45,7 +45,7 @@ void l_getobjectcoords(PHASOR_API_ARGS);
  *	
  *	Example usage:
  *	\code
- *		local player = objecttoplayer(m_object)
+ *		local player = objectaddrtoplayer(m_object)
  *		if (player ~= nil) then
  *			hprintf("object belongs to " .. player)
  *		end
@@ -54,7 +54,24 @@ void l_getobjectcoords(PHASOR_API_ARGS);
  * \remark This only works for player objects, not objects created by the player,
  * ie bullets.
  */
-void l_objecttoplayer(PHASOR_API_ARGS);
+void l_objectaddrtoplayer(PHASOR_API_ARGS);
+
+/*! \brief Find which player the specified object id belongs to.
+ *	\param m_objectId The object's id
+ *	\return memory_id The player's memory id, or \c nil if not found.
+ *	
+ *	Example usage:
+ *	\code
+ *		local player = objectidtoplayer(objid)
+ *		if (player ~= nil) then
+ *			hprintf("object belongs to " .. player)
+ *		end
+ *	\endcode
+ *
+ * \remark This only works for player objects, not objects created by the player,
+ * ie bullets.
+ */
+void l_objectidtoplayer(PHASOR_API_ARGS);
 
 /*! \brief Creates an ingame object.
  *
