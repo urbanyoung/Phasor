@@ -58,9 +58,9 @@ namespace commands
 		cmd["sv_version_check"]		= &server::misc::sv_version_check;
 		cmd["sv_hash_check"]		= &server::misc::sv_hash_check;
 
-		cmd["sv_logname"]			= &logging::sv_logname;
-		cmd["sv_loglimit"]			= &logging::sv_loglimit;
-		cmd["sv_logmovedir"]		= &logging::sv_logmovedir;
+		cmd["sv_log_name"]			= &logging::sv_logname;
+		cmd["sv_log_limit"]			= &logging::sv_loglimit;
+		cmd["sv_log_move_dir"]		= &logging::sv_logmovedir;
 
 		cmd["sv_alias_enable"]		= &alias::sv_alias_enable;
 		cmd["sv_alias_hash"]		= &alias::sv_alias_hash;
@@ -101,14 +101,13 @@ namespace commands
 		usage["sv_script_list"]		= "";
 
 		usage["sv_kickafk"]			= "<time in minutes>";
-
 		usage["sv_version"]			= "<version> see `sv_version` for list of versions.";
 		usage["sv_version_check"]	= "<true or false>";
 		usage["sv_hash_check"]		= "<true or false>";
 
-		usage["sv_logname"]			= "<log type [phasor,script,game,rcon]> <new name>";
-		usage["sv_loglimit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";
-		usage["sv_logmovedir"]		= "<directory>";
+		usage["sv_log_name"]		= "<log type [phasor,script,game,rcon]> <new name>";
+		usage["sv_log_limit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";
+		usage["sv_logmove_dir"]		= "<directory>";
 
 		usage["sv_alias_enable"]	= "<status>";
 		usage["sv_alias_hash"]		= "<hash or player index>";
