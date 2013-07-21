@@ -40,7 +40,7 @@ void l_registertimer(PHASOR_API_ARGS);
  *	\param id The id of the timer to remove.
  *	
  *	\remark
- *		- If \c id isn't a valid timer id, a Lua error is raised.
+ *		- \c id can be invalid, in which case the call is ignored (no errors are raised)
  *		- If you want to remove a timer from its callback, return \c false. Don't
  *		use removetimer.
  *	

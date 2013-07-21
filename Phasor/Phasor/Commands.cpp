@@ -51,12 +51,18 @@ namespace commands
 		cmd["sv_script_unload"]		= &server::scriptloader::sv_script_unload;
 		cmd["sv_script_list"]		= &server::scriptloader::sv_script_list;
 		
-		cmd["sv_kickafk"]			= &afk_detection::sv_kickafk;
+		cmd["sv_kickafk"]			= &afk_detection::sv_kickafk;		
 
 		// misc
 		cmd["sv_version"]			= &server::misc::sv_version;
 		cmd["sv_version_check"]		= &server::misc::sv_version_check;
 		cmd["sv_hash_check"]		= &server::misc::sv_hash_check;
+		cmd["sv_kill"]				= &server::misc::sv_kill;
+		cmd["sv_getobject"]			= &server::misc::sv_getobject;
+		cmd["sv_invis"]				= &server::misc::sv_invis;
+		cmd["sv_setspeed"]			= &server::misc::sv_setspeed;
+		cmd["sv_say"]				= &server::misc::sv_say;
+		cmd["sv_gethash"]			= &server::misc::sv_gethash;
 
 		cmd["sv_log_name"]			= &logging::sv_logname;
 		cmd["sv_log_limit"]			= &logging::sv_loglimit;
@@ -104,6 +110,12 @@ namespace commands
 		usage["sv_version"]			= "<version> see `sv_version` for list of versions.";
 		usage["sv_version_check"]	= "<true or false>";
 		usage["sv_hash_check"]		= "<true or false>";
+		usage["sv_kill"]			= "<player>";
+		usage["sv_getobject"]		= "<object id>";
+		usage["sv_invis"]			= "<player> <duration>";
+		usage["sv_setspeed"]		= "<player> <speed>";
+		usage["sv_say"]				= "<msg to say>";
+		usage["sv_gethash"]			= "<player>";
 
 		usage["sv_log_name"]		= "<log type [phasor,script,game,rcon]> <new name>";
 		usage["sv_log_limit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";

@@ -114,4 +114,65 @@ namespace halo { namespace server { namespace misc {
 		return e_command_result::kProcessed;
 	}
 
+	e_command_result sv_kill(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		halo::s_player& player = args.ReadPlayer();
+		player.Kill();
+		out << player.mem->playerName << " has been killed." << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_getobject(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		ident obj = make_ident(args.ReadUInt());
+		void* addr = objects::GetObjectAddress(obj);
+		if (addr) out.wprint(L"%08X is at address %08X", (unsigned long)obj, addr);
+		else out.wprint(L"%08X isn't a valid object.", (unsigned long)obj);
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_invis(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		halo::s_player& player = args.ReadPlayer();
+		float duration = 0;
+		if (args.size() == 2) {
+			duration = args.ReadFloat();
+			if (duration > 1092.00) {
+				out << "That duration is so large that it will be treated as indefinite." << endl;
+				duration = 0;
+			}
+		}
+		player.ApplyCamo(duration);
+		out << player.mem->playerName << " is now invisible." << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_setspeed(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		halo::s_player& player = args.ReadPlayer();
+		float newSpeed = args.ReadFloat();
+		player.SetSpeed(newSpeed);
+		out << "The player's speed has been changed." << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_say(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		say_stream << args.ReadWideString() << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_gethash(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		halo::s_player& player = args.ReadPlayer();
+		out << player.hash << endl;
+		return e_command_result::kProcessed;
+	}
+
 }}}

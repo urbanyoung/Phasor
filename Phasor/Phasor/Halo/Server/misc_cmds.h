@@ -13,4 +13,19 @@ namespace halo { namespace server { namespace misc {
 	// Hash checking
 	e_command_result sv_hash_check(void*, 
 		commands::CArgParser& args, COutStream& out);
+
+	// Other
+	e_command_result sv_kill(void*, 
+		commands::CArgParser& args, COutStream& out);
+	e_command_result sv_getobject(void*, 
+		commands::CArgParser& args, COutStream& out);
+	e_command_result sv_invis(void*, 
+		commands::CArgParser& args, COutStream& out);
+	e_command_result sv_setspeed(void*, 
+		commands::CArgParser& args, COutStream& out);
+	e_command_result sv_say(void*, 
+		commands::CArgParser& args, COutStream& out);
+	e_command_result sv_gethash(void*, 
+		commands::CArgParser& args, COutStream& out);
+
 }}}

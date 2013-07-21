@@ -112,6 +112,7 @@ namespace halo { namespace game {
 	// Called when a new game starts
 	void OnNewGame(const char* map)
 	{
+		objects::ClearManagedObjects();
 		afk_detection::Enable();
 		halo::BuildTagCache();
 		
