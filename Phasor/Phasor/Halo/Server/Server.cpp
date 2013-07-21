@@ -285,10 +285,15 @@ namespace halo { namespace server
 	// Called when a console command is to be executed
 	// kProcessed: Event has been handled, don't pass to server
 	// kGiveToHalo: Not handled, pass to server.
-	e_command_result __stdcall ProcessCommand(char* command)
+	e_command_result __stdcall ProcessCommand(char* cmd)
 	{
 		s_player* exec_player = GetPlayerExecutingCommand();
 		bool can_execute = exec_player == NULL;
+
+		std::string command = cmd;
+
+		std::vector<std::string> tokens = TokenizeArgs(command);
+		if (!tokens.size()) return e_command_result::kProcessed; 
 
 		if (!can_execute) {
 			TempForwarder echo(*g_PrintStream, 
@@ -297,9 +302,12 @@ namespace halo { namespace server
 			if (exec_player->authenticating_hash) {
 				*exec_player->console_stream << "Please wait while your hash is authenticated.." << endl;
 			} else {
+				// Find just the command name
+				std::string commandName = command.substr(0, command.find(' '));
+
 				std::string authName;
 				Admin::result_t result = Admin::canUseCommand(exec_player->hash,
-					command, &authName);
+					commandName, &authName);
 
 				e_command_result do_process = e_command_result::kProcessed;
 				switch (result)
@@ -316,7 +324,7 @@ namespace halo { namespace server
 						echo << L"Name: '" << exec_player->mem->playerName <<
 							L"' Hash: " << exec_player->hash << " Authed as: '" 
 							<< authName << "'" << endl;
-						echo << "Command: '" << command << "'" << endl;
+						echo << "Command: '" << commandName << "'" << endl;
 					} break;
 				case Admin::E_OK:
 					{
@@ -347,7 +355,7 @@ namespace halo { namespace server
 			s_command_cache* cache = (s_command_cache*)ADDR_CMDCACHE;
 			cache->count = (cache->count + 1) % 8;
 			strcpy_s(cache->commands[cache->count], sizeof(cache->commands[cache->count]),
-				command);
+				cmd);
 			cache->cur = 0xFFFF;
 		}
 		return result;
