@@ -161,6 +161,9 @@
     <ClCompile Include="Phasor\Halo\Server\misc_cmds.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
+    <ClCompile Include="PhasorAPI\scriptmanagement.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -390,6 +393,9 @@
     </ClInclude>
     <ClInclude Include="Phasor\Halo\Server\misc_cmds.h">
       <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\scriptmanagement.h">
+      <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,7 @@
 #include "alias_script.h"
 #include "scripttimers.h"
 #include "damagelookup.h"
+#include "scriptmanagement.h"
 
 using namespace Common;
 using namespace Manager;
@@ -103,7 +104,6 @@ namespace PhasorAPI
 		{&l_gettaginfo, "gettaginfo", 1, {TYPE_NUMBER}},
 		{&l_gettagaddress, "gettagaddress", 1, {TYPE_NUMBER}},
 		{&l_halointersect, "halointersect", 7, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
-		
 		// Alias related functions: see alias_script.h
 		{&l_alias_search, "alias_search", 2, {TYPE_STRING, TYPE_STRING}},
 		{&l_alias_hash, "alias_hash", 2, {TYPE_STRING, TYPE_STRING}},
@@ -119,6 +119,8 @@ namespace PhasorAPI
 		// Damage application, see haloobjects.h
 		{&l_applydmg, "applydmg", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
 		{&l_applydmgtag, "applydmgtag", 2, {TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER, TYPE_NUMBER}},
+		// Script management functions
+		{&l_raiseerror, "raiseerror", 1, {TYPE_STRING}},
 	};
 
 	static const size_t export_table_size = sizeof(PhasorExportTable)/sizeof(PhasorExportTable[0]);

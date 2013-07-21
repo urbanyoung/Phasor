@@ -161,6 +161,9 @@
     <ClCompile Include="Libraries\sqlitepp.cpp">
       <Filter>Libraries\sqlite</Filter>
     </ClCompile>
+    <ClCompile Include="PhasorAPI\scriptmanagement.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="Libraries\sqlitepp.h">
       <Filter>Libraries\sqlite</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\scriptmanagement.h">
+      <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
