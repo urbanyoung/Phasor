@@ -20,7 +20,9 @@ namespace halo {
 		UNKNOWN(12);
 		UNKNOWN_BITFIELD(2);
 		bool ignoreGravity : 1;
-		UNKNOWN_BITFIELD(4);
+		UNKNOWN_BITFIELD(2);
+		bool stationary : 1;
+		UNKNOWN_BITFIELD(1);
 		bool noCollision : 1; // has no collision box, projectiles etc pass right through
 		UNKNOWN(3);
 		unsigned long timer; // 0x0014

@@ -340,6 +340,7 @@ ASSIGNMENT_FAILED:
 	void MoveObject(s_halo_object& object, const vect3d& pos)
 	{
 		object.location = pos;
+		object.stationary = false;
 	}
 
 	bool FindIntersection(const view_vector& view, const halo::ident& ignore_obj,
