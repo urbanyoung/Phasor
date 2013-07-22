@@ -91,7 +91,10 @@ template <typename T> struct s_number_write_info : s_number_read_info
 		if (is_write_bit) {
 			BYTE b = read_data<BYTE>(handler, address);
 			if (data == 1) data = (BYTE)(b | (1 << bit_offset)); 
-			else data = (BYTE)(b ^ (1 << bit_offset)); 
+			else {
+				data = (BYTE)(b & ~(1 << bit_offset));
+				//data = (BYTE)(b ^ (1 << bit_offset)); 
+			}
 		}
 	}
 };
