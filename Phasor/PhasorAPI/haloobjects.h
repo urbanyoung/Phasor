@@ -28,7 +28,7 @@
  */
 void l_getobject(PHASOR_API_ARGS);
 
-/*! \brief Get the specified object's memory address.
+/*! \brief Get the specified object's location in the map.
  *	\param object_id The object's id
  *	\return x,y,z The object's x, y and z coordinates.
  *
@@ -94,7 +94,7 @@ void l_objectidtoplayer(PHASOR_API_ARGS);
  *	Example usage:
  *	\code
  *		function OnNewGame(map)
- *			global assault_rifle_id = LookupTag("weap", "weapons\\assault rifle\\assault rifle")
+ *			assault_rifle_id = LookupTag("weap", "weapons\\assault rifle\\assault rifle")
  *		end
  *		
  *		... (somewhere else in the code) ...
@@ -182,6 +182,11 @@ void l_exitvehicle(PHASOR_API_ARGS);
  *  \param x The x coordinate to move the object to.
  *  \param y The y coordinate to move the object to.
  *  \param z The z coordinate to move the object to.
+ *  
+ *  \remark
+ *  This function will also reset the object's flags to indicate
+ *  that it is not stationary. This causes gravity to work as expected.
+ *  If this is no the behaviour you want, then do \c writebit(m_obj + 0x10, 5, 1)
  *  
  *  Example usage:
  *  \code
@@ -310,7 +315,7 @@ void l_applydmgtag(PHASOR_API_ARGS);
  *	
  *	\remark
  *	\c hit is set if the ray intersects with something (wall, obj etc)\n
- *	\c x,y,z is the hit location.\n
+ *	\c x,\cy,\cz is the hit location.\n
  *	\c obj is the object id of the first object hit, or \c nil if none.
  *		
  *	Example usage:

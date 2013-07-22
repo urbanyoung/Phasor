@@ -36,7 +36,6 @@ public:
 	virtual bool OnExpiration(Timers& timers) override
 	{
 		if (!still_valid()) {
-			*g_PrintStream << "expiration " << endl;
 			// remove all timers for this script (it's invalid)
 			auto itr = scriptTimers.find(state->state.get());
 			if (itr != scriptTimers.end()) scriptTimers.erase(itr);

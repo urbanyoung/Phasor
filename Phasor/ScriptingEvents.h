@@ -7,7 +7,8 @@
  *	add it to your parameter list unless you want to use it.
  *	
  *	### CHANGES
- *		- If you don't want your return value to be considered you \b must return \c nil
+ *		- If you don't want your return value to be considered you \b must either 
+ *		  return \c nil or return nothing at all.
  *		- If you return a value and \c relevant == \c false it will be ignored.
  *		- The value indicating the server is executing the command is \c nil not \c -1
  *		- OnClientUpdate only receives the player's memory id, not their object id.
@@ -16,6 +17,9 @@
  *		  returned the result of \c lookuptag, instead use \c gettagid. Also, for
  *		  performance reasons scripts should save the result of \c gettagid instead
  *		  of calling it each time.
+ *		- OnDamageLookup has completely changed, you shouldn't write to its
+ *		  \c tagdata anymore. Instead, use the odl_ functions to modify its
+ *		  behaviour.   
  * 
  */
 

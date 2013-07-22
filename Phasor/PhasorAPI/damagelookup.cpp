@@ -94,7 +94,7 @@ void l_odl_flags(CallHandler& handler, Object::unique_deque& args, Object::uniqu
 	} else {
 		bool to_set = ReadBoolean(*args[1]);
 		if (to_set) odl::opts->flags |= flag;
-		else odl::opts->flags ^= flag;
+		else odl::opts->flags &= ~flag;
 
 		odl::flags_state = &handler.state;
 	}
