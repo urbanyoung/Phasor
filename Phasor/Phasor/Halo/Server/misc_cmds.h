@@ -27,5 +27,8 @@ namespace halo { namespace server { namespace misc {
 		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_gethash(void*, 
 		commands::CArgParser& args, COutStream& out);
+	e_command_result sv_changeteam(void*, 
+		commands::CArgParser& args, COutStream& out);
+
 
 }}}

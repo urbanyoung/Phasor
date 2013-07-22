@@ -76,7 +76,7 @@ namespace halo
 				mem->team_Again = new_team;
 				player_entry->team = new_team;
 
-				if (forcekill) 	Kill();
+				if (forcekill) Kill();
 				NotifyServerOfTeamChange(*this);
 				
 				scripting::events::OnTeamChange(*this, false, old_team, new_team);

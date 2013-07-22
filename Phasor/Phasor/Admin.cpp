@@ -39,6 +39,11 @@ namespace Admin
 				return all_access || commands.find(command) != commands.end();
 			}
 
+			const std::set<const std::string>& 
+				getCommands() { return commands; }
+
+			bool allAccess() const { return all_access; }
+
 			int get_level() const { return level; }
 		};
 
@@ -362,6 +367,7 @@ namespace Admin
 				}
 			}
 		}
+		out << endl;
 		return e_command_result::kProcessed;
 	}
 
@@ -371,9 +377,36 @@ namespace Admin
 		return e_command_result::kProcessed;
 	}
 
-	e_command_result sv_commands(void*, commands::CArgParser& args, COutStream& out)
+	e_command_result sv_commands(void* player1, commands::CArgParser& args, COutStream& out)
 	{
-		out << "not yet implemented" << endl;
+		if (!player1) {
+			out << "You can use all commands." << endl;
+			return e_command_result::kProcessed;
+		}
+
+		halo::s_player* player = (halo::s_player*)player1;
+
+		int level = 0;
+		if (!getLevel(player->hash, &level)) {
+			out << "The admin system isn't enabled, you can use any command" << endl;
+			return e_command_result::kProcessed;
+		}
+
+		access::s_access_level* lvl = 0;
+		if (find(level, &lvl)) {
+			auto commands = lvl->getCommands();
+
+			if (!lvl->allAccess())	{
+				out << "You can use the following commands:" << endl;
+				int i = 0;
+				for (auto itr = commands.begin(); itr != commands.end(); ++itr, i++) {
+					if (i % 4 == 3) out << endl;
+					out << *itr << "   ";
+				}
+			} else out << "You can use all commands." << endl;
+		}
+		out << endl;
+
 		return e_command_result::kProcessed;
 	}
 

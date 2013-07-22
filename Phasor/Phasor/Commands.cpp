@@ -63,6 +63,7 @@ namespace commands
 		cmd["sv_setspeed"]			= &server::misc::sv_setspeed;
 		cmd["sv_say"]				= &server::misc::sv_say;
 		cmd["sv_gethash"]			= &server::misc::sv_gethash;
+		cmd["sv_changeteam"]		= &server::misc::sv_changeteam;
 
 		cmd["sv_log_name"]			= &logging::sv_logname;
 		cmd["sv_log_limit"]			= &logging::sv_loglimit;
@@ -116,6 +117,7 @@ namespace commands
 		usage["sv_setspeed"]		= "<player> <speed>";
 		usage["sv_say"]				= "<msg to say>";
 		usage["sv_gethash"]			= "<player>";
+		usage["sv_changeteam"]		= "<player>";
 
 		usage["sv_log_name"]		= "<log type [phasor,script,game,rcon]> <new name>";
 		usage["sv_log_limit"]		= "<log type [phasor,script,game,rcon]> <size in kB>";

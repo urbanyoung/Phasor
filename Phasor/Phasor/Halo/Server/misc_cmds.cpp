@@ -175,4 +175,13 @@ namespace halo { namespace server { namespace misc {
 		return e_command_result::kProcessed;
 	}
 
+	e_command_result sv_changeteam(void*, 
+		commands::CArgParser& args, COutStream& out)
+	{
+		halo::s_player& player = args.ReadPlayer();
+		player.ChangeTeam(!player.mem->team, true);
+		out << "The player's team has been changed to " << ((player.mem->team == 0) ? "Red" : "Blue") << endl;
+		return e_command_result::kProcessed;
+	}
+
 }}}

@@ -91,7 +91,7 @@ namespace Admin
 	 *
 	 *	Example usage: sv_commands
 	 */
-	e_command_result sv_commands(void*, commands::CArgParser& args, COutStream& out);
+	e_command_result sv_commands(void* player, commands::CArgParser& args, COutStream& out);
 
 	/*! \brief Enables/Disables forced-hash checking. This protects against people
 	 *	attempting to steal an admin's hash, an admin won't be marked as such until
