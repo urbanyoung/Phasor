@@ -763,7 +763,7 @@ ALLOW_VEHICLE_ENTRY:
 }
 
 DWORD ondeath_ret = 0;
-
+bool show_kill_msg = true;
 // Codecave for handling player deaths
 __declspec(naked) void OnDeath_CC()
 {
@@ -784,8 +784,10 @@ __declspec(naked) void OnDeath_CC()
 		push eax // victim
 		push ecx // killer
 		call game::OnPlayerDeath
-
+		mov show_kill_msg, al
 		popad
+
+		mov bl, show_kill_msg
 
 		PUSH EBP
 		MOV EBP,DWORD PTR SS:[ESP+0x20]

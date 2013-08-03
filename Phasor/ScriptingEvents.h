@@ -435,6 +435,8 @@ namespace scripting {
 		 *	\param victim The victim's memory id.
 		 *	\param mode Describes how they died.
 		 *	
+		 *	\return Boolean indicating whether or not the kill message should be shown.
+		 *	
 		 *	\remark
 		 *		- \c killer can be \c nil.
 		 *		- \c victim is never \c nil.
@@ -452,7 +454,7 @@ namespace scripting {
 		 *		function OnPlayerKill(killer, victim, mode)
 		 *	\endcode
 		 */
-		void OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,
+		bool OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,
 			DWORD mode);
 
 		/*! \brief Called when a player gets a kill streak.

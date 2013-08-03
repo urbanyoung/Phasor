@@ -271,14 +271,14 @@ namespace scripting { namespace events {
 		return HandleResult<bool>(caller.Call("OnVehicleEject", result_bool), true);
 	}
 
-	void OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,
+	bool OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,
 		DWORD mode)
 	{
 		PhasorCaller caller;
 		AddPlayerArg(killer, caller);
 		AddPlayerArg(&victim, caller);
 		caller.AddArg(mode);
-		caller.Call("OnPlayerKill");
+		return HandleResult<bool>(caller.Call("OnPlayerKill", result_bool), true);
 	}
 
 	void OnKillMultiplier(const halo::s_player& player, DWORD multiplier)

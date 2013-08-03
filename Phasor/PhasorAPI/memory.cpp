@@ -249,7 +249,7 @@ void l_readbit(CallHandler& handler, Object::unique_deque& args, Object::unique_
 {
 	s_number_read_info r(args, true);
 	BYTE b = read_data<BYTE>(handler, r.address);
-	bool bit = ((b & (1 << r.bit_offset)) >> r.bit_offset) == 1;
+	bool bit = (b & (1 << r.bit_offset)) != 0;
 	results.push_back(std::unique_ptr<Object>(new ObjBool(bit)));
 }
 

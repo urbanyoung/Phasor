@@ -80,7 +80,7 @@ namespace halo {
 	bool __stdcall OnVehicleEject(objects::s_halo_biped* m_playerObject, bool forceEjected);
 
 	// Called when a player dies
-	void __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode);
+	bool __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode);
 
 	// Called when a player gets a double kill, spree etc
 	void __stdcall OnKillMultiplier(DWORD playerId, DWORD multiplier);

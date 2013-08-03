@@ -311,12 +311,12 @@ namespace halo { namespace game {
 	}
 
 	// Called when a player dies
-	void __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode)
+	bool __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode)
 	{
 		s_player* victim = getPlayer(victimId);
 		s_player* killer = getPlayer(killerId);
 
-		if (!victim) return;
+		if (!victim) return true;
 
 		// log the death based on type
 		switch (mode)
@@ -365,7 +365,7 @@ namespace halo { namespace game {
 			} break;
 		}
 			
-		scripting::events::OnPlayerKill(*victim, killer, mode);
+		return scripting::events::OnPlayerKill(*victim, killer, mode);
 	}
 
 	// Called when a player gets a double kill, spree etc

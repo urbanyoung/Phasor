@@ -26,6 +26,11 @@
  * \remark
  * All string operations are limited to 80 characters at max.
  * 
+ * \remark
+ * bit offsets have changed from the previous version of Phasor. In the old
+ * one, bit 0 was the most significant bit whereas now it is the least 
+ * significant bit. 
+ * 
  *	\addtogroup PhasorAPI
  *	@{
 */
