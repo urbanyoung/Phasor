@@ -59,7 +59,7 @@ public:
 		
 		scripting::PhasorCaller caller;
 		caller.AddArg(std::move(result_obj));
-		caller.Call(*state, callback);
+		caller.Call(*getPhasorState(), callback);
 	}
 };
 

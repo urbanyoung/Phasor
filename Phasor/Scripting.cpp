@@ -259,8 +259,14 @@ namespace scripting
 	void CheckedScriptReference::ScriptBeingClosed(PhasorScript* state)
 	{
 		for (auto itr = refed_list.begin(); itr != refed_list.end(); ++itr) {		
-			if ((*itr)->state == state) (*itr)->valid = false;
+			if ((*itr)->phasorState == state) (*itr)->valid = false;
 		}
+	}
+
+	PhasorScript* CheckedScriptReference::getPhasorState() const
+	{
+		if (!valid) throw std::runtime_error("attempted to reference invalid PhasorScript.");
+		return phasorState;
 	}
 
 	CheckedScriptReference::CheckedScriptReference(Manager::ScriptState* state)
@@ -270,7 +276,8 @@ namespace scripting
 		auto itr = g_Scripts->scripts.begin();
 		while (itr != g_Scripts->scripts.end())	{
 			if (itr->second->state.get() == state) {
-				this->state = itr->second.get();
+				this->phasorState = itr->second.get();
+				this->scriptState = state;
 				found = true;
 				break;
 			}

@@ -109,12 +109,16 @@ namespace scripting
 		static void ScriptBeingClosed(PhasorScript* state);
 		static std::list<CheckedScriptReference*> refed_list;
 
+		PhasorScript* phasorState;
+
 	protected:
-		PhasorScript* state;
+		Manager::ScriptState* scriptState;
+
 	public:
 		CheckedScriptReference(Manager::ScriptState* state);
 		virtual ~CheckedScriptReference();
 		bool still_valid() const;
+		PhasorScript* getPhasorState() const;
 
 		friend class Scripts;
 	};

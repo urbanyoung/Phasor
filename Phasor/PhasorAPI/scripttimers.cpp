@@ -37,17 +37,18 @@ public:
 	{
 		if (!still_valid()) {
 			// remove all timers for this script (it's invalid)
-			auto itr = scriptTimers.find(state->state.get());
+			auto itr = scriptTimers.find(scriptState);
 			if (itr != scriptTimers.end()) scriptTimers.erase(itr);
 			return false;
 		}
 
+		PhasorScript *phasorState = getPhasorState();
 		PhasorCaller caller;
 		caller.AddArg(GetID());
 		caller.AddArg(++count);
 		if (userdata != nullptr) caller.AddArg(userdata->NewCopy());
-		bool reset = HandleResult<bool>(caller.Call(*state, callback.c_str(), result_bool), false);
-		if (!reset) removeScriptTimer(state->state.get(), GetID());
+		bool reset = HandleResult<bool>(caller.Call(*phasorState, callback.c_str(), result_bool), false);
+		if (!reset) removeScriptTimer(scriptState, GetID());
 		return reset;
 	}
 };
