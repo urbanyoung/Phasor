@@ -11,14 +11,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Phasor", "Phasor\Phasor.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strings", "strings\strings.vcxproj", "{F0FAD873-6B69-4C38-9B03-53EF6866052A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl_test", "libcurl_test\libcurl_test.vcxproj", "{AD8C25D9-498E-4122-9681-6F028ABFABB5}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua_test", "lua_test\lua_test.vcxproj", "{CEEBA4DF-6F65-4229-A5B6-B6193C342219}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sql_test", "sql_test\sql_test.vcxproj", "{28396E85-70FE-4928-9349-95F4235A1F46}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phasor_test", "phasor_test\phasor_test.vcxproj", "{F1B5508F-52B4-4107-BFAB-8E82021B12E1}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhasorCE", "Phasor\PhasorCE.vcxproj", "{F70F475A-E558-41C7-BAA4-8E2F6389ED68}"
 EndProject
 Global
@@ -47,22 +39,6 @@ Global
 		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Debug|Win32.Build.0 = Debug|Win32
 		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Release|Win32.ActiveCfg = Release|Win32
 		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Release|Win32.Build.0 = Release|Win32
-		{AD8C25D9-498E-4122-9681-6F028ABFABB5}.Debug|Win32.ActiveCfg = Debug|Win32
-		{AD8C25D9-498E-4122-9681-6F028ABFABB5}.Debug|Win32.Build.0 = Debug|Win32
-		{AD8C25D9-498E-4122-9681-6F028ABFABB5}.Release|Win32.ActiveCfg = Release|Win32
-		{AD8C25D9-498E-4122-9681-6F028ABFABB5}.Release|Win32.Build.0 = Release|Win32
-		{CEEBA4DF-6F65-4229-A5B6-B6193C342219}.Debug|Win32.ActiveCfg = Debug|Win32
-		{CEEBA4DF-6F65-4229-A5B6-B6193C342219}.Debug|Win32.Build.0 = Debug|Win32
-		{CEEBA4DF-6F65-4229-A5B6-B6193C342219}.Release|Win32.ActiveCfg = Release|Win32
-		{CEEBA4DF-6F65-4229-A5B6-B6193C342219}.Release|Win32.Build.0 = Release|Win32
-		{28396E85-70FE-4928-9349-95F4235A1F46}.Debug|Win32.ActiveCfg = Debug|Win32
-		{28396E85-70FE-4928-9349-95F4235A1F46}.Debug|Win32.Build.0 = Debug|Win32
-		{28396E85-70FE-4928-9349-95F4235A1F46}.Release|Win32.ActiveCfg = Release|Win32
-		{28396E85-70FE-4928-9349-95F4235A1F46}.Release|Win32.Build.0 = Release|Win32
-		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Debug|Win32.Build.0 = Debug|Win32
-		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Release|Win32.ActiveCfg = Release|Win32
-		{F1B5508F-52B4-4107-BFAB-8E82021B12E1}.Release|Win32.Build.0 = Release|Win32
 		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Debug|Win32.Build.0 = Debug|Win32
 		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Release|Win32.ActiveCfg = Release|Win32

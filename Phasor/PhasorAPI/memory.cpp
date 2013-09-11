@@ -120,13 +120,15 @@ T readstring(typename T::value_type* src, int size_bytes)
 {
 	typedef T::value_type char_type;
 	char_type buff[81];
-	copy_string<char_type>(src, sizeof(buff)/sizeof(buff[0]), buff);
+
+	int buffer_char_count = sizeof(buff)/sizeof(char_type);
+	int read_char_count = size_bytes / sizeof(char_type);
+	int use_count = buffer_char_count < read_char_count ? buffer_char_count : read_char_count;
+
+	copy_string<char_type>(src, use_count, buff);
 
 	// make sure it's null terminated
-	DWORD end_pos = size_bytes < sizeof(buff) ? size_bytes : sizeof(buff) - 1;
-	end_pos %= sizeof(buff);
-	end_pos /= sizeof(buff[0]);
-	buff[end_pos] = 0;
+	buff[use_count - 1] = 0;
 
 	return buff;
 }
