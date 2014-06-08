@@ -280,8 +280,8 @@ namespace Addresses
 		BYTE sig24[] = {0x66, 0x8B, 0x46, 0x04, 0x83, 0xEC, 0x0C, 0x66, 0x85, 0xC0, 0x53};
 		FUNC_PLAYERJOINING = FindAddress("FUNC_PLAYERJOINING", codeSection, codeSize, sig24, sizeof(sig24), 0, 0);
 
-		BYTE sig25[] = {0x3B, 0xD0, 0x0F, 0x9F, 0xC0};
-		FUNC_TEAMSELECT = FindAddress("FUNC_TEAMSELECT", codeSection, codeSize, sig25, sizeof(sig25), 0, -84);
+		BYTE sig25[] = {0x83, 0xEC, 0x10, 0x32, 0xC0, 0x85, 0xC9};
+		FUNC_TEAMSELECT = FindAddress("FUNC_TEAMSELECT", codeSection, codeSize, sig25, sizeof(sig25), 0, -6);
 
 		BYTE sig26[] = {0xC6, 0x00, 0x01, 0x5E};
 		FUNC_GETMAPPATH = FindAddress("FUNC_GETMAPPATH", codeSection, codeSize, sig26, sizeof(sig26), 0, 0x0E);

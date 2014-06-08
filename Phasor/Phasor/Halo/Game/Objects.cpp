@@ -150,7 +150,7 @@ namespace halo { namespace objects {
 	// todo: check ticks should be signed
 	bool __stdcall EquipmentDestroyCheck(int checkTicks, ident m_objId, s_halo_object* obj)
 	{
-		s_tag_entry* tag =  LookupTag(obj->map_id);
+		//s_tag_entry* tag =  LookupTag(obj->map_id);
 
 		bool bDestroy = false;
 

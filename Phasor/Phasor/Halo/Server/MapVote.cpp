@@ -71,9 +71,9 @@ namespace halo { namespace server { namespace mapvote {
 		for (size_t x = 0; x < votes.size(); x++)
 		{
 			if (!max_voted.size()) max_voted.push_back(x);
-			else if (max_voted[0] == votes[x])
+			else if (votes[max_voted[0]] == votes[x])
 				max_voted.push_back(x);
-			else if (max_voted[0] < votes[x]) {
+			else if (votes[max_voted[0]] < votes[x]) {
 				max_voted.clear();
 				max_voted.push_back(x);
 			}
