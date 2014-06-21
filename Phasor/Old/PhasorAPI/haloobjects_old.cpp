@@ -73,7 +73,7 @@ void l_createobject(CallHandler& handler, Object::unique_deque& args, Object::un
 	if (!tag) handler.RaiseError("createobject : cannot find object to create.");
 
 	ident objid;
-	if (CreateObject(tag->id, make_ident(parentId), respawnTime, do_respawn, &pos, objid))
+	if (CreateObject(tag, make_ident(parentId), respawnTime, do_respawn, &pos, objid))
 		AddResultNumber((unsigned long)objid, results);
 	else 
 		AddResultNil(results);

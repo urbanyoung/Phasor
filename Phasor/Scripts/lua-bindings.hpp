@@ -2,10 +2,9 @@
 
 #include <stdexcept>
 #include <string>
-#include <boost/optional.hpp>
 #include <boost/format.hpp>
-#include "../lua/lua.hpp"
-#include "Common/tuple-iterate.hpp"
+#include "../../lua/lua.hpp"
+#include "../Common/tuple-iterate.hpp"
 
 namespace lua {
 

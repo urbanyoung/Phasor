@@ -1,7 +1,6 @@
 #include "Objects.h"
 #include "../Addresses.h"
 #include "../../Globals.h"
-#include "../tags.h"
 #include "../Server/Server.h"
 #include <map>
 
@@ -12,11 +11,11 @@ namespace halo { namespace objects {
 		ident objid;
 		bool bRecycle;
 		vect3d pos, velocity, rotation, other;
-		int respawnTicks;
+		boost::optional<int> respawnTicks;
 		DWORD creationTicks;
 
 		s_phasor_managed_obj(ident objid, bool bRecycle, const vect3d& pos, 
-			int respawnTicks, s_object_creation_disposition* creation_disposition)
+			boost::optional<int> respawnTicks, s_object_creation_disposition* creation_disposition)
 			: objid(objid), bRecycle(bRecycle), pos(pos), respawnTicks(respawnTicks)
 		{
 			s_halo_object* obj = (s_halo_object*)GetObjectAddress(objid);
@@ -105,38 +104,40 @@ namespace halo { namespace objects {
 		auto itr = managedList.find(m_objId);
 		if (itr != managedList.end()) {
 			s_phasor_managed_obj* phasor_obj = &itr->second;
-			DWORD expiration = obj->idle_timer + phasor_obj->respawnTicks;
-			if (expiration < server_ticks) {
-				if (phasor_obj->bRecycle) {
-					void* v1 = &phasor_obj->other, *rotation = &phasor_obj->rotation,
-						*position = &phasor_obj->pos;
+			if (phasor_obj->respawnTicks) { // unset when no respawn
+				DWORD expiration = obj->idle_timer + *phasor_obj->respawnTicks;
+				if (expiration < server_ticks) {
+					if (phasor_obj->bRecycle) {
+						void* v1 = &phasor_obj->other, *rotation = &phasor_obj->rotation,
+							*position = &phasor_obj->pos;
 
-					__asm
-					{
-						pushad
-						push m_objId
-						call dword ptr ds:[FUNC_VEHICLERESPAWN2] // set flags to let object fall, reset velocities etc
-						add esp, 4
-						push v1
-						push rotation
-						push m_objId
-						mov edi, position
-						call dword ptr ds:[FUNC_VEHICLERESPAWN1] // move the object (proper way)
-						add esp, 0x0c
-						popad
-					}
+						__asm
+						{
+							pushad
+								push m_objId
+								call dword ptr ds : [FUNC_VEHICLERESPAWN2] // set flags to let object fall, reset velocities etc
+								add esp, 4
+								push v1
+								push rotation
+								push m_objId
+								mov edi, position
+								call dword ptr ds : [FUNC_VEHICLERESPAWN1] // move the object (proper way)
+								add esp, 0x0c
+								popad
+						}
 
-					// set last interacted to be now
-					obj->idle_timer = server_ticks;
-				} else { // destroy
-					// destroy object will erase obj from managed list, so
-					// itr and phasor_obj will be invalid.
+						// set last interacted to be now
+						obj->idle_timer = server_ticks;
+					} else { // destroy
+						// destroy object will erase obj from managed list, so
+						// itr and phasor_obj will be invalid.
 #ifdef BUILD_DEBUG
-					phasor_obj = 0;
-					itr = managedList.end();
+						phasor_obj = 0;
+						itr = managedList.end();
 #endif
-					DestroyObject(m_objId);
-					result = 2;					
+						DestroyObject(m_objId);
+						result = 2;
+					}
 				}
 			}
 		} else if (respawn_ticks != 0) { // default processing
@@ -150,10 +151,7 @@ namespace halo { namespace objects {
 	// todo: check ticks should be signed
 	bool __stdcall EquipmentDestroyCheck(int checkTicks, ident m_objId, s_halo_object* obj)
 	{
-		//s_tag_entry* tag =  LookupTag(obj->map_id);
-
 		bool bDestroy = false;
-
 		int objTicks = *(int*)((LPBYTE)obj + 0x204);
 
 		auto itr = managedList.find(m_objId);
@@ -161,16 +159,15 @@ namespace halo { namespace objects {
 			s_phasor_managed_obj* phasor_obj = &itr->second;
 
 			// respawn ticks are treated as expiration ticks
-			if (phasor_obj->respawnTicks > 0)
-			{
-				if (phasor_obj->respawnTicks + (int)phasor_obj->creationTicks < checkTicks)
-					bDestroy = true;
-			}
-			else if (phasor_obj->respawnTicks == -1) // use default value
-			{
-				if (checkTicks > objTicks)
-					bDestroy = true;
-			}
+			if (phasor_obj->respawnTicks) {
+				if (phasor_obj->respawnTicks > 0) {
+					if (*phasor_obj->respawnTicks + (int)phasor_obj->creationTicks < checkTicks)
+						bDestroy = true;
+				} else { // use default value
+					if (checkTicks > objTicks)
+						bDestroy = true;
+				}
+			}			
 		} else {
 			if (checkTicks > objTicks) 
 				bDestroy = true;
@@ -179,14 +176,11 @@ namespace halo { namespace objects {
 		return bDestroy;
 	}
 
-	bool CreateObject(ident mapid, ident parentId, int respawnTime, bool bRecycle,
+	bool CreateObject(s_tag_entry* tag, ident parentId,
+		boost::optional<int> respawnTime,
+		bool bRecycle,
 		const vect3d* location, ident& out_objid)
 	{
-		s_tag_entry* tag = LookupTag(mapid);
-		if (!tag) return false;
-
-		if (!parentId) parentId = make_ident(-1);
-
 		// Build the request data for <halo>.CreateObject
 		DWORD mapId = tag->id;
 		BYTE query[0x100] = {0}; // i think max ever used is 0x90
@@ -227,17 +221,16 @@ namespace halo { namespace objects {
 		if (!out_objid.valid())	return false;
 
 		// resolve the respawn timer
-		if (respawnTime == -1) // use gametype's value
-		{
+		if (respawnTime == -1) { // use gametype's value
 			// weapons/equipment don't respawn, they're destroyed and
 			// so the default value is handled in the processing func
 			if (tag->tagType == TAG_EQIP || tag->tagType == TAG_WEAP)
 				respawnTime = -1;
 			else
 				respawnTime = server::GetRespawnTicks();
+		} else if (respawnTime) {
+			*respawnTime *= 30;
 		}
-		else
-			respawnTime *= 30;
 
 		managedList.insert(std::pair<ident, s_phasor_managed_obj>
 			(out_objid, 

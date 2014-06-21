@@ -112,7 +112,6 @@
     <ClCompile Include="Common\Timers.cpp" />
     <ClCompile Include="Libraries\Curl.cpp" />
     <ClCompile Include="Libraries\sqlitepp.cpp" />
-    <ClCompile Include="lua-bindings.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Old\CallHelper.cpp" />
     <ClCompile Include="Old\Lua.cpp" />
@@ -120,7 +119,7 @@
     <ClCompile Include="Old\PhasorAPI\alias_script.cpp" />
     <ClCompile Include="Old\PhasorAPI\api_readers.cpp" />
     <ClCompile Include="Old\PhasorAPI\damagelookup.cpp" />
-    <ClCompile Include="Old\PhasorAPI\haloobjects.cpp" />
+    <ClCompile Include="Old\PhasorAPI\haloobjects_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\memory.cpp" />
     <ClCompile Include="Old\PhasorAPI\misc.cpp" />
     <ClCompile Include="Old\PhasorAPI\misc_halo.cpp" />
@@ -160,6 +159,8 @@
     <ClCompile Include="Phasor\LogHandler.cpp" />
     <ClCompile Include="Phasor\PhasorThread.cpp" />
     <ClCompile Include="Phasor\ThreadedLogging.cpp" />
+    <ClCompile Include="Scripts\lua-bindings.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\haloobjects.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h" />
@@ -175,7 +176,6 @@
     <ClInclude Include="Common\vect3d.h" />
     <ClInclude Include="Libraries\Curl.h" />
     <ClInclude Include="Libraries\sqlitepp.h" />
-    <ClInclude Include="lua-bindings.hpp" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Old\CallHelper.h" />
     <ClInclude Include="Old\Lua.h" />
@@ -195,7 +195,6 @@
     <ClInclude Include="Old\PhasorAPI\string.h" />
     <ClInclude Include="Old\Scripting.h" />
     <ClInclude Include="Old\ScriptingEvents.h" />
-    <ClInclude Include="phasor-lua.hpp" />
     <ClInclude Include="Phasor\Admin.h" />
     <ClInclude Include="Phasor\Commands.h" />
     <ClInclude Include="Phasor\CrashHandler.h" />
@@ -227,6 +226,9 @@
     <ClInclude Include="Phasor\PhasorThread.h" />
     <ClInclude Include="Phasor\ThreadedLogging.h" />
     <ClInclude Include="Phasor\Version.h" />
+    <ClInclude Include="Scripts\lua-bindings.hpp" />
+    <ClInclude Include="Scripts\phasor-lua.hpp" />
+    <ClInclude Include="Scripts\PhasorAPI\haloobjects.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,6 +3,8 @@
 #include "../../../Common/Types.h"
 #include "../../../Common/vect3d.h"
 #include "../Halo.h"
+#include "../tags.h"
+#include <boost/optional.hpp>
 
 namespace halo { 
 	struct s_player;
@@ -161,8 +163,10 @@ namespace halo {
 
 	void ClearManagedObjects();
 
-	bool CreateObject(ident mapid, ident parentId, int respawnTime, bool bRecycle,
-		const vect3d* location, ident& out_objid);
+	bool CreateObject(s_tag_entry* tag, ident parentId, 
+					  boost::optional<int> respawnTime,
+					  bool bRecycle,
+					  const vect3d* location, ident& out_objid);
 
 	bool AssignPlayerWeapon(s_player& player, ident weaponid);
 
