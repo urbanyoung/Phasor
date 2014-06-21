@@ -1,7 +1,7 @@
 #include "output.h"
-#include "../Phasor/Halo/Game/Game.h"
-#include "../Phasor/Halo/Server/Server.h"
-#include "../Phasor/Globals.h"
+#include "../../Phasor/Halo/Game/Game.h"
+#include "../../Phasor/Halo/Server/Server.h"
+#include "../../Phasor/Globals.h"
 #include "api_readers.h"
 #include <vector>
 #include <string>

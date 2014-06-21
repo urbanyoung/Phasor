@@ -1,10 +1,10 @@
 #include "haloobjects.h"
 #include "api_readers.h"
-#include "../Phasor/Halo/Game/Objects.h"
-#include "../Phasor/Halo/Game/Game.h"
-#include "../Phasor/Halo/tags.h"
-#include "../Phasor/Halo/Game/Damage.h"
-#include "../Common/MyString.h"
+#include "../../Phasor/Halo/Game/Objects.h"
+#include "../../Phasor/Halo/Game/Game.h"
+#include "../../Phasor/Halo/tags.h"
+#include "../../Phasor/Halo/Game/Damage.h"
+#include "../../Common/MyString.h"
 
 using namespace Common;
 using namespace Manager;

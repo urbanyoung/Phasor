@@ -1,7 +1,7 @@
 #include "damagelookup.h"
 #include "api_readers.h"
-#include "../Phasor/Halo/Game/Damage.h"
-#include "../Phasor/Halo/Game/Game.h"
+#include "../../Phasor/Halo/Game/Damage.h"
+#include "../../Phasor/Halo/Game/Game.h"
 
 using namespace Common;
 using namespace Manager;

@@ -1,6 +1,6 @@
 #include "playerinfo.h"
 #include "api_readers.h"
-#include "../Phasor/Admin.h"
+#include "../../Phasor/Admin.h"
 
 using namespace Common;
 using namespace Manager;

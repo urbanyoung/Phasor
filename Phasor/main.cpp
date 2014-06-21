@@ -5,7 +5,7 @@
 #include "Phasor/ThreadedLogging.h"
 #include "Phasor/GameLogging.h"
 #include "Phasor/Directory.h"
-#include "Scripting.h"
+#include "Old/Scripting.h"
 #include "Phasor/Commands.h"
 #include "Phasor/Admin.h"
 #include "Phasor/Halo/Addresses.h"

@@ -1,7 +1,7 @@
 #include "api_readers.h"
-#include "../Common/MyString.h"
-#include "../Phasor/Halo/Game/Objects.h"
-#include "../Phasor/Halo/tags.h"
+#include "../../Common/MyString.h"
+#include "../../Phasor/Halo/Game/Objects.h"
+#include "../../Phasor/Halo/tags.h"
 
 using namespace Common;
 using namespace Manager;

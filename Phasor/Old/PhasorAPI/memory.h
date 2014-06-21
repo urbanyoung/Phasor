@@ -34,7 +34,7 @@
  *	\addtogroup PhasorAPI
  *	@{
 */
-#include "../Common/Common.h"
+#include "../../Common/Common.h"
 #include "PhasorAPI.h"
 #include <list> 
 

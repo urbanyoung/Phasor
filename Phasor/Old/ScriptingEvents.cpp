@@ -1,11 +1,11 @@
 #include "ScriptingEvents.h"
 #include "Scripting.h"
-#include "Phasor/Halo/Player.h"
-#include "Phasor/Halo/tags.h"
-#include "Phasor/Halo/Game/Damage.h"
+#include "../Phasor/Halo/Player.h"
+#include "../Phasor/Halo/tags.h"
+#include "../Phasor/Halo/Game/Damage.h"
 #include "PhasorAPI/damagelookup.h"
 #include "CallHelper.h"
-#include "Phasor/Halo/Server/Chat.h"
+#include "../Phasor/Halo/Server/Chat.h"
 
 // stupid enum warning
 #pragma warning( disable : 4482)

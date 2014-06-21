@@ -1,5 +1,5 @@
 #include "PhasorAPI.h"
-#include "../Common/Common.h"
+#include "../../Common/Common.h"
 #include <list>
 #include <assert.h>
 #include "memory.h"

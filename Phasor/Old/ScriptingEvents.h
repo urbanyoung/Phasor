@@ -26,7 +26,7 @@
 #pragma once
 
 #include "Scripting.h"
-#include "Common/types.h"
+#include "../Common/types.h"
 #include <string>
 
 namespace halo

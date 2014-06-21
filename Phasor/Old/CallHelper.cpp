@@ -1,6 +1,6 @@
 #include "CallHelper.h"
-#include "Phasor/Halo/Player.h"
-#include "Phasor/Halo/Halo.h"
+#include "../Phasor/Halo/Player.h"
+#include "../Phasor/Halo/Halo.h"
 
 namespace scripting {
 	void AddPlayerArg(const halo::s_player* player, PhasorCaller& caller)

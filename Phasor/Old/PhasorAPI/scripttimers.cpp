@@ -1,7 +1,7 @@
 #include "scripttimers.h"
 #include "api_readers.h"
-#include "../Common/Timers.h"
-#include "../Phasor/Globals.h"
+#include "../../Common/Timers.h"
+#include "../../Phasor/Globals.h"
 #include "../Scripting.h"
 #include "../CallHelper.h"
 

@@ -1,9 +1,9 @@
 #include "misc_halo.h"
 #include "api_readers.h"
-#include "../Phasor/Halo/Game/Objects.h"
-#include "../Phasor/Globals.h"
-#include "../Phasor/Directory.h"
-#include "../Common/MyString.h"
+#include "../../Phasor/Halo/Game/Objects.h"
+#include "../../Phasor/Globals.h"
+#include "../../Phasor/Directory.h"
+#include "../../Common/MyString.h"
 
 using namespace Common;
 using namespace Manager;

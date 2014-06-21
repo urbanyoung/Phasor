@@ -13,7 +13,7 @@
 */
 
 #include "PhasorAPI.h"
-#include "../Phasor/Halo/Halo.h"
+#include "../../Phasor/Halo/Halo.h"
 
 namespace halo { struct s_damage_info; struct damage_script_options; }
 namespace odl {

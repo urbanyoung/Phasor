@@ -1,7 +1,7 @@
 #include "api_readers.h"
-#include "../Phasor/Halo/Alias.h"
+#include "../../Phasor/Halo/Alias.h"
 #include "../Scripting.h"
-#include "../Common/MyString.h"
+#include "../../Common/MyString.h"
 #include <list>
 
 using namespace Common;

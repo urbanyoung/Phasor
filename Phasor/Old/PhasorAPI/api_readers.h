@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <string>
-#include "../Phasor/Halo/Game/Game.h"
-#include "../Phasor/Halo/Server/Server.h"
+#include "../../Phasor/Halo/Game/Game.h"
+#include "../../Phasor/Halo/Server/Server.h"
 #include "PhasorAPI.h"
 
 // Raises an invalid player error

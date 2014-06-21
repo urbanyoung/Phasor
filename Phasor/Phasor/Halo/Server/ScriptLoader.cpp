@@ -1,5 +1,5 @@
 #include "ScriptLoader.h"
-#include "../../../Scripting.h"
+#include "../../../Old/Scripting.h"
 #include "../../../Common/FileIO.h"
 #include "../../../Common/MyString.h"
 #include "../../Directory.h"

@@ -1,6 +1,6 @@
 #include "misc.h"
 #include "api_readers.h"
-#include "../Common/MyString.h"
+#include "../../Common/MyString.h"
 using namespace Common;
 using namespace Manager;
 

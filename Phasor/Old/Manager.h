@@ -6,7 +6,7 @@
 #include <array>
 #include <memory>
 #include <stack>
-#include "Common/Common.h"
+#include "../Common/Common.h"
 
 typedef unsigned long DWORD;
 

@@ -1,11 +1,11 @@
 #include "Scripting.h"
 #include "Manager.h"
-#include "Common/Common.h"
-#include "Common/MyString.h"
-#include "Common/FileIO.h"
+#include "../Common/Common.h"
+#include "../Common/MyString.h"
+#include "../Common/FileIO.h"
 #include "PhasorAPI/PhasorAPI.h"
 #include "ScriptingEvents.h"
-#include "Phasor/Version.h"
+#include "../Phasor/Version.h"
 #include <string>
 #include <sstream>
 #include <windows.h> // for GetCurrentProcessId()

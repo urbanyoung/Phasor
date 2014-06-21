@@ -4,9 +4,9 @@
 #include <string>
 #include <deque>
 #include <memory>
-#include "..\lua\lua.hpp"
+#include "../../lua/lua.hpp"
 #include "Manager.h"
-#include "Common/noncopyable.h"
+#include "../Common/noncopyable.h"
 
 namespace Lua
 {

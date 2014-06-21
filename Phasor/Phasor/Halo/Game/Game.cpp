@@ -6,7 +6,7 @@
 #include "../Alias.h"
 #include "../../Globals.h"
 #include "../../../Common/MyString.h"
-#include "../../../ScriptingEvents.h"
+#include "../../../Old/ScriptingEvents.h"
 #include "../tags.h"
 #include "../Server/Chat.h"
 #include "../Server/MapVote.h"

@@ -1,5 +1,5 @@
 #include "Manager.h"
-#include "Common/Common.h"
+#include "../Common/Common.h"
 #include "Lua.h"
 #include <sstream>
 

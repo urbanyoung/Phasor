@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Manager.h"
-#include "Common/Streams.h"
-#include "Common/noncopyable.h"
+#include "../Common/Streams.h"
+#include "../Common/noncopyable.h"
 #include <array>
 #include <set>
 #include <string>
