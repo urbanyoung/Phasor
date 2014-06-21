@@ -28,7 +28,7 @@ namespace phlua {
 			operator()(v.z);
 		}
 
-		void operator()(const void* x) {
+		void operator()(const halo::s_tag_entry* x) {
 			operator()((unsigned long)x);
 		}
 
