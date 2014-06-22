@@ -119,9 +119,6 @@
     <ClCompile Include="Old\PhasorAPI\damagelookup.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\misc.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Old\PhasorAPI\misc_halo.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
@@ -172,6 +169,12 @@
     </ClCompile>
     <ClCompile Include="Old\PhasorAPI\memory_old.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Old\PhasorAPI\misc_old.cpp">
+      <Filter>Scripting\Old\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\PhasorAPI\misc.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
