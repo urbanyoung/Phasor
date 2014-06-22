@@ -4,6 +4,7 @@
 #include <vector>
 #include <stdarg.h>
 
+// todo: cstr versions
 std::string NarrowString(const std::wstring& wide);
 std::wstring WidenString(const std::string& narrow);
 // Remove all trailing \n characters from the input string.

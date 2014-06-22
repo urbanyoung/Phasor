@@ -12,7 +12,7 @@ int l_getobject(lua_State* L) {
 int l_getobjectcoords(lua_State* L) {
 	halo::objects::s_halo_object* object;
 	std::tie(object) = phlua::callback::getArguments<decltype(object)>(L, __FUNCTION__);
-	return phlua::callback::pushReturns(L, std::make_tuple(std::ref(object->location)));
+	return phlua::callback::pushReturns(L, std::make_tuple(std::cref(object->location)));
 }
 
 int l_objectaddrtoplayer(lua_State* L) {
@@ -237,7 +237,7 @@ int l_halointersect(lua_State* L) {
 	bool intersected = halo::objects::FindIntersection(view, *ignoreObj, hit, obj);
 
 	if (obj.valid())
-		return phlua::callback::pushReturns(L, std::make_tuple(intersected, hit, obj));
+		return phlua::callback::pushReturns(L, std::make_tuple(intersected, std::cref(hit), obj));
 	else
-		return phlua::callback::pushReturns(L, std::make_tuple(intersected, hit, lua::types::Nil()));
+		return phlua::callback::pushReturns(L, std::make_tuple(intersected, std::cref(hit), lua::types::Nil()));
 }

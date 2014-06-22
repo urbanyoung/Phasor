@@ -120,7 +120,7 @@
     <ClCompile Include="Old\PhasorAPI\api_readers.cpp" />
     <ClCompile Include="Old\PhasorAPI\damagelookup.cpp" />
     <ClCompile Include="Old\PhasorAPI\haloobjects_old.cpp" />
-    <ClCompile Include="Old\PhasorAPI\memory.cpp" />
+    <ClCompile Include="Old\PhasorAPI\memory_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\misc.cpp" />
     <ClCompile Include="Old\PhasorAPI\misc_halo.cpp" />
     <ClCompile Include="Old\PhasorAPI\output.cpp" />
@@ -161,6 +161,7 @@
     <ClCompile Include="Phasor\ThreadedLogging.cpp" />
     <ClCompile Include="Scripts\lua-bindings.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\haloobjects.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h" />

@@ -7,6 +7,7 @@
 #include "../Phasor/Halo/Game/Game.h"
 #include "../Phasor/Halo/tags.h"
 #include "../Common/vect3d.h"
+#include "../Common/MyString.h"
 
 namespace phlua {
 
@@ -26,6 +27,10 @@ namespace phlua {
 			operator()(v.x);
 			operator()(v.y);
 			operator()(v.z);
+		}
+
+		void operator()(const wchar_t* x) {
+			operator()(NarrowString(x));
 		}
 
 		void operator()(const halo::s_tag_entry* x) {
@@ -62,6 +67,12 @@ namespace phlua {
 		{}
 
 		using lua::Pop::operator();
+
+		void operator()(std::wstring& x) {
+			std::string s;
+			operator()(s);
+			x = WidenString(s);
+		}
 
 		void operator()(halo::ident& x) {
 			unsigned long id;
