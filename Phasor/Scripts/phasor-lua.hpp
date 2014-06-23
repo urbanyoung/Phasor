@@ -8,6 +8,7 @@
 #include "../Phasor/Halo/tags.h"
 #include "../Common/vect3d.h"
 #include "../Common/MyString.h"
+#include "../Common/is_container.hpp"
 
 namespace phlua {
 
@@ -37,6 +38,10 @@ namespace phlua {
 			operator()(NarrowString(x));
 		}
 
+		void operator()(const std::wstring& x) {
+			operator()(NarrowString(x));
+		}
+
 		void operator()(const halo::s_tag_entry* x) {
 			operator()((unsigned long)x);
 		}
@@ -45,8 +50,10 @@ namespace phlua {
 			operator()((unsigned long)x);
 		}
 
-		template <typename T>
-		void operator()(const std::vector<T>& x) {
+		template<typename Container>
+		typename std::enable_if<is_container<Container>::value>::type
+			operator()(const Container& x)
+		{
 			int keyIndex = 1;
 
 			lua_newtable(L);

@@ -116,9 +116,6 @@
     <ClCompile Include="Old\PhasorAPI\api_readers.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\misc_halo.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Old\PhasorAPI\output.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
@@ -183,6 +180,12 @@
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\string.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Old\PhasorAPI\misc_halo_old.cpp">
+      <Filter>Scripting\Old\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\PhasorAPI\misc_halo.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -435,6 +438,9 @@
     </ClInclude>
     <ClInclude Include="Scripts\PhasorAPI\haloobjects.h">
       <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\is_container.hpp">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
