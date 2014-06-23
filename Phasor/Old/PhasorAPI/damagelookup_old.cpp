@@ -17,12 +17,13 @@ namespace odl {
 	void setData(halo::damage_script_options* opts_, 
 		halo::s_damage_info* dmg, const halo::ident& receiver) {
 		opts = opts_;
-		opts_->causer = dmg->causer;
+		/*opts_->causer = dmg->causer;
 		opts_->causer_player = dmg->player_causer;
 		opts_->receiver = receiver;
 		opts_->tag = dmg->tag_id;
 		opts_->flags = dmg->flags;
 		opts_->modifier = dmg->modifier1;
+		*/
 
 		//causer_set = receiver_set = tag_set = instakill_set =  modifier_set = flags_set = false;
 		flags_state = causer_state = receiver_state = tag_state = modifier_state = NULL;

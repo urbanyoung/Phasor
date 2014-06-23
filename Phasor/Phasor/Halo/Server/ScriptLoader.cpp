@@ -62,6 +62,7 @@ namespace halo { namespace server { namespace scriptloader
 		commands::CArgParser& args, COutStream& out)
 	{
 		g_Scripts->CloseScript(args.ReadString().c_str());
+		out << "The script has been unloaded." << endl;
 		return e_command_result::kProcessed;
 	}
 

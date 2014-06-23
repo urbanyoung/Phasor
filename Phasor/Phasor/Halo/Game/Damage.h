@@ -72,6 +72,10 @@ namespace halo {
 		halo::ident tag;
 		int flags;
 		float modifier;
+
+		damage_script_options(const halo::s_damage_info* dmg, halo::ident receiver);
+
+		void copyInto(s_damage_info& dmg, ident& receiver) const;
 	};
 
 	// Called when an object's damage is being looked up
