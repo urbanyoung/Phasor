@@ -131,9 +131,6 @@
     <ClCompile Include="Old\PhasorAPI\scripttimers.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\string.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Old\Manager.cpp">
       <Filter>Scripting\Old\Manager</Filter>
     </ClCompile>
@@ -180,6 +177,12 @@
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\playerinfo.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Old\PhasorAPI\string_old.cpp">
+      <Filter>Scripting\Old\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\PhasorAPI\string.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
   </ItemGroup>

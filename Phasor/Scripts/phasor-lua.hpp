@@ -46,6 +46,18 @@ namespace phlua {
 		}
 
 		template <typename T>
+		void operator()(const std::vector<T>& x) {
+			int keyIndex = 1;
+
+			lua_newtable(L);
+			for (auto itr = x.cbegin(); itr != x.cend(); ++itr) {
+				lua_pushnumber(L, keyIndex++);
+				operator()(*itr);
+				lua_settable(L, -3);
+			}
+		}
+
+		template <typename T>
 		void operator()(const boost::optional<T>& x) {
 			if (!x) operator()(lua::types::Nil());
 			else operator()(*x);

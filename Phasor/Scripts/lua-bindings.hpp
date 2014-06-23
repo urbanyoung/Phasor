@@ -205,7 +205,7 @@ namespace lua {
 			size_t nargs = sizeof...(ArgTypes);
 
 			PushType push(L);
-			TupleHelpers::citerate<TupleHelpers::forward_comparator, Push>(args, push);
+			TupleHelpers::citerate<TupleHelpers::forward_comparator, PushType>(args, push);
 
 			L.pcall(nargs, nresults);
 
