@@ -200,14 +200,14 @@ namespace phlua {
 	class Caller : public ::lua::Caller<ResultTypes...> {
 	public:
 		Caller(::lua::State& L)
-			: ::lua::Caller(L)
+			: ::lua::Caller<ResultTypes...>(L)
 		{}
 
 		template <typename... ArgTypes>
-		inline std::tuple<ResultTypes...> call(const std::string& func, 
+		inline std::tuple<ResultTypes...> call(const char* func, 
 			const std::tuple<ArgTypes...>& args)
 		{
-			return ::lua::Caller.call<PhasorPush, PhasorPop, ArgTypes...>(func, args);
+			return ::lua::Caller<ResultTypes...>::call<PhasorPush, PhasorPop, ArgTypes...>(func, args);
 		}
 	};
 

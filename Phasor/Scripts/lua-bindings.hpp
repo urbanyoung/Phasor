@@ -159,18 +159,19 @@ namespace lua {
 
 		void doFile(const std::string& file);
 		void pcall(int nargs, int nresults);
+		bool hasFunction(const char* f);
 
-		template <typename T>
+		template <class PushType, typename T>
 		void setGlobal(const std::string& name, const T& value) {
-			Push p(L);
+			PushType p(L);
 			p(value);
 			lua_setglobal(L, name.c_str());
 		}
 
-		template <typename T>
+		template <class PopType, typename T>
 		boost::optional<T> getGlobal(const std::string& name) {
 			boost::optional<T> result;
-			Pop p(L);
+			PopType p(L, 0, PopType::e_mode::kDontRaiseError);
 			p(result);
 			return result;
 		}
@@ -195,8 +196,8 @@ namespace lua {
 		}
 
 		template <class PushType, class PopType, typename... ArgTypes>
-		std::tuple<ResultTypes...> call(const std::string& func, const std::tuple<ArgTypes...>& args) {
-			lua_getglobal(L, func.c_str());
+		std::tuple<ResultTypes...> call(const char* func, const std::tuple<ArgTypes...>& args) {
+			lua_getglobal(L, func);
 			if (lua_type(L, -1) != LUA_TFUNCTION) {
 				lua_pop(L, 1);
 				throw Exception("attempt to call non-function entity");

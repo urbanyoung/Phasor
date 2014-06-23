@@ -125,12 +125,12 @@
     <ClCompile Include="Old\PhasorAPI\misc_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\misc_halo_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\output_old.cpp" />
-    <ClCompile Include="Old\PhasorAPI\PhasorAPI.cpp" />
+    <ClCompile Include="Old\PhasorAPI\PhasorAPI_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\playerinfo_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\scriptmanagement.cpp" />
     <ClCompile Include="Old\PhasorAPI\scripttimers.cpp" />
     <ClCompile Include="Old\PhasorAPI\string_old.cpp" />
-    <ClCompile Include="Old\Scripting.cpp" />
+    <ClCompile Include="Old\Scripting_old.cpp" />
     <ClCompile Include="Old\ScriptingEvents.cpp" />
     <ClCompile Include="Phasor\Admin.cpp" />
     <ClCompile Include="Phasor\Commands.cpp" />
@@ -167,8 +167,11 @@
     <ClCompile Include="Scripts\PhasorAPI\misc.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\misc_halo.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\output.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\phasorapi.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\playerinfo.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\string.cpp" />
+    <ClCompile Include="Scripts\script-events.cpp" />
+    <ClCompile Include="Scripts\scripting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h" />
@@ -238,6 +241,9 @@
     <ClInclude Include="Scripts\lua-bindings.hpp" />
     <ClInclude Include="Scripts\phasor-lua.hpp" />
     <ClInclude Include="Scripts\PhasorAPI\haloobjects.h" />
+    <ClInclude Include="Scripts\PhasorAPI\phasorapi.h" />
+    <ClInclude Include="Scripts\script-events.h" />
+    <ClInclude Include="Scripts\scripting.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

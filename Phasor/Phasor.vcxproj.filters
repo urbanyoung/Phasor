@@ -116,9 +116,6 @@
     <ClCompile Include="Old\PhasorAPI\api_readers.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\PhasorAPI.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Old\PhasorAPI\scriptmanagement.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
@@ -132,9 +129,6 @@
       <Filter>Scripting\Old\Lua</Filter>
     </ClCompile>
     <ClCompile Include="Old\CallHelper.cpp">
-      <Filter>Scripting\Old</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\Scripting.cpp">
       <Filter>Scripting\Old</Filter>
     </ClCompile>
     <ClCompile Include="Old\ScriptingEvents.cpp">
@@ -190,6 +184,21 @@
     </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\output.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\scripting.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Old\Scripting_old.cpp">
+      <Filter>Scripting\Old</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\script-events.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\PhasorAPI\phasorapi.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Old\PhasorAPI\PhasorAPI_old.cpp">
+      <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -444,6 +453,15 @@
     </ClInclude>
     <ClInclude Include="Common\is_container.hpp">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\scripting.hpp">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\script-events.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\phasorapi.h">
+      <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

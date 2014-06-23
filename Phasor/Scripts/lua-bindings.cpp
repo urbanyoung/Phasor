@@ -143,4 +143,11 @@ namespace lua {
 		}
 	}
 
+	bool State::hasFunction(const char* f) {
+		lua_getglobal(L, f);
+		bool success = lua_type(L, -1) == LUA_TFUNCTION;
+		lua_pop(L, 1);
+		return success;
+	}
+
 }
