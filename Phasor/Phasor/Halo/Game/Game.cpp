@@ -269,7 +269,7 @@ namespace halo { namespace game {
 		if (!sender || chat->type < kChatAll || chat->type > kChatVehicle) return;
 
 		int length = wcslen(chat->msg);
-		if (length > 64) return;
+		if (length > 256) return;
 
 		std::wstring send_msg = chat->msg;
 		
