@@ -89,11 +89,12 @@ namespace scripting {
 		std::string file = scriptDir + name + ".lua";
 
 		try {
+
 			std::shared_ptr<PhasorScript> script = PhasorScript::create(persistent,
-																		file,
-																		name,
-																		phasorapi::funcTable.begin(),
-																		phasorapi::funcTable.end());
+                                                                        file,
+                                                                        name,
+                                                                        phasorapi::funcTable.begin(),
+                                                                        phasorapi::funcTable.end());
 
 			lua::State& state = script->getState();
 			checkCompatibility(state);
