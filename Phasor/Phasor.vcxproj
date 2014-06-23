@@ -125,7 +125,7 @@
     <ClCompile Include="Old\PhasorAPI\misc_halo.cpp" />
     <ClCompile Include="Old\PhasorAPI\output.cpp" />
     <ClCompile Include="Old\PhasorAPI\PhasorAPI.cpp" />
-    <ClCompile Include="Old\PhasorAPI\playerinfo.cpp" />
+    <ClCompile Include="Old\PhasorAPI\playerinfo_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\scriptmanagement.cpp" />
     <ClCompile Include="Old\PhasorAPI\scripttimers.cpp" />
     <ClCompile Include="Old\PhasorAPI\string.cpp" />
@@ -164,6 +164,7 @@
     <ClCompile Include="Scripts\PhasorAPI\haloobjects.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\memory.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\misc.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\playerinfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Common.h" />

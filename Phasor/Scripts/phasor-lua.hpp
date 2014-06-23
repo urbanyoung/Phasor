@@ -11,6 +11,10 @@
 
 namespace phlua {
 
+	struct ProcessedString {
+		std::vector<std::wstring> msgs;
+	};
+
 	struct PhasorPush : public lua::Push {
 
 		PhasorPush(lua_State* L)
@@ -94,6 +98,34 @@ namespace phlua {
 			operator()(tmp.y);
 			operator()(tmp.z);
 			x = tmp;
+		}
+
+		void operator()(ProcessedString& x) {
+			std::wstring str;
+			operator()(str);
+			x.msgs = Tokenize<std::wstring>(str, L"\n");
+			// Format each message and replace {i} with i's name.
+			for (auto itr = x.msgs.begin(); itr != x.msgs.end(); ++itr) {
+				size_t brace_pos = itr->find(L'{');
+				size_t end_brace_pos = itr->find(L'}', brace_pos);
+
+				while (brace_pos != itr->npos && end_brace_pos != itr->npos) {
+					size_t diff = end_brace_pos - brace_pos;
+					if (diff == 2 || diff == 3) { // ids can only be at most 2 digits				
+						std::string str = NarrowString(itr->substr(brace_pos + 1, diff - 1));
+						int id;
+						if (StringToNumber<int>(str, id)) {
+							halo::s_player* player = halo::game::getPlayer(id);
+							if (player) {
+								itr->erase(brace_pos, diff + 1);
+								itr->insert(brace_pos, player->mem->playerName);
+							}
+						}
+					}
+					brace_pos = itr->find(L'{', brace_pos + 1);
+					end_brace_pos = itr->find(L'}', brace_pos);
+				}
+			}
 		}
 
 		// --------------------------------------------------------------
