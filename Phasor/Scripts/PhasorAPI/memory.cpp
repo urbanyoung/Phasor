@@ -42,6 +42,7 @@ bool checkLimits(double value, T& out) {
 size_t addBitOffset(size_t x, int& offset) {
 	x += offset / 8;
 	offset %= 8;
+	return x;
 }
 
 // --------------------------------------------------------

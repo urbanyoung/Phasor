@@ -212,6 +212,7 @@ int l_applydmgtag(lua_State* L) {
 	if (!causer) causer = halo::ident();
 
 	halo::ApplyDamage(receiver, *causer, *multiplier, *flags);
+	return 0;
 }
 
 int l_halointersect(lua_State* L) {

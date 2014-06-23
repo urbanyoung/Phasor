@@ -96,7 +96,7 @@ int l_getadminlvl(lua_State* L) {
 
 int l_setadmin(lua_State* L) {
 	halo::s_player* player;
-	phlua::callback::getArguments<>(L, __FUNCTION__);
+	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
 	player->is_admin = true;
 	return 0;
 }

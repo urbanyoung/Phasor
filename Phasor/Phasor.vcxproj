@@ -20,6 +20,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -123,7 +124,7 @@
     <ClCompile Include="Old\PhasorAPI\memory_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\misc_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\misc_halo_old.cpp" />
-    <ClCompile Include="Old\PhasorAPI\output.cpp" />
+    <ClCompile Include="Old\PhasorAPI\output_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\PhasorAPI.cpp" />
     <ClCompile Include="Old\PhasorAPI\playerinfo_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\scriptmanagement.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Scripts\PhasorAPI\memory.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\misc.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\misc_halo.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\output.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\playerinfo.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\string.cpp" />
   </ItemGroup>

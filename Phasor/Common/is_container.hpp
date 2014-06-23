@@ -1,6 +1,7 @@
 #include <list>
 #include <vector>
 
+// http://stackoverflow.com/a/12045843/1520427
 template <typename Container>
 struct is_container : std::false_type { };
 
