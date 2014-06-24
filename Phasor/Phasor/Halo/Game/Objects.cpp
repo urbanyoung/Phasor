@@ -29,8 +29,8 @@ namespace halo { namespace objects {
 	struct s_halo_object_header
 	{
 		WORD id;
-		char flags; // 0x44 by default, dunno what they're for.
-		char type;
+		char flag1; // 0x44 by default, dunno what they're for.
+		char flag2;
 		UNKNOWN(2);
 		WORD size;
 		union
@@ -63,6 +63,7 @@ namespace halo { namespace objects {
 		if (objectId.slot >= object_table->header.max_size) return 0;
 
 		s_halo_object_header* obj = &object_table->entries[objectId.slot];
+        //if (obj->flag1 & 8) return 0; // due to be destroyed
 		return obj->id == objectId.id ? obj->data : 0;
 	}
 
@@ -71,6 +72,14 @@ namespace halo { namespace objects {
 		if (!GetObjectAddress(objid)) return false;
 		__asm
 		{
+            
+          //  CPU Disasm
+          //      Address   Hex dump          Command                                  Comments
+           //     0052C1CE  |.  6A 00         PUSH 0
+           //     0052C1D0  |.  51            PUSH ECX
+           //     0052C1D1  |.E8 8A420000   CALL haloded.00530460
+
+
 			pushad
 			mov eax, objid
 			call dword ptr ds:[FUNC_DESTROYOBJECT]

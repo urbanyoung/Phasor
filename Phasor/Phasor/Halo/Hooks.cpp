@@ -479,14 +479,13 @@ __declspec(naked) void OnObjectDestroy_CC()
 
 		pushad
 
-		push eax
+		push edx
 		call objects::OnObjectDestroy
 
 		popad
 
-		MOV EDX,DWORD PTR DS:[ECX+0x34]
-		PUSH EDI
-		MOV EDI,EAX
+        MOV ECX, EDX
+        AND ECX, 0x0000FFFF
 
 		push objdestroy_ret
 		ret
@@ -1232,7 +1231,7 @@ namespace halo
 		// Codecave called when a weapon is created
 		CreateCodeCave(CC_OBJECTCREATION, 5, OnObjectCreation_CC);
 		CreateCodeCave(CC_OBJECTCREATIONATTEMPT, 6, OnObjectCreationAttempt_CC);
-		CreateCodeCave(CC_OBJECTDESTROY, 6, OnObjectDestroy_CC);
+		CreateCodeCave(CC_OBJECTDESTROY, 8, OnObjectDestroy_CC);
 
 		// Codecave for handling weapon assignment to spawning players
 		CreateCodeCave(CC_WEAPONASSIGN, 6, OnWeaponAssignment_CC);
