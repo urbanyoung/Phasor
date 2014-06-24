@@ -2,7 +2,8 @@
 #include "../Addresses.h"
 #include "../../Globals.h"
 #include "../Server/Server.h"
-#include <map>
+#include <array>
+#include <boost/optional.hpp>
 
 namespace halo { namespace objects {
 
@@ -48,11 +49,30 @@ namespace halo { namespace objects {
 		s_halo_object_header entries[0x800];
 	};	
 
-	std::map<ident, s_phasor_managed_obj> managedList;
+    struct ManagedObjects {
+        std::array<boost::optional<s_phasor_managed_obj>, 0x800> objs;
 
-	void ClearManagedObjects()
-	{
-		managedList.clear();
+        void clear() {
+            objs.fill(boost::none);
+        }
+
+        inline void remove(ident id) {
+            objs[id.slot] = boost::none;
+        }
+
+        inline boost::optional<s_phasor_managed_obj>& find(ident id) {
+            return objs[id.slot];
+        }
+
+        inline void add(s_phasor_managed_obj obj) {
+            objs[obj.objid.slot] = std::move(obj);
+        }
+
+    } managed;
+    
+
+	void ClearManagedObjects() {
+        managed.clear();
 	}
 
 	// -------------------------------------------------------------------
@@ -70,16 +90,7 @@ namespace halo { namespace objects {
 	bool DestroyObject(ident objid)
 	{
 		if (!GetObjectAddress(objid)) return false;
-		__asm
-		{
-            
-          //  CPU Disasm
-          //      Address   Hex dump          Command                                  Comments
-           //     0052C1CE  |.  6A 00         PUSH 0
-           //     0052C1D0  |.  51            PUSH ECX
-           //     0052C1D1  |.E8 8A420000   CALL haloded.00530460
-
-
+		__asm {
 			pushad
 			mov eax, objid
 			call dword ptr ds:[FUNC_DESTROYOBJECT]
@@ -90,11 +101,8 @@ namespace halo { namespace objects {
 
 
 	// Called when an object is being destroyed
-	void __stdcall OnObjectDestroy(ident m_objid)
-	{
-		auto itr = managedList.find(m_objid);
-		if (itr != managedList.end()) 
-			managedList.erase(itr);
+	void __stdcall OnObjectDestroy(ident m_objid) {
+        managed.remove(m_objid);
 	}
 
 	// Called when an object is being checked to see if it should respawn
@@ -110,29 +118,28 @@ namespace halo { namespace objects {
 
 		int result = 0;
 
-		auto itr = managedList.find(m_objId);
-		if (itr != managedList.end()) {
-			s_phasor_managed_obj* phasor_obj = &itr->second;
-			if (phasor_obj->respawnTicks) { // unset when no respawn
-				DWORD expiration = obj->idle_timer + *phasor_obj->respawnTicks;
+        boost::optional<s_phasor_managed_obj>& mobj = managed.find(m_objId);
+		if (mobj) {
+			s_phasor_managed_obj& phasorObj = *mobj;
+            if (phasorObj.respawnTicks) { // unset when no respawn
+                DWORD expiration = obj->idle_timer + *phasorObj.respawnTicks;
 				if (expiration < server_ticks) {
-					if (phasor_obj->bRecycle) {
-						void* v1 = &phasor_obj->other, *rotation = &phasor_obj->rotation,
-							*position = &phasor_obj->pos;
+                    if (phasorObj.bRecycle) {
+                        void* v1 = &phasorObj.other, *rotation = &phasorObj.rotation,
+                            *position = &phasorObj.pos;
 
-						__asm
-						{
+						__asm {
 							pushad
-								push m_objId
-								call dword ptr ds : [FUNC_VEHICLERESPAWN2] // set flags to let object fall, reset velocities etc
-								add esp, 4
-								push v1
-								push rotation
-								push m_objId
-								mov edi, position
-								call dword ptr ds : [FUNC_VEHICLERESPAWN1] // move the object (proper way)
-								add esp, 0x0c
-								popad
+							push m_objId
+							call dword ptr ds : [FUNC_VEHICLERESPAWN2] // set flags to let object fall, reset velocities etc
+							add esp, 4
+							push v1
+							push rotation
+							push m_objId
+							mov edi, position
+							call dword ptr ds : [FUNC_VEHICLERESPAWN1] // move the object (proper way)
+							add esp, 0x0c
+							popad
 						}
 
 						// set last interacted to be now
@@ -163,14 +170,14 @@ namespace halo { namespace objects {
 		bool bDestroy = false;
 		int objTicks = *(int*)((LPBYTE)obj + 0x204);
 
-		auto itr = managedList.find(m_objId);
-		if (itr != managedList.end()) {
-			s_phasor_managed_obj* phasor_obj = &itr->second;
+        boost::optional<s_phasor_managed_obj>& mobj = managed.find(m_objId);
+        if (mobj) {
+			s_phasor_managed_obj& phasorObj = *mobj;
 
 			// respawn ticks are treated as expiration ticks
-			if (phasor_obj->respawnTicks) {
-				if (phasor_obj->respawnTicks > 0) {
-					if (*phasor_obj->respawnTicks + (int)phasor_obj->creationTicks < checkTicks)
+            if (phasorObj.respawnTicks) {
+                if (*phasorObj.respawnTicks > 0) {
+                    if (*phasorObj.respawnTicks + (int)phasorObj.creationTicks < checkTicks)
 						bDestroy = true;
 				} else { // use default value
 					if (checkTicks > objTicks)
@@ -241,10 +248,8 @@ namespace halo { namespace objects {
 			*respawnTime *= 30;
 		}
 
-		managedList.insert(std::pair<ident, s_phasor_managed_obj>
-			(out_objid, 
-				s_phasor_managed_obj(out_objid, bRecycle, *location, respawnTime,
-			creation_disposition)));
+        managed.add(s_phasor_managed_obj(out_objid, bRecycle, *location, respawnTime,
+            creation_disposition));
 	
 		return true;
 	}
