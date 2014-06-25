@@ -52,13 +52,13 @@ int l_getteam(lua_State* L) {
 int l_getname(lua_State* L) {
 	halo::s_player* player;
 	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
-	return phlua::callback::pushReturns(L, std::make_tuple(player->mem->team));
+	return phlua::callback::pushReturns(L, std::make_tuple(player->mem->playerName));
 }
 
 int l_gethash(lua_State* L) {
 	halo::s_player* player;
 	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
-	return phlua::callback::pushReturns(L, std::make_tuple(player->mem->playerName));
+	return phlua::callback::pushReturns(L, std::make_tuple(player->hash));
 }
 
 int l_getteamsize(lua_State* L) {
