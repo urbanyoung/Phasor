@@ -57,6 +57,9 @@ namespace lua {
 			AnyRef(AnyRef&& other);
 			AnyRef& operator=(AnyRef&& other);
 
+            // lua_State* is no longer valid so just reset
+            inline void invalidate() { L = nullptr;  }
+
 			void push(lua_State* L) const;
 			void pop(lua_State* L);
 		};

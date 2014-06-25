@@ -23,7 +23,10 @@ public:
 
     virtual bool OnExpiration(Timers&) override {
         auto s = state.lock();
-        if (!s) return false;
+        if (!s) {
+            userdata.invalidate();
+            return false;
+        }
 
         boost::optional<bool> reset;
         phlua::Caller<bool> c(s->getState());
@@ -44,6 +47,9 @@ int l_registertimer(lua_State* L) {
     size_t delay;
     std::string callback;
     lua::types::AnyRef userdata;
+
+    // AnyRef can handle nils fine..
+    if (lua_gettop(L) == 2) lua_pushnil(L);
 
     std::tie(delay, callback, userdata) = phlua::callback::getArguments<size_t, std::string, decltype(userdata)>(L, __FUNCTION__);
 
