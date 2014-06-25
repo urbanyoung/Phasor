@@ -28,12 +28,13 @@ public:
             return false;
         }
 
-        boost::optional<bool> reset;
-        phlua::Caller<bool> c(s->getState());
-        std::tie(reset) = c.call(func.c_str(), std::make_tuple(GetID(), ++count, std::cref(userdata)));
-        if (!reset) *reset = false;
+        bool reset = false;
 
-        return *reset;
+        auto result = scripting::Caller<bool>::call_single(*g_Scripts, *s, func, std::make_tuple(GetID(), ++count, std::cref(userdata)));
+
+        if (result) reset = std::get<0>(*result);
+        
+        return reset;     
     }
 };
 

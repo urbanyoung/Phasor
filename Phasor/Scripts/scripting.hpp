@@ -57,7 +57,6 @@ namespace scripting {
         COutStream& errStream;
         std::string scriptDir;
 
-        void handleError(PhasorScript& script, const std::string& func, const char* what);
         void unloadScript(PhasorScript& script);
         bool loadScript(const std::string& script, bool persistent, std::shared_ptr<PhasorScript>& out);
 
@@ -74,6 +73,8 @@ namespace scripting {
         void reloadAllScripts(bool includePersistent);
 
         std::vector<std::pair<std::string, bool>> getLoadedScripts() const;
+
+        void handleError(PhasorScript& script, const std::string& func, const char* what);
 
         template <typename... ResultTypes> friend class Caller;
     };
@@ -98,21 +99,33 @@ namespace scripting {
             const size_t lastElem = std::tuple_size<decltype(args)>::value-1;
 
             for (auto itr = h.scripts.begin(); itr != h.scripts.end(); ++itr) {
-                PhasorScript& script = **itr;
-                if (script.isBlocked(func)) continue;
+                auto x = call_single(h, **itr, func.c_str(), args);
+                if (x && !result) { // got all return values successfully
+                    result = x;
+                    std::get<lastElem>(args) = false;
+                }
+            }
+
+            return result;
+        }
+
+        template <typename... ArgTypes>
+        static inline boost::optional<std::tuple<ResultTypes...>>
+            call_single(ScriptHandler& h, PhasorScript& script, const std::string& func, std::tuple<ArgTypes...>& args)
+        {
+            boost::optional<std::tuple<ResultTypes...>> result;
+            if (!script.isBlocked(func)) {
                 phlua::Caller<ResultTypes...> c(script.getState());
 
                 try {
                     auto x = c.call(func.c_str(), args);
-                    if (!c.hasError() && !result) { // got all return values successfully
+                    if (!c.hasError()) { // got all return values successfully
                         result = x;
-                        std::get<lastElem>(args) = false;
                     }
                 } catch (std::exception& e) {
                     h.handleError(script, func, e.what());
                 }
             }
-
             return result;
         }
     };

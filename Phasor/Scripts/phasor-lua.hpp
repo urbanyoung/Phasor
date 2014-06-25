@@ -188,8 +188,10 @@ namespace phlua {
 		void operator()(boost::optional<halo::objects::s_halo_object*>& object) {
 			boost::optional<halo::ident> id;
 			operator()(id);
-			halo::objects::s_halo_object* obj = static_cast<halo::objects::s_halo_object*>(halo::objects::GetObjectAddress(*id));
-			if (obj) object = obj;
+            if (id) {
+                halo::objects::s_halo_object* obj = static_cast<halo::objects::s_halo_object*>(halo::objects::GetObjectAddress(*id));
+                if (obj) object = obj;
+            }
 		}
 
 		// --------------------------------------------------------------

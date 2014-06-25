@@ -36,7 +36,7 @@ int l_privatesay(lua_State* L) {
 
 	std::tie(player, str, prepend) = phlua::callback::getArguments<decltype(player), decltype(str), decltype(prepend)>(L, __FUNCTION__);
 
-	if (!prepend) *prepend = false;
+	if (!prepend) prepend = false;
 
 	halo::PlayerChatStreamRaw raw(*player);
 	writeToStream(str, *prepend ? *player->chat_stream : raw);
@@ -49,7 +49,7 @@ int l_say(lua_State* L) {
 
 	std::tie(str, prepend) = phlua::callback::getArguments<decltype(str), decltype(prepend)>(L, __FUNCTION__);
 
-	if (!prepend) *prepend = false;
+	if (!prepend) prepend = false;
 	writeToStream(str, *prepend ? halo::server::say_stream : halo::server::say_stream_raw);
 	return 0;
 }

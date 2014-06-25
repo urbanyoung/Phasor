@@ -12,7 +12,7 @@ int l_changeteam(lua_State* L) {
 
 	std::tie(player, forcekill, team) = phlua::callback::getArguments<decltype(player), bool, decltype(team)>(L, __FUNCTION__);
 
-	if (!team) *team = !player->mem->team;
+	if (!team) team = !player->mem->team;
 	player->ChangeTeam(*team, forcekill);
 	return 0;
 }
@@ -88,7 +88,7 @@ int checkAndExecuteCommand(lua_State* L,
 	if (tokens[0] == "sv_script_reload")
 		luaL_argerror(L, 1, "scripts cannot execute 'sv_script_reload'");
 	
-	if (!wantResult) {
+	if (!wantResult || !*wantResult) {
 		halo::server::ExecuteServerCommand(cmd, player);
 		return 0;
 	}
