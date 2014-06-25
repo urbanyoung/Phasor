@@ -170,6 +170,7 @@ namespace lua {
 
 		template <class PopType, typename T>
 		boost::optional<T> getGlobal(const std::string& name) {
+            lua_getglobal(L, name.c_str());
 			boost::optional<T> result;
 			PopType p(L, 0, PopType::e_mode::kDontRaiseError);
 			p(result);

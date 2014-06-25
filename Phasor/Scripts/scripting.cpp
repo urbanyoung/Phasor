@@ -39,12 +39,11 @@ namespace scripting {
 	//
 	// --------------------------------------------------------------
 	//
-
 	size_t getRequiredVersion(lua::State& state) {
 		boost::optional<size_t> required = state.getGlobal<phlua::PhasorPop, size_t>("required_version");
 		if (required) return *required;
 		if (!state.hasFunction("GetRequiredVersion"))
-			throw std::exception("function GetRequiredVersion undefined");
+			throw std::exception("both required_version and GetRequiredVersion undefined");
 
 		size_t version;
 		phlua::Caller<size_t> c(state);
