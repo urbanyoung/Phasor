@@ -172,7 +172,7 @@ namespace halo { namespace server
 
 		char* map = loading_map->map;
 		current_map = map;
-		char* gametype = loading_map->gametype;
+		//char* gametype = loading_map->gametype;
 #ifdef PHASOR_PC		
 		maploader::OnMapLoad(map);
 		if (!maploader::GetBaseMapName(map, (const char**)&map)) {

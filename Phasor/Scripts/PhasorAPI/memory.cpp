@@ -13,18 +13,21 @@ void readData(lua_State* L, void* dest, void* src, size_t nbytes) {
 		memcpy(dest, src, nbytes);
 		VirtualProtect(src, nbytes, oldProtect, &oldProtect);
 	} else {
-		luaL_error(L, "invalid read: %u bytes from 0x%08X", nbytes, src);
+        auto f = boost::format("invalid read: %u bytes from 0x%08X") % nbytes % src;
+		luaL_error(L, "%s", f.str().c_str());
 	}
 }
 
 void writeData(lua_State* L, void* dest, const void* src, size_t nbytes) {
-	DWORD oldProtect = 0;
-	if (VirtualProtect(dest, nbytes, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-		memcpy(dest, src, nbytes);
-		VirtualProtect(dest, nbytes, oldProtect, &oldProtect);
-	} else {
-		luaL_error(L, "invalid write: %u bytes from 0x%08X", nbytes, src);
-	}
+    DWORD oldProtect = 0;
+    if (VirtualProtect(dest, nbytes, PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        memcpy(dest, src, nbytes);
+        VirtualProtect(dest, nbytes, oldProtect, &oldProtect);
+    } else {
+        auto f = boost::format("invalid write: %u bytes from 0x%08X") % nbytes % src;
+        luaL_error(L, "%s", f.str().c_str());
+    }
+
 }
 
 template <typename T>

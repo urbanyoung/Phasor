@@ -10,10 +10,6 @@
 #include "string.h"
 
 namespace phasorapi {
-	int test(lua_State* L) {
-		return 0;
-	}
-
 	std::vector<lua::callback::CFunc> funcTable
     {
         // Memory related functions: see memory.h

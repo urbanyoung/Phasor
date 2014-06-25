@@ -26,7 +26,7 @@ int l_getplayer(lua_State* L) {
 	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
 	
 	if (player)
-		return phlua::callback::pushReturns(L, std::make_tuple((*player)->memory_id));
+		return phlua::callback::pushReturns(L, std::make_tuple((size_t)(*player)->mem));
 	else
 		return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil()));
 }
