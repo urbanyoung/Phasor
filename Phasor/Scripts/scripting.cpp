@@ -4,7 +4,7 @@
 #include "PhasorAPI/phasorapi.h"
 #include "../Common/FileIO.h"
 #include "../Phasor/Globals.h"
-
+#include "../Common/Timers.h"
 #include <array>
 
 namespace scripting {
@@ -18,7 +18,7 @@ namespace scripting {
 	//
 	// --------------------------------------------------------------
 	//
-
+    
 	PhasorScript& PhasorScript::get(lua_State* L) {
 		lua_pushlightuserdata(L, (void *)&thisKey); 
 		lua_gettable(L, LUA_REGISTRYINDEX);

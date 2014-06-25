@@ -119,9 +119,6 @@
     <ClCompile Include="Old\PhasorAPI\scriptmanagement.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\scripttimers.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Old\Manager.cpp">
       <Filter>Scripting\Old\Manager</Filter>
     </ClCompile>
@@ -198,6 +195,12 @@
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
     <ClCompile Include="Old\PhasorAPI\PhasorAPI_old.cpp">
+      <Filter>Scripting\Old\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\PhasorAPI\scripttimers.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Old\PhasorAPI\scripttimers_old.cpp">
       <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
   </ItemGroup>

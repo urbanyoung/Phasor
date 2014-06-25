@@ -129,7 +129,7 @@
     <ClCompile Include="Old\PhasorAPI\PhasorAPI_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\playerinfo_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\scriptmanagement.cpp" />
-    <ClCompile Include="Old\PhasorAPI\scripttimers.cpp" />
+    <ClCompile Include="Old\PhasorAPI\scripttimers_old.cpp" />
     <ClCompile Include="Old\PhasorAPI\string_old.cpp" />
     <ClCompile Include="Old\Scripting_old.cpp" />
     <ClCompile Include="Old\ScriptingEvents.cpp" />
@@ -170,6 +170,7 @@
     <ClCompile Include="Scripts\PhasorAPI\output.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\phasorapi.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\playerinfo.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\scripttimers.cpp" />
     <ClCompile Include="Scripts\PhasorAPI\string.cpp" />
     <ClCompile Include="Scripts\script-events.cpp" />
     <ClCompile Include="Scripts\scripting.cpp" />

@@ -4,6 +4,7 @@
 #include "../Common/Streams.h"
 #include <unordered_set>
 #include <memory>
+#include <list>
 
 namespace scripting {
 
@@ -15,6 +16,7 @@ namespace scripting {
 		std::string file, name;
 		bool persistent;
 		std::unordered_set<std::string> blockedFunctions;
+
 		static const char thisKey;
 
 		template <class Itr>
@@ -31,7 +33,7 @@ namespace scripting {
 		}
 
 	public:
-		
+
 		template <class Itr>
 		static std::shared_ptr<PhasorScript> create(bool persistent, std::string file, std::string name, Itr itr, const Itr end) {
 			return std::shared_ptr<PhasorScript>(new PhasorScript(persistent, std::move(file), std::move(name), itr, end));

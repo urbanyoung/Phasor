@@ -5,7 +5,9 @@ namespace phasorapi {
 		return 0;
 	}
 
-	std::vector<lua::callback::CFunc> funcTable{
+	std::vector<lua::callback::CFunc> funcTable
+    {
 		{"test", &test},
+
 	};
 }
