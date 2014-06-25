@@ -1,7 +1,7 @@
 #include "Commands.h"
 #include "../Common/Streams.h"
 #include "../Common/MyString.h"
-#include "../Old/ScriptingEvents.h"
+
 #include "Logging.h"
 #include "Halo/Server/Server.h"
 #include "Halo/Game/Game.h"
@@ -11,7 +11,7 @@
 #include "Halo/Server/misc_cmds.h"
 #include "Halo/AFKDetection.h"
 #include "Halo/Alias.h"
-#include "../Old/Scripting.h"
+#include "../Scripts/script-events.h"
 #include "LogHandler.h"
 #include "Admin.h"
 #include <map>

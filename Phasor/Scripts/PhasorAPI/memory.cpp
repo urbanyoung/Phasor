@@ -1,4 +1,4 @@
-//#include "memory.h"
+#include "memory.h"
 #include "../phasor-lua.hpp"
 #include <cstdint>
 #include <array>

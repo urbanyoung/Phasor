@@ -1,3 +1,4 @@
+#include "misc_halo.h"
 #include "../phasor-lua.hpp"
 #include "../../Phasor/Halo/Game/Objects.h"
 #include "../../Phasor/Globals.h"
@@ -23,7 +24,7 @@ int l_kill(lua_State* L) {
 	return 0;
 }
 
-int l_applycammo(lua_State* L) {
+int l_applycamo(lua_State* L) {
 	halo::s_player* player;
 	float duration;
 	std::tie(player, duration) = phlua::callback::getArguments<decltype(player), float>(L, __FUNCTION__);
@@ -66,6 +67,12 @@ int l_setammo(lua_State* L) {
 int l_getprofilepath(lua_State* L) {
 	phlua::callback::getArguments<>(L, __FUNCTION__);
 	return phlua::callback::pushReturns(L, std::make_tuple(g_ProfileDirectory));
+}
+
+int l_getservername(lua_State* L) {
+    phlua::callback::getArguments<>(L, __FUNCTION__);
+    halo::server::s_server_info* server = halo::server::GetServerStruct();
+    return phlua::callback::pushReturns(L, std::make_tuple(server->server_name));
 }
 
 // -------------------------------------------------------

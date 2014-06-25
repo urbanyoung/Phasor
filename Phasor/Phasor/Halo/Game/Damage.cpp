@@ -1,5 +1,5 @@
 #include "Damage.h"
-#include "../../../Old/ScriptingEvents.h"
+#include "../../../Scripts/script-events.h"
 #include "../tags.h"
 #include "../../Globals.h"
 #include "Objects.h"

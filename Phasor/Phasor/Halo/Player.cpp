@@ -6,7 +6,7 @@
 #include "Addresses.h"
 #include "Server/Server.h"
 #include "Game/Game.h"
-#include "../../Old/ScriptingEvents.h"
+#include "../../Scripts/script-events.h"
 #include <assert.h>
 
 namespace halo 

@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include "PhasorAPI.h"
+#include "../phasor-lua.hpp"
 
 /*! \brief Get the current cpu ticks.
  *
@@ -17,7 +17,7 @@
  *		local ticks = gettick()
  *	\endcode
  */
-void l_getticks(PHASOR_API_ARGS);
+int l_getticks(lua_State* L);
 
 /*! \brief Generate a random number in the given range
  *
@@ -30,6 +30,6 @@ void l_getticks(PHASOR_API_ARGS);
  *		local ticks = getrandomnumber(0, 10) -- between 0 and 10
  *	\endcode
  */
-void l_getrandomnumber(PHASOR_API_ARGS);
+int l_getrandomnumber(lua_State* L);
 
 //! }@

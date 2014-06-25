@@ -145,12 +145,6 @@ namespace halo { namespace objects {
 						// set last interacted to be now
 						obj->idle_timer = server_ticks;
 					} else { // destroy
-						// destroy object will erase obj from managed list, so
-						// itr and phasor_obj will be invalid.
-#ifdef BUILD_DEBUG
-						phasor_obj = 0;
-						itr = managedList.end();
-#endif
 						DestroyObject(m_objId);
 						result = 2;
 					}

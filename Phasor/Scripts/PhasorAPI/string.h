@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "PhasorAPI.h"
+#include "../phasor-lua.hpp"
 
 /*! \brief Tokenizes (splits) an input string at specified delimiters.
  *
@@ -38,7 +38,7 @@
  Token 6 is comma
  \endverbatim
  */
-void l_tokenizestring(PHASOR_API_ARGS);
+int l_tokenizestring(lua_State* L);
 
 /*! \brief Tokenizes (splits) an input string into distinct words, which are
  * either separated by a space or enclosed in " ".
@@ -63,6 +63,6 @@ void l_tokenizestring(PHASOR_API_ARGS);
  Token 5 is ok?
  \endverbatim
  */
-void l_tokenizecmdstring(PHASOR_API_ARGS);
+int l_tokenizecmdstring(lua_State* L);
 
 //! }@

@@ -6,7 +6,7 @@
 #include "../Alias.h"
 #include "../../Globals.h"
 #include "../../../Common/MyString.h"
-#include "../../../Old/ScriptingEvents.h"
+#include "../../../Scripts/script-events.h"
 #include "../tags.h"
 #include "../Server/Chat.h"
 #include "../Server/MapVote.h"
@@ -158,9 +158,7 @@ namespace halo { namespace game {
 
 	DWORD __stdcall OnTeamSelection(DWORD cur_team, server::s_machine_info* machine)
 	{
-		DWORD new_team = cur_team;
-		scripting::events::OnTeamDecision(cur_team, new_team);
-		return new_team;
+		return scripting::events::OnTeamDecision(cur_team);
 	}
 
 	/*! \todo add checks when sv_teams_change or w/e is enabled */
@@ -207,19 +205,17 @@ namespace halo { namespace game {
 	bool __stdcall OnObjectCreationAttempt(objects::s_object_creation_disposition* creation_info)
 	{
 		/*! \todo make sure the player is correct */
-		halo::ident change_id;
-		bool allow;
+		bool allow = true;
+		boost::optional<halo::ident> changeId = scripting::events::OnObjectCreationAttempt(creation_info, allow);
 
-		scripting::events::e_ident_or_bool r = scripting::events::OnObjectCreationAttempt(creation_info, change_id, allow);
-
-		if (r == scripting::events::e_ident_or_bool::kBool) return allow;
+		if (!changeId) return allow;
 		else {
 			
-			halo::s_tag_entry* change_tag = LookupTag(change_id);
+            halo::s_tag_entry* change_tag = LookupTag(*changeId);
 			halo::s_tag_entry* default_tag = LookupTag(creation_info->map_id);
 
 			if (change_tag && default_tag && change_tag->tagType == default_tag->tagType) {
-				creation_info->map_id = change_id;
+                creation_info->map_id = *changeId;
 			}
 			return true;
 		}		
@@ -229,13 +225,13 @@ namespace halo { namespace game {
 		s_object_info* curWeapon, DWORD order)
 	{
 		halo::s_player* player = game::getPlayer(playerId);
-		ident weap_id = curWeapon->id, result_id;
+        ident weap_id = curWeapon->id;
 
-		bool b = scripting::events::OnWeaponAssignment(player, owningObjectId, order, weap_id,
-			result_id);
+		boost::optional<halo::ident> changeId = 
+            scripting::events::OnWeaponAssignment(player, owningObjectId, order, weap_id);
 
 		// can return 0xFFFFFFFF to not assign a weapon
-		if (b && (!result_id.valid() || LookupTag(result_id))) return result_id;
+        if (changeId && (!changeId->valid() || LookupTag(*changeId))) return *changeId;
 		else return weap_id;	
 	}
 

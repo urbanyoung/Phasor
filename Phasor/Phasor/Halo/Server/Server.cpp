@@ -7,7 +7,7 @@
 #include "../Game/Game.h"
 #include "../../Globals.h"
 #include "../../Admin.h"
-#include "../../../Old/ScriptingEvents.h"
+#include "../../../Scripts/script-events.h"
 #include "Mapvote.h"
 #include "Packet.h"
 #include "Chat.h"
@@ -110,12 +110,12 @@ namespace halo { namespace server
 		// now let scripts change the player's name
 		std::string hash(data->hash, 32);
 		std::string name = NarrowString(data->name);
-		std::string new_name;
+		boost::optional<std::string> newName;
 
-		bool allow_name = scripting::events::OnNameRequest(hash, name, new_name);
+		bool allow_name = scripting::events::OnNameRequest(hash, name, newName);
 
-		if (new_name.size()) {
-			std::wstring wname = WidenString(new_name).substr(0, 11);
+		if (newName) {
+			std::wstring wname = WidenString(*newName).substr(0, 11);
 			wcscpy_s(data->name, 12, wname.c_str());
 		} else if (!allow_name) {
 			data->name[0] = L'\0';

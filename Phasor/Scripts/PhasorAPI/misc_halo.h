@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include "PhasorAPI.h"
+#include "../phasor-lua.hpp"
 
 /*! \brief Changes the specified player's team.
  *	\param player The player's memory id.
@@ -22,7 +22,7 @@
  *	If you don't specify the player's new team, their new team is the logical NOT
  *	of their current team. ie red -> blue, blue -> red.
  */
-void l_changeteam(PHASOR_API_ARGS);
+int l_changeteam(lua_State* L);
 
 /*! \brief Kill the specified player.
  *	\param player The player's memory id.
@@ -32,7 +32,7 @@ void l_changeteam(PHASOR_API_ARGS);
  *		kill(player)
  *	\endcode
  */
-void l_kill(PHASOR_API_ARGS);
+int l_kill(lua_State* L);
 
 /*! \brief Gives the specified player active camo for a specified duration 
  *	\param player The player's memory id
@@ -43,7 +43,7 @@ void l_kill(PHASOR_API_ARGS);
  *		applycamo(player, 30) -- invis for 30 seconds
  *	\endcode
  */
-void l_applycamo(PHASOR_API_ARGS);
+int l_applycamo(lua_State* L);
 
 /*! \brief Executes a server command.
  *	\param cmd The command to execute
@@ -68,7 +68,7 @@ void l_applycamo(PHASOR_API_ARGS);
  *	player will be logged. Once the command has completed it will be returned
  *	to you as a table.
  */
-void l_svcmd(PHASOR_API_ARGS);
+int l_svcmd(lua_State* L);
 
 /*! \brief Executes a server command as the specified player.
  *	\param cmd The command to execute
@@ -94,7 +94,7 @@ void l_svcmd(PHASOR_API_ARGS);
  *	player will be logged. Once the command has completed it will be returned
  *	to you as a table.
  */
-void l_svcmdplayer(PHASOR_API_ARGS);
+int l_svcmdplayer(lua_State* L);
 
 /*! \brief Forcibly sync the specified weapon's ammo counts.
  *	\param weaponId The memory id of the weapon to sync.
@@ -104,7 +104,7 @@ void l_svcmdplayer(PHASOR_API_ARGS);
  *		updateammo(m_weaponId) -- update the weapon's ammo
  *	\endcode
  */
-void l_updateammo(PHASOR_API_ARGS);
+int l_updateammo(lua_State* L);
 
 /*! \brief Set a weapon's ammo and forcibly sync
  *	\param weaponId The memory id of the weapon to sync.
@@ -116,7 +116,7 @@ void l_updateammo(PHASOR_API_ARGS);
  *		setammo(m_weaponId, 50, 200) -- 50 clip, 200 pack
  *	\endcode
  */
-void l_setammo(PHASOR_API_ARGS);
+int l_setammo(lua_State* L);
 
 /*! \brief Set the specified player's speed
  *	\param player The player's memory id
@@ -127,7 +127,7 @@ void l_setammo(PHASOR_API_ARGS);
  *		setspeed(player, 5) -- 5x speed
  *	\endcode
  */
-void l_setspeed(PHASOR_API_ARGS);
+int l_setspeed(lua_State* L);
 
 /*! \brief Gets halo's data directory (where banned.txt is stored)
  *	\return The profile directory 
@@ -137,7 +137,7 @@ void l_setspeed(PHASOR_API_ARGS);
  *		local profilepath = getprofilepath()
  *	\endcode
  *	*/
-void l_getprofilepath(PHASOR_API_ARGS);
+int l_getprofilepath(lua_State* L);
 
 /*! \brief Gets the server's current name
  *	\return The server's name
@@ -148,6 +148,6 @@ void l_getprofilepath(PHASOR_API_ARGS);
  *		hprintf(servername)
  *	\endcode
  */
-void l_getservername(PHASOR_API_ARGS);
+int l_getservername(lua_State* L);
 
 //! }@

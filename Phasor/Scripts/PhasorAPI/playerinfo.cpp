@@ -1,3 +1,4 @@
+#include "playerinfo.h"
 #include "../phasor-lua.hpp"
 #include "../../Phasor/Halo/Player.h"
 #include "../../Phasor/Halo/Game/Game.h"
@@ -40,6 +41,12 @@ int l_getport(lua_State* L) {
 	halo::s_player* player;
 	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
 	return phlua::callback::pushReturns(L, std::make_tuple(player->port));
+}
+
+int l_getteam(lua_State* L) {
+    halo::s_player* player;
+    std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
+    return phlua::callback::pushReturns(L, std::make_tuple(player->mem->team));
 }
 
 int l_getname(lua_State* L) {

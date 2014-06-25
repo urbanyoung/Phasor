@@ -5,7 +5,7 @@
 #include "Phasor/ThreadedLogging.h"
 #include "Phasor/GameLogging.h"
 #include "Phasor/Directory.h"
-#include "Old/Scripting.h"
+#include "Scripts/scripting.hpp"
 #include "Phasor/Commands.h"
 #include "Phasor/Admin.h"
 #include "Phasor/Halo/Addresses.h"
@@ -29,7 +29,7 @@ std::unique_ptr<CScriptsLog> g_ScriptsLog;
 std::unique_ptr<CPhasorLog> g_PhasorLog;
 std::unique_ptr<CGameLog> g_GameLog;
 std::unique_ptr<CRconLog> g_RconLog;
-std::unique_ptr<scripting::Scripts> g_Scripts;
+std::unique_ptr<scripting::ScriptHandler> g_Scripts;
 std::unique_ptr<halo::CHaloPrintStream> g_PrintStream;
 
 
@@ -90,11 +90,11 @@ extern "C" __declspec(dllexport) void OnLoad()
 		scriptOutput.reset(new Forwarder(*g_PrintStream, Forwarder::end_point(*g_ScriptsLog)));
 		
 		// Initialize scripting system
-		g_Scripts.reset(new scripting::Scripts(*scriptOutput,g_ScriptsDirectory));
+        g_Scripts.reset(new scripting::ScriptHandler(NarrowString(g_ScriptsDirectory), *scriptOutput));
 
 		// Load all scripts in scripts\\persistent
 		PhasorLog << "Loading persistent scripts" << endl; 
-		g_Scripts->LoadPersistentScripts();
+		g_Scripts->loadPersistentScripts();
 
 		PhasorLog << L"Processing earlyinit.txt" << endl;
 		LoadEarlyInit(PhasorLog);

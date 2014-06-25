@@ -110,74 +110,29 @@
     <ClCompile Include="Phasor\Halo\Server\misc_cmds.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\alias_script.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\api_readers.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\scriptmanagement.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\Manager.cpp">
-      <Filter>Scripting\Old\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\Lua.cpp">
-      <Filter>Scripting\Old\Lua</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\CallHelper.cpp">
-      <Filter>Scripting\Old</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\ScriptingEvents.cpp">
-      <Filter>Scripting\Old</Filter>
-    </ClCompile>
     <ClCompile Include="Scripts\lua-bindings.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\haloobjects.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\haloobjects_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\memory.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\memory_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\misc_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\misc.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\damagelookup_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\damagelookup.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\playerinfo_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\playerinfo.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\string_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\string.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\misc_halo_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\misc_halo.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\output_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\output.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
@@ -185,23 +140,14 @@
     <ClCompile Include="Scripts\scripting.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="Old\Scripting_old.cpp">
-      <Filter>Scripting\Old</Filter>
-    </ClCompile>
     <ClCompile Include="Scripts\script-events.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\phasorapi.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\PhasorAPI_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClCompile>
     <ClCompile Include="Scripts\PhasorAPI\scripttimers.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Old\PhasorAPI\scripttimers_old.cpp">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -243,18 +189,6 @@
     </Filter>
     <Filter Include="Scripting\PhasorAPI">
       <UniqueIdentifier>{aeb382aa-ec08-4fb0-a3a9-032d2e6510b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scripting\Old">
-      <UniqueIdentifier>{38a93285-413c-4830-9202-04b98e6d0ca0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scripting\Old\Lua">
-      <UniqueIdentifier>{c84675ec-0b57-47b5-941d-c121e818861f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scripting\Old\Manager">
-      <UniqueIdentifier>{e75bf6ba-31fe-4005-be76-52be7291a71b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scripting\Old\PhasorAPI">
-      <UniqueIdentifier>{2ecdf623-1246-4bc4-beaf-6b7470b864cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -391,60 +325,6 @@
     <ClInclude Include="Common\tuple-iterate.hpp">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\alias_script.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\api_readers.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\damagelookup.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\haloobjects.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\memory.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\misc.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\misc_halo.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\output.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\PhasorAPI.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\playerinfo.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\scriptmanagement.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\scripttimers.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\PhasorAPI\string.h">
-      <Filter>Scripting\Old\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\Manager.h">
-      <Filter>Scripting\Old\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\Lua.h">
-      <Filter>Scripting\Old\Lua</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\CallHelper.h">
-      <Filter>Scripting\Old</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\Scripting.h">
-      <Filter>Scripting\Old</Filter>
-    </ClInclude>
-    <ClInclude Include="Old\ScriptingEvents.h">
-      <Filter>Scripting\Old</Filter>
-    </ClInclude>
     <ClInclude Include="Scripts\lua-bindings.hpp">
       <Filter>Scripting</Filter>
     </ClInclude>
@@ -464,6 +344,30 @@
       <Filter>Scripting</Filter>
     </ClInclude>
     <ClInclude Include="Scripts\PhasorAPI\phasorapi.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\damagelookup.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\string.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\memory.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\misc.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\misc_halo.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\output.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\playerinfo.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\PhasorAPI\scripttimers.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
   </ItemGroup>

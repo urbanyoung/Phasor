@@ -5,7 +5,7 @@
  *	@{
  */
 #pragma once
-#include "PhasorAPI.h"
+#include "../phasor-lua.hpp"
 
 /*! \brief Registers a timer which is called when it expires.
  *
@@ -33,7 +33,7 @@
  *		end
  *	\endcode
  */
-void l_registertimer(PHASOR_API_ARGS);
+int l_registertimer(lua_State* L);
 
 /*! \brief Removes a currently registered timer.
  *
@@ -49,6 +49,6 @@ void l_registertimer(PHASOR_API_ARGS);
  *		removetimer(timer_id)
  *	\endcode
  */
-void l_removetimer(PHASOR_API_ARGS);
+int l_removetimer(lua_State* L);
 
 //! }@

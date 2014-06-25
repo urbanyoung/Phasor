@@ -8,102 +8,115 @@
 
 namespace scripting {
 
-	template <typename... ResultTypes> class Caller;
+    template <typename... ResultTypes> class Caller;
 
-	class PhasorScript : public std::enable_shared_from_this<PhasorScript> {
-	private:
-		lua::State state;
-		std::string file, name;
-		bool persistent;
-		std::unordered_set<std::string> blockedFunctions;
+    class PhasorScript : public std::enable_shared_from_this<PhasorScript> {
+    private:
+        lua::State state;
+        std::string file, name;
+        bool persistent;
+        std::unordered_set<std::string> blockedFunctions;
 
-		static const char thisKey;
+        static const char thisKey;
 
-		template <class Itr>
-		PhasorScript(bool persistent, std::string file, std::string name, Itr itr, const Itr end)
-			: file(std::move(file)), name(std::move(name)), persistent(persistent)
-		{
-			// store reference to this so we can access it from script callbacks..
-			lua_pushlightuserdata(state, (void *)&thisKey); //key
-			lua_pushlightuserdata(state, this); // value
-			lua_settable(state, LUA_REGISTRYINDEX);
+        template <class Itr>
+        PhasorScript(bool persistent, std::string file, std::string name, Itr itr, const Itr end)
+            : file(std::move(file)), name(std::move(name)), persistent(persistent)
+        {
+            // store reference to this so we can access it from script callbacks..
+            lua_pushlightuserdata(state, (void *)&thisKey); //key
+            lua_pushlightuserdata(state, this); // value
+            lua_settable(state, LUA_REGISTRYINDEX);
 
-			lua::callback::registerFunctions(state, itr, end);
-			state.doFile(file);
-		}
+            lua::callback::registerFunctions(state, itr, end);
+            state.doFile(this->file);
+        }
 
-	public:
+    public:
 
-		template <class Itr>
-		static std::shared_ptr<PhasorScript> create(bool persistent, std::string file, std::string name, Itr itr, const Itr end) {
-			return std::shared_ptr<PhasorScript>(new PhasorScript(persistent, std::move(file), std::move(name), itr, end));
-		}
+        template <class Itr>
+        static std::shared_ptr<PhasorScript> create(bool persistent, std::string file, std::string name, Itr itr, const Itr end) {
+            return std::shared_ptr<PhasorScript>(new PhasorScript(persistent, std::move(file), std::move(name), itr, end));
+        }
 
-		static PhasorScript& get(lua_State* L);
-		
-		inline std::shared_ptr<PhasorScript> get() { return shared_from_this(); }
-		inline lua::State& getState() { return state;  }
-		inline const lua::State& getState() const { return state; }
-		inline const std::string& getName() const { return name;  }
-		inline bool isPersistent() const { return persistent;  }
+        static PhasorScript& get(lua_State* L);
 
-		void block(std::string f);
-		bool isBlocked(const std::string& f) const;
-	};
+        inline std::shared_ptr<PhasorScript> get() { return shared_from_this(); }
+        inline lua::State& getState() { return state; }
+        inline const lua::State& getState() const { return state; }
+        inline const std::string& getName() const { return name; }
+        inline bool isPersistent() const { return persistent; }
 
-	class ScriptHandler {
-	private:
-		std::vector<std::shared_ptr<PhasorScript>> scripts;
-		COutStream& errStream;
-		std::string scriptDir;
+        void block(std::string f);
+        bool isBlocked(const std::string& f) const;
+    };
 
-		void handleError(PhasorScript& script, const std::string& func, const char* what);
-		void unloadScript(PhasorScript& script);
-		bool loadScript(const std::string& script, bool persistent, std::shared_ptr<PhasorScript>& out);
+    class ScriptHandler {
+    private:
+        std::vector<std::shared_ptr<PhasorScript>> scripts;
+        COutStream& errStream;
+        std::string scriptDir;
 
-	public:
-		ScriptHandler(std::string scriptDir, COutStream& errStream);
+        void handleError(PhasorScript& script, const std::string& func, const char* what);
+        void unloadScript(PhasorScript& script);
+        bool loadScript(const std::string& script, bool persistent, std::shared_ptr<PhasorScript>& out);
 
-		bool isLoaded(const std::string& script);
+    public:
+        ScriptHandler(std::string scriptDir, COutStream& errStream);
 
-		bool loadScript(const std::string& script, bool persistent);
-		void loadPersistentScripts();
-		bool unloadScript(const std::string& script);
-		void unloadAllScripts(bool includePersistent);
-		bool reloadScript(const std::string& script);
-		void reloadAllScripts(bool includePersistent);
+        bool isLoaded(const std::string& script);
 
-		std::vector<std::string> getLoadedScripts() const;
+        bool loadScript(const std::string& script, bool persistent);
+        void loadPersistentScripts();
+        bool unloadScript(const std::string& script);
+        void unloadAllScripts(bool includePersistent);
+        bool reloadScript(const std::string& script);
+        void reloadAllScripts(bool includePersistent);
 
-		template <typename... ResultTypes> friend class Caller;
-	};
+        std::vector<std::pair<std::string, bool>> getLoadedScripts() const;
 
-	template <typename... ResultTypes>
-	class Caller {
-	public:
-		template <typename... ArgTypes>
-		static inline boost::optional<std::tuple<ResultTypes...>>
-			call(ScriptHandler& h, const std::string& func, const std::tuple<ArgTypes...>& args)
-		{
-			boost::optional<std::tuple<ResultTypes...>> result;
+        template <typename... ResultTypes> friend class Caller;
+    };
 
-			for (auto itr = h.scripts.begin(); itr != h.scripts.end(); ++itr) {
-				PhasorScript& script = *itr;
-				if (script.isBlocked(func)) continue;
-				phlua::Caller<ResultTypes...> c<(script.getState());
+    template <typename... ResultTypes>
+    class Caller {
 
-				try {
-					auto x = c.call(func.c_str(), args);
-					if (!c.hasError() && !result) { // got all return values successfully
-						result = x;
-					}
-				} catch (std::exception& e) {
-					h.handleError(script, func, e.what());
-				}
-			}
+    public:
+        template <typename... ArgTypes>
+        static inline boost::optional<std::tuple<ResultTypes...>>
+            call(ScriptHandler& h, const std::string& func, std::tuple<ArgTypes...>& uargs)
+        {
+            return call(h, func, true, std::move(uargs));
+        }
 
-			return result;
-		}
-	};
+        template <typename... ArgTypes>
+        static inline boost::optional<std::tuple<ResultTypes...>>
+            call(ScriptHandler& h, const std::string& func, bool relevant, std::tuple<ArgTypes...>& uargs)
+        {
+            boost::optional<std::tuple<ResultTypes...>> result;
+            std::tuple<ArgTypes..., bool> args = std::tuple_cat(std::move(uargs), std::make_tuple(relevant));
+            const size_t lastElem = std::tuple_size<decltype(args)>::value-1;
+
+            for (auto itr = h.scripts.begin(); itr != h.scripts.end(); ++itr) {
+                PhasorScript& script = **itr;
+                if (script.isBlocked(func)) continue;
+                phlua::Caller<ResultTypes...> c(script.getState());
+
+                try {
+                    auto x = c.call(func.c_str(), args);
+                    if (!c.hasError() && !result) { // got all return values successfully
+                        result = x;
+                        std::get<lastElem>(args) = false;
+                    }
+                } catch (std::exception& e) {
+                    h.handleError(script, func, e.what());
+                }
+            }
+
+            return result;
+        }
+    };
 
 }
+
+extern std::unique_ptr<scripting::ScriptHandler> g_Scripts;

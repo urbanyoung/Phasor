@@ -35,7 +35,7 @@
  *	@{
 */
 #include "../../Common/Common.h"
-#include "PhasorAPI.h"
+#include "../phasor-lua.hpp"
 #include <list> 
 
 
@@ -52,7 +52,7 @@
  *		local b = readbit(0x12345678, 2) -- read the 3rd bit at 0x12345678
  *  \endcode
  */
-void l_readbit(PHASOR_API_ARGS);
+int l_readbit(lua_State* L);
 
 /*! \brief Reads a byte from the specified memory address.
  *
@@ -66,7 +66,7 @@ void l_readbit(PHASOR_API_ARGS);
  *		local b = readbyte(0x12345678) -- read the byte at 0x12345678
  *  \endcode
  */
-void l_readbyte(PHASOR_API_ARGS);
+int l_readbyte(lua_State* L);
 
 /*! \brief Reads a char from the specified memory address.
  *
@@ -80,7 +80,7 @@ void l_readbyte(PHASOR_API_ARGS);
  *		local b = readchar(0x12345678) -- read the char at 0x12345678
  *  \endcode
  */
-void l_readchar(PHASOR_API_ARGS);
+int l_readchar(lua_State* L);
 
 /*! \brief Reads a word from the specified memory address.
  *
@@ -94,7 +94,7 @@ void l_readchar(PHASOR_API_ARGS);
  *		local b = readword(0x12345678) -- read the word at 0x12345678
  *  \endcode
  */
-void l_readword(PHASOR_API_ARGS);
+int l_readword(lua_State* L);
 
 /*! \brief Reads a short from the specified memory address.
  *
@@ -108,7 +108,7 @@ void l_readword(PHASOR_API_ARGS);
  *		local b = readshort(0x12345678) -- read the short at 0x12345678
  *  \endcode
  */
-void l_readshort(PHASOR_API_ARGS);
+int l_readshort(lua_State* L);
 
 /*! \brief Reads a dword from the specified memory address.
  *
@@ -122,7 +122,7 @@ void l_readshort(PHASOR_API_ARGS);
  *		local b = readdword(0x12345678) -- read the dword at 0x12345678
  *  \endcode
  */
-void l_readdword(PHASOR_API_ARGS);
+int l_readdword(lua_State* L);
 
 /*! \brief Reads an int from the specified memory address.
  *
@@ -136,7 +136,7 @@ void l_readdword(PHASOR_API_ARGS);
  *		local b = readint(0x12345678) -- read the int at 0x12345678
  *  \endcode
  */
-void l_readint(PHASOR_API_ARGS);
+int l_readint(lua_State* L);
 
 /*! \brief Reads a float from the specified memory address.
  *
@@ -150,7 +150,7 @@ void l_readint(PHASOR_API_ARGS);
  *		local b = readfloat(0x12345678) -- read the float at 0x12345678
  *  \endcode
  */
-void l_readfloat(PHASOR_API_ARGS);
+int l_readfloat(lua_State* L);
 
 /*! \brief Reads a double from the specified memory address.
  *
@@ -164,14 +164,14 @@ void l_readfloat(PHASOR_API_ARGS);
  *		local b = readdouble(0x12345678) -- read the double at 0x12345678
  *  \endcode
  */
-void l_readdouble(PHASOR_API_ARGS);
+int l_readdouble(lua_State* L);
 
 /*! \brief Reads a string from the specified memory address.
  *
  *	\param address The memory address to read from.
  *	\param [length] The number of characters to read.
  */
-void l_readstring(PHASOR_API_ARGS);
+int l_readstring(lua_State* L);
 
 /*! \brief Reads a wide string from the specified memory address.
  *
@@ -183,7 +183,7 @@ void l_readstring(PHASOR_API_ARGS);
  *	can't handle wide strings so Phasor will convert to a narrow string
  *	before returning.
  */
-void l_readwidestring(PHASOR_API_ARGS);
+int l_readwidestring(lua_State* L);
 
 /*! \brief Writes a bit to the specified memory address.
  *
@@ -201,7 +201,7 @@ void l_readwidestring(PHASOR_API_ARGS);
  *  \remark
  *  \c bit_offset starts at 0 for the least significant bit
  */
-void l_writebit(PHASOR_API_ARGS);
+int l_writebit(lua_State* L);
 
 /*! \brief Writes a byte to the specified memory address.
  *
@@ -215,7 +215,7 @@ void l_writebit(PHASOR_API_ARGS);
  *		writebyte(0x12345678, 50) -- write 50 to 0x12345678
  *  \endcode
  */
-void l_writebyte(PHASOR_API_ARGS);
+int l_writebyte(lua_State* L);
 
 /*! \brief Writes a char to the specified memory address.
  *
@@ -229,7 +229,7 @@ void l_writebyte(PHASOR_API_ARGS);
  *		writechar(0x12345678, -41) -- write -41 to 0x12345678
  *  \endcode
  */
-void l_writechar(PHASOR_API_ARGS);
+int l_writechar(lua_State* L);
 
 /*! \brief Writes a word to the specified memory address.
  *
@@ -243,7 +243,7 @@ void l_writechar(PHASOR_API_ARGS);
  *		writeword(0x12345678, 50) -- write 50 to 0x12345678
  *  \endcode
  */
-void l_writeword(PHASOR_API_ARGS);
+int l_writeword(lua_State* L);
 
 /*! \brief Writes a short to the specified memory address.
  *
@@ -257,7 +257,7 @@ void l_writeword(PHASOR_API_ARGS);
  *		writeshort(0x12345678, 50) -- write 50 to 0x12345678
  *  \endcode
  */
-void l_writeshort(PHASOR_API_ARGS);
+int l_writeshort(lua_State* L);
 
 /*! \brief Writes a dword to the specified memory address.
  *
@@ -271,7 +271,7 @@ void l_writeshort(PHASOR_API_ARGS);
  *		writedword(0x12345678, 50) -- write 50 to 0x12345678
  *  \endcode
  */
-void l_writedword(PHASOR_API_ARGS);
+int l_writedword(lua_State* L);
 
 /*! \brief Writes an int to the specified memory address.
  *
@@ -285,7 +285,7 @@ void l_writedword(PHASOR_API_ARGS);
  *		writeint(0x12345678, 50) -- write 50 to 0x12345678
  *  \endcode
  */
-void l_writeint(PHASOR_API_ARGS);
+int l_writeint(lua_State* L);
 
 /*! \brief Writes a float to the specified memory address.
  *
@@ -299,7 +299,7 @@ void l_writeint(PHASOR_API_ARGS);
  *		writefloat(0x12345678, 1.5) -- write 1.5 to 0x12345678
  *  \endcode
  */
-void l_writefloat(PHASOR_API_ARGS);
+int l_writefloat(lua_State* L);
 
 /*! \brief Writes a double to the specified memory address.
  *
@@ -313,7 +313,7 @@ void l_writefloat(PHASOR_API_ARGS);
  *		writedouble(0x12345678, 1.5) -- write 1.5 to 0x12345678
  *  \endcode
  */
-void l_writedouble(PHASOR_API_ARGS);
+int l_writedouble(lua_State* L);
 
 /*! \brief Writes a string to the specified memory address
  *
@@ -325,7 +325,7 @@ void l_writedouble(PHASOR_API_ARGS);
  *		writestring(0x12345678, "write this string.")
  * \endcode
  */
-void l_writestring(PHASOR_API_ARGS);
+int l_writestring(lua_State* L);
 
 /*! \brief Writes a wide string to the specified memory address
  *
@@ -341,6 +341,6 @@ void l_writestring(PHASOR_API_ARGS);
  * Lua doesn't support wide strings, so Phasor will convert the provided
  * narrow string to wide before writing it. 
  */
-void l_writewidestring(PHASOR_API_ARGS);
+int l_writewidestring(lua_State* L);
 
 //! }@

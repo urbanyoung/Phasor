@@ -50,6 +50,15 @@ namespace phlua {
 			operator()((unsigned long)x);
 		}
 
+        void operator()(const halo::s_player* player) {
+            if (player) operator()(player->memory_id);
+            else operator()(lua::types::Nil());
+        }
+
+        void operator()(const halo::s_player& player) {
+            operator()(player.memory_id);
+        }
+
 		template<typename Container>
 		typename std::enable_if<is_container<Container>::value>::type
 			operator()(const Container& x)
@@ -111,13 +120,13 @@ namespace phlua {
 			else tag = t;
 		}
 
-		void operator()(vect3d& x) {
+		/*void operator()(vect3d& x) {
 			vect3d tmp;
 			operator()(tmp.x);
 			operator()(tmp.y);
 			operator()(tmp.z);
 			x = tmp;
-		}
+		}*/
 
 		void operator()(ProcessedString& x) {
 			std::wstring str;
@@ -160,8 +169,10 @@ namespace phlua {
 		void operator()(boost::optional<halo::s_player*>& player) {
 			boost::optional<int> id;
 			operator()(id);
-			halo::s_player* p = halo::game::getPlayer(*id);
-			if (p) player = p;
+            if (id) {
+                halo::s_player* p = halo::game::getPlayer(*id);
+                if (p) player = p;
+            }
 		}
 
 		// --------------------------------------------------------------

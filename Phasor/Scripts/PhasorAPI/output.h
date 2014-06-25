@@ -29,7 +29,7 @@
  *	@{
  */
 
-#include "PhasorAPI.h"
+#include "../phasor-lua.hpp"
 
 /*! \brief Outputs a string to the server console.
  * \param str The string to print.
@@ -39,7 +39,7 @@
  *		hprintf("This will be printed to the console.")
  * \endcode
  */
-void l_hprintf(PHASOR_API_ARGS);
+int l_hprintf(lua_State* L);
 
 /*! \brief Sends a chat message to the entire server.
  *
@@ -53,7 +53,7 @@ void l_hprintf(PHASOR_API_ARGS);
  *		say("Don't include ** SERVER **", false)
  *	\endcode
  */
-void l_say(PHASOR_API_ARGS);
+int l_say(lua_State* L);
 
 /*! \brief Sends a chat message to the specified player.
  *
@@ -67,7 +67,7 @@ void l_say(PHASOR_API_ARGS);
  *		privatesay(1, "Hello", false) -- don't include ** SERVER **
  *	\endcode
  */
-void l_privatesay(PHASOR_API_ARGS);
+int l_privatesay(lua_State* L);
 
 /*! \brief Sends the specified player a console message.
  *
@@ -79,7 +79,7 @@ void l_privatesay(PHASOR_API_ARGS);
  *		sendconsoletext(4, "Your command was successful.")
  * \endcode
  */
-void l_sendconsoletext(PHASOR_API_ARGS);
+int l_sendconsoletext(lua_State* L);
 
 /*! \brief Responds to the person executing the current command.
  * 
@@ -94,7 +94,7 @@ void l_sendconsoletext(PHASOR_API_ARGS);
  *		respond("Your command was successfully executed.")
  *	\endcode
  */
-void l_respond(PHASOR_API_ARGS);
+int l_respond(lua_State* L);
 
 /*! \brief Sends output to the specified logging stream.
  *
@@ -117,6 +117,6 @@ void l_respond(PHASOR_API_ARGS);
  * game log. If player 4 is called Oxide then "Oxide won the game" would be 
  * saved. 
  */
-void l_log_msg(PHASOR_API_ARGS);
+int l_log_msg(lua_State* L);
 
 //! }@

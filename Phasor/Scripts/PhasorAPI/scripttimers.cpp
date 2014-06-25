@@ -1,3 +1,4 @@
+#include "scripttimers.h"
 #include "../phasor-lua.hpp"
 #include "../../Common/Timers.h"
 #include "../scripting.hpp"
@@ -73,7 +74,7 @@ int l_removetimer(lua_State* L) {
     bool valid = lua_type(L, -1) != LUA_TNIL;
     lua_pop(L, 1);
 
-    if (valid) {
+    if (valid) { // just ignore invalid timer ids
         if (!g_Timers.RemoveTimer(id))
             luaL_error(L, "attempt to remove timer within its callback");
 

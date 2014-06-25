@@ -55,13 +55,15 @@ private:
 	}
 } flagStates;
 
-void set(halo::damage_script_options* opts_) {
-	opts = opts_;
-	flagStates.reset();
-}
+namespace odl {
+    void set(halo::damage_script_options* opts_) {
+        opts = opts_;
+        flagStates.reset();
+    }
 
-void reset() {
-	opts = nullptr;
+    void reset() {
+        opts = nullptr;
+    }
 }
 
 int l_odl_causer(lua_State* L) {

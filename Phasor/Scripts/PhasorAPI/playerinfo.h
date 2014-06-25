@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "PhasorAPI.h"
+#include "../phasor-lua.hpp"
 
 /*! \brief Resolve a player's memory id to their rcon id.
  *
@@ -23,7 +23,7 @@
  *		local player_rconid = resolveplayer(0)
  * \endcode
  */
-void l_resolveplayer(PHASOR_API_ARGS);
+int l_resolveplayer(lua_State* L);
 
 /*! \brief Resolve a player's rcon id to their memory id.
  *
@@ -35,7 +35,7 @@ void l_resolveplayer(PHASOR_API_ARGS);
  *		local player_memid = rresolveplayer(0)
  * \endcode
  */
-void l_rresolveplayer(PHASOR_API_ARGS);
+int l_rresolveplayer(lua_State* L);
 
 /*! \brief Get the specified player's memory data.
  *
@@ -47,7 +47,7 @@ void l_rresolveplayer(PHASOR_API_ARGS);
  *		local m_player = getplayer(0)
  * \endcode
  */
-void l_getplayer(PHASOR_API_ARGS);
+int l_getplayer(lua_State* L);
 
 /*! \brief Get the specified player's ip address.
  *
@@ -59,7 +59,7 @@ void l_getplayer(PHASOR_API_ARGS);
  *		local ip = getip(3)
  * \endcode
  */
-void l_getip(PHASOR_API_ARGS);
+int l_getip(lua_State* L);
 
 /*! \brief Get the specified player's network port
  *
@@ -77,7 +77,7 @@ void l_getip(PHASOR_API_ARGS);
  Player with ip:port 127.0.0.1:2302
  \endverbatim
  */
-void l_getport(PHASOR_API_ARGS);
+int l_getport(lua_State* L);
 
 /*! \brief Get the specified player's team
  *
@@ -89,7 +89,7 @@ void l_getport(PHASOR_API_ARGS);
  *		local team = getteam(5)		
  * \endcode
  */
-void l_getteam(PHASOR_API_ARGS);
+int l_getteam(lua_State* L);
 
 /*! \brief Get the specified player's name
  *
@@ -100,7 +100,7 @@ void l_getteam(PHASOR_API_ARGS);
  *		local name = getname(0)
  * \endcode
  */
-void l_getname(PHASOR_API_ARGS);
+int l_getname(lua_State* L);
 
 /*! \brief Get the specified player's hash
  *
@@ -112,7 +112,7 @@ void l_getname(PHASOR_API_ARGS);
  *		local hash = gethash(player)
  * \endcode
  */
-void l_gethash(PHASOR_API_ARGS);
+int l_gethash(lua_State* L);
 
 /*! \brief Get the number of players on the specified team
  *
@@ -125,7 +125,7 @@ void l_gethash(PHASOR_API_ARGS);
  *		local bluesize = getteamsize(1) -- get size of blue team
  * \endcode
  */
-void l_getteamsize(PHASOR_API_ARGS);
+int l_getteamsize(lua_State* L);
 
 /*! \brief Get the specified player's object id.
  *
@@ -140,7 +140,7 @@ void l_getteamsize(PHASOR_API_ARGS);
  * \remark 
  * If the player is currently dead, nil is returned.
  */
-void l_getplayerobjectid(PHASOR_API_ARGS);
+int l_getplayerobjectid(lua_State* L);
 
 /*! \brief Checks if the specified player is an admin.
  *
@@ -152,7 +152,7 @@ void l_getplayerobjectid(PHASOR_API_ARGS);
  *		local is_player_admin = isadmin(0)
  * \endcode
  */
-void l_isadmin(PHASOR_API_ARGS);
+int l_isadmin(lua_State* L);
 
 /*! \brief Returns the admins level, or \c nil if not an admin.
  *
@@ -167,7 +167,7 @@ void l_isadmin(PHASOR_API_ARGS);
  *		end
  *	\endcode
  */
-void l_getadminlvl(PHASOR_API_ARGS);
+int l_getadminlvl(lua_State* L);
 
 /*! \brief Sets the specified player as an admin for the duration of the
  * current game, or until the player leaves.
@@ -182,6 +182,6 @@ void l_getadminlvl(PHASOR_API_ARGS);
  *		end
  * \endcode
  */
-void l_setadmin(PHASOR_API_ARGS);
+int l_setadmin(lua_State* L);
 
 //! }@

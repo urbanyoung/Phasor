@@ -56,14 +56,16 @@ int l_createobject(lua_State* L) {
 	bool do_respawn;
 	vect3d pos;
 
-	std::tie(tag, parentId, respawnTime, do_respawn, pos) =
+	std::tie(tag, parentId, respawnTime, do_respawn, pos.x, pos.y, pos.z) =
 		phlua::callback::getArguments
 		<
 			decltype(tag),
 			decltype(parentId),
 			decltype(respawnTime),
 			decltype(do_respawn),
-			decltype(pos)
+			decltype(pos.x),
+            decltype(pos.y),
+            decltype(pos.z)
 		>(L, __FUNCTION__);
 
 	if (parentId == 0) parentId = halo::ident();
@@ -131,7 +133,7 @@ int l_exitvehicle(lua_State* L) {
 int l_movobjectcoords(lua_State* L) {
 	halo::objects::s_halo_object* obj;
 	vect3d newPos;
-	std::tie(obj, newPos) = phlua::callback::getArguments<decltype(obj), decltype(newPos)>(L, __FUNCTION__);
+    std::tie(obj, newPos.x, newPos.y, newPos.z) = phlua::callback::getArguments<decltype(obj), float, float, float>(L, __FUNCTION__);
 	
 	MoveObject(*obj, newPos);
 	return 0;
@@ -220,12 +222,12 @@ int l_halointersect(lua_State* L) {
 	halo::objects::view_vector view;
 	boost::optional<halo::ident> ignoreObj;
 
-	std::tie(dist, view.pos, view.dir, ignoreObj) =
+    std::tie(dist, view.pos.x, view.pos.y, view.pos.z, view.dir.x, view.dir.y, view.dir.z, ignoreObj) =
 		phlua::callback::getArguments
 		<
 			decltype(dist),
-			decltype(view.pos),
-			decltype(view.dir),
+			float,float,float,
+			float,float,float,
 			decltype(ignoreObj)
 		>(L, __FUNCTION__);
 

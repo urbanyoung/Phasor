@@ -81,11 +81,6 @@ namespace scripting {
 
 	bool ScriptHandler::loadScript(const std::string& name, bool persistent, std::shared_ptr<PhasorScript>& out)
 	{
-		if (isLoaded(name)) {
-			errStream << name << " is already loaded." << endl;
-			return false;
-		}
-
 		std::string file = scriptDir + name + ".lua";
 
 		try {
@@ -126,10 +121,14 @@ namespace scripting {
 
 	bool ScriptHandler::loadScript(const std::string& name, bool persistent)
 	{
+        if (isLoaded(name)) {
+            errStream << name << " is already loaded." << endl;
+            return false;
+        }
 		std::shared_ptr<PhasorScript> script;
 		if (!loadScript(name, persistent, script)) return false;
 		scripts.push_back(script);
-		return false;
+		return true;
 	}
 
 	void ScriptHandler::loadPersistentScripts() {
@@ -198,11 +197,11 @@ namespace scripting {
 		}
 	}
 
-	std::vector<std::string> ScriptHandler::getLoadedScripts() const {
-		std::vector<std::string> loaded;
+    std::vector<std::pair<std::string, bool>> ScriptHandler::getLoadedScripts() const {
+        std::vector<std::pair<std::string, bool>> loaded;
 		loaded.reserve(scripts.size());
-		for (auto itr = scripts.begin(); itr != scripts.end(); ++itr)
-			loaded.push_back((*itr)->getName());
+        for (auto itr = scripts.begin(); itr != scripts.end(); ++itr)
+            loaded.emplace_back((*itr)->getName(), (*itr)->isPersistent());
 		return loaded;
 	}
 

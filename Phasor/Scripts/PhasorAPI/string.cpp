@@ -1,3 +1,4 @@
+#include "string.h"
 #include "../phasor-lua.hpp"
 
 int l_tokenizestring(lua_State* L) {

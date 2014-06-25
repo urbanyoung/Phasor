@@ -220,8 +220,8 @@ namespace lua {
 
 	namespace callback {
 		struct CFunc {
-			const char* name;
-			lua_CFunction func;
+            lua_CFunction func;
+			const char* name;			
 		};
 
 		template <class Itr>

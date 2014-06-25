@@ -1,3 +1,4 @@
+#include "output.h"
 #include "../phasor-lua.hpp"
 #include "../../Phasor/Globals.h"
 #include "../../Phasor/Halo/Server/Server.h"
