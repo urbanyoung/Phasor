@@ -13,7 +13,8 @@ int l_resolveplayer(lua_State* L) {
 int l_rresolveplayer(lua_State* L) {
 	size_t machineId;
 	std::tie(machineId) = phlua::callback::getArguments<size_t>(L, __FUNCTION__);
-	halo::s_player* player = halo::game::getPlayerFromRconId(machineId);
+    // note the -1
+	halo::s_player* player = halo::game::getPlayerFromRconId(machineId-1);
 
 	if (player)
 		return phlua::callback::pushReturns(L, std::make_tuple(player->memory_id));
@@ -58,7 +59,7 @@ int l_getname(lua_State* L) {
 int l_gethash(lua_State* L) {
 	halo::s_player* player;
 	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
-	return phlua::callback::pushReturns(L, std::make_tuple(player->hash));
+	return phlua::callback::pushReturns(L, std::make_tuple(std::cref(player->hash)));
 }
 
 int l_getteamsize(lua_State* L) {
