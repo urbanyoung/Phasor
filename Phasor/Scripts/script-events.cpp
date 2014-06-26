@@ -6,37 +6,36 @@
 #include "PhasorAPI/damagelookup.h"
 
 namespace scripting {
-	namespace events {
-
-		const std::vector<std::string> eventList
-		{
-			"OnScriptUnload",
-			"OnTeamChange",
-			"OnServerCommand",
-			"OnServerCommandAttempt",
-			"OnNewGame",
-			"OnGameEnd",
-			"OnBanCheck",
-			"OnClientUpdate",
-			"OnPlayerJoin",
-			"OnPlayerLeave",
-			"OnTeamDecision",
-			"OnPlayerSpawn",
-			"OnPlayerSpawnEnd",
-			"OnObjectCreation",
-			"OnObjectCreationAttempt",
-			"OnWeaponAssignment",
-			"OnObjectInteraction",
-			"OnDamageLookup",
-			"OnDamageApplication",
-			"OnServerChat",
-			"OnVehicleEntry",
-			"OnVehicleEject",
-			"OnPlayerKill",
-			"OnKillMultiplier",
-			"OnWeaponReload",
-			"OnNameRequest"
-		};
+    namespace events {
+        const std::vector<std::string> eventList
+        {
+        "OnScriptUnload",
+        "OnTeamChange",
+        "OnServerCommand",
+        "OnServerCommandAttempt",
+        "OnNewGame",
+        "OnGameEnd",
+        "OnBanCheck",
+        "OnClientUpdate",
+        "OnPlayerJoin",
+        "OnPlayerLeave",
+        "OnTeamDecision",
+        "OnPlayerSpawn",
+        "OnPlayerSpawnEnd",
+        "OnObjectCreation",
+        "OnObjectCreationAttempt",
+        "OnWeaponAssignment",
+        "OnObjectInteraction",
+        "OnDamageLookup",
+        "OnDamageApplication",
+        "OnServerChat",
+        "OnVehicleEntry",
+        "OnVehicleEject",
+        "OnPlayerKill",
+        "OnKillMultiplier",
+        "OnWeaponReload",
+        "OnNameRequest"
+        };
 
         inline bool default_true(const boost::optional<std::tuple<bool>>& allow) {
             return allow ? std::get<0>(*allow) : true;
@@ -66,14 +65,14 @@ namespace scripting {
         {
             auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnServerCommandAttempt",
                                                        std::make_tuple(std::cref(player),
-                                                       std::cref(command), 
+                                                       std::cref(command),
                                                        std::cref(password)));
             return default_true(allow);
         }
-        
+
         void OnNewGame(const std::string& map)
         {
-            scripting::Caller<>::call(*g_Scripts, "OnNewGame", 
+            scripting::Caller<>::call(*g_Scripts, "OnNewGame",
                                       std::make_tuple(std::cref(map)));
         }
 
@@ -87,17 +86,17 @@ namespace scripting {
         bool OnBanCheck(const std::string& hash, const std::string& ip)
         {
             auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnServerCommand",
-                                                       std::make_tuple(std::cref(hash), 
+                                                       std::make_tuple(std::cref(hash),
                                                        std::cref(ip)));
             return default_true(allow);
         }
-        
+
         void OnClientUpdate(const halo::s_player& player)
         {
             scripting::Caller<>::call(*g_Scripts, "OnClientUpdate",
                                       std::make_tuple(std::cref(player)));
         }
-        
+
         void OnPlayerJoin(const halo::s_player& player)
         {
             scripting::Caller<>::call(*g_Scripts, "OnPlayerJoin",
@@ -113,7 +112,7 @@ namespace scripting {
         size_t OnTeamDecision(size_t team)
         {
             auto result = scripting::Caller<size_t>::call(*g_Scripts, "OnTeamDecision",
-                                                        std::make_tuple(team));
+                                                          std::make_tuple(team));
             return result ? std::get<0>(*result) : team;
         }
 
@@ -139,15 +138,15 @@ namespace scripting {
                                                              bool& allow)
         {
             boost::optional<std::tuple<size_t>> result;
-            
+
             if (info->player_ident.valid()) {
-               result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
-                                                        std::make_tuple(info->map_id, info->parent, info->player_ident.slot));
+                result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
+                                                         std::make_tuple(info->map_id, info->parent, info->player_ident.slot));
             } else {
                 result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
                                                          std::make_tuple(info->map_id, info->parent, lua::types::Nil()));
             }
-            
+
             if (!result) return boost::none;
             size_t x = std::get<0>(*result);
             if (x == 0 || x == 1) {
@@ -176,7 +175,7 @@ namespace scripting {
                                  halo::ident mapid)
         {
             auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnObjectInteraction",
-                                                       std::make_tuple(std::cref(player), 
+                                                       std::make_tuple(std::cref(player),
                                                        objid, mapid));
             return default_true(allow);
         }
@@ -194,17 +193,16 @@ namespace scripting {
             return default_true(allow);
         }
 
-
         bool OnDamageApplication(const halo::s_damage_info* dmg, halo::ident receiver,
                                  const halo::s_hit_info* hit, bool backtap)
         {
             auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnDamageApplication",
-                                                          std::make_tuple(receiver,
-                                                          dmg->causer, dmg->tag_id,
-                                                          hit->desc, backtap));
+                                                       std::make_tuple(receiver,
+                                                       dmg->causer, dmg->tag_id,
+                                                       hit->desc, backtap));
             return default_true(allow);
         }
-        
+
         bool OnServerChat(const halo::s_player* sender, const std::string& msg,
                           halo::server::chat::e_chat_types& type, std::string& change_msg)
         {
@@ -232,9 +230,9 @@ namespace scripting {
                 // can only change type of non-server chat
                 if (chat_type >= (size_t)e_chat_types::kChatAll &&
                     chat_type < (size_t)e_chat_types::kChatPrivate)
-                {                    
+                {
                     type = (e_chat_types)chat_type;
-                }                    
+                }
             }
 
             return allow;
@@ -246,10 +244,10 @@ namespace scripting {
             halo::objects::s_halo_object* obj = (halo::objects::s_halo_object*)
                 halo::objects::GetObjectAddress(veh_id);
             if (!obj) return true;
-            
+
             auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnVehicleEntry", relevant,
-                                                        std::make_tuple(std::cref(player), veh_id,
-                                                        seat, obj->map_id));
+                                                       std::make_tuple(std::cref(player), veh_id,
+                                                       seat, obj->map_id));
             return default_true(allow);
         }
 
@@ -292,8 +290,8 @@ namespace scripting {
 
             result = scripting::Caller<
                 boost::optional<bool>,
-                boost::optional<std::string>>::call(*g_Scripts, "OnNameRequest", 
-                        std::make_tuple(std::cref(hash), std::cref(name)));
+                boost::optional<std::string>>::call(*g_Scripts, "OnNameRequest",
+                std::make_tuple(std::cref(hash), std::cref(name)));
 
             if (result) {
                 auto allow = std::get<0>(*result);
@@ -308,5 +306,5 @@ namespace scripting {
 
             return true;
         }
-	}
+    }
 }

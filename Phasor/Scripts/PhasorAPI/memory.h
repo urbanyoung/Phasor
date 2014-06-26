@@ -6,38 +6,37 @@
  *	you shouldn't include address_offset and the address used will be
  *	exactly what's specified and not (base_address + address_offset) as
  *	in previous versions.
- *	
+ *
  *	For example, the below are equivalent
  *	\code
- *		readbyte(12345, 5) 
+ *		readbyte(12345, 5)
  *		readbyte(12350)
  *	\endcode
- *	
+ *
  *	### DEFINITIONS
- *		- \c byte - 8 bit positive integer from [0,255] 	
- *		- \c char - 8 bit integer from [-128, 127]	
- *		- \c word - 16 bit positive integer from [0,65,535]	
- *		- \c short - 16 bit integer from [-32768, 32767]	
- *		- \c dword - 32 bit positive integer from [0, 4,294,967,295]	
- *		- \c int - 32 bit integer from [-2147483648, 2147483647]	
- *		- \c float - 32 bit floating point number from [-3.402823466e+38, 3.402823466e+38]	
+ *		- \c byte - 8 bit positive integer from [0,255]
+ *		- \c char - 8 bit integer from [-128, 127]
+ *		- \c word - 16 bit positive integer from [0,65,535]
+ *		- \c short - 16 bit integer from [-32768, 32767]
+ *		- \c dword - 32 bit positive integer from [0, 4,294,967,295]
+ *		- \c int - 32 bit integer from [-2147483648, 2147483647]
+ *		- \c float - 32 bit floating point number from [-3.402823466e+38, 3.402823466e+38]
  *		- \c double - 64 bit floating point number from[-1.7976931348623158e+308, 1.7976931348623158e+308]
- *		
+ *
  * \remark
  * All string operations are limited to 80 characters at max.
- * 
+ *
  * \remark
  * bit offsets have changed from the previous version of Phasor. In the old
- * one, bit 0 was the most significant bit whereas now it is the least 
- * significant bit. 
- * 
+ * one, bit 0 was the most significant bit whereas now it is the least
+ * significant bit.
+ *
  *	\addtogroup PhasorAPI
  *	@{
-*/
+ */
 #include "../../Common/Common.h"
 #include "../phasor-lua.hpp"
-#include <list> 
-
+#include <list>
 
 /*! \brief Reads a bit from the specified memory address.
  *
@@ -45,7 +44,7 @@
  *	\param [address_offset] The offset relative to base_address.
  *	\param bit_offset Which bit to read (starting at 0)
  *  \return The specified bit (ie 1 or 0)
- * 
+ *
  * 	Example usage:
  *  \code
  *		local b = readbit(0x12345678, 3, 2) -- read the 3rd bit at 0x12345678 + 3
@@ -59,7 +58,7 @@ int l_readbit(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\return The byte read.
- *	
+ *
  *	Example usage:
  *  \code
  *		local b = readbyte(0x12345678, 3) -- read the byte at 0x12345678 + 3
@@ -73,7 +72,7 @@ int l_readbyte(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\return The char read.
- *	
+ *
  *	Example usage:
  *  \code
  *		local b = readchar(0x12345678, 3) -- read the char at 0x12345678 + 3
@@ -87,7 +86,7 @@ int l_readchar(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\return The word read
- *	
+ *
  *	Example usage:
  *  \code
  *		local b = readword(0x12345678, 3) -- read the word at 0x12345678 + 3
@@ -101,7 +100,7 @@ int l_readword(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\return The short read
- *	
+ *
  *	Example usage:
  *  \code
  *		local b = readshort(0x12345678, 3) -- read the short at 0x12345678 + 3
@@ -115,7 +114,7 @@ int l_readshort(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\return The dword read
- *	
+ *
  *	Example usage:
  *  \code
  *		local b = readdword(0x12345678, 3) -- read the dword at 0x12345678 + 3
@@ -129,7 +128,7 @@ int l_readdword(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\return The integer read
- *	
+ *
  *	Example usage:
  *  \code
  *		local b = readint(0x12345678, 3) -- read the int at 0x12345678 + 3
@@ -143,7 +142,7 @@ int l_readint(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\return The word read
- *	
+ *
  *	Example usage:
  *  \code
  *		local b = readfloat(0x12345678, 3) -- read the float at 0x12345678 + 3
@@ -157,7 +156,7 @@ int l_readfloat(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\return The double read
- *	
+ *
  *	Example usage:
  *  \code
  *		local b = readdouble(0x12345678, 3) -- read the double at 0x12345678 + 3
@@ -177,7 +176,7 @@ int l_readstring(lua_State* L);
  *
  *	\param address The memory address to read from.
  *	\param [length] The number of wide characters to read.
- *	
+ *
  *	\remark
  *	A wide string is one where each character is two bytes wide. Lua
  *	can't handle wide strings so Phasor will convert to a narrow string
@@ -191,13 +190,13 @@ int l_readwidestring(lua_State* L);
  *	\param [address_offset] The offset relative to base_address.
  *	\param bit_offset Which bit to write (starting at 0)
  *	\param data The value to write (1 or 0)
- * 
+ *
  * 	Example usage:
  *  \code
  *		writebit(0x12345678, 3, 1, 0) -- write 0 to the 2nd bit at 0x12345678 + 3
  *		writebit(0x12345678, 1, 0) -- write 0 to the 2nd bit at 0x12345678
  *  \endcode
- *  
+ *
  *  \remark
  *  \c bit_offset starts at 0 for the least significant bit
  */
@@ -208,7 +207,7 @@ int l_writebit(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\param data The data to write
- *	
+ *
  *	Example usage:
  *  \code
  *		writebyte(0x12345678, 3, 50) -- write 50 to 0x12345678 + 3
@@ -222,7 +221,7 @@ int l_writebyte(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\param data The data to write
- *	
+ *
  *	Example usage:
  *  \code
  *		writechar(0x12345678, 3, -41) -- write -41 to 0x12345678 + 3
@@ -236,7 +235,7 @@ int l_writechar(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\param data The data to write
- *	
+ *
  *	Example usage:
  *  \code
  *		writeword(0x12345678, 3, 50) -- write 50 to 0x12345678 + 3
@@ -250,7 +249,7 @@ int l_writeword(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\param data The data to write
- *	
+ *
  *	Example usage:
  *  \code
  *		writeshort(0x12345678, 3, 50) -- write 50 to 0x12345678 + 3
@@ -264,7 +263,7 @@ int l_writeshort(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\param data The data to write
- *	
+ *
  *	Example usage:
  *  \code
  *		writedword(0x12345678, 3, 0xbadf00d) -- write 0xbadf00d to 0x12345678 + 3
@@ -278,7 +277,7 @@ int l_writedword(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\param data The data to write
- *	
+ *
  *	Example usage:
  *  \code
  *		writeint(0x12345678, 3, -501) -- write -501 to 0x12345678 + 3
@@ -292,7 +291,7 @@ int l_writeint(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\param data The data to write
- *	
+ *
  *	Example usage:
  *  \code
  *		writefloat(0x12345678, 3, 1.5) -- write 1.5 to 0x12345678 + 3
@@ -306,7 +305,7 @@ int l_writefloat(lua_State* L);
  *	\param base_address The base address to use.
  *	\param [address_offset] The offset relative to base_address.
  *	\param data The data to write
- *	
+ *
  *	Example usage:
  *  \code
  *		writedouble(0x12345678, 3, 1.5) -- write 1.5 to 0x12345678 + 3
@@ -336,10 +335,10 @@ int l_writestring(lua_State* L);
  * \code
  *		writewidestring(0x12345678, "write this string.")
  * \endcode
- * 
- * \remark 
+ *
+ * \remark
  * Lua doesn't support wide strings, so Phasor will convert the provided
- * narrow string to wide before writing it. 
+ * narrow string to wide before writing it.
  */
 int l_writewidestring(lua_State* L);
 

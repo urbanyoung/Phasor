@@ -50,8 +50,8 @@ namespace halo {
 }
 
 namespace scripting {
-	namespace events {
-		extern const std::vector<std::string> eventList;
+    namespace events {
+        extern const std::vector<std::string> eventList;
 
         /*! \brief Called when a player has changed team.
         *
@@ -285,8 +285,8 @@ namespace scripting {
         *		function OnWeaponAssignment(player, owner_id, order, weap_id)
         *	\endcode
         */
-        boost::optional<halo::ident> OnWeaponAssignment(const halo::s_player* player, 
-                                                        halo::ident owner, 
+        boost::optional<halo::ident> OnWeaponAssignment(const halo::s_player* player,
+                                                        halo::ident owner,
                                                         size_t order,
                                                         halo::ident weap_id);
 
@@ -516,6 +516,5 @@ namespace scripting {
         bool OnNameRequest(const std::string& hash,
                            const std::string& name,
                            boost::optional<std::string>& changeTo);
-
-	}
+    }
 }

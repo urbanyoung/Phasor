@@ -1,11 +1,11 @@
 /*! \file string.h
  * \brief String manipulation functions provided by Phasor
- * 
+ *
  * These implementations have changed since the previous Phasor.\n
  * Both \c tokenizestring and \c tokenizecmdstring return an array of strings
  * and as such \c gettoken, \c getcmdtoken, \c gettokencount, \c getcmdtokencount have
  * been removed.
- * 
+ *
  *	\addtogroup PhasorAPI
  *	@{
  */
@@ -19,7 +19,7 @@
  * \param str The string to tokenize
  * \param delim A string of characters to split at.
  * \return A table consisting of the split strings.
- * 
+ *
  * Example usage:
  * \code
  *		local tokens = tokenizestring("Split at each space,and,comma", " ,")
@@ -45,7 +45,7 @@ int l_tokenizestring(lua_State* L);
  *
  * \param str The string to tokenize
  * \return A table consisting of the split strings.
- * 
+ *
  * Example usage:
  * \code
  *		local tokens = tokenizecmdstring("Split at space \"but not while in quotes\" ok?")

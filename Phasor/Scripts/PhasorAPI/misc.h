@@ -1,6 +1,6 @@
 /*! \file misc.h
  * \brief Miscellaneous scripting functions that aren't Halo related.
- * 
+ *
  *	\addtogroup PhasorAPI
  *	@{
  */
@@ -11,7 +11,7 @@
 /*! \brief Get the current cpu ticks.
  *
  * \return The current cpu ticks
- * 
+ *
  * Example usage:
  * \code
  *		local ticks = gettick()
@@ -24,7 +24,7 @@ int l_getticks(lua_State* L);
  * \param min The minimum value to generate (inclusive)
  * \param max The maximum value to generate (exclusive)
  * \return The number generated
- * 
+ *
  * Example usage:
  * \code
  *		local ticks = getrandomnumber(0, 10) -- between 0 and 10

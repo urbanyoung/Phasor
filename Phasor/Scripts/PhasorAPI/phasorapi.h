@@ -4,5 +4,5 @@
 #include <vector>
 
 namespace phasorapi {
-	extern std::vector<lua::callback::CFunc> funcTable;
+    extern std::vector<lua::callback::CFunc> funcTable;
 }

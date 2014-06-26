@@ -320,38 +320,38 @@ int l_applydmgtag(lua_State* L);
 *
 *	Example usage:
 *	\code
-        local player_objid = getplayerobjectid(player)
-        if (player_objid ~= nil) then
-            local m_object = getobject(player_objid)
-            local vx = readfloat(m_object + 0x230)
-            local vy = readfloat(m_object + 0x234)
-            local vz = readfloat(m_object + 0x238)
-            local px, py, pz = getobjectcoords(player_objid)
+local player_objid = getplayerobjectid(player)
+if (player_objid ~= nil) then
+local m_object = getobject(player_objid)
+local vx = readfloat(m_object + 0x230)
+local vy = readfloat(m_object + 0x234)
+local vz = readfloat(m_object + 0x238)
+local px, py, pz = getobjectcoords(player_objid)
 
-            -- We want to fire the ray from the player's head
-            -- So we need to find the standing/crouch height for the map
-            -- You should move this little bit of code into OnNewGame and
-            -- save the values.
-            local bipd_id = readdword(m_object)
-            local bipd_tag = gettagaddress(bipd_id)
-            local bipd_data = readdword(bipd_tag + 0x14)
-            local standing_height = readfloat(bipd_data + 0x400)
-            local crouch_height = readfloat(bipd_data + 0x404)
+-- We want to fire the ray from the player's head
+-- So we need to find the standing/crouch height for the map
+-- You should move this little bit of code into OnNewGame and
+-- save the values.
+local bipd_id = readdword(m_object)
+local bipd_tag = gettagaddress(bipd_id)
+local bipd_data = readdword(bipd_tag + 0x14)
+local standing_height = readfloat(bipd_data + 0x400)
+local crouch_height = readfloat(bipd_data + 0x404)
 
-            local crouch_state = readfloat(m_object + 0x50c)
-            if (crouch_state == 0) then pz = pz + standing_height
-            else pz = pz + (crouch_height * crouch_state) end
+local crouch_state = readfloat(m_object + 0x50c)
+if (crouch_state == 0) then pz = pz + standing_height
+else pz = pz + (crouch_height * crouch_state) end
 
-            local hit,x,y,z,objid = halointersect(1000, px, py, pz, vx, vy, vz, player_objid)
-            if (hit == true) then
-                hprintf(string.format("The hit location is (%.2f, %.2f, %.2f)", x,y,z))
-                if (objid ~= nil) then
-                    hprintf(string.format("The player is looking at object %08X", objid))
-                end
-            else
-                hprintf("no hit")
-            end
-        end
+local hit,x,y,z,objid = halointersect(1000, px, py, pz, vx, vy, vz, player_objid)
+if (hit == true) then
+hprintf(string.format("The hit location is (%.2f, %.2f, %.2f)", x,y,z))
+if (objid ~= nil) then
+hprintf(string.format("The player is looking at object %08X", objid))
+end
+else
+hprintf("no hit")
+end
+end
 *	\endcode
 */
 int l_halointersect(lua_State* L);
