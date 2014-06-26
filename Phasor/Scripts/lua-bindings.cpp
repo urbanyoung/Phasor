@@ -128,7 +128,7 @@ namespace lua {
 	}
 
 	void State::doFile(const std::string& file) {
-		if (luaL_dofile(L, file.c_str())) {
+        if (luaL_dofile(L, file.c_str())) {
 			std::string error = lua_tostring(L, -1);
 			lua_pop(L, 1);
 			throw Exception(error);

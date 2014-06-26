@@ -18,11 +18,13 @@ namespace scripting {
         std::unordered_set<std::string> blockedFunctions;
 
         static const char thisKey;
+        
+        PhasorScript(bool persistent, std::string file, std::string name)
+            : file(std::move(file)), name(std::move(name)), persistent(persistent)
+        {}
 
         template <class Itr>
-        PhasorScript(bool persistent, std::string file, std::string name, Itr itr, const Itr end)
-            : file(std::move(file)), name(std::move(name)), persistent(persistent)
-        {
+        void load(Itr itr, const Itr end) {
             // store reference to this so we can access it from script callbacks..
             lua_pushlightuserdata(state, (void *)&thisKey); //key
             lua_pushlightuserdata(state, this); // value
@@ -36,7 +38,10 @@ namespace scripting {
 
         template <class Itr>
         static std::shared_ptr<PhasorScript> create(bool persistent, std::string file, std::string name, Itr itr, const Itr end) {
-            return std::shared_ptr<PhasorScript>(new PhasorScript(persistent, std::move(file), std::move(name), itr, end));
+            // Some API functions need a valid shared_ptr before they will work, so split the construction
+            std::shared_ptr<PhasorScript> p(new PhasorScript(persistent, std::move(file), std::move(name)));
+            p->load(itr, end);
+            return p;
         }
 
         static PhasorScript& get(lua_State* L);
