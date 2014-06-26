@@ -10,9 +10,9 @@
 #include "string.h"
 
 namespace phasorapi {
-	std::vector<lua::callback::CFunc> funcTable
+    std::vector<lua::callback::CFunc> funcTable
     {
-        // Memory related functions: see memory.h
+    // Memory related functions: see memory.h
         {l_readbit, "readbit"},
         {l_readbyte, "readbyte"},
         {l_readchar, "readchar"},
@@ -52,6 +52,7 @@ namespace phasorapi {
         {l_getname, "getname"},
         {l_gethash, "gethash"},
         {l_getteamsize, "getteamsize"},
+        {l_getplayerobject, "getplayerobject"},
         {l_getplayerobjectid, "getplayerobjectid"},
         {l_isadmin, "isadmin"},
         {l_getadminlvl, "getadminlvl"},
@@ -91,8 +92,8 @@ namespace phasorapi {
         {l_gettagaddress, "gettagaddress"},
         {l_halointersect, "halointersect"},
         // Alias related functions: see alias_script.h
-       // {l_alias_search, "alias_search"},
-       // {l_alias_hash, "alias_hash"},
+        // {l_alias_search, "alias_search"},
+        // {l_alias_hash, "alias_hash"},
         // Timer related functions: see scripttimers.h
         {l_registertimer, "registertimer"},
         {l_removetimer, "removetimer"},
@@ -107,5 +108,5 @@ namespace phasorapi {
         {l_applydmgtag, "applydmgtag"},
         // Script management functions
         //{l_raiseerror, "raiseerror"},
-	};
+};
 }

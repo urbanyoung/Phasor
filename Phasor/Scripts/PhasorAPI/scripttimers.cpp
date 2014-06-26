@@ -10,15 +10,15 @@ private:
     std::weak_ptr<scripting::PhasorScript> state;
     std::string func;
     lua::types::AnyRef userdata;
-    size_t count;    
+    size_t count;
 
 public:
-    ScriptTimer(std::weak_ptr<scripting::PhasorScript> state, 
+    ScriptTimer(std::weak_ptr<scripting::PhasorScript> state,
                 std::string func, lua::types::AnyRef userdata,
                 size_t delay)
-        : TimerEvent(delay),
-        state(std::move(state)), func(std::move(func)), 
-        userdata(std::move(userdata)), count(0)
+                : TimerEvent(delay),
+                state(std::move(state)), func(std::move(func)),
+                userdata(std::move(userdata)), count(0)
     {}
 
     virtual bool OnExpiration(Timers&) override {
@@ -33,8 +33,8 @@ public:
         auto result = scripting::Caller<bool>::call_single(*g_Scripts, *s, func, std::make_tuple(GetID(), ++count, std::cref(userdata)));
 
         if (result) reset = std::get<0>(*result);
-        
-        return reset;     
+
+        return reset;
     }
 };
 
