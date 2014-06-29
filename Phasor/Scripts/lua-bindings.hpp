@@ -292,9 +292,10 @@ namespace lua {
 
         template <class PushType, typename... Types>
         int pushReturns(lua_State* L, const std::tuple<Types...>& t) {
+			int top = lua_gettop(L);
             PushType p(L);
             TupleHelpers::citerate<TupleHelpers::forward_comparator, PushType>(t, p);
-            return sizeof...(Types);
+			return lua_gettop(L) - top;
         }
     }
 }
