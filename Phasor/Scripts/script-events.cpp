@@ -85,7 +85,7 @@ namespace scripting {
         /*! \todo make function so scripts can check if hash-checking is on */
         bool OnBanCheck(const std::string& hash, const std::string& ip)
         {
-            auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnServerCommand",
+            auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnBanCheck",
                                                        std::make_tuple(std::cref(hash),
                                                        std::cref(ip)));
             return default_true(allow);
