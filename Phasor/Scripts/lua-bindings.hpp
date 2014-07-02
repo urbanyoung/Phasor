@@ -295,7 +295,7 @@ namespace lua {
             int top = lua_gettop(L);
             PushType p(L);
             TupleHelpers::citerate<TupleHelpers::forward_comparator, PushType>(t, p);
-            return top - lua_gettop(L);
+            return lua_gettop(L) - top;
         }
     }
 }
