@@ -175,7 +175,12 @@ namespace scripting {
             if ((*itr)->getName() == script) {
                 bool persistent = (*itr)->isPersistent();
                 unloadScript(**itr);
-                return loadScript(script, persistent, *itr);
+                if (!loadScript(script, persistent, *itr)) {
+                    itr = scripts.erase(itr);
+                    return false;
+                } else {
+                    return true;
+                }
             }
         }
         return false;
@@ -183,13 +188,17 @@ namespace scripting {
 
     void ScriptHandler::reloadAllScripts(bool includePersistent)
     {
-        for (auto itr = scripts.begin(); itr != scripts.end(); ++itr) {
+        for (auto itr = scripts.begin(); itr != scripts.end(); ) {
             bool persistent = (*itr)->isPersistent();
             if (includePersistent || !persistent) {
                 std::string name = (*itr)->getName();
                 unloadScript(**itr);
-                loadScript(name, persistent, *itr);
-            }
+                if (!loadScript(name, persistent, *itr)) {
+                    itr = scripts.erase(itr);
+                    continue;
+                }
+            } 
+            ++itr;
         }
     }
 
