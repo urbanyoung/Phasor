@@ -1,4 +1,4 @@
-Phasor
+Phasor (Wizard Mod)
 ======
 
 Phasor is a server extension for Halo PC/CE which focuses on customization of gameplay.
