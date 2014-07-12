@@ -67,7 +67,7 @@ namespace scripting {
                                                        std::make_tuple(std::cref(player),
                                                        std::cref(command),
                                                        std::cref(password)));
-            return default_true(allow);
+            return default_false(allow);
         }
 
         void OnNewGame(const std::string& map)

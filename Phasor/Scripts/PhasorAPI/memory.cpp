@@ -146,8 +146,10 @@ int writeNumber(lua_State* L, const char* f) {
     if (offset) address += *offset;
 
     T x;
-    if (!checkLimits<T>(value, x))
-        luaL_error(L, "value (%.0f) outside of type's range", value);
+    if (!checkLimits<T>(value, x)) {
+        auto f = boost::format("invalid write: value (%.0f) outside of type's range") % value;
+        luaL_error(L, "%s", f.str().c_str());
+    }
 
     writeData(L, (void*)address, &x, sizeof(T));
     return 0;
