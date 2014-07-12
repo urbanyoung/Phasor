@@ -286,13 +286,22 @@ DWORD teamsel_ret = 0, selection = 0;
 // Codecave for team selection
 __declspec(naked) void OnTeamSelection_CC()
 {
-	__asm
-	{
-		pop teamsel_ret
+    __asm
+    {
+        pop teamsel_ret
 
-		// ecx can be modified safely (see FUNC_TEAMSELECT)
-		mov ecx, FUNC_TEAMSELECT
-		call ecx
+        CMP BYTE PTR DS: [EBX+0x1E], 0xFF
+        jne skip_halo_team_assign
+        // Player doesn't have previous team, find one.
+        // ecx can be modified safely (see FUNC_TEAMSELECT)
+        mov ecx, FUNC_TEAMSELECT
+        call ecx
+        jmp phasor_team_assign
+skip_halo_team_assign:
+        // use previous team
+        mov al, byte ptr ds: [EBX+0x1E]
+
+phasor_team_assign:
 
 		pushad
 
