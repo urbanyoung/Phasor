@@ -21,6 +21,15 @@ class ScriptTimer : public TimerEvent {
           userdata(std::move(userdata)),
           count(0) {}
 
+    ~ScriptTimer() {
+        {
+            auto s = state.lock();
+            if (!s) {
+                userdata.invalidate();
+            }
+        }
+    }
+
     virtual bool OnExpiration(Timers&) override {
         auto s = state.lock();
         if (!s) {
