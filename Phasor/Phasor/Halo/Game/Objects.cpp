@@ -300,7 +300,7 @@ ASSIGNMENT_FAILED:
 	bool EnterVehicle(s_player& player, ident m_vehicleId, DWORD seat)
 	{
 		s_halo_vehicle* vehicle = (s_halo_vehicle*)GetObjectAddress(m_vehicleId);
-		if (!vehicle) return false; 
+		if (!vehicle || vehicle->base.objectType != e_object_type::vehicle) return false; 
 
 		// set interaction info
 		player.mem->m_interactionObject = m_vehicleId;
