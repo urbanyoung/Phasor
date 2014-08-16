@@ -50,7 +50,7 @@ namespace scripting {
         {
             auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnTeamChange", relevant,
                                                        std::make_tuple(std::cref(player), old_team, new_team));
-            return default_true(allow);
+            return !relevant ? true : default_true(allow);
         }
 
         bool OnServerCommand(const halo::s_player* player, const std::string& command)
@@ -248,14 +248,14 @@ namespace scripting {
             auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnVehicleEntry", relevant,
                                                        std::make_tuple(std::cref(player), veh_id,
                                                        seat, obj->map_id));
-            return default_true(allow);
+            return !relevant ? true : default_true(allow);
         }
 
         bool OnVehicleEject(const halo::s_player& player, bool forceEjected)
         {
             auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnVehicleEject", !forceEjected,
                                                        std::make_tuple(std::cref(player)));
-            return default_true(allow);
+            return !forceEjected ? true : default_true(allow);
         }
 
         bool OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,
