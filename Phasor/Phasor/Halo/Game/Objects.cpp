@@ -260,7 +260,7 @@ namespace halo { namespace objects {
 		if (!biped->base.vehicleId.valid())	{
 			// make sure they passed a weapon
 			s_halo_weapon* weapon = (s_halo_weapon*)GetObjectAddress(weaponid);
-			if (!weapon) return false;
+			if (!weapon || weapon->base.objectType != e_object_type::weapon) return false;
 			
 			s_tag_entry* weap_tag = LookupTag(weapon->base.map_id);
 			if (weap_tag->tagType != TAG_WEAP) return false;
