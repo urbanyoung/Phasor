@@ -142,7 +142,7 @@ int l_getprofilepath(lua_State* L);
 /*! \brief Gets the server's current name
  *	\return The server's name
  *
- *	Exampe usage:
+ *	Example usage:
  *	\code
  *		local servername = getservername()
  *		hprintf(servername)
@@ -150,4 +150,24 @@ int l_getprofilepath(lua_State* L);
  */
 int l_getservername(lua_State* L);
 
+/*! \brief Sets the default lead for everyone in the server
+*	\param Lead (in milliseconds)
+*
+*	Example usage:
+*	\code
+*		setdefaultlead(33) -- Everyone will feel like they have 33 ping on the server.
+*	\endcode
+*/
+int l_setdefaultlead(lua_State* L);
+
+/*! \brief Sets a specific player's lead on the server
+*	\param Player id
+*	\param Lead (in milliseconds)
+*
+*	Example usage:
+*	\code
+*		setdefaultlead(16, 0) -- Player 16 will not have to lead.
+*	\endcode
+*/
+int l_setlead(lua_State* L);
 //! }@

@@ -6,14 +6,44 @@
 #include "Server/MapLoader.h"
 #include "Game/Objects.h"
 #include "Game/Damage.h"
+#include "Server/NoLead.h"
 
 using namespace halo;
 
 // Server function codecaves
 // ------------------------------------------------------------------------
 
+__declspec(naked) void OnMeh2() {
 
-// Codecave for timers, safer than creating threads (hooking console chceking routine)
+	__asm {
+		pushad
+		push ebx
+		call dUpdateObject
+		popad
+		mov eax, ebx
+		and eax, 0x0000FFFF
+		ret
+	}
+}
+
+__declspec(naked) void OnMeh() {
+
+	__asm {
+			//add esp, 4
+			mov eax, dword ptr ds : [0x671420]
+			mov cl, byte ptr ds : [eax + 0xC]
+
+			// ret in esp
+			pushad // adds 0x20 to stack
+			call dUpdateAllObjects
+			popad
+
+			//sub esp, 4
+			ret
+	}
+}
+
+// Codecave for timers, safer than creating threads (hooking console checking routine)
 DWORD consoleProc_ret = 0;
 __declspec(naked) void OnConsoleProcessing_CC()
 {	
@@ -286,13 +316,22 @@ DWORD teamsel_ret = 0, selection = 0;
 // Codecave for team selection
 __declspec(naked) void OnTeamSelection_CC()
 {
-	__asm
-	{
-		pop teamsel_ret
+    __asm
+    {
+        pop teamsel_ret
 
-		// ecx can be modified safely (see FUNC_TEAMSELECT)
-		mov ecx, FUNC_TEAMSELECT
-		call ecx
+        CMP BYTE PTR DS: [EBX+0x1E], 0xFF
+        jne skip_halo_team_assign
+        // Player doesn't have previous team, find one.
+        // ecx can be modified safely (see FUNC_TEAMSELECT)
+        mov ecx, FUNC_TEAMSELECT
+        call ecx
+        jmp phasor_team_assign
+skip_halo_team_assign:
+        // use previous team
+        mov al, byte ptr ds: [EBX+0x1E]
+
+phasor_team_assign:
 
 		pushad
 
@@ -452,6 +491,8 @@ __declspec(naked) void OnObjectCreationAttempt_CC()
 
 		mov eax, [ESP + 0x24]
 		push eax // creation description
+		mov eax, [ESP + 0x38]
+		push eax // player struct (if any)
 		call game::OnObjectCreationAttempt
 
 		cmp al, 1
@@ -921,7 +962,7 @@ __declspec(naked) void OnVehicleForceEject_CC()
 
 		pushad
 		push 1 // force eject
-		push ebx 
+		push ebx
 		call game::OnVehicleEject // false - don't eject
 
 		cmp al, 1
@@ -1216,6 +1257,9 @@ namespace halo
 
 		// Codecave used to decide the player's team
 		CreateCodeCave(CC_TEAMSELECTION, 5, OnTeamSelection_CC);
+
+		CreateCodeCave(CC_UPDATEALLOBJECTS, 8, OnMeh);
+		CreateCodeCave(CC_UPDATEOBJECT, 7, OnMeh2);
 
 		// Codecave for handling team changes
 		#ifdef PHASOR_PC

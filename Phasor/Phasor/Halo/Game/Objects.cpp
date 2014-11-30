@@ -2,6 +2,7 @@
 #include "../Addresses.h"
 #include "../../Globals.h"
 #include "../Server/Server.h"
+#include "Game.h"
 #include <array>
 #include <boost/optional.hpp>
 
@@ -260,14 +261,14 @@ namespace halo { namespace objects {
 		if (!biped->base.vehicleId.valid())	{
 			// make sure they passed a weapon
 			s_halo_weapon* weapon = (s_halo_weapon*)GetObjectAddress(weaponid);
-			if (!weapon) return false;
+			if (!weapon || weapon->base.objectType != e_object_type::weapon) return false;
 			
 			s_tag_entry* weap_tag = LookupTag(weapon->base.map_id);
 			if (weap_tag->tagType != TAG_WEAP) return false;
 
 			DWORD mask = player.getPlayerIdent();
 			ident playerObj = player.mem->object_id;
-
+			//test2
 			__asm
 			{
 				pushad
@@ -300,7 +301,7 @@ ASSIGNMENT_FAILED:
 	bool EnterVehicle(s_player& player, ident m_vehicleId, DWORD seat)
 	{
 		s_halo_vehicle* vehicle = (s_halo_vehicle*)GetObjectAddress(m_vehicleId);
-		if (!vehicle) return false; 
+		if (!vehicle || vehicle->base.objectType != e_object_type::vehicle) return false; 
 
 		// set interaction info
 		player.mem->m_interactionObject = m_vehicleId;
@@ -327,7 +328,7 @@ ASSIGNMENT_FAILED:
 	bool ExitVehicle(s_player& player)
 	{
 		if (!player.InVehicle()) return false;
-
+		game::OnVehicleEject(player.get_object(), true);
 		DWORD playerObj = player.mem->object_id;
 		__asm
 		{
@@ -336,6 +337,7 @@ ASSIGNMENT_FAILED:
 			call dword ptr ds:[FUNC_EJECTVEHICLE]
 			popad
 		}
+
 	}
 
 	void MoveObject(s_halo_object& object, const vect3d& pos)

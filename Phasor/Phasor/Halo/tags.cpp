@@ -33,6 +33,7 @@ namespace halo
 	{
 		s_tag_index_table_header* tag_table = *(s_tag_index_table_header**)ADDR_TAGTABLE;
 		if (tagId.slot > tag_table->entityCount) return 0;
+        if (tag_table->next_ptr[tagId.slot].id != tagId) return 0;
 		return &tag_table->next_ptr[tagId.slot];
 	}
 

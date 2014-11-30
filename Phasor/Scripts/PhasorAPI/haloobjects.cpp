@@ -115,8 +115,10 @@ int l_entervehicle(lua_State* L) {
         decltype(seat)
         >(L, __FUNCTION__);
 
-    if (!halo::objects::EnterVehicle(*player, vehicleId, seat))
-        return luaL_argerror(L, 2, "invalid vehicle id");
+    if (!halo::objects::EnterVehicle(*player, vehicleId, seat)) {
+        auto f = boost::format("invalid vehicle id %08x (either bad object or not a vehicle)") % vehicleId;
+        return luaL_argerror(L, 2, f.str().c_str());
+    }
     return 0;
 }
 

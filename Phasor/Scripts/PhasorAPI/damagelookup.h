@@ -44,7 +44,7 @@ int l_odl_receiver(lua_State* L);
 
 /*! \brief Can be used to change the type of damage which is being applied.
 *
-*	\param id object id of the damage tag to apply.
+*	\param id tag id of the damage tag to apply.
 *
 *	\remarks
 *	Will raise an error if \c id is not a damage (jpt!) tag.

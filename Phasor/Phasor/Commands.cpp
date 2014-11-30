@@ -61,6 +61,8 @@ namespace commands
 		cmd["sv_getobject"]			= &server::misc::sv_getobject;
 		cmd["sv_invis"]				= &server::misc::sv_invis;
 		cmd["sv_setspeed"]			= &server::misc::sv_setspeed;
+		cmd["sv_default_lead"]	= &server::misc::sv_default_lead;
+		cmd["sv_setlead"]			= &server::misc::sv_setlead;
 		cmd["sv_say"]				= &server::misc::sv_say;
 		cmd["sv_gethash"]			= &server::misc::sv_gethash;
 		cmd["sv_changeteam"]		= &server::misc::sv_changeteam;

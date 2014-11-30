@@ -17,6 +17,7 @@ namespace halo
 	// ------------------------------------------------------------------
 
 	#pragma pack(push, 1)
+
 	struct s_player_structure
 	{
 		WORD playerJoinCount; // 0x0000
@@ -41,7 +42,8 @@ namespace halo
 		BYTE playerNum; // 0x0064 player number used for rcon etc (ofc this is 0 based tho)
 		BYTE unk_PlayerNumberHigh; // 0x0065 just a guess
 		BYTE team_Again; // 0x0066
-		UNKNOWN(5);
+		BYTE player_id; // 0x0067
+		UNKNOWN(4);
 		float speed; // 0x006C
 		UNKNOWN(0x2c); 
 		WORD kills; // 0x009C
@@ -55,7 +57,14 @@ namespace halo
 		UNKNOWN(0x14e);
 	};
 	static_assert(sizeof(s_player_structure) == 0x0200, "bad");
+
 	#pragma pack(pop)
+
+	struct s_player_table
+	{
+		s_table_header header;
+		s_player_structure players[16];
+	};
 
 	struct s_player : private noncopyable
 	{

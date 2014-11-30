@@ -2,6 +2,7 @@
 #include "../Addresses.h"
 #include "../../../Common/Common.h"
 #include "Server.h"
+#include "NoLead.h"
 
 namespace halo { namespace server { namespace misc { 
 
@@ -157,6 +158,25 @@ namespace halo { namespace server { namespace misc {
 		float newSpeed = args.ReadFloat();
 		player.SetSpeed(newSpeed);
 		out << "The player's speed has been changed." << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_default_lead(void*,
+		commands::CArgParser& args, COutStream& out)
+	{
+		short lead = args.ReadInt();
+		default_lead = lead;
+		out << "The default lead has been set." << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_setlead(void*,
+		commands::CArgParser& args, COutStream& out)
+	{
+		halo::s_player& player = args.ReadPlayer();
+		short lead = args.ReadInt();
+		Player_Lead[player.memory_id] = lead;
+		out << "The player's lead has been set." << endl;
 		return e_command_result::kProcessed;
 	}
 
