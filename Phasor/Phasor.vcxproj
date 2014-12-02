@@ -138,6 +138,7 @@
     <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Server\MapVote.cpp" />
     <ClCompile Include="Phasor\Halo\Server\misc_cmds.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\NoLead.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Packet.cpp" />
     <ClCompile Include="Phasor\Halo\Server\ScriptLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Server.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="Phasor\Halo\Server\MapLoader.h" />
     <ClInclude Include="Phasor\Halo\Server\MapVote.h" />
     <ClInclude Include="Phasor\Halo\Server\misc_cmds.h" />
+    <ClInclude Include="Phasor\Halo\Server\NoLead.h" />
     <ClInclude Include="Phasor\Halo\Server\Packet.h" />
     <ClInclude Include="Phasor\Halo\Server\ScriptLoader.h" />
     <ClInclude Include="Phasor\Halo\Server\Server.h" />
