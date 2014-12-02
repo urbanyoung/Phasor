@@ -3,6 +3,7 @@
 #include "../../Common/Streams.h"
 #include "../../Common/noncopyable.h"
 #include "Halo.h"
+#include "../../Common/Types.h"
 #include "Game/Objects.h"
 #include "HaloStreams.h"
 #include <string>

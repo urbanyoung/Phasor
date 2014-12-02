@@ -149,9 +149,6 @@
     <ClCompile Include="Scripts\PhasorAPI\scripttimers.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Halo\Server\NoLead.cpp">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -372,18 +369,6 @@
     </ClInclude>
     <ClInclude Include="Scripts\PhasorAPI\scripttimers.h">
       <Filter>Scripting\PhasorAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Phasor\Halo\Server\PlayerInfo.h">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="Phasor\Halo\Server\PlayerHistory.h">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="Phasor\Halo\Server\NoLead.h">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="Phasor\Halo\Server\structs.h">
-      <Filter>Phasor\Halo\Server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
