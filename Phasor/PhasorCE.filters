@@ -1,0 +1,398 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Lua.cpp">
+      <Filter>Scripting\Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripting.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Common.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\FileIO.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\MyString.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Streams.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Threads.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Timers.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>Scripting\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\sqlitepp.cpp">
+      <Filter>Libraries\SQLite</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\Curl.cpp">
+      <Filter>Libraries\cURL</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\PhasorThread.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Directory.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Commands.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Admin.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\ThreadedLogging.cpp">
+      <Filter>Phasor\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Logging.cpp">
+      <Filter>Phasor\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\GameLogging.cpp">
+      <Filter>Phasor\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\CrashHandler.cpp">
+      <Filter>Phasor</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Addresses.cpp">
+      <Filter>Phasor\Halo\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Hooks.cpp">
+      <Filter>Phasor\Halo\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Game\Game.cpp">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Server.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Gametypes.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\ScriptLoader.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\AFKDetection.cpp">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Player.cpp">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Game\Objects.cpp">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Halo.cpp">
+      <Filter>Phasor\Halo</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\LogHandler.cpp">
+      <Filter>Phasor\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Alias.cpp">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\HaloStreams.cpp">
+      <Filter>Phasor\Halo</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\PhasorAPI.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\memory.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\output.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Packet.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Chat.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\api_readers.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\playerinfo.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\string.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\misc.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\misc_halo.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptingEvents.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\haloobjects.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\alias_script.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\tags.cpp">
+      <Filter>Phasor\Halo</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\MapVote.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\scripttimers.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="CallHelper.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="PhasorAPI\damagelookup.cpp">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Game\Damage.cpp">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\misc_cmds.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{7079a9e2-e462-46a5-8823-5b8a37a83223}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting\Lua">
+      <UniqueIdentifier>{c84675ec-0b57-47b5-941d-c121e818861f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{9f3ef030-3b45-4918-b148-807ef010790b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting\Manager">
+      <UniqueIdentifier>{e75bf6ba-31fe-4005-be76-52be7291a71b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting\PhasorAPI">
+      <UniqueIdentifier>{2ecdf623-1246-4bc4-beaf-6b7470b864cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{84ce3342-9772-488a-82b1-75bb013069a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\SQLite">
+      <UniqueIdentifier>{b79b28ae-4eac-429f-9faf-9704db66da51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\cURL">
+      <UniqueIdentifier>{bda8da5b-c6fc-4c0c-8db4-b8f13e524c81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor">
+      <UniqueIdentifier>{6de8fee8-ff2e-4593-b343-5581cfec9017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo">
+      <UniqueIdentifier>{ea62687a-5294-4b86-9ca2-86666feac676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Logging">
+      <UniqueIdentifier>{cdfbb3a9-9c9d-4223-8809-ef666c4c59e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo\Hooks">
+      <UniqueIdentifier>{5eb0009b-23ca-4edb-b0c5-2a22a9dd60ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo\Game">
+      <UniqueIdentifier>{e6bf1418-302f-4c3f-a0e4-1b14ceb5ed57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo\Player">
+      <UniqueIdentifier>{6b77bf64-17d4-456b-a2fa-31683f1c5952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Phasor\Halo\Server">
+      <UniqueIdentifier>{2c4ce1ef-ef16-43a7-a9e0-74925365f012}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Lua.h">
+      <Filter>Scripting\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripting.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\FileIO.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MyException.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MyString.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Streams.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Threads.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Timers.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Types.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>Scripting\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\sqlitepp.h">
+      <Filter>Libraries\SQLite</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\Curl.h">
+      <Filter>Libraries\cURL</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\PhasorThread.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Directory.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Commands.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Admin.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\ThreadedLogging.h">
+      <Filter>Phasor\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Logging.h">
+      <Filter>Phasor\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\GameLogging.h">
+      <Filter>Phasor\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\CrashHandler.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Addresses.h">
+      <Filter>Phasor\Halo\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Hooks.h">
+      <Filter>Phasor\Halo\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Player.h">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Chat.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Game.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Objects.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\AFKDetection.h">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Alias.h">
+      <Filter>Phasor\Halo\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Server.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\MapLoader.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\MapVote.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Gametypes.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\ScriptLoader.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Version.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Globals.h">
+      <Filter>Phasor</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\vect3d.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Halo.h">
+      <Filter>Phasor\Halo</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\LogHandler.h">
+      <Filter>Phasor\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\noncopyable.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\HaloStreams.h">
+      <Filter>Phasor\Halo</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\PhasorAPI.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\memory.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\output.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Packet.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Chat.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\playerinfo.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\api_readers.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\string.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\misc.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\misc_halo.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptingEvents.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\haloobjects.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\alias_script.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\tags.h">
+      <Filter>Phasor\Halo</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h" />
+    <ClInclude Include="PhasorAPI\scripttimers.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="CallHelper.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="PhasorAPI\damagelookup.h">
+      <Filter>Scripting\PhasorAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Game\Damage.h">
+      <Filter>Phasor\Halo\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\misc_cmds.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="phasor_includes.props" />
+  </ItemGroup>
+</Project>

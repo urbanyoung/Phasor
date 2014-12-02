@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite", "sqlite\sqlite.vcxproj", "{DFB5F9F9-3363-4345-A5A5-922E9AB45548}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl", "libcurl\libcurl.vcxproj", "{8D3373E1-3000-46DD-A043-E5B0FA5919C0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua5.22", "lua\lua.vcxproj", "{D55AF885-7878-4C5B-A0D1-B69E062FFF40}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Phasor", "Phasor\Phasor.vcxproj", "{FFC23927-B528-4548-A4E4-A8DEBDD449C0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strings", "strings\strings.vcxproj", "{F0FAD873-6B69-4C38-9B03-53EF6866052A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhasorCE", "Phasor\PhasorCE.vcxproj", "{F70F475A-E558-41C7-BAA4-8E2F6389ED68}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DFB5F9F9-3363-4345-A5A5-922E9AB45548}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DFB5F9F9-3363-4345-A5A5-922E9AB45548}.Debug|Win32.Build.0 = Debug|Win32
+		{DFB5F9F9-3363-4345-A5A5-922E9AB45548}.Release|Win32.ActiveCfg = Release|Win32
+		{DFB5F9F9-3363-4345-A5A5-922E9AB45548}.Release|Win32.Build.0 = Release|Win32
+		{8D3373E1-3000-46DD-A043-E5B0FA5919C0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8D3373E1-3000-46DD-A043-E5B0FA5919C0}.Debug|Win32.Build.0 = Debug|Win32
+		{8D3373E1-3000-46DD-A043-E5B0FA5919C0}.Release|Win32.ActiveCfg = Release|Win32
+		{8D3373E1-3000-46DD-A043-E5B0FA5919C0}.Release|Win32.Build.0 = Release|Win32
+		{D55AF885-7878-4C5B-A0D1-B69E062FFF40}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D55AF885-7878-4C5B-A0D1-B69E062FFF40}.Debug|Win32.Build.0 = Debug|Win32
+		{D55AF885-7878-4C5B-A0D1-B69E062FFF40}.Release|Win32.ActiveCfg = Release|Win32
+		{D55AF885-7878-4C5B-A0D1-B69E062FFF40}.Release|Win32.Build.0 = Release|Win32
+		{FFC23927-B528-4548-A4E4-A8DEBDD449C0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FFC23927-B528-4548-A4E4-A8DEBDD449C0}.Debug|Win32.Build.0 = Debug|Win32
+		{FFC23927-B528-4548-A4E4-A8DEBDD449C0}.Release|Win32.ActiveCfg = Release|Win32
+		{FFC23927-B528-4548-A4E4-A8DEBDD449C0}.Release|Win32.Build.0 = Release|Win32
+		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Debug|Win32.Build.0 = Debug|Win32
+		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Release|Win32.ActiveCfg = Release|Win32
+		{F0FAD873-6B69-4C38-9B03-53EF6866052A}.Release|Win32.Build.0 = Release|Win32
+		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Debug|Win32.Build.0 = Debug|Win32
+		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Release|Win32.ActiveCfg = Release|Win32
+		{F70F475A-E558-41C7-BAA4-8E2F6389ED68}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

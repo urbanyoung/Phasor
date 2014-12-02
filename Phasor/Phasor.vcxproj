@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FFC23927-B528-4548-A4E4-A8DEBDD449C0}</ProjectGuid>
+    <RootNamespace>Phasor</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft Visual Studio 12.0\boost_1_57_0\boost_1_57_0;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
+    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio 12.0\boost_1_57_0\boost_1_57_0;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS; PHASOR_PC; BUILD_DEBUG</PreprocessorDefinitions>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <EnablePREfast>false</EnablePREfast>
+      <DisableSpecificWarnings>4610;4512;4510;4239</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS; PHASOR_PC;BUILD_RELEASE</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libcurl\libcurl.vcxproj">
+      <Project>{8d3373e1-3000-46dd-a043-e5b0fa5919c0}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\lua\lua.vcxproj">
+      <Project>{d55af885-7878-4c5b-a0d1-b69e062fff40}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\sqlite\sqlite.vcxproj">
+      <Project>{dfb5f9f9-3363-4345-a5a5-922e9ab45548}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Common\Common.cpp" />
+    <ClCompile Include="Common\FileIO.cpp" />
+    <ClCompile Include="Common\MyString.cpp" />
+    <ClCompile Include="Common\Streams.cpp" />
+    <ClCompile Include="Common\Threads.cpp" />
+    <ClCompile Include="Common\Timers.cpp" />
+    <ClCompile Include="Libraries\Curl.cpp" />
+    <ClCompile Include="Libraries\sqlitepp.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Phasor\Admin.cpp" />
+    <ClCompile Include="Phasor\Commands.cpp" />
+    <ClCompile Include="Phasor\CrashHandler.cpp" />
+    <ClCompile Include="Phasor\Directory.cpp" />
+    <ClCompile Include="Phasor\GameLogging.cpp" />
+    <ClCompile Include="Phasor\Halo\Addresses.cpp" />
+    <ClCompile Include="Phasor\Halo\AFKDetection.cpp" />
+    <ClCompile Include="Phasor\Halo\Alias.cpp" />
+    <ClCompile Include="Phasor\Halo\Game\Damage.cpp" />
+    <ClCompile Include="Phasor\Halo\Game\Game.cpp" />
+    <ClCompile Include="Phasor\Halo\Game\Objects.cpp" />
+    <ClCompile Include="Phasor\Halo\Halo.cpp" />
+    <ClCompile Include="Phasor\Halo\HaloStreams.cpp" />
+    <ClCompile Include="Phasor\Halo\Hooks.cpp" />
+    <ClCompile Include="Phasor\Halo\Player.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\Chat.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\Gametypes.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\MapVote.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\misc_cmds.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\NoLead.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\Packet.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\ScriptLoader.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\Server.cpp" />
+    <ClCompile Include="Phasor\Halo\tags.cpp" />
+    <ClCompile Include="Phasor\Logging.cpp" />
+    <ClCompile Include="Phasor\LogHandler.cpp" />
+    <ClCompile Include="Phasor\PhasorThread.cpp" />
+    <ClCompile Include="Phasor\ThreadedLogging.cpp" />
+    <ClCompile Include="Scripts\lua-bindings.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\damagelookup.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\haloobjects.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\memory.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\misc.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\misc_halo.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\output.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\phasorapi.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\playerinfo.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\scripttimers.cpp" />
+    <ClCompile Include="Scripts\PhasorAPI\string.cpp" />
+    <ClCompile Include="Scripts\script-events.cpp" />
+    <ClCompile Include="Scripts\scripting.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\Common.h" />
+    <ClInclude Include="Common\FileIO.h" />
+    <ClInclude Include="Common\is_container.hpp" />
+    <ClInclude Include="Common\MyException.h" />
+    <ClInclude Include="Common\MyString.h" />
+    <ClInclude Include="Common\noncopyable.h" />
+    <ClInclude Include="Common\Streams.h" />
+    <ClInclude Include="Common\Threads.h" />
+    <ClInclude Include="Common\Timers.h" />
+    <ClInclude Include="Common\tuple-iterate.hpp" />
+    <ClInclude Include="Common\Types.h" />
+    <ClInclude Include="Common\vect3d.h" />
+    <ClInclude Include="Libraries\Curl.h" />
+    <ClInclude Include="Libraries\sqlitepp.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="Phasor\Admin.h" />
+    <ClInclude Include="Phasor\Commands.h" />
+    <ClInclude Include="Phasor\CrashHandler.h" />
+    <ClInclude Include="Phasor\Directory.h" />
+    <ClInclude Include="Phasor\GameLogging.h" />
+    <ClInclude Include="Phasor\Globals.h" />
+    <ClInclude Include="Phasor\Halo\Addresses.h" />
+    <ClInclude Include="Phasor\Halo\AFKDetection.h" />
+    <ClInclude Include="Phasor\Halo\Alias.h" />
+    <ClInclude Include="Phasor\Halo\Game\Chat.h" />
+    <ClInclude Include="Phasor\Halo\Game\Damage.h" />
+    <ClInclude Include="Phasor\Halo\Game\Game.h" />
+    <ClInclude Include="Phasor\Halo\Game\Objects.h" />
+    <ClInclude Include="Phasor\Halo\Halo.h" />
+    <ClInclude Include="Phasor\Halo\HaloStreams.h" />
+    <ClInclude Include="Phasor\Halo\Hooks.h" />
+    <ClInclude Include="Phasor\Halo\Player.h" />
+    <ClInclude Include="Phasor\Halo\Server\Chat.h" />
+    <ClInclude Include="Phasor\Halo\Server\Gametypes.h" />
+    <ClInclude Include="Phasor\Halo\Server\MapLoader.h" />
+    <ClInclude Include="Phasor\Halo\Server\MapVote.h" />
+    <ClInclude Include="Phasor\Halo\Server\misc_cmds.h" />
+    <ClInclude Include="Phasor\Halo\Server\NoLead.h" />
+    <ClInclude Include="Phasor\Halo\Server\Packet.h" />
+    <ClInclude Include="Phasor\Halo\Server\PlayerHistory.h" />
+    <ClInclude Include="Phasor\Halo\Server\PlayerInfo.h" />
+    <ClInclude Include="Phasor\Halo\Server\ScriptLoader.h" />
+    <ClInclude Include="Phasor\Halo\Server\Server.h" />
+    <ClInclude Include="Phasor\Halo\Server\structs.h" />
+    <ClInclude Include="Phasor\Halo\tags.h" />
+    <ClInclude Include="Phasor\Logging.h" />
+    <ClInclude Include="Phasor\LogHandler.h" />
+    <ClInclude Include="Phasor\PhasorThread.h" />
+    <ClInclude Include="Phasor\ThreadedLogging.h" />
+    <ClInclude Include="Phasor\Version.h" />
+    <ClInclude Include="Scripts\lua-bindings.hpp" />
+    <ClInclude Include="Scripts\phasor-lua.hpp" />
+    <ClInclude Include="Scripts\PhasorAPI\damagelookup.h" />
+    <ClInclude Include="Scripts\PhasorAPI\haloobjects.h" />
+    <ClInclude Include="Scripts\PhasorAPI\memory.h" />
+    <ClInclude Include="Scripts\PhasorAPI\misc.h" />
+    <ClInclude Include="Scripts\PhasorAPI\misc_halo.h" />
+    <ClInclude Include="Scripts\PhasorAPI\output.h" />
+    <ClInclude Include="Scripts\PhasorAPI\phasorapi.h" />
+    <ClInclude Include="Scripts\PhasorAPI\playerinfo.h" />
+    <ClInclude Include="Scripts\PhasorAPI\scripttimers.h" />
+    <ClInclude Include="Scripts\PhasorAPI\string.h" />
+    <ClInclude Include="Scripts\script-events.h" />
+    <ClInclude Include="Scripts\scripting.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
