@@ -9,13 +9,8 @@
 #include "../../Scripts/script-events.h"
 #include <assert.h>
 
-namespace halo 
+namespace halo
 {
-	struct s_player_table
-	{
-		s_table_header header;
-		s_player_structure players[16];
-	};
 
 	s_player::s_player(int memory_id) : memory_id(memory_id), sv_killed(false),
 		force_entered(false)

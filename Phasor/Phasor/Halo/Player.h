@@ -72,7 +72,7 @@ namespace halo
 		// cbf with the rest
 		UNKNOWN(0x14e);
 	};
-	static_assert(sizeof(s_player_structure) <= 0x0200, "bad");
+	static_assert(sizeof(s_player_structure) == 0x0200, "bad");
 
 	#pragma pack(pop)
 
