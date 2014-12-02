@@ -1,14 +1,11 @@
 Phasor (Wizard Mod)
 ======
 
-Phasor is a server extension for Halo PC/CE which focuses on customization of gameplay.
+Welcome to my phasor mod. Stuff on here will be general fixes that oxide couldn't be bothered with.
 
-Features:
-  - Scripting system which allows deep customization of gameplay.
-  - Inactive player detection and kicking.
-  - Alias system for tracking who joins your server.
-  - Map voting system
-  - New server commands
-  - Secure, hash based admin system.
-  - Logging of game events
-  - Security fixes.
+Fixes/Additions:
+  - OnVehicleEject now called when exitvehicle() is called.
+  - No longer says 'script already loaded' in scriptlogs.
+  - OnObjectCreationAttempt now passes the player argument (instead of the parent player).
+  - Added setlead() and setdefaultlead() that will be used when phasor gets its nolead.
+  - All Halo structures updated to have all the same variables as my address page here: http://pastebin.com/z4eqrjVN

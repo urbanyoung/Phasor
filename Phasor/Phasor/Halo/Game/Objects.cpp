@@ -268,7 +268,7 @@ namespace halo { namespace objects {
 
 			DWORD mask = player.getPlayerIdent();
 			ident playerObj = player.mem->object_id;
-			//test2
+
 			__asm
 			{
 				pushad

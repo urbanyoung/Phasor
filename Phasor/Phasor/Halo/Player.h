@@ -22,7 +22,7 @@ namespace halo
 	{
 		WORD playerJoinCount; // 0x0000
 		WORD localClient; // 0x0002 always FF FF on a dedi in Halo is 00 00 if its your player
-		wchar_t playerName[11]; //0x0004
+		wchar_t playerName[11]; //0x0004 it's actually only 11 not 12
 		UNKNOWN(2); // 0x001A (some index)
 		UNKNOWN(4); // 0x001C only seen FF FF FF FF
 		BYTE team; // 0x0020
