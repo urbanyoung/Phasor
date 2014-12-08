@@ -4,7 +4,7 @@
 #include "../../Phasor/Globals.h"
 #include "../../Phasor/Directory.h"
 #include "../../Phasor/Halo/Server/Server.h"
-#include "../../Phasor/Halo/Server/Nolead.h"
+#include "../../Phasor/Halo/Server/LeadControl.h"
 
 int l_changeteam(lua_State* L) {
     halo::s_player* player;

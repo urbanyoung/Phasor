@@ -79,7 +79,7 @@ namespace halo
 		bool operator!=(e_tag_types type);
 		char* GetString(char out[5]);
 	};
-	static_assert(sizeof(s_tag_type) == 0x4, "bad");
+	static_assert(sizeof(s_tag_type) == 0x4, "sizeof(s_tag_type) == 0x4");
 
 	// Structure of the tag header (entry in tag table)
 	struct s_tag_entry
@@ -91,7 +91,7 @@ namespace halo
 		void* metaData; // data for this tag
 		UNKNOWN(8);
 	};
-	static_assert(sizeof(s_tag_entry) == 0x20, "bad");
+	static_assert(sizeof(s_tag_entry) == 0x20, "sizeof(s_tag_entry) == 0x20");
 
 	// Structure of tag index table
 	struct s_tag_index_table_header
@@ -106,7 +106,7 @@ namespace halo
 		unsigned long readSize;
 		UNKNOWN(4);
 	};
-	static_assert(sizeof(s_tag_index_table_header) == 0x28, "bad");
+	static_assert(sizeof(s_tag_index_table_header) == 0x28, "sizeof(s_tag_index_table_header) == 0x28");
 
 	struct s_object_info
 	{

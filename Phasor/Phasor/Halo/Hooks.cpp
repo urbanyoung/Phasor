@@ -6,14 +6,29 @@
 #include "Server/MapLoader.h"
 #include "Game/Objects.h"
 #include "Game/Damage.h"
-#include "Server/NoLead.h"
+#include "Server/LeadControl.h"
 
 using namespace halo;
 
 // Server function codecaves
 // ------------------------------------------------------------------------
 
-__declspec(naked) void OnMeh2() {
+__declspec(naked) void oUpdateAllObjects() {
+
+	__asm {
+		mov eax, dword ptr ds : [0x671420]
+		mov cl, byte ptr ds : [eax + 0xC]
+
+		// ret in esp
+		pushad // adds 0x20 to stack
+		call dUpdateAllObjects
+		popad
+
+		ret
+	}
+}
+
+__declspec(naked) void oUpdateObject() {
 
 	__asm {
 		pushad
@@ -23,23 +38,6 @@ __declspec(naked) void OnMeh2() {
 		mov eax, ebx
 		and eax, 0x0000FFFF
 		ret
-	}
-}
-
-__declspec(naked) void OnMeh() {
-
-	__asm {
-			//add esp, 4
-			mov eax, dword ptr ds : [0x671420]
-			mov cl, byte ptr ds : [eax + 0xC]
-
-			// ret in esp
-			pushad // adds 0x20 to stack
-			call dUpdateAllObjects
-			popad
-
-			//sub esp, 4
-			ret
 	}
 }
 
@@ -1258,8 +1256,8 @@ namespace halo
 		// Codecave used to decide the player's team
 		CreateCodeCave(CC_TEAMSELECTION, 5, OnTeamSelection_CC);
 
-		CreateCodeCave(CC_UPDATEALLOBJECTS, 8, OnMeh);
-		CreateCodeCave(CC_UPDATEOBJECT, 7, OnMeh2);
+		CreateCodeCave(CC_UPDATEALLOBJECTS, 8, oUpdateAllObjects);
+		CreateCodeCave(CC_UPDATEOBJECT, 7, oUpdateObject);
 
 		// Codecave for handling team changes
 		#ifdef PHASOR_PC

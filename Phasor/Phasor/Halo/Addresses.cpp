@@ -64,9 +64,17 @@ unsigned long FUNC_NOTIFY_WEAPONPICKUP	= 0x00499EF0;
 unsigned long FUNC_ENTERVEHICLE			= 0x0049A2A0;
 unsigned long FUNC_EJECTVEHICLE			= 0x00580B00;
 unsigned long FUNC_HALOEXCEPTIONHANDLER = 0x005B036C;
-unsigned long FUNC_UPDATE_OBJECT		= 0x0052F2F0;
-unsigned long FUNC_UPDATE_ALL_OBJECT	= 0x0052BFE0;
-unsigned long FUNC_UPDATE_PHYSICS		= 0x0052F710;
+
+//don't feel like learning how phasor finds its sigs
+#ifdef PHASOR_PC
+	unsigned long FUNC_UPDATE_OBJECT		= 0x0052F2F0;
+	unsigned long FUNC_UPDATE_ALL_OBJECTS	= 0x0052BFE0;
+	unsigned long FUNC_UPDATE_PHYSICS		= 0x0052F710;
+#elif PHASOR_CE
+	unsigned long FUNC_UPDATE_OBJECT		= 0x004E2AD0;
+	unsigned long FUNC_UPDATE_ALL_OBJECTS	= 0x004DFB10;
+	unsigned long FUNC_UPDATE_PHYSICS		= 0x004E2EF0;
+#endif
 
 
 // ------------------------------------------------------------------------
@@ -107,8 +115,8 @@ unsigned long CC_VEHICLEFORCEEJECT = 0x0056E6CD;
 unsigned long CC_VEHICLEUSEREJECT = 0x0056E107;
 unsigned long CC_HALOPRINT = 0x004BA3F0;
 unsigned long CC_HALOBANCHECK = 0x00518820;
-unsigned long CC_UPDATEALLOBJECTS = 0x0052BFE0;
-unsigned long CC_UPDATEOBJECT = 0x0052F2FF;
+unsigned long CC_UPDATEOBJECT = FUNC_UPDATE_OBJECT + 0xF;
+unsigned long CC_UPDATEALLOBJECTS = FUNC_UPDATE_ALL_OBJECTS;
 
 // ------------------------------------------------------------------------
 //

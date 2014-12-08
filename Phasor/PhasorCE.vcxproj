@@ -134,10 +134,10 @@
     <ClCompile Include="Phasor\Halo\Player.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Chat.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Gametypes.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\LeadControl.cpp" />
     <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Server\MapVote.cpp" />
     <ClCompile Include="Phasor\Halo\Server\misc_cmds.cpp" />
-    <ClCompile Include="Phasor\Halo\Server\NoLead.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Packet.cpp" />
     <ClCompile Include="Phasor\Halo\Server\ScriptLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Server.cpp" />
@@ -170,7 +170,7 @@
     <ClInclude Include="Common\Threads.h" />
     <ClInclude Include="Common\Timers.h" />
     <ClInclude Include="Common\Types.h" />
-    <ClInclude Include="Common\vect3d.h" />
+    <ClInclude Include="Common\vect.h" />
     <ClInclude Include="Libraries\Curl.h" />
     <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="main.h" />
@@ -192,10 +192,10 @@
     <ClInclude Include="Phasor\Halo\Player.h" />
     <ClInclude Include="Phasor\Halo\Server\Chat.h" />
     <ClInclude Include="Phasor\Halo\Server\Gametypes.h" />
+    <ClInclude Include="Phasor\Halo\Server\LeadControl.h" />
     <ClInclude Include="Phasor\Halo\Server\MapLoader.h" />
     <ClInclude Include="Phasor\Halo\Server\MapVote.h" />
     <ClInclude Include="Phasor\Halo\Server\misc_cmds.h" />
-    <ClInclude Include="Phasor\Halo\Server\NoLead.h" />
     <ClInclude Include="Phasor\Halo\Server\Packet.h" />
     <ClInclude Include="Phasor\Halo\Server\ScriptLoader.h" />
     <ClInclude Include="Phasor\Halo\Server\Server.h" />

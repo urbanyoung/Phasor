@@ -22,7 +22,7 @@ namespace halo {
 	s_player* getPlayer(int index);
 	s_player* getPlayerFromRconId(unsigned int playerNum);
 	s_player* getPlayerFromAddress(s_player_structure* player);
-	s_player* getPlayerFromObject(objects::s_halo_biped* obj);
+	s_player* getPlayerFromObject(objects::s_halo_unit* obj);
 	s_player* getPlayerFromObjectId(ident id);
 	s_player* getPlayerFromHash(const std::string& hash);
 
@@ -77,7 +77,7 @@ namespace halo {
 	bool __stdcall OnVehicleEntry(DWORD playerId);
 
 	// Called when a player is being ejected from a vehicle
-	bool __stdcall OnVehicleEject(objects::s_halo_biped* m_playerObject, bool forceEjected);
+	bool __stdcall OnVehicleEject(objects::s_halo_unit* m_playerObject, bool forceEjected);
 
 	// Called when a player dies
 	bool __stdcall OnPlayerDeath(DWORD killerId, DWORD victimId, DWORD mode);

@@ -17,7 +17,7 @@ namespace halo { namespace server { namespace chat {
 		{
 		case kChatServer:
 			{
-				chat_data.player = -1;
+				chat_data.player = 0xFFFFFFFF;
 			} break;
 
 		case kChatAll:
@@ -62,13 +62,13 @@ namespace halo { namespace server { namespace chat {
 			case kChatVehicle:
 				{
 					// Check if the sender is in a vehicle
-					halo::objects::s_halo_biped* from_obj = from->get_object();
+					halo::objects::s_halo_unit* from_obj = from->get_object();
 					if (from_obj && from_obj->base.vehicleId.valid()) {
 						// send to players in this vehicle
 						for (int i = 0; i < 16; i++) {
 							s_player* player = game::getPlayer(i);
 							if (!player) continue;
-							halo::objects::s_halo_biped* obj = player->get_object();
+							halo::objects::s_halo_unit* obj = player->get_object();
 							if (obj && obj->base.vehicleId == from_obj->base.vehicleId)
 								AddPacketToPlayerQueue(player->mem->client_stuff.machineId, PACKET_QUEUE_PARAMS);		
 						}

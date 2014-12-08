@@ -12,7 +12,7 @@ namespace halo { namespace objects {
 	{
 		ident objid;
 		bool bRecycle;
-		vect3d pos, velocity, rotation, other;
+		vect3d pos, velocity, rotation, rotationalVel;
 		boost::optional<int> respawnTicks;
 		DWORD creationTicks;
 
@@ -23,7 +23,7 @@ namespace halo { namespace objects {
 			s_halo_object* obj = (s_halo_object*)GetObjectAddress(objid);
 			velocity = obj->velocity;
 			rotation = obj->rotation;
-			other = obj->someVector;
+			rotationalVel = obj->rotationalVel;
 			creationTicks = server::GetServerTicks();
 		}
 	};
@@ -39,10 +39,10 @@ namespace halo { namespace objects {
 		{
 			void*					data;
 			s_halo_object*	base;
-			s_halo_biped*			biped;
+			s_halo_unit*			biped;
 		};
 	};
-	static_assert(sizeof(s_halo_object_header) == 0x0c, "s_halo_object_entry incorrect");
+	BOOST_STATIC_ASSERT(sizeof(s_halo_object_header) == 0x0c);
 
 	struct s_halo_object_table
 	{
@@ -126,7 +126,7 @@ namespace halo { namespace objects {
                 DWORD expiration = obj->idle_timer + *phasorObj.respawnTicks;
 				if (expiration < server_ticks) {
                     if (phasorObj.bRecycle) {
-                        void* v1 = &phasorObj.other, *rotation = &phasorObj.rotation,
+                        void* v1 = &phasorObj.rotationalVel, *rotation = &phasorObj.rotation,
                             *position = &phasorObj.pos;
 
 						__asm {
@@ -254,7 +254,7 @@ namespace halo { namespace objects {
 	{
 		bool bSuccess = false;
 
-		s_halo_biped* biped = player.get_object();
+		s_halo_unit* biped = player.get_object();
 		if (!biped) return false;
 
 		// can't be in vehicle
@@ -343,7 +343,7 @@ ASSIGNMENT_FAILED:
 	void MoveObject(s_halo_object& object, const vect3d& pos)
 	{
 		object.location = pos;
-		object.stationary = false;
+		object.physics.stationary = false;
 	}
 
 	bool FindIntersection(const view_vector& view, const halo::ident& ignore_obj,
@@ -360,7 +360,7 @@ ASSIGNMENT_FAILED:
 			ident hit_obj;
 			UNKNOWN(0x28);
 		};
-		static_assert(sizeof(s_intersection_output) == 0x64, "bad s_intersection_test");
+		BOOST_STATIC_ASSERT(sizeof(s_intersection_output) == 0x64);
 
 		const vect3d* dir = &view.dir, *pos = &view.pos;
 		s_intersection_output result;

@@ -45,9 +45,9 @@ namespace halo
 		authenticating_hash = false;
 	}
 
-	objects::s_halo_biped* s_player::get_object() const
+	objects::s_halo_unit* s_player::get_object() const
 	{
-		return (objects::s_halo_biped*)objects::GetObjectAddress(mem->object_id);
+		return (objects::s_halo_unit*)objects::GetObjectAddress(mem->object_id);
 	}
 
 	void s_player::Kick() const

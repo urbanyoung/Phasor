@@ -27,6 +27,8 @@ namespace halo { namespace server { namespace misc {
 		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_setlead(void*,
 		commands::CArgParser& args, COutStream& out);
+	e_command_result sv_average_ping(void*, 
+		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_say(void*, 
 		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_gethash(void*, 

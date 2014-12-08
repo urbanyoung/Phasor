@@ -55,7 +55,7 @@ namespace halo
 		UNKNOWN(4);
 		void* data;
 	};
-	static_assert(sizeof(s_table_header) == 0x38, "s_table_header size incorrect");
+	static_assert(sizeof(s_table_header) == 0x38, "sizeof(s_table_header) == 0x38");
 
 	//! Represents an entry in Halo's connection player table
 	struct s_presence_item
@@ -68,7 +68,7 @@ namespace halo
 		BYTE team;
 		BYTE playerId;
 	};
-	static_assert(sizeof(s_presence_item) == 0x20, "incorrect s_presence_item");
+	static_assert(sizeof(s_presence_item) == 0x20, "sizeof(s_presence_item) == 0x20");
 
 #pragma pack(pop)
 }

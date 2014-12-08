@@ -30,8 +30,7 @@ namespace halo { namespace server { namespace maploader
 		s_script_list* scripts;
 		BYTE gametype_data[GAMET_BUFFER_SIZE];
 	};
-	static_assert(sizeof(s_mapcycle_entry) == CONST_MENTRY_SIZE, 
-		"sizeof(s_mapcycle_entry) != CONST_MENTRY_SIZE");
+	BOOST_STATIC_ASSERT(sizeof(s_mapcycle_entry) == CONST_MENTRY_SIZE);
 
 	struct s_mapcycle_header
 	{

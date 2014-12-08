@@ -149,7 +149,7 @@
     <ClCompile Include="Scripts\PhasorAPI\scripttimers.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Phasor\Halo\Server\NoLead.cpp">
+    <ClCompile Include="Phasor\Halo\Server\LeadControl.cpp">
       <Filter>Phasor\Halo\Server</Filter>
     </ClCompile>
   </ItemGroup>
@@ -294,9 +294,6 @@
     <ClInclude Include="Phasor\Globals.h">
       <Filter>Phasor</Filter>
     </ClInclude>
-    <ClInclude Include="Common\vect3d.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Phasor\Halo\Halo.h">
       <Filter>Phasor\Halo</Filter>
     </ClInclude>
@@ -373,8 +370,14 @@
     <ClInclude Include="Scripts\PhasorAPI\scripttimers.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor\Halo\Server\NoLead.h">
+    <ClInclude Include="dbgmsh.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\LeadControl.h">
       <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\vect.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

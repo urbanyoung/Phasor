@@ -11,6 +11,7 @@
 #include "../Server/Chat.h"
 #include "../Server/MapVote.h"
 #include <vector>
+#include "../Server/LeadControl.h"
 
 namespace halo { namespace game {
 	typedef std::unique_ptr<s_player> s_player_ptr;
@@ -60,7 +61,7 @@ namespace halo { namespace game {
 		return NULL;*/
 	}
 
-	s_player* getPlayerFromObject(objects::s_halo_biped* obj)
+	s_player* getPlayerFromObject(objects::s_halo_unit* obj)
 	{
 		for (int i = 0; i < 16; i++) {
 			if (PlayerList[i] && PlayerList[i]->get_object() == (void*)obj)
@@ -151,6 +152,8 @@ namespace halo { namespace game {
 				player->mem->playerName, WidenString(player->hash).c_str()
 				);
 
+			Player_Lead[playerId] = -1; // reset lead for next person
+			
 			scripting::events::OnPlayerLeave(*player);
 			PlayerList[playerId].reset();
 		}
@@ -244,8 +247,7 @@ namespace halo { namespace game {
 	{
 		bool allow = true;
 		halo::s_player* player = game::getPlayer(playerId);
-        objects::s_halo_object* obj = (objects::s_halo_object*)
-            objects::GetObjectAddress(m_ObjId);
+        objects::s_halo_object* obj = (objects::s_halo_object*)objects::GetObjectAddress(m_ObjId);
 		if (player && obj) {
 
 			allow = scripting::events::OnObjectInteraction(*player, m_ObjId, obj->map_id);		
@@ -259,7 +261,6 @@ namespace halo { namespace game {
 		player.afk->CheckPlayerActivity();
 	}
 
-
 	// Called when someone chats in the server
 	void __stdcall OnChat(server::chat::s_chat_data* chat)
 	{
@@ -272,6 +273,41 @@ namespace halo { namespace game {
 		if (length > 256) return;
 
 		std::wstring send_msg = chat->msg;
+
+		////////////////////////////////////////////////////////////////////////////////
+		//god I hope this works. It's super messy, but it 'should' work (hopefully).
+		COutStream& stream = *sender->chat_stream;
+
+		std::wstring word1 = send_msg.substr(0, 5);
+		std::wstring word2;
+		if (send_msg.length() >= 6) word2 = send_msg.substr(6);
+
+		int id = sender->memory_id;
+
+		if (word1 == L"/lead") {
+			if (word2 == L"1") {
+				Player_Lead[id] = -2;
+				stream << "Lead is now ON!" << endl;
+			}
+			else if (word2 == L"0") {
+				Player_Lead[id] = 0;
+				stream << "Lead is now OFF!" << endl;
+			}
+			else if (word2 != L"" && stoi(word2)) {
+				Player_Lead[id] = stoi(word2);
+				stream << "Your lead has been set to " << word2 << " ms" << endl;
+			}
+			else {
+				short plead = Player_Lead[id];
+				short dlead = default_lead;
+				if (plead == -2 || (plead == -1 && dlead == -1)) stream << "Your lead is currently: NORMAL" << endl;
+				else if (plead == -1 && dlead != -1) stream << "Your lead is currently: " << dlead << " ms." << endl; // we know plead isn't
+				else stream << "Your lead is currently: " << plead << " ms." << endl; // we know plead isn't -1 or -2
+
+			}
+			return;
+		}
+		/////////////////////////////////////////////////////////////////////////////////
 		
 		sender->afk->MarkPlayerActive();
 
@@ -295,7 +331,7 @@ namespace halo { namespace game {
 		s_player* player = getPlayer(playerId);
 		if (!player) return true;
 
-		objects::s_halo_biped* obj = (objects::s_halo_biped*)objects::GetObjectAddress(player->mem->object_id);
+		objects::s_halo_unit* obj = (objects::s_halo_unit*)objects::GetObjectAddress(player->mem->object_id);
 		if (!obj) return true;
 
 		return scripting::events::OnVehicleEntry(*player, player->mem->m_interactionObject,
@@ -303,7 +339,7 @@ namespace halo { namespace game {
 	}
 
 	// Called when a player is being ejected from a vehicle
-	bool __stdcall OnVehicleEject(objects::s_halo_biped* player_obj, bool forceEjected)
+	bool __stdcall OnVehicleEject(objects::s_halo_unit* player_obj, bool forceEjected)
 	{
 		s_player* player = getPlayerFromObject(player_obj);
 		if (!player) return true;

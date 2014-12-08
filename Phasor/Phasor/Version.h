@@ -10,5 +10,5 @@
 #define PHASOR_HALO_BUILD				L"CE"
 #define PHASOR_HALO_BUILDA				L"CE"
 #else
-static_assert(false, "define PHASOR_PC or PHASOR_CE");
+BOOST_STATIC_ASSERT(false, "define PHASOR_PC or PHASOR_CE");
 #endif

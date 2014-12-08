@@ -66,7 +66,7 @@ namespace phasorapi {
         // Miscellaneous halo functions: see misc_halo.h
         {l_changeteam, "changeteam"},
 		{l_setdefaultlead, "setdefaultlead"},
-		{l_setlead, "setdefaultlead"},
+		{l_setlead, "setlead"},
         {l_kill, "kill"},
         {l_applycamo, "applycamo"},
         {l_svcmd, "svcmd"},

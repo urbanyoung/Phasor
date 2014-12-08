@@ -2,7 +2,7 @@
 #include "../Addresses.h"
 #include "../../../Common/Common.h"
 #include "Server.h"
-#include "NoLead.h"
+#include "LeadControl.h"
 
 namespace halo { namespace server { namespace misc { 
 
@@ -157,7 +157,7 @@ namespace halo { namespace server { namespace misc {
 		halo::s_player& player = args.ReadPlayer();
 		float newSpeed = args.ReadFloat();
 		player.SetSpeed(newSpeed);
-		out << "The player's speed has been changed." << endl;
+		out << "The player's speed has been changed to " << newSpeed << endl;
 		return e_command_result::kProcessed;
 	}
 
@@ -166,7 +166,15 @@ namespace halo { namespace server { namespace misc {
 	{
 		short lead = args.ReadInt();
 		default_lead = lead;
-		out << "The default lead has been set." << endl;
+		out << "The default lead has been set to " << lead << endl;
+		return e_command_result::kProcessed;
+	}
+
+	e_command_result sv_average_ping(void*, commands::CArgParser& args, COutStream& out)
+	{
+		bool avgBool = args.ReadBool();
+		useAveragePing = avgBool;
+		out << "Use Average Ping for Lead: " << useAveragePing << endl;
 		return e_command_result::kProcessed;
 	}
 
@@ -176,7 +184,7 @@ namespace halo { namespace server { namespace misc {
 		halo::s_player& player = args.ReadPlayer();
 		short lead = args.ReadInt();
 		Player_Lead[player.memory_id] = lead;
-		out << "The player's lead has been set." << endl;
+		out << "The player's lead has been set to " << lead << endl;
 		return e_command_result::kProcessed;
 	}
 

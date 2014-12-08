@@ -2,7 +2,7 @@
 
 #include "Player.h"
 #include "../../Common/Timers.h"
-#include "../../Common/vect3d.h"
+#include "../../Common/vect.h"
 #include "Server/Server.h"
 
 namespace halo {

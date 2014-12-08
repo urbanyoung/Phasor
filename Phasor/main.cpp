@@ -19,6 +19,7 @@
 #include "Common/MyString.h"
 #include "Phasor/Halo/HaloStreams.h"
 #include "Phasor/Halo/Game/Game.h"
+#include "Phasor/Halo/Game/Objects.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 
@@ -46,12 +47,21 @@ void LocateDirectories();
 // Process any early Phasor commands.
 void LoadEarlyInit(COutStream& out);
 
+#define OFFSETOF(type, field)    ((unsigned long) &(((type *) 0)->field))
+
 // Called when the dll is loaded
 extern "C" __declspec(dllexport) void OnLoad()
 {
 	srand(GetTickCount());
 	g_PrintStream.reset(new halo::CHaloPrintStream());
 	*g_PrintStream << L"44656469636174656420746f206d756d2e2049206d69737320796f752e" << endl;
+	
+	// I use this to figure out where in the struct I'm off at.
+	/*while(true)
+	{
+		*g_PrintStream << (OFFSETOF(halo::objects::s_halo_biped, airborne_time) + 0x4CC) << endl;
+	}*/
+
 	LocateDirectories();
 	
 	// can't rename phasor log for startup errors via earlyinit
@@ -62,7 +72,7 @@ extern "C" __declspec(dllexport) void OnLoad()
 		PhasorLog << L"Initializing Phasor ... " << endl;	
 
 		PhasorLog << L"Locating Halo addresses and structures" << endl;
-		DWORD ticks = GetTickCount();
+		//DWORD ticks = GetTickCount();
 		Addresses::LocateAddresses();
 		//PhasorLog << L"Finished in " << GetTickCount() - ticks << " ticks" << endl;
 		
