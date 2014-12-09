@@ -135,13 +135,17 @@ namespace scripting {
         }
 
         boost::optional<halo::ident> OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
+                                                             const halo::s_player* player,
                                                              bool& allow)
         {
             boost::optional<std::tuple<size_t>> result;
 
-            if (info->player_ident.valid()) {
+            if (player != nullptr) {
                 result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
-                                                         std::make_tuple(info->map_id, info->parent, info->player_ident.slot));
+                                                          std::make_tuple(info->map_id, info->parent, player->memory_id));                
+            } else if (info->player_ident.valid()) {
+                result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
+                                                          std::make_tuple(info->map_id, info->parent, info->player_ident.slot));                
             } else {
                 result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
                                                          std::make_tuple(info->map_id, info->parent, lua::types::Nil()));
@@ -253,9 +257,9 @@ namespace scripting {
 
         bool OnVehicleEject(const halo::s_player& player, bool forceEjected)
         {
-            auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnVehicleEject", !forceEjected,
+            auto allow = scripting::Caller<bool>::call(*g_Scripts, "OnVehicleEject", forceEjected,
                                                        std::make_tuple(std::cref(player)));
-            return !forceEjected ? true : default_true(allow);
+            return default_true(allow);
         }
 
         bool OnPlayerKill(const halo::s_player& victim, const halo::s_player* killer,

@@ -461,6 +461,8 @@ __declspec(naked) void OnObjectCreationAttempt_CC()
 
 		mov eax, [ESP + 0x24]
 		push eax // creation description
+        mov eax, [ESP + 0x38]
+        push eax // player struct (if any)
 		call game::OnObjectCreationAttempt
 
 		cmp al, 1

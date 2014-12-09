@@ -202,11 +202,17 @@ namespace halo { namespace game {
 		scripting::events::OnObjectCreation(m_objectId);
 	}
 
-	bool __stdcall OnObjectCreationAttempt(objects::s_object_creation_disposition* creation_info)
+	bool __stdcall OnObjectCreationAttempt(s_player_structure* probably_not_a_player,
+                                           objects::s_object_creation_disposition* creation_info)
 	{
-		/*! \todo make sure the player is correct */
+        // note: this argument is most definitely wrong for every single call 
+        // that isn't creating a player. It probably isn't even a pointer
+        // most of the time. However, getPlayerFromAddress will validate
+        // it for us.
+        s_player* player = getPlayerFromAddress(probably_not_a_player);
+
 		bool allow = true;
-		boost::optional<halo::ident> changeId = scripting::events::OnObjectCreationAttempt(creation_info, allow);
+		boost::optional<halo::ident> changeId = scripting::events::OnObjectCreationAttempt(creation_info, player, allow);
 
 		if (!changeId) return allow;
 		else {
