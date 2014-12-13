@@ -6,7 +6,11 @@
 #include "../../sqlite/sqlite3.h"
 #include "../Common/Common.h"
 
+#ifndef BUILD_DEBUG
 #pragma comment(lib, "../release/sqlite.lib")
+#else
+#pragma comment(lib, "../debug/sqlite.lib")
+#endif
 
 namespace sqlite 
 {
