@@ -255,8 +255,8 @@ namespace scripting {
         *	\endcode
         */
 		boost::optional<halo::ident> OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
-															 const halo::s_player* player,
-															 bool& allow);
+                                                             const halo::s_player* player,
+                                                             bool& allow);
 
         /*! \brief Called when an object is being assigned their spawn weapons.
         *

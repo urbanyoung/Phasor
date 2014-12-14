@@ -205,15 +205,18 @@ namespace halo { namespace game {
 		scripting::events::OnObjectCreation(m_objectId);
 	}
 
-	bool __stdcall OnObjectCreationAttempt(s_player_structure* m_player, objects::s_object_creation_disposition* creation_info)
+	bool __stdcall OnObjectCreationAttempt(s_player_structure* probably_not_a_player,
+                                           objects::s_object_creation_disposition* creation_info)
 	{
-		/*! \todo make sure the player is correct */
-		bool allow = true;
+        // note: this argument is most definitely wrong for every single call 
+        // that isn't creating a player. It probably isn't even a pointer
+        // most of the time. However, getPlayerFromAddress will validate
+        // it for us.
+        s_player* player = getPlayerFromAddress(probably_not_a_player);
 
-		s_player* player = getPlayerFromAddress(m_player);
-		
+		bool allow = true;
 		boost::optional<halo::ident> changeId = scripting::events::OnObjectCreationAttempt(creation_info, player, allow);
-		
+
 		if (!changeId) return allow;
 		else {
 			
@@ -260,6 +263,7 @@ namespace halo { namespace game {
 		// scripts called from server
 		player.afk->CheckPlayerActivity();
 	}
+
 
 	// Called when someone chats in the server
 	void __stdcall OnChat(server::chat::s_chat_data* chat)

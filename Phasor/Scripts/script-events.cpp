@@ -135,19 +135,19 @@ namespace scripting {
         }
 
 		boost::optional<halo::ident> OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
-															 const halo::s_player* player,
+                                                             const halo::s_player* player,
 															 bool& allow)
         {
             boost::optional<std::tuple<size_t>> result;
 
-            
-			if (player != nullptr) {
-				result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
-														 std::make_tuple(info->map_id, info->parent, player->memory_id));
+            if (player != nullptr) {
+                result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
+                                                          std::make_tuple(info->map_id, info->parent, player->memory_id));                
+            } else if (info->player_ident.valid()) {
 			}
 			else if (info->player_ident.valid()) {
 				result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
-					std::make_tuple(info->map_id, info->parent, info->player_ident.slot));
+                                                          std::make_tuple(info->map_id, info->parent, info->player_ident.slot));                
 			}
 			else {
 				result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",

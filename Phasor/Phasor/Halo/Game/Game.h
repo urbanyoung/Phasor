@@ -58,7 +58,8 @@ namespace halo {
 	// Called when a weapon is created
 	void __stdcall OnObjectCreation(ident m_objectId);
 
-	bool __stdcall OnObjectCreationAttempt(s_player_structure* m_player, objects::s_object_creation_disposition* creation_info);
+	bool __stdcall OnObjectCreationAttempt(s_player_structure* player,
+                                           objects::s_object_creation_disposition* creation_info);
 
 	// Called when a weapon is assigned to an object
 	DWORD __stdcall OnWeaponAssignment(DWORD playerId, ident owningObjectId,
