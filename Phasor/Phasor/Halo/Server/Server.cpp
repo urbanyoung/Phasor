@@ -25,7 +25,7 @@ namespace halo { namespace server
 		char hash[0x20];
 		BYTE unk[0x2c];
 	};
-	BOOST_STATIC_ASSERT(sizeof(s_hash_data) == 0x50);
+	static_assert(sizeof(s_hash_data) == 0x50, "incorrect s_hash_data");
 
 	struct s_hash_list
 	{
@@ -33,7 +33,7 @@ namespace halo { namespace server
 		s_hash_list* next;
 		s_hash_list* prev; 
 	};
-	BOOST_STATIC_ASSERT(sizeof(s_hash_list) == 0x0C);
+	static_assert(sizeof(s_hash_list) == 0x0C, "incorrect s_hash_list");
 
 	struct s_command_cache
 	{
@@ -443,7 +443,7 @@ namespace halo { namespace server
 
 	void SetExecutingPlayer(halo::s_player* player)
 	{
-		if (!player) *(DWORD*)UlongToPtr(ADDR_RCONPLAYER) = 0xFFFFFFFF;
+		if (!player) *(DWORD*)UlongToPtr(ADDR_RCONPLAYER) = -1;
 		else *(DWORD*)UlongToPtr(ADDR_RCONPLAYER) = player->mem->client_stuff.machineId;
 	}
 

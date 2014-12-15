@@ -42,7 +42,6 @@ namespace halo { namespace objects {
 			s_halo_unit*			biped;
 		};
 	};
-	BOOST_STATIC_ASSERT(sizeof(s_halo_object_header) == 0x0c);
 
 	struct s_halo_object_table
 	{
@@ -337,7 +336,6 @@ ASSIGNMENT_FAILED:
 			call dword ptr ds:[FUNC_EJECTVEHICLE]
 			popad
 		}
-
 	}
 
 	void MoveObject(s_halo_object& object, const vect3d& pos)
@@ -360,7 +358,6 @@ ASSIGNMENT_FAILED:
 			ident hit_obj;
 			UNKNOWN(0x28);
 		};
-		BOOST_STATIC_ASSERT(sizeof(s_intersection_output) == 0x64);
 
 		const vect3d* dir = &view.dir, *pos = &view.pos;
 		s_intersection_output result;

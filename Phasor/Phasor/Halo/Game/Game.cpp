@@ -250,7 +250,8 @@ namespace halo { namespace game {
 	{
 		bool allow = true;
 		halo::s_player* player = game::getPlayer(playerId);
-        objects::s_halo_object* obj = (objects::s_halo_object*)objects::GetObjectAddress(m_ObjId);
+        objects::s_halo_object* obj = (objects::s_halo_object*)
+            objects::GetObjectAddress(m_ObjId);
 		if (player && obj) {
 
 			allow = scripting::events::OnObjectInteraction(*player, m_ObjId, obj->map_id);		

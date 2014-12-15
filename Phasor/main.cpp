@@ -19,7 +19,6 @@
 #include "Common/MyString.h"
 #include "Phasor/Halo/HaloStreams.h"
 #include "Phasor/Halo/Game/Game.h"
-#include "Phasor/Halo/Game/Objects.h"
 
 #define WAIT_AND_QUIT Sleep(10000); exit(1);
 

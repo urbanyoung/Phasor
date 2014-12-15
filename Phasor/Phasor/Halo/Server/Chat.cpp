@@ -17,7 +17,7 @@ namespace halo { namespace server { namespace chat {
 		{
 		case kChatServer:
 			{
-				chat_data.player = 0xFFFFFFFF;
+				chat_data.player = -1;
 			} break;
 
 		case kChatAll:

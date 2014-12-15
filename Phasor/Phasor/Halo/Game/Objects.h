@@ -193,7 +193,6 @@ struct s_halo_object // generic object header
     //	immune to backtap: 0xB4 (boolean) what? 0xB4 is object_type...
     //	0x107 | 8 == immune to all damage
 };
-BOOST_STATIC_ASSERT(sizeof(s_halo_object) == 0x1F4);
 
 struct s_unit_noninstant_actions
 {

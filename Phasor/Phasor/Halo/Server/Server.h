@@ -24,7 +24,7 @@ namespace server
 		WORD pad;
 		BYTE unk[0x148]; // handshake stuff etc, don't care atm.
 	};
-	BOOST_STATIC_ASSERT(sizeof(s_connection_info) == 0x150);
+	static_assert(sizeof(s_connection_info) == 0x150, "incorrect s_connection_info");
 
 	//! Represents an entry in Halo's machine table
 	struct s_machine_info
@@ -49,7 +49,6 @@ namespace server
 		char unk2[0x2c];
 #endif
 	};
-	BOOST_STATIC_ASSERT(sizeof(s_machine_info) == MACHINE_ENTRY_SIZE);
 
 	//! Server related items (name, gametype, players, machines)
 	struct s_server_info
@@ -77,7 +76,7 @@ namespace server
 		char password[9]; // don't forget to ensure null-termination
 		char command[65];
 	};
-	BOOST_STATIC_ASSERT(sizeof(s_command_input) == 74);
+	static_assert(sizeof(s_command_input) == 74, "incorrect s_command_input");
 
 	struct s_hash_validation {
 		DWORD machineId;

@@ -55,7 +55,6 @@ namespace halo
 		UNKNOWN(4);
 		void* data;
 	};
-	static_assert(sizeof(s_table_header) == 0x38, "sizeof(s_table_header) == 0x38");
 
 	//! Represents an entry in Halo's connection player table
 	struct s_presence_item

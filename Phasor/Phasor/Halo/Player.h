@@ -155,8 +155,6 @@ namespace halo
 		// rest are unknown
 		UNKNOWN(0x84);							// 0x017C
 	};
-	BOOST_STATIC_ASSERT(sizeof(s_player_structure) == 0x0200);
-
 	#pragma pack(pop)
 
 	struct s_player_table

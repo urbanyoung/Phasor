@@ -18,13 +18,11 @@ namespace halo {
 		float modifier1; // 1.0 default > 1.0 increases dmg.
 		UNKNOWN(8);
 	};
-	static_assert(sizeof(s_damage_info) == 0x50, "sizeof(s_damage_info) == 0x50");
 
 	struct s_hit_info {
 		char desc[0x20];
 		UNKNOWN(0x28); 	// doesn't seem to be that useful, mostly 0s with a few 1.0 floats.	
 	};
-	static_assert(sizeof(s_hit_info) == 0x48, "sizeof(s_hit_info) == 0x48");
 
 	struct s_damage_amount
 	{
@@ -43,7 +41,6 @@ namespace halo {
 		{
 		}
 	};
-	static_assert(sizeof(s_damage_amount) == 0x0C, "sizeof(s_damage_amount) == 0x0C");
 
 	struct s_damage_tag
 	{
@@ -55,7 +52,6 @@ namespace halo {
 		s_damage_amount amount;
 		UNKNOWN(0xC4);
 	};
-	static_assert(sizeof(s_damage_tag) == 0x2A0, "sizeof(s_damage_tag) == 0x2A0");
 	
 	#pragma pack(pop)
 	namespace damage_flags {

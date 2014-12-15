@@ -351,7 +351,7 @@ MAP_NOT_FOUND:
 				g_mapcycle_header->games = NULL;
 				g_mapcycle_header->cur_count = 0;
 				g_mapcycle_header->allocated_count = 0;
-				g_mapcycle_header->cur_count = 0xFFFFFFFF;
+				g_mapcycle_header->cur_count = -1;
 			}
 		}
 
@@ -494,7 +494,7 @@ MAP_NOT_FOUND:
 
 				// Make sure the index Halo's using is still valid
 				if (g_mapcycle_header->current >= cur_count)
-					g_mapcycle_header->current = 0xFFFFFFFF; // restart cycle
+					g_mapcycle_header->current = -1; // restart cycle
 				else if (g_mapcycle_header->current == index)
 					g_mapcycle_header->current--;
 			}
@@ -540,7 +540,7 @@ MAP_NOT_FOUND:
 			mapcycle_header.games = active->start;
 			mapcycle_header.cur_count = active->cur_count;
 			mapcycle_header.allocated_count = active->allocated_count;
-			mapcycle_header.current = 0xFFFFFFFF;
+			mapcycle_header.current = -1;
 			StartGame(active->start->map);
 		}
 

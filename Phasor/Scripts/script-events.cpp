@@ -134,9 +134,9 @@ namespace scripting {
                                       std::make_tuple(m_objectId));
         }
 
-		boost::optional<halo::ident> OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
+        boost::optional<halo::ident> OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
                                                              const halo::s_player* player,
-															 bool& allow)
+                                                             bool& allow)
         {
             boost::optional<std::tuple<size_t>> result;
 
@@ -144,15 +144,12 @@ namespace scripting {
                 result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
                                                           std::make_tuple(info->map_id, info->parent, player->memory_id));                
             } else if (info->player_ident.valid()) {
-			}
-			else if (info->player_ident.valid()) {
-				result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
+                result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
                                                           std::make_tuple(info->map_id, info->parent, info->player_ident.slot));                
-			}
-			else {
-				result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
-					std::make_tuple(info->map_id, info->parent, lua::types::Nil()));
-			}
+            } else {
+                result = scripting::Caller<size_t>::call(*g_Scripts, "OnObjectCreationAttempt",
+                                                         std::make_tuple(info->map_id, info->parent, lua::types::Nil()));
+            }
 
             if (!result) return boost::none;
             size_t x = std::get<0>(*result);
