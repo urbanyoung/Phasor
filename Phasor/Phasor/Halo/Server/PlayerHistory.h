@@ -17,7 +17,7 @@
 #pragma once
 
 #include <map>
-#include "structs.h"
+#include "../Game/Objects.h"
 //#include <Windows.h>
 
 //extern LARGE_INTEGER countsPerSecond;
@@ -25,7 +25,7 @@
 class OldData {
 public:
   int valid;
-  vect3 pos;
+  vect3d pos;
 };
 
 template<size_t MAX_ENTRIES>
@@ -57,23 +57,23 @@ public:
 
   
 
-  void addData(AObject* player) {
+  void addData(halo::objects::s_halo_object* player) {
     cleared = false;
     OldData data;
-    data.pos = player->World;
+    data.pos = player->location;
     data.valid = 1;
     previousPositions[nextWriteIndex] = data;
     nextWriteIndex = wrap(nextWriteIndex+1);
   }
 
-  void readDataIntoPlayer(int millisecondsInPast, AObject* player) {
+  void readDataIntoPlayer(int millisecondsInPast, halo::objects::s_halo_object* player) {
     size_t ticksInPast = size_t(double(millisecondsInPast)/1000.0 * 30.0);
     if(ticksInPast == 0) return;
     if(ticksInPast > MAX_ENTRIES-1) ticksInPast = MAX_ENTRIES-1;
     size_t index = wrap(nextWriteIndex - 1 - ticksInPast);
     const OldData& oldData = previousPositions[index];
     if(!oldData.valid) return;
-    player->World = oldData.pos;
+    player->location = oldData.pos;
 
   }
 

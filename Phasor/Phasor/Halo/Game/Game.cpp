@@ -298,10 +298,11 @@ namespace halo { namespace game {
 				Player_Lead[id] = 0;
 				stream << "Lead is now OFF!" << endl;
 			}
-			else if (word2 != L"" && stoi(word2)) {
+			//code doesn't work, crashes the server when lead isn't a number... I hate my life...
+			/*else if (word2 != L"" && stoi(word2)) {
 				Player_Lead[id] = stoi(word2);
 				stream << "Your lead has been set to " << word2 << " ms" << endl;
-			}
+			}*/
 			else {
 				short plead = Player_Lead[id];
 				short dlead = default_lead;

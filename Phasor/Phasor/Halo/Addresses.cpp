@@ -64,6 +64,7 @@ unsigned long FUNC_NOTIFY_WEAPONPICKUP	= 0x00499EF0;
 unsigned long FUNC_ENTERVEHICLE			= 0x0049A2A0;
 unsigned long FUNC_EJECTVEHICLE			= 0x00580B00;
 unsigned long FUNC_HALOEXCEPTIONHANDLER = 0x005B036C;
+unsigned long FUNC_COLLISIONCHECK		= 0x0053D8D0;
 
 //don't feel like learning how phasor finds its sigs
 #ifdef PHASOR_PC
@@ -75,7 +76,6 @@ unsigned long FUNC_HALOEXCEPTIONHANDLER = 0x005B036C;
 	unsigned long FUNC_UPDATE_ALL_OBJECTS	= 0x004DFB10;
 	unsigned long FUNC_UPDATE_PHYSICS		= 0x004E2EF0;
 #endif
-
 
 // ------------------------------------------------------------------------
 //
@@ -117,6 +117,11 @@ unsigned long CC_HALOPRINT = 0x004BA3F0;
 unsigned long CC_HALOBANCHECK = 0x00518820;
 unsigned long CC_UPDATEOBJECT = FUNC_UPDATE_OBJECT + 0xF;
 unsigned long CC_UPDATEALLOBJECTS = FUNC_UPDATE_ALL_OBJECTS;
+unsigned long CC_COLLISIONCHECK = FUNC_COLLISIONCHECK;
+unsigned long CC_COLLISIONEND = 0x53E00A;
+unsigned long CC_COLLISIONEND2 = 0x53E051;
+unsigned long CC_COLLISIONEND3 = 0x53E07D;
+unsigned long CC_BULLETPHYSICS = 0x4786BB;
 
 // ------------------------------------------------------------------------
 //
@@ -563,6 +568,21 @@ namespace Addresses
 
         BYTE sig95[] = {0x8B, 0xCA, 0x81, 0xE1, 0xFF, 0xFF, 0x00, 0x00, 0x56};
         CC_OBJECTDESTROY = FindAddress("CC_DESTROY", codeSection, codeSize, sig95, sizeof(sig95), 0, 0);
+
+		BYTE sig96[] = { 0x81, 0xEC, 0x38, 0x04, 0x00, 0x00, 0x8B, 0x8C, 0x24, 0x44, 0x04, 0x00 };
+		FUNC_COLLISIONCHECK = FindAddress("FUNC_COLLISIONCHECK", codeSection, codeSize, sig96, sizeof(sig96), 0, 0);
+
+		BYTE sig97[] = { 0x5F, 0x5E, 0x5D, 0x5B, 0x81, 0xC4, 0x38, 0x04, 0x00, 0x00, 0xC3 };
+		CC_COLLISIONEND = FindAddress("CC_COLLISIONEND", codeSection, codeSize, sig97, sizeof(sig97), 0, 4);
+
+		BYTE sig98[] = { 0x8A, 0x44, 0x24, 0x0E, 0x5E, 0x5D, 0x5B, 0x81, 0xC4, 0x38, 0x04, 0x00, 0x00, 0xC3 };
+		CC_COLLISIONEND2 = FindAddress("CC_COLLISIONEND2", codeSection, codeSize, sig98, sizeof(sig98), 0, 7);
+
+		BYTE sig99[] = { 0x5F, 0x5E, 0x5D, 0x5B, 0x81, 0xC4, 0x38, 0x04, 0x00, 0x00, 0xC3, 0xCC };
+		CC_COLLISIONEND3 = FindAddress("CC_COLLISIONEND3", codeSection, codeSize, sig99, sizeof(sig99), 0, 4);
+
+		BYTE sig100[] = { 0x51, 0x52, 0x53, 0x50, 0xE8 };
+		CC_BULLETPHYSICS = FindAddress("CC_BULLETPHYSICS", codeSection, codeSize, sig100, sizeof(sig100), 0, 4);
 
 		// patch the installation of other exception handlers
 		BYTE instSig[] = {0x68, 0x6C, 0x03, 0x5B, 0x00, 0x64, 0xA1, 0x00, 0x00, 0x00, 0x00, 0x50, 0x64, 0x89, 0x25, 0x00, 0x00, 0x00, 0x00};
