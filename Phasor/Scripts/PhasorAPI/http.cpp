@@ -38,9 +38,15 @@ struct script_request
     script_request(std::shared_ptr<scripting::PhasorScript> script,
                    std::string func, lua::types::AnyRef userdata,
                    boost::network::uri::uri uri)
-                   : script(script), func(func), userdata(std::move(userdata)), uri(std::move(uri)),
-                     request(this->uri)
+                   : script(script), func(func), userdata(std::move(userdata)), uri(uri),
+                   request(this->uri)
     {
+        *g_PrintStream << "uri " << (unsigned long)&this->uri << endl;
+        *g_PrintStream << "request " << (unsigned long)&request.uri_ << endl;
+    }
+
+    ~script_request() {
+        *g_PrintStream << "request destroyed" << endl;
     }
 
     script_request(const script_request&) = delete;
@@ -53,7 +59,7 @@ struct script_request
     }
 
     void post(std::string data) {
-        this->postData = std::move(data);
+        this->postData = data;
         response = client.post(request, this->postData);
     }
 };
@@ -105,7 +111,7 @@ int l_httpsimple(lua_State* L)
     if (base_url.find("https://") == 0)
         luaL_error(L, "cannot perform request : https is not supported");
 
-    // uri class needs to protocol
+    // uri class needs the protocol
     if (base_url.find("http://") == std::string::npos)
         base_url.insert(0, "http://");
 
@@ -122,7 +128,7 @@ int l_httpsimple(lua_State* L)
         }
     }*/
 
-    // There's a bug w/ msvc debug where it will complain and incompatible iterators
+    // There's a bug w/ msvc debug where it will complain about incompatible iterators
     // if the query is empty. So we populate it with the uri as a work around.
     boost::network::uri::uri uri_with_query = uri;
     if (requestData) {
@@ -154,18 +160,36 @@ int l_httpsimple(lua_State* L)
 namespace scripting {
     namespace http_requests {
 
+        void processResponse(script_request& req) {
+            try {
+                // process some shit and call the script
+                auto headers = convertHeaders(req.response);
+                std::string data = body(req.response);
+                scripting::Caller<>::call_single(*g_Scripts, *req.script, req.func,
+                                                 std::make_tuple(static_cast<std::uint16_t>(status(req.response)),
+                                                 std::cref(headers),
+                                                 std::cref(data),
+                                                 std::cref(req.userdata)));
+                
+            } catch (boost::system::system_error& e) {
+                *g_PrintStream << e.what() << endl;
+                
+                // add 1000 to avoid http codes
+                int err = 1000 + e.code().value();
+
+                scripting::Caller<>::call_single(*g_Scripts, *req.script, req.func,
+                                                 std::make_tuple(err,
+                                                 lua::types::Nil(),
+                                                 e.what(), // probably somewhat useful
+                                                 std::cref(req.userdata)));
+            }
+        }
+
         void checkRequests() {
             for (auto itr = activeRequests.begin(); itr != activeRequests.end();) {
                 script_request& req = **itr;
                 if (ready(req.response)) {
-                    // process some shit and call the script
-                    auto headers = convertHeaders(req.response);
-                    std::string data = body(req.response);
-                    scripting::Caller<>::call_single(*g_Scripts, *req.script, req.func,
-                                                     std::make_tuple(static_cast<std::uint16_t>(status(req.response)),
-                                                     std::cref(headers),
-                                                     std::cref(data),
-                                                     std::cref(req.userdata)));
+                    processResponse(req);
                     // scripts will be freed when the last reference goes, OnScriptClose is called elsewhere
                     itr = activeRequests.erase(itr);
                 } else ++itr;

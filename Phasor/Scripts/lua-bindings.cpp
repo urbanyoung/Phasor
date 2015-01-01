@@ -135,7 +135,8 @@ namespace lua {
 
     void State::pcall(int nargs, int nresults) {
         if (lua_pcall(L, nargs, nresults, 0)) {
-            std::string error = lua_tostring(L, -1);
+            const char* err = lua_tostring(L, -1);
+            std::string error = err != nullptr ? err : "unknown script error";
             lua_pop(L, 1);
             throw Exception(error);
         }

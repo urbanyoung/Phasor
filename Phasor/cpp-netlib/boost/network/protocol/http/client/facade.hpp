@@ -52,7 +52,7 @@ struct basic_client_facade {
                                    body_generator_function_type());
   }
 
-  response post(request request, string_type const& body = string_type(),
+  response post(request& request, string_type const& body = string_type(),
                 string_type const& content_type = string_type(),
                 body_callback_function_type body_handler =
                     body_callback_function_type(),
@@ -103,7 +103,7 @@ struct basic_client_facade {
     return post(request, body, string_type(), callback, body_generator);
   }
 
-  response put(request request, string_type const& body = string_type(),
+  response put(request& request, string_type const& body = string_type(),
                string_type const& content_type = string_type(),
                body_callback_function_type body_handler =
                    body_callback_function_type(),
