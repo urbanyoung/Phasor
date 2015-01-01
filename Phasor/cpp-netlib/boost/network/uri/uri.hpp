@@ -109,45 +109,66 @@ class BOOST_URI_DECL uri {
   }
 
   string_type scheme() const {
-    const_range_type range = scheme_range();
-    return range ? string_type(boost::begin(range), boost::end(range))
-                 : string_type();
+      if (!uri_parts_.scheme) {
+          return string_type();
+      }
+      const_range_type range = scheme_range();
+
+      return string_type(boost::begin(range), boost::end(range));
   }
 
   string_type user_info() const {
-    const_range_type range = user_info_range();
-    return range ? string_type(boost::begin(range), boost::end(range))
-                 : string_type();
+      if (!uri_parts_.hier_part.user_info) {
+          return string_type();
+      }
+      const_range_type range = user_info_range();
+
+      return string_type(boost::begin(range), boost::end(range));
   }
 
   string_type host() const {
-    const_range_type range = host_range();
-    return range ? string_type(boost::begin(range), boost::end(range))
-                 : string_type();
+      if (!uri_parts_.hier_part.host) {
+          return string_type();
+      }
+      const_range_type range = host_range();
+
+      return string_type(boost::begin(range), boost::end(range));
   }
 
   string_type port() const {
-    const_range_type range = port_range();
-    return range ? string_type(boost::begin(range), boost::end(range))
-                 : string_type();
+      if (!uri_parts_.hier_part.port) {
+          return string_type();
+      }
+      const_range_type range = port_range();
+
+      return string_type(boost::begin(range), boost::end(range));
   }
 
   string_type path() const {
-    const_range_type range = path_range();
-    return range ? string_type(boost::begin(range), boost::end(range))
-                 : string_type();
+      if (!uri_parts_.hier_part.path) {
+          return string_type();
+      }
+      const_range_type range = path_range();
+
+      return string_type(boost::begin(range), boost::end(range));
   }
 
   string_type query() const {
-    const_range_type range = query_range();
-    return range ? string_type(boost::begin(range), boost::end(range))
-                 : string_type();
+      if (!this->uri_parts_.query) {
+          return string_type();
+
+      }
+      const_range_type range = query_range();
+      return string_type(boost::begin(range), boost::end(range));
   }
 
   string_type fragment() const {
-    const_range_type range = fragment_range();
-    return range ? string_type(boost::begin(range), boost::end(range))
-                 : string_type();
+      if (!this->uri_parts_.fragment) {
+          return string_type();
+      }
+      const_range_type range = fragment_range();
+
+      return string_type(boost::begin(range), boost::end(range));
   }
 
   string_type string() const { return uri_; }

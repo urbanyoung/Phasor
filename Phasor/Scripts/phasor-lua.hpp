@@ -9,6 +9,7 @@
 #include "../Common/vect3d.h"
 #include "../Common/MyString.h"
 #include "../Common/is_container.hpp"
+#include <map>
 
 namespace phlua {
     struct ProcessedString {
@@ -57,24 +58,40 @@ namespace phlua {
             operator()(player.memory_id);
         }
 
-        template<typename Container>
+        template <typename Container>
         typename std::enable_if<is_container<Container>::value>::type
-            operator()(const Container& x)
-        {
-                int keyIndex = 1;
+            operator()(const Container& x) {
+            int keyIndex = 1;
 
-                lua_newtable(L);
-                for (auto itr = x.cbegin(); itr != x.cend(); ++itr) {
-                    lua_pushnumber(L, keyIndex++);
-                    operator()(*itr);
-                    lua_settable(L, -3);
-                }
+            lua_newtable(L);
+            for (auto itr = x.cbegin(); itr != x.cend(); ++itr) {
+                push_to_table(keyIndex++, *itr);
             }
+        }
+
+        template <typename K, template<typename, typename = std::allocator<V>> class C>
+        typename std::enable_if<is_container<C>::value>::type
+            operator()(const std::map<K, C>& x)
+        {
+            lua_newtable(L);
+            for (auto itr = x.cbegin(); itr != x.cend(); ++itr) {
+                push_to_table(itr->first, itr->second);
+            }
+        }
 
         template <typename T>
         void operator()(const boost::optional<T>& x) {
             if (!x) operator()(lua::types::Nil());
             else operator()(*x);
+        }
+
+    private:
+
+        template <typename Key, typename Value>
+        void push_to_table(const Key& key, const Value& value) {
+            operator()(key);
+            operator()(value);
+            lua_settable(L, -3);
         }
     };
 
@@ -125,6 +142,65 @@ namespace phlua {
             operator()(tmp.z);
             x = tmp;
             }*/
+
+        template <typename T>
+        void operator()(std::vector<T>& x)
+        {
+            if (lua_type(L, -1) != LUA_TTABLE) {
+                // try treating it as a container with one item
+                T value;
+                operator()(value);
+                x.push_back(std::move(value));
+                return;
+            }
+
+            lua_pushnil(L);
+            while (lua_next(L, -2) != 0) { // table is always at -2
+                // table -3, key -2, value -1
+                int key;
+                T value;
+                operator()(value);
+
+                // keys should always be integers because we're treating the
+                // table as an array. we do this check here for better error
+                // messages
+                if (lua_type(L, -1) != LUA_TNUMBER)
+                    raise_error(n-1, "expected array, got table with key-value pairs");
+
+                // we need the key to remain on the stack, so push it again
+                lua_pushvalue(L, -1);
+                operator()(key);
+
+                x.push_back(std::move(value));
+
+                // -1 is key, -2 is table
+            }
+            pop(L);
+        }
+
+        template <typename T>
+        void operator()(std::map<std::string, T>& x)
+        {
+            if (lua_type(L, -1) != LUA_TTABLE)
+                raise_error(n-1, "key-value mapping table expected");
+
+            lua_pushnil(L);
+            while (lua_next(L, -2) != 0) { // table is always at -2
+                // table -3, key -2, value -1
+                std::string key;
+                T value;
+                operator()(value);
+
+                // we need the key to remain on the stack, so push it again
+                lua_pushvalue(L, -1);
+                operator()(key);
+
+                x.insert(std::make_pair(key, value));
+                
+                // -1 is key, -2 is table
+            }
+            pop(L);
+        }
 
         void operator()(ProcessedString& x) {
             std::wstring str;

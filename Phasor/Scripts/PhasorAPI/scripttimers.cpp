@@ -37,6 +37,10 @@ class ScriptTimer : public TimerEvent {
             return false;
         }
 
+        // script is still valid, but no longer active
+        if (!s->isActive())
+            return false; 
+
         bool reset = false;
 
         auto result = scripting::Caller<bool>::call_single(

@@ -8,6 +8,7 @@
 #include "../../Globals.h"
 #include "../../Admin.h"
 #include "../../../Scripts/script-events.h"
+#include "../../../Scripts/scripting.hpp"
 #include "Mapvote.h"
 #include "Packet.h"
 #include "Chat.h"
@@ -142,6 +143,7 @@ namespace halo { namespace server
 	{
 		g_Timers.Process();
 		g_Thread.ProcessEvents();
+        scripting::checkEvents();
 	}
 
 	/*! \todo make this more efficient.. shouldn't need to GetPlayerFromAddress */

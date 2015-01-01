@@ -149,6 +149,18 @@
     <ClCompile Include="Scripts\PhasorAPI\string.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="cpp-netlib\libs\network\src\client.cpp">
+      <Filter>Libraries\cpp-netlib\libs\network\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp-netlib\libs\network\src\server_request_parsers_impl.cpp">
+      <Filter>Libraries\cpp-netlib\libs\network\src</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp-netlib\libs\network\src\uri\schemes.cpp">
+      <Filter>Libraries\cpp-netlib\libs\network\src\uri</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp-netlib\libs\network\src\uri\uri.cpp">
+      <Filter>Libraries\cpp-netlib\libs\network\src\uri</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
@@ -320,9 +332,576 @@
     <ClInclude Include="Scripts\PhasorAPI\string.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="phasor_includes.props" />
+    <ClInclude Include="cpp-netlib\boost\mime.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\constants.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\detail\debug.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\detail\directive_base.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\detail\wrapper_base.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\include\http\client.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\include\http\server.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\include\message.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\directives.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\directives\detail\string_directive.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\directives\detail\string_value.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\directives\header.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\directives\remove_header.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\message_concept.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\add_header.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\body.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\clear_headers.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\destination.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\remove_header.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\source.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\traits\body.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\traits\destination.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\traits\headers.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\traits\source.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\transformers.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\transformers\selectors.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\transformers\to_lower.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\transformers\to_upper.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers\body.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers\destination.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers\headers.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers\source.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\message_fwd.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\algorithms\linearize.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\async_impl.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\async_base.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\async_normal.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\async_protocol_handler.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\connection_delegate.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\connection_delegate_factory.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\normal_delegate.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\ssl_delegate.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\sync_base.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\sync_normal.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\sync_ssl.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\facade.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\macros.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\options.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\pimpl.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\sync_impl.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\errors.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\impl\request.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\async_message.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\major_version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\method.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\minor_version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\status.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\status_message.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\uri.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\header.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\header\name.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\header\value.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\header_concept.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\message_base.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\body.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\clear_headers.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\destination.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\headers.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\major_version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\method.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\minor_version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\source.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\status.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\status_message.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\uri.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\traits\status.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\traits\status_message.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\traits\version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\anchor.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\body.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\destination.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\headers.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\helper.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\host.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\major_version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\method.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\minor_version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\path.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\port.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\protocol.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\query.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\ready.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\source.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\status.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\status_message.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\uri.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\parser.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\parser\incremental.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\async_connection.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\async_resolver.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\pooled_connection.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\simple_connection.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\sync_resolver.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\request.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\request_concept.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\request_parser.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\response.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\response_concept.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\async_connection.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\async_server.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\options.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\request.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\request_parser.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\socket_options_base.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\storage_base.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\sync_connection.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\sync_server.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\client_or_server.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_client.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_http.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_keepalive.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_server.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_simple.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\sync_only.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\tags.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\connection_keepalive.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\connection_policy.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\delegate_factory.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\message_traits.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\parser_traits.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\resolver.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\resolver_policy.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\vector.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\protocol\stream_handler.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_async.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_default_string.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_default_wstring.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_http.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_keepalive.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_pod.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_simple.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_sync.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_tcp.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\is_udp.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\pod_or_normal.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\support\sync_only.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\tags.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\traits\char.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\traits\headers_container.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\traits\istream.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\traits\istringstream.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\traits\ostream_iterator.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\traits\ostringstream.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\traits\string.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\traits\vector.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\accessors.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\builder.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\config.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\decode.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\detail\uri_parts.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\authority.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\fragment.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\host.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\path.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\port.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\query.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\scheme.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\user_info.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\encode.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\schemes.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\uri.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\uri\uri_io.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\utils\base64\encode-io.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\utils\base64\encode.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\utils\thread_pool.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
+    <ClInclude Include="cpp-netlib\boost\network\version.hpp">
+      <Filter>Libraries\cpp-netlib\boost</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">
@@ -363,6 +942,24 @@
     </Filter>
     <Filter Include="Scripting\PhasorAPI">
       <UniqueIdentifier>{9ce75f8b-6770-40e9-9a00-fd37c89fa385}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\cpp-netlib">
+      <UniqueIdentifier>{37428c80-665d-4a84-bf8b-858399c8d7f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\cpp-netlib\boost">
+      <UniqueIdentifier>{debea1ff-ed3c-4fbf-8ab7-67007d2da694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\cpp-netlib\libs">
+      <UniqueIdentifier>{683498bc-0bce-4f5b-877e-0fb742075479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\cpp-netlib\libs\network">
+      <UniqueIdentifier>{907b2e33-aa60-432b-abc5-4300970333dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\cpp-netlib\libs\network\src">
+      <UniqueIdentifier>{cbf5867c-8581-4ff5-8f82-e9aebe1c07a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\cpp-netlib\libs\network\src\uri">
+      <UniqueIdentifier>{bdaf42d3-2f26-4c85-90f3-3c6f54b16a48}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

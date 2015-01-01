@@ -5,6 +5,7 @@
 #include "../Common/FileIO.h"
 #include "../Phasor/Globals.h"
 #include "../Common/Timers.h"
+#include "PhasorAPI/http.h"
 #include <array>
 
 namespace scripting {
@@ -13,6 +14,11 @@ static const std::string log_prefix = "   ";
 
 // only care about its memory address
 const char PhasorScript::thisKey = 0;
+
+void checkEvents()
+{
+    http_requests::checkRequests();
+}
 
 //
 // --------------------------------------------------------------
@@ -151,6 +157,9 @@ void ScriptHandler::unloadScript(PhasorScript& script) {
 
     scripting::Caller<>::call_single(*this, script, "OnScriptUnload",
                                      std::make_tuple());
+    // The script should be considered unloaded, even if it is
+    // kept alive by outstanding http requests.
+    script.inactive();
 }
 
 bool ScriptHandler::unloadScript(const std::string& script) {

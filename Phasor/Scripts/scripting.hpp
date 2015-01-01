@@ -10,17 +10,20 @@ namespace scripting {
 
     template <typename... ResultTypes> class Caller;
 
+    void checkEvents();
+
     class PhasorScript : public std::enable_shared_from_this<PhasorScript> {
     private:
         lua::State state;
         std::string file, name;
         bool persistent;
+        bool active; // false if OnScriptUnload has been called
         std::unordered_set<std::string> blockedFunctions;
 
         static const char thisKey;
         
         PhasorScript(bool persistent, std::string file, std::string name)
-            : file(std::move(file)), name(std::move(name)), persistent(persistent)
+            : file(std::move(file)), name(std::move(name)), persistent(persistent), active(true)
         {}
 
         template <class Itr>
@@ -51,6 +54,8 @@ namespace scripting {
         inline const lua::State& getState() const { return state; }
         inline const std::string& getName() const { return name; }
         inline bool isPersistent() const { return persistent; }
+        inline bool isActive() const { return active;  }
+        inline void inactive() { active = false;  }
 
         void block(std::string f);
         bool isBlocked(const std::string& f) const;

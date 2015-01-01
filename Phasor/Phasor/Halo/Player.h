@@ -41,18 +41,21 @@ namespace halo
 		BYTE playerNum; // 0x0064 player number used for rcon etc (ofc this is 0 based tho)
 		BYTE unk_PlayerNumberHigh; // 0x0065 just a guess
 		BYTE team_Again; // 0x0066
-		UNKNOWN(5);
+        BYTE memoryId;
+		UNKNOWN(4);
 		float speed; // 0x006C
 		UNKNOWN(0x2c); 
 		WORD kills; // 0x009C
 		UNKNOWN(6);
 		WORD assists; // 0x00A4
-		UNKNOWN(6);
+		UNKNOWN(6); // A6
 		WORD betrayals; // 0x00AC
 		WORD deaths; // 0x00AE
 		WORD suicides; // 0x00B0
+        UNKNOWN(0x2a); // B2
+        DWORD ping; // DC
 		// cbf with the rest
-		UNKNOWN(0x14e);
+		UNKNOWN(0x120); // E0
 	};
 	static_assert(sizeof(s_player_structure) == 0x0200, "bad");
 	#pragma pack(pop)

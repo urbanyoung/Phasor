@@ -117,6 +117,7 @@ extern unsigned long CC_VEHICLEFORCEEJECT;
 extern unsigned long CC_VEHICLEUSEREJECT;
 extern unsigned long CC_HALOPRINT;
 extern unsigned long CC_HALOBANCHECK;
+extern unsigned long CC_PINGREQUEST;
 extern unsigned long CC_EQUIPMENTDESTROY;
 
 // ------------------------------------------------------------------------

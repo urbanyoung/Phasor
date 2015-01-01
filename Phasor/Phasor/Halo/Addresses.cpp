@@ -103,6 +103,7 @@ unsigned long CC_VEHICLEFORCEEJECT = 0x0056E6CD;
 unsigned long CC_VEHICLEUSEREJECT = 0x0056E107;
 unsigned long CC_HALOPRINT = 0x004BA3F0;
 unsigned long CC_HALOBANCHECK = 0x00518820;
+unsigned long CC_PINGREQUEST = 0x5130F4; // ce 4c99e4
 
 // ------------------------------------------------------------------------
 //
@@ -549,6 +550,9 @@ namespace Addresses
 
         BYTE sig95[] = {0x8B, 0xCA, 0x81, 0xE1, 0xFF, 0xFF, 0x00, 0x00, 0x56};
         CC_OBJECTDESTROY = FindAddress("CC_DESTROY", codeSection, codeSize, sig95, sizeof(sig95), 0, 0);
+
+        BYTE pingSig[] = {0x6A, 0x00, 0x6A, 0x35, 0x6A, 0x00};
+        CC_PINGREQUEST = FindAddress("CC_PINGREQUEST", codeSection, codeSize, pingSig, sizeof(pingSig), 0, 0x0F);
 
 		// patch the installation of other exception handlers
 		BYTE instSig[] = {0x68, 0x6C, 0x03, 0x5B, 0x00, 0x64, 0xA1, 0x00, 0x00, 0x00, 0x00, 0x50, 0x64, 0x89, 0x25, 0x00, 0x00, 0x00, 0x00};

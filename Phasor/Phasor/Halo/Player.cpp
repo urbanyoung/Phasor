@@ -18,9 +18,10 @@ namespace halo
 	};
 
 	s_player::s_player(int memory_id) : memory_id(memory_id), sv_killed(false),
-		force_entered(false)
+        force_entered(false)
 	{
 		*g_PrintStream << "New player " << memory_id << endl;
+
 		mem = GetPlayerMemory(memory_id);
 		afk.reset(new afk_detection::CAFKDetection(*this, g_Timers));
 		console_stream.reset(new PlayerConsoleStream(*this));	

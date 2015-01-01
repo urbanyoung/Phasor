@@ -8,6 +8,7 @@
 #include "playerinfo.h"
 #include "scripttimers.h"
 #include "string.h"
+#include "http.h"
 
 namespace phasorapi {
     std::vector<lua::callback::CFunc> funcTable
@@ -106,6 +107,8 @@ namespace phasorapi {
         // Damage application, see haloobjects.h
         {l_applydmg, "applydmg"},
         {l_applydmgtag, "applydmgtag"},
+        // HTTP functions, see http.h
+        {l_http, "httpsimple"},
         // Script management functions
         //{l_raiseerror, "raiseerror"},
 };
