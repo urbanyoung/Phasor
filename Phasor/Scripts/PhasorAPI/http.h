@@ -46,9 +46,9 @@
 write me!
 *	\endcode
 */
-int l_httpsimple(lua_State* L);
+int l_http(lua_State* L);
 
-int l_httpcomplex(lua_State* L);
+int l_httpraw(lua_State* L);
 
 namespace scripting {
     namespace http_requests {

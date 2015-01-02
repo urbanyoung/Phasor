@@ -42,7 +42,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\Boost.props" />
     <Import Project="Phasor-Common.props" />
-    <Import Project="Phasor-Debug.props" />
+    <Import Project="Phasor-Release.props" />
     <Import Project="Phasor-PC.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -75,7 +75,6 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS; PHASOR_PC;BUILD_RELEASE</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>
