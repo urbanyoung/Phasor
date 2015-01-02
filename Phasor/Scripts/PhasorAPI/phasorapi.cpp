@@ -109,6 +109,7 @@ namespace phasorapi {
         {l_applydmgtag, "applydmgtag"},
         // HTTP functions, see http.h
         {l_httpsimple, "httpsimple"},
+        {l_httpcomplex, "httpcomplex"},
         // Script management functions
         //{l_raiseerror, "raiseerror"},
 };

@@ -25,6 +25,9 @@ bool validateMode(int mode) {
     return mode >= HTTP_GET && mode <= HTTP_POST;
 }
 
+/*
+
+*/
 struct script_request
 {    
     std::shared_ptr<scripting::PhasorScript> script;
@@ -41,18 +44,19 @@ struct script_request
                    : script(script), func(func), userdata(std::move(userdata)), uri(uri),
                    request(this->uri)
     {
-        *g_PrintStream << "uri " << (unsigned long)&this->uri << endl;
-        *g_PrintStream << "request " << (unsigned long)&request.uri_ << endl;
-    }
-
-    ~script_request() {
-        *g_PrintStream << "request destroyed" << endl;
     }
 
     script_request(const script_request&) = delete;
     script_request& operator=(const script_request&) = delete;
     script_request(script_request&&) = delete;
     script_request&& operator=(script_request&&) = delete;
+
+    void writeHeaders(const HeaderMap& headers) {
+        for (auto p : headers) {
+            for (auto v : p.second)
+                request << boost::network::header(p.first, v);
+        }
+    }
 
     void get() {
         response = client.get(request);
@@ -120,20 +124,12 @@ int l_httpsimple(lua_State* L)
         return luaL_argerror(L, 1, "badly formatted url");
     }
 
-    /*
-    if (headers) {        
-        for (auto p : *headers) {
-            for (auto v : p.second)
-                request << boost::network::header(p.first, v);
-        }
-    }*/
-
     // There's a bug w/ msvc debug where it will complain about incompatible iterators
     // if the query is empty. So we populate it with the uri as a work around.
     boost::network::uri::uri uri_with_query = uri;
     if (requestData) {
         for (auto p : *requestData) {
-            uri_with_query << boost::network::uri::query(p.first, boost::network::uri::encoded(p.second));;
+            uri_with_query << boost::network::uri::query(boost::network::uri::encoded(p.first), boost::network::uri::encoded(p.second));;
         }
     }
 
@@ -151,6 +147,49 @@ int l_httpsimple(lua_State* L)
         req->post(uri_with_query.query());
         break;
     }
+
+    activeRequests.push_back(std::move(req));
+
+    return 0;
+}
+
+int l_httpcomplex(lua_State* L)
+{
+    using namespace scripting;
+    std::string base_url, callback;
+    lua::types::AnyRef userdata;
+    boost::optional<std::string> postData;
+    boost::optional<HeaderMap> headers;
+
+    // AnyRef can handle nils fine..
+    if (lua_gettop(L) == 2)
+        lua_pushnil(L);
+
+    std::tie(base_url, callback, userdata, postData, headers) =
+        phlua::callback::getArguments<
+        std::string, std::string, decltype(userdata), decltype(postData),
+        decltype(headers)
+        >(L, __FUNCTION__);
+    
+    if (base_url.find("https://") == 0)
+        luaL_error(L, "cannot perform request : https is not supported");
+
+    // uri class needs the protocol
+    if (base_url.find("http://") == std::string::npos)
+        base_url.insert(0, "http://");
+
+    boost::network::uri::uri uri(base_url);
+    if (!uri.is_valid()) {
+        return luaL_argerror(L, 1, "badly formatted url");
+    }
+
+    std::shared_ptr<PhasorScript> state = PhasorScript::get(L).shared_from_this();
+    std::unique_ptr<script_request> req = std::make_unique<script_request>(state, std::move(callback), std::move(userdata), uri);
+
+    if (headers)
+        req->writeHeaders(*headers);
+
+    req->post(postData ? *postData : "");    
 
     activeRequests.push_back(std::move(req));
 
