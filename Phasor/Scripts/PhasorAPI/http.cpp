@@ -18,6 +18,8 @@ typedef std::map<std::string, std::string> ValueMap;
 static const int HTTP_GET = 0;
 static const int HTTP_POST = 1;
 
+static const int ERR_UNKNOWN = -1;
+
 static http::client client;
 static std::list<std::unique_ptr<script_request>> activeRequests;
 
@@ -26,7 +28,10 @@ bool validateMode(int mode) {
 }
 
 /*
-
+cpp-netlib isn't brilliant in that it takes references everywhere
+and doesn't make it clear in the docs. So we need to ensure certain
+objects outlive the post. Easiest way to do this is just to make sure
+that they all do. 
 */
 struct script_request
 {    
@@ -89,24 +94,23 @@ HeaderMap convertHeaders(http::client::response& response)
     return output;
 }
 
-int l_httpsimple(lua_State* L)
+int l_http(lua_State* L)
 {
     using namespace scripting;
     std::string base_url, callback;
     lua::types::AnyRef userdata;
     boost::optional<int> mode;
     boost::optional<ValueMap> requestData;
-    
-//    boost::optional<HeaderMap> headers;
+    boost::optional<HeaderMap> headers;
     
     // AnyRef can handle nils fine..
     if (lua_gettop(L) == 2)
         lua_pushnil(L);
 
-    std::tie(base_url, callback, userdata, requestData, mode) =
+    std::tie(base_url, callback, userdata, requestData, mode, headers) =
         phlua::callback::getArguments<
             std::string, std::string, decltype(userdata), decltype(requestData),
-            decltype(mode)         
+            decltype(mode), decltype(headers)
         >(L, __FUNCTION__);
 
     if (!mode)
@@ -139,6 +143,9 @@ int l_httpsimple(lua_State* L)
     std::shared_ptr<PhasorScript> state = PhasorScript::get(L).shared_from_this();
     std::unique_ptr<script_request> req = std::make_unique<script_request>(state, std::move(callback), std::move(userdata), uri);
 
+    if (headers)
+        req->writeHeaders(*headers);
+
     switch (*mode) {
     case HTTP_GET:
         req->get();
@@ -153,7 +160,7 @@ int l_httpsimple(lua_State* L)
     return 0;
 }
 
-int l_httpcomplex(lua_State* L)
+int l_httpraw(lua_State* L)
 {
     using namespace scripting;
     std::string base_url, callback;
@@ -218,6 +225,13 @@ namespace scripting {
 
                 scripting::Caller<>::call_single(*g_Scripts, *req.script, req.func,
                                                  std::make_tuple(err,
+                                                 lua::types::Nil(),
+                                                 e.what(), // probably somewhat useful
+                                                 std::cref(req.userdata)));
+            } catch (std::exception& e) {
+                // not sure what exceptions can be thrown so catch them all
+                scripting::Caller<>::call_single(*g_Scripts, *req.script, req.func,
+                                                 std::make_tuple(ERR_UNKNOWN,
                                                  lua::types::Nil(),
                                                  e.what(), // probably somewhat useful
                                                  std::cref(req.userdata)));
