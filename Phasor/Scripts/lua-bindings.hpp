@@ -151,6 +151,14 @@ namespace lua {
 
     template <> void Pop::operator()<bool>(bool& x);
 
+    struct CFunc {
+        lua_CFunction func;
+        const char* name;
+    };
+
+    // Error handler that appends a stack trace to the error message
+    int build_stack_trace_error_func(lua_State*);
+
     struct State  {
         lua_State* L;
 
@@ -160,8 +168,11 @@ namespace lua {
         inline operator lua_State*() { return L; }
 
         void doFile(const std::string& file);
+        void doString(const std::string& str);
         void pcall(int nargs, int nresults);
+        void pcall(int nargs, int nresults, int err_function);
         bool hasFunction(const char* f);
+        void registerFunction(const char* name, lua_CFunction f);
 
         template <class PushType, typename T>
         void setGlobal(const std::string& name, const T& value) {
@@ -186,12 +197,26 @@ namespace lua {
         static const size_t nresults = sizeof...(ResultTypes);
         State& L;
         bool err;
+        int err_handler_index;
 
     public:
 
-        Caller(State& L)
-            : L(L), err(false)
-        {}
+        Caller(State& L, lua_CFunction errHandler)
+            : L(L), err(false), err_handler_index(0)
+        {
+            if (errHandler != nullptr) {
+                err_handler_index = lua_gettop(L);
+                lua_pushcfunction(L, errHandler);
+               // err_handler_index = lua_gettop(L);
+            }
+        }
+
+        Caller(State& L) 
+            : Caller(L, build_stack_trace_error_func)
+        {
+            if (err_handler_index != 0)
+                lua_pop(L, 1); // err handler
+        }
 
         // whether or not an error occurred popping return values
         inline bool hasError() const {
@@ -211,7 +236,7 @@ namespace lua {
             PushType push(L);
             TupleHelpers::citerate<TupleHelpers::forward_comparator, PushType>(args, push);
 
-            L.pcall(nargs, nresults);
+            L.pcall(nargs, nresults, err_handler_index);
 
             std::tuple<ResultTypes...> results;
             PopType pop(L, nresults, Pop::e_mode::kDontRaiseError);
@@ -222,17 +247,7 @@ namespace lua {
     };
 
     namespace callback {
-        struct CFunc {
-            lua_CFunction func;
-            const char* name;
-        };
-
-        template <class Itr>
-        static void registerFunctions(lua_State* L, Itr itr, const Itr end) {
-            for (; itr != end; ++itr) {
-                lua_register(L, itr->name, itr->func);
-            }
-        }
+            
 
         // Counts number of boost::optional<> parameters (starting from end).
         // -------------------------------------------------------------------------------------

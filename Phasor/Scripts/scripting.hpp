@@ -33,7 +33,11 @@ namespace scripting {
             lua_pushlightuserdata(state, this); // value
             lua_settable(state, LUA_REGISTRYINDEX);
 
-            lua::callback::registerFunctions(state, itr, end);
+            for (; itr != end; ++itr)
+                state.registerFunction(itr->cfunc.name, itr->cfunc.func);
+            
+            // For better error logs
+            state.doString("local STP = require \"StackTracePlus\"");
             state.doFile(this->file);
         }
 
@@ -55,7 +59,7 @@ namespace scripting {
         inline const std::string& getName() const { return name; }
         inline bool isPersistent() const { return persistent; }
         inline bool isActive() const { return active;  }
-        inline void inactive() { active = false;  }
+        void inactive();
 
         void block(std::string f);
         bool isBlocked(const std::string& f) const;

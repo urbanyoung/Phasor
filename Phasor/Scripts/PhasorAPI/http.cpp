@@ -248,5 +248,10 @@ namespace scripting {
                 } else ++itr;
             }
         }
+
+        void setupScript(PhasorScript& script) {
+            script.getState().setGlobal<phlua::PhasorPush, int>("HTTP_GET", HTTP_GET);
+            script.getState().setGlobal<phlua::PhasorPush, int>("HTTP_POST", HTTP_POST);
+        }
     }
 }

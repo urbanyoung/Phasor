@@ -6,6 +6,7 @@
 */
 #pragma once
 #include "../phasor-lua.hpp"
+#include "../scripting.hpp"
 
 /*! 
 * \brief Perform an HTTP operation asynchronously and call the specified
@@ -53,6 +54,7 @@ int l_httpraw(lua_State* L);
 namespace scripting {
     namespace http_requests {
 
+        void setupScript(PhasorScript& script);
         void checkRequests();
     }
 }

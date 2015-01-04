@@ -34,6 +34,16 @@ PhasorScript& PhasorScript::get(lua_State* L) {
     return *pThis;
 }
 
+void PhasorScript::inactive() {
+    active = false;
+
+    // Remap any API funcs that should no longer be used 
+    for (auto itr = phasorapi::funcTable.cbegin(); itr != phasorapi::funcTable.cend(); ++itr) {
+        if (itr->access == phasorapi::AccessMode::kWhileLoaded)
+            state.registerFunction(itr->cfunc.name, phasorapi::l_func_inactive);
+    }
+}
+
 void PhasorScript::block(std::string f) {
     blockedFunctions.insert(std::move(f));
 }
@@ -101,6 +111,8 @@ bool ScriptHandler::loadScript(const std::string& name, bool persistent,
         lua::State& state = script->getState();
         checkCompatibility(state);
 
+        http_requests::setupScript(*script);
+
         if (state.hasFunction("OnScriptLoad")) {
             phlua::Caller<> c(state);
             c.call("OnScriptLoad",
@@ -157,6 +169,7 @@ void ScriptHandler::unloadScript(PhasorScript& script) {
 
     scripting::Caller<>::call_single(*this, script, "OnScriptUnload",
                                      std::make_tuple());
+
     // The script should be considered unloaded, even if it is
     // kept alive by outstanding http requests.
     script.inactive();
