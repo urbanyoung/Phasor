@@ -244,10 +244,10 @@ void ScriptHandler::handleError(PhasorScript& script, const std::string& func,
     errStream << L"Error in '" << script.getName() << L'\'' << endl;
     errStream << log_prefix << L"Error: " << what << endl;
 
-    script.block(func);
+    /*script.block(func);
 
     errStream << log_prefix << L"Action: Further calls to '" << func
-              << L"' will be ignored." << endl;
+              << L"' will be ignored." << endl;*/
 
     errStream << endl;
 }
