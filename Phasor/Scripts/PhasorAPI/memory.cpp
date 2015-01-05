@@ -52,7 +52,15 @@ size_t addBitOffset(size_t x, int& offset) {
 int l_readbit(lua_State* L) {
     size_t address;
     int bitOffset;
-    std::tie(address, bitOffset) = phlua::callback::getArguments<size_t, int>(L, __FUNCTION__);
+
+    if (lua_gettop(L) == 3) {
+        // legacy: three args mean address, address_offset, bit_offset
+        int addrOffset;
+        std::tie(address, addrOffset, bitOffset) = phlua::callback::getArguments<size_t, int, int>(L, __FUNCTION__);
+        address += addrOffset;
+    } else {
+        std::tie(address, bitOffset) = phlua::callback::getArguments<size_t, int>(L, __FUNCTION__);
+    }
 
     address = addBitOffset(address, bitOffset);
 
@@ -67,8 +75,16 @@ int l_writebit(lua_State* L) {
     size_t address;
     int bitOffset;
     bool value;
-    std::tie(address, bitOffset, value) = phlua::callback::getArguments<size_t, int, bool>(L, __FUNCTION__);
 
+    if (lua_gettop(L) == 4) {
+        int addrOffset;
+        // legacy: four args mean address, address_offset, bit_offset, value
+        std::tie(address, addrOffset, bitOffset, value) = phlua::callback::getArguments<size_t, int, int, bool>(L, __FUNCTION__);
+        address += addrOffset;
+    } else {
+        std::tie(address, bitOffset, value) = phlua::callback::getArguments<size_t, int, bool>(L, __FUNCTION__);
+    }
+    
     address = addBitOffset(address, bitOffset);
 
     std::uint8_t b;
@@ -134,16 +150,16 @@ int l_readdouble(lua_State* L) {
 template <typename T>
 int writeNumber(lua_State* L, const char* f) {
     size_t address;
-    boost::optional<size_t> offset; // backwards compatibility
     lua_Number value;
 
     if (lua_gettop(L) == 3) { // backwards compatibility
-        std::tie(address, offset, value) = phlua::callback::getArguments<size_t, decltype(offset), lua_Number>(L, f);
+        // address, offset, value
+        int offset;
+        std::tie(address, offset, value) = phlua::callback::getArguments<size_t, int, lua_Number>(L, f);
+        address += offset;
     } else {
         std::tie(address, value) = phlua::callback::getArguments<size_t, lua_Number>(L, f);
     }
-
-    if (offset) address += *offset;
 
     T x;
     if (!checkLimits<T>(value, x)) {
@@ -194,17 +210,18 @@ static const size_t kMaxStringElements = 160;
 template <typename T>
 int readstring(lua_State* L, const char* f) {
     size_t address;
-    boost::optional<size_t> length;
+    boost::optional<unsigned int> length;
     std::array<T, kMaxStringElements+1> dest;
 
     std::tie(address, length) = phlua::callback::getArguments<size_t, decltype(length)>(L, f);
 
     size_t readLength = kMaxStringElements;
-    if (length > kMaxStringElements) {
-        auto f = boost::format("can only read strings to a maximum size of %u characters") % kMaxStringElements;
-        luaL_argerror(L, 2, f.str().c_str());
-    } else if (length) {
-        readLength = *length;
+    if (length) {
+        if (length > kMaxStringElements) {
+            auto f = boost::format("can only read strings to a maximum size of %u characters") % kMaxStringElements;
+            luaL_argerror(L, 2, f.str().c_str());
+        }
+        readLength *= *length;
     }
 
     readData(L, dest.data(), (void*)address, readLength*sizeof(T));
