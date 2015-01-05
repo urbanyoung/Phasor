@@ -221,7 +221,7 @@ int readstring(lua_State* L, const char* f) {
             auto f = boost::format("can only read strings to a maximum size of %u characters") % kMaxStringElements;
             luaL_argerror(L, 2, f.str().c_str());
         }
-        readLength *= *length;
+        readLength = *length;
     }
 
     readData(L, dest.data(), (void*)address, readLength*sizeof(T));
