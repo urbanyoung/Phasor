@@ -596,6 +596,7 @@ __declspec(naked) void OnChat_CC()
 		#endif
 		
 		push eax
+        push esi // machine entry
 		call game::OnChat
 
 		popad

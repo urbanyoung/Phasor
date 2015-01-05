@@ -263,12 +263,13 @@ namespace halo { namespace game {
 
 
 	// Called when someone chats in the server
-	void __stdcall OnChat(server::chat::s_chat_data* chat)
+    void __stdcall OnChat(server::s_machine_info* machine, server::chat::s_chat_data* chat)
 	{
 		using namespace server::chat;
 		static const wchar_t* typeValues[] = {L"GLOBAL", L"TEAM", L"VEHICLE"};
 		s_player* sender = getPlayer(chat->player);
 		if (!sender || chat->type < kChatAll || chat->type > kChatVehicle) return;
+        if (machine->playerNum != sender->mem->playerNum) return;
 
 		int length = wcslen(chat->msg);
 		if (length > 256) return;
