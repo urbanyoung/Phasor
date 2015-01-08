@@ -170,6 +170,19 @@ struct s_object_creation_disposition {
     vect3d pos;
     // rest unknown..
 };
+
+struct s_intersection_output
+{
+    BYTE mode; // only seen 2 (hit obj) 3 (didn't)
+    UNKNOWN(0x0f);
+    BYTE hit; // 0 = no hit, else hit.. i think
+    UNKNOWN(7);
+    vect3d hit_pos;
+    UNKNOWN(0x14);
+    ident hit_obj;
+    UNKNOWN(0x28);
+};
+static_assert(sizeof(s_intersection_output) == 0x64, "bad s_intersection_test");
 #pragma pack(pop)
 
 struct view_vector {

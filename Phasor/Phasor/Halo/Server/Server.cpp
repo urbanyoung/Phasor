@@ -341,7 +341,9 @@ namespace halo { namespace server
 
 				if (!can_execute) *(exec_player->console_stream) << L" ** Access denied **" << endl;
 			}			
-		}
+        } else {
+            *g_RconLog << "Server executing: " << command << endl;
+        }
 
 		e_command_result result = e_command_result::kProcessed;
 		if (can_execute) {

@@ -95,4 +95,5 @@ namespace halo { namespace server { namespace maploader
 		commands::CArgParser& args, COutStream& out);
 	e_command_result sv_end_game(void*,
 		commands::CArgParser& args, COutStream&);
+    e_command_result sv_refresh_maps(void*, commands::CArgParser&, COutStream& out);
 }}}

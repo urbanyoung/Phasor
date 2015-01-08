@@ -153,6 +153,13 @@ extern unsigned long CC_MACHINEDISCONNECT;
 extern unsigned long CC_MACHINEINFOFIX;
 extern unsigned long FUNC_INTERSECT;
 
+extern unsigned long CC_INTERSECT_RET1;
+extern unsigned long CC_INTERSECT_RET2;
+extern unsigned long CC_INTERSECT_RET3;
+extern unsigned long CC_PROJMOVE;
+extern unsigned long CC_PROJMOVE_RET1;
+extern unsigned long CC_PROJMOVE_RET2;
+
 //unsigned long ADDR_BROADCASTVERSION = 0x005df840;
 //unsigned long ADDR_HASHLIST = 0x006A2AE4;
 //unsigned long ADDR_SERVERSTRUCT = 0x00745BA0;

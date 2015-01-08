@@ -36,6 +36,7 @@ namespace phasorapi {
         {{l_writedouble, "writedouble"}, AccessMode::kWhileLoaded},
         {{l_writestring, "writestring"}, AccessMode::kWhileLoaded},
         {{l_writewidestring, "writewidestring"}, AccessMode::kWhileLoaded},
+        {{l_findsig, "findsig"}, AccessMode::kWhileLoaded},
         // Output related functions: see output.h
         {{l_hprintf, "hprintf"}, AccessMode::kAlways},
         {{l_say, "say"}, AccessMode::kWhileLoaded},

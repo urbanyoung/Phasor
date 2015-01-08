@@ -139,6 +139,14 @@ unsigned long CC_MACHINEINFOFIX = 0x00516e39;
 unsigned long FUNC_INTERSECT = 0x0053d8d0;
 unsigned long CC_OBJECTDESTROY = 0x52f1e0;
 
+unsigned long CC_INTERSECT_RET1 = 0x0053E00A;
+unsigned long CC_INTERSECT_RET2 = 0x0053E051;
+unsigned long CC_INTERSECT_RET3 = 0x0053E07D;
+unsigned long CC_PROJMOVE = 0x004E2420;
+unsigned long CC_PROJMOVE_RET1 = 0x004E32C0;
+unsigned long CC_PROJMOVE_RET2 = 0x004E3363;
+
+
 namespace Addresses
 {
 	using namespace Common;

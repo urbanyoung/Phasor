@@ -6,6 +6,7 @@
 #include "Server/MapLoader.h"
 #include "Game/Objects.h"
 #include "Game/Damage.h"
+#include "Server/Lead.h"
 
 using namespace halo;
 
@@ -1159,6 +1160,91 @@ __declspec(naked) void OnMachineInfoFix_CC()
 	}
 }
 
+DWORD projmove_ret;
+__declspec(naked) void OnProjectileMove_CC()
+{
+    __asm 
+    {
+        pop projmove_ret
+
+        pushad
+
+        mov eax, [ESP + 0x24]
+        push eax
+        call halo::server::lead::OnProjectileMove
+
+        popad
+
+        PUSH EBP
+        MOV EBP, ESP
+        AND ESP, 0xFFFFFFF8
+
+        push projmove_ret
+        ret
+    }
+}
+
+__declspec(naked) void OnProjectileMoveRet_CC()
+{
+    __asm
+    {
+        add esp, 4
+
+        pushad
+        call halo::server::lead::OnProjectileMoveRet
+        popad
+
+        mov esp, ebp
+        pop ebp
+        ret
+    }
+}
+
+DWORD raycast_ret;
+__declspec(naked) void OnRayCast_CC()
+{
+    __asm
+    {
+        pop raycast_ret
+
+        // todo: stop using pushad/popad at some point
+        pushad
+        
+        mov eax, [esp + 0x30]
+        push eax // s_intersection_output
+        mov eax, [esp + 0x2c]
+        push eax // ignore object
+        mov eax, [esp + 0x28]
+        push eax // dir
+        mov eax, [esp + 0x24]
+        push eax // pos
+        mov eax, [esp + 0x20]
+        push eax // flags
+        call halo::server::lead::OnRayCast
+
+        popad
+
+        sub esp, 0x438
+        push raycast_ret
+        ret
+    }
+}
+
+_declspec(naked) void OnRayCastRet_CC()
+{
+    __asm
+    {
+        add esp, 4
+        pushad
+        call halo::server::lead::OnRayCastRet
+        popad
+
+        ADD ESP, 0x438
+
+        ret
+    }
+}
+
 namespace halo
 {
 	using namespace Common;
@@ -1311,7 +1397,15 @@ namespace halo
 		//BYTE curCmp[] = {0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
 		//WriteBytes(0x00512479 , &curCmp, sizeof(curCmp));
 
-		
+        // nolead
+        CreateCodeCave(FUNC_INTERSECT, 6, OnRayCast_CC);
+        CreateCodeCave(CC_INTERSECT_RET1, 7, OnRayCastRet_CC);
+        CreateCodeCave(CC_INTERSECT_RET2, 7, OnRayCastRet_CC);
+        CreateCodeCave(CC_INTERSECT_RET3, 7, OnRayCastRet_CC);
+        CreateCodeCave(CC_PROJMOVE, 6, OnProjectileMove_CC);
+        CreateCodeCave(CC_PROJMOVE_RET1, 4, OnProjectileMoveRet_CC);
+        CreateCodeCave(CC_PROJMOVE_RET2, 4, OnProjectileMoveRet_CC);
+
 		// I want to remove haloded's seh chain so that I can get extra exception
 		// information (passed to the unhandled exception filter)
 		#pragma pack(push, 1)

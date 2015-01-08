@@ -161,6 +161,9 @@
     <ClCompile Include="Scripts\PhasorAPI\http.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="Phasor\Halo\Server\Lead.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Scripting">
@@ -967,5 +970,13 @@
     <ClInclude Include="Scripts\PhasorAPI\http.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
+    <ClInclude Include="Phasor\Halo\Server\Lead.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\StackTracePlus.lua">
+      <Filter>Scripting</Filter>
+    </None>
   </ItemGroup>
 </Project>
