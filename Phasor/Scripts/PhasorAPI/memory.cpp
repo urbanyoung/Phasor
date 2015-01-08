@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <array>
 #include <Windows.h>
+#include <unordered_map>
 
 #undef min
 #undef max
@@ -364,6 +365,8 @@ bool ishex(char c) {
     return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
 }
 
+std::unordered_map<std::string, unsigned int> sigMap;
+
 int l_findsig(lua_State* L) {
     std::string sig;
     boost::optional<int> occurance;
@@ -387,9 +390,24 @@ int l_findsig(lua_State* L) {
         sig.append("?"); 
     }
 
-    uint8_t* mem = sigscan(sig, *occurance);
+    // Basic caching because sig searching is really slow...
+    unsigned int mem;
+    std::unordered_map<std::string, unsigned int>::iterator itr;
+    char occuranceStr[9]; 
+    static const std::string occ_key_header = "occ:";
+    sprintf_s(occuranceStr, sizeof(occuranceStr), "%08x", *occurance);
+    std::string map_key = sig + occ_key_header + occuranceStr;
+
+    itr = sigMap.find(map_key);
+    if (itr != sigMap.end()) 
+        mem = itr->second;
+    else {
+        mem = (unsigned int)sigscan(sig, *occurance);
+        sigMap.insert(std::make_pair(map_key, mem));
+    }
+
     if (mem) {
-        return phlua::callback::pushReturns(L, std::make_tuple((unsigned int)mem));
+        return phlua::callback::pushReturns(L, std::make_tuple(mem));
     } else {
         return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil()));
     }
