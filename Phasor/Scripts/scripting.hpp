@@ -35,9 +35,16 @@ namespace scripting {
 
             for (; itr != end; ++itr)
                 state.registerFunction(itr->cfunc.name, itr->cfunc.func);
-            
+           
             // For better error logs
-            state.doString("local STP = require \"StackTracePlus\"");
+            state.doString(R"(
+local __f_stacktrace = loadfile("lua\\StackTracePlus.lua")
+if __f_stacktrace then
+STP = __f_stacktrace()
+end
+                )");
+            // Print causes issues once the console has initialized
+            state.doString("print = hprintf");
             state.doFile(this->file);
         }
 
