@@ -245,11 +245,22 @@ namespace halo { namespace server
 	// Called once Halo has received the hash-checking response from gamespy
 	void __stdcall OnHashValidation(s_hash_validation* info, const char* status)
 	{
-        scripting::events::OnHashValidation(info->hash, info->status);
+        int script_status = info->status; // 1 = valid, 2 = invalid
 
-		// We still want to reject valid hashes with invalid challenges
-		// If we get such a case, someone is trying to steal a hash.
-		if (allow_invalid_hash && strcmp(status, "Invalid authentication") != 0) info->status = 1;
+        // We still want to reject valid hashes with invalid challenges
+        // If we get such a case, someone is trying to steal a hash.
+        if (!strcmp(status, "Invalid authentication")) {
+            script_status = 3;
+        } else if (allow_invalid_hash) {
+            info->status = 1;
+        }
+
+        scripting::events::OnHashValidation(info->hash, script_status);
+
+		
+		if (allow_invalid_hash && strcmp(status, "Invalid authentication") != 0) {
+            info->status = 1;
+        }
 
 		if (info->status == 1) {
 			PhasorMachine* machine = FindMachineById(info->machineId);

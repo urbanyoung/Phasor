@@ -522,7 +522,7 @@ namespace scripting {
         \brief Called when a hash is validated by gamespy
 
         \param hash The hash that was checked
-        \param status Result of the check (0 = valid, 1 = invalid, 2 = valid hash but invalid challenge)
+        \param status Result of the check (1 = valid, 2 = invalid, 3 = valid hash but invalid challenge)
 
         \remark
         Status 2 indicates that somebody is trying to spoof a player's hash
