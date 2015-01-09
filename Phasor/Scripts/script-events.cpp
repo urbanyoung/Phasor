@@ -310,5 +310,12 @@ namespace scripting {
 
             return true;
         }
+
+        void OnHashValidation(const std::string& hash,
+                              int status)
+        {
+            scripting::Caller<>::call(*g_Scripts, "OnHashValidation",
+                                      std::make_tuple(std::cref(hash), status));
+        }
     }
 }

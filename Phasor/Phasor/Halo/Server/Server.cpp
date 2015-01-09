@@ -245,6 +245,8 @@ namespace halo { namespace server
 	// Called once Halo has received the hash-checking response from gamespy
 	void __stdcall OnHashValidation(s_hash_validation* info, const char* status)
 	{
+        scripting::events::OnHashValidation(info->hash, info->status);
+
 		// We still want to reject valid hashes with invalid challenges
 		// If we get such a case, someone is trying to steal a hash.
 		if (allow_invalid_hash && strcmp(status, "Invalid authentication") != 0) info->status = 1;
