@@ -1209,16 +1209,18 @@ __declspec(naked) void OnRayCast_CC()
 
         // todo: stop using pushad/popad at some point
         pushad
+
+        // 0 = return address from RayCast
         
-        mov eax, [esp + 0x30]
+        mov eax, [esp + 0x34]
         push eax // s_intersection_output
-        mov eax, [esp + 0x2c]
+        mov eax, [esp + 0x34]
         push eax // ignore object
-        mov eax, [esp + 0x28]
+        mov eax, [esp + 0x34]
         push eax // dir
-        mov eax, [esp + 0x24]
+        mov eax, [esp + 0x34]
         push eax // pos
-        mov eax, [esp + 0x20]
+        mov eax, [esp + 0x34]
         push eax // flags
         call halo::server::lead::OnRayCast
 
