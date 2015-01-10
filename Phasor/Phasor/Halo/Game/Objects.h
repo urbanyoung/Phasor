@@ -133,8 +133,9 @@ struct s_halo_biped {
     // The rest of bipd is composed of other tags, such as
     // mod2\characters\cyborg\cyborg
     // with these tags its size is 0xDEC
+    UNKNOWN(0xDEC - 0x510);
 };
-static_assert(sizeof(s_halo_biped) == 0x510, "bad");
+static_assert(sizeof(s_halo_biped) == 0xDEC, "bad");
 
 struct s_halo_weapon {
     s_halo_object base;
@@ -158,8 +159,9 @@ struct s_halo_vehicle {
     UNKNOWN(0x010);
     // rest of vehi is composed of other tags, with these tags
     // its size is 0xE00
+    UNKNOWN(0xE00 - 0x5C0);
 };
-static_assert(sizeof(s_halo_vehicle) == 0x5c0, "bad");
+static_assert(sizeof(s_halo_vehicle) == 0xE00, "bad");
 
 struct s_object_creation_disposition {
     ident map_id;
@@ -226,7 +228,7 @@ int __stdcall VehicleRespawnCheck(ident m_objId, s_halo_vehicle* obj);
 bool __stdcall EquipmentDestroyCheck(int checkTicks, ident m_objId,
                                      s_halo_object* obj);
 
-// Called when an object is being destroyed
-void __stdcall OnObjectDestroy(ident m_objid);
+void OnObjectDestroy(ident m_objid);
+
 }
 }

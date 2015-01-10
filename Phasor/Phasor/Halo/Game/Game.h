@@ -55,6 +55,9 @@ namespace halo {
 	// Called after the server has been notified of a player spawn
 	void __stdcall OnPlayerSpawnEnd(DWORD playerId, ident m_objectId);
 
+    // Called when an object is being destroyed
+    void __stdcall OnObjectDestroy(ident m_objid);
+
 	// Called when a weapon is created
 	void __stdcall OnObjectCreation(ident m_objectId);
 

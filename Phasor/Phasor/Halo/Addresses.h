@@ -159,6 +159,7 @@ extern unsigned long CC_INTERSECT_RET3;
 extern unsigned long CC_PROJMOVE;
 extern unsigned long CC_PROJMOVE_RET1;
 extern unsigned long CC_PROJMOVE_RET2;
+extern unsigned long CC_ONTICKSLEEP;
 
 //unsigned long ADDR_BROADCASTVERSION = 0x005df840;
 //unsigned long ADDR_HASHLIST = 0x006A2AE4;

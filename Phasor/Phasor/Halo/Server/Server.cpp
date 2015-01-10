@@ -257,11 +257,6 @@ namespace halo { namespace server
 
         scripting::events::OnHashValidation(info->hash, script_status);
 
-		
-		if (allow_invalid_hash && strcmp(status, "Invalid authentication") != 0) {
-            info->status = 1;
-        }
-
 		if (info->status == 1) {
 			PhasorMachine* machine = FindMachineById(info->machineId);
 			machine->hash_validated = true;

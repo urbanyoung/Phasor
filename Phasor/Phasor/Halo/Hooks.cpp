@@ -492,7 +492,7 @@ __declspec(naked) void OnObjectDestroy_CC()
 		pushad
 
 		push edx
-		call objects::OnObjectDestroy
+		call game::OnObjectDestroy
 
 		popad
 
@@ -1210,7 +1210,7 @@ __declspec(naked) void OnRayCast_CC()
         // todo: stop using pushad/popad at some point
         pushad
 
-        // 0 = return address from RayCast
+        // +0x20 = return address from RayCast
         
         mov eax, [esp + 0x34]
         push eax // s_intersection_output
@@ -1242,6 +1242,20 @@ _declspec(naked) void OnRayCastRet_CC()
         popad
 
         ADD ESP, 0x438
+
+        ret
+    }
+}
+
+__declspec(naked) void OnTickSleep_CC()
+{
+    __asm
+    {
+        mov ebx, Sleep
+
+        pushad
+        call halo::server::lead::OnTick
+        popad
 
         ret
     }
@@ -1407,6 +1421,7 @@ namespace halo
         CreateCodeCave(CC_PROJMOVE, 6, OnProjectileMove_CC);
         CreateCodeCave(CC_PROJMOVE_RET1, 4, OnProjectileMoveRet_CC);
         CreateCodeCave(CC_PROJMOVE_RET2, 4, OnProjectileMoveRet_CC);
+        CreateCodeCave(CC_ONTICKSLEEP, 6, OnTickSleep_CC);
 
 		// I want to remove haloded's seh chain so that I can get extra exception
 		// information (passed to the unhandled exception filter)

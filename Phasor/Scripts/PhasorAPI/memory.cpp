@@ -290,7 +290,7 @@ uint8_t hex_to_int(char c) {
 // sig code in Addresses is really bad, so i'll just rewrite it...
 // sig should conform to ([A-Fa-f0-9?][A-Fa-f0-9?])+
 // returns absolute address
-uint8_t* sigscan(const std::string& sig, int occurance) {
+uint8_t* sigscan(const std::string& sig, unsigned int occurance) {
     // should refactor this, but for now a copy/paste works...
     uint8_t* module = (uint8_t*)GetModuleHandle(0);
     unsigned int OffsetToPE = *(unsigned int*)(module + 0x3C);
@@ -369,7 +369,7 @@ std::unordered_map<std::string, unsigned int> sigMap;
 
 int l_findsig(lua_State* L) {
     std::string sig;
-    boost::optional<int> occurance;
+    boost::optional<unsigned int> occurance;
 
     std::tie(sig, occurance) = phlua::callback::getArguments<std::string, decltype(occurance)>(L, __FUNCTION__);
 
@@ -392,13 +392,13 @@ int l_findsig(lua_State* L) {
 
     // Basic caching because sig searching is really slow...
     unsigned int mem;
-    std::unordered_map<std::string, unsigned int>::iterator itr;
     char occuranceStr[9]; 
     static const std::string occ_key_header = "occ:";
+
     sprintf_s(occuranceStr, sizeof(occuranceStr), "%08x", *occurance);
     std::string map_key = sig + occ_key_header + occuranceStr;
 
-    itr = sigMap.find(map_key);
+    auto itr = sigMap.find(map_key);
     if (itr != sigMap.end()) 
         mem = itr->second;
     else {

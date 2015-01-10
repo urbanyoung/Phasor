@@ -10,6 +10,7 @@
 #include "../tags.h"
 #include "../Server/Chat.h"
 #include "../Server/MapVote.h"
+#include "../Server/Lead.h"
 #include <vector>
 
 namespace halo { namespace game {
@@ -28,7 +29,7 @@ namespace halo { namespace game {
 
 	inline bool valid_index(DWORD playerIndex)
 	{
-		return playerIndex >= 0 && playerIndex < 16;
+		return playerIndex < 16;
 	}
 
 	// Find the player based on their memory id.
@@ -95,6 +96,7 @@ namespace halo { namespace game {
 		case 1: // just ended (in game scorecard is shown)
 			{
 				afk_detection::Disable();
+                server::lead::OnGameEnd();
 				g_GameLog->WriteLog(kGameEnd, L"The game has ended.");
 				*g_PrintStream << "The game is ending..." << endl;
 
@@ -115,6 +117,7 @@ namespace halo { namespace game {
 		objects::ClearManagedObjects();
 		afk_detection::Enable();
 		halo::BuildTagCache();
+        server::lead::OnGameStart();
 		
 		g_GameLog->WriteLog(kGameStart, "A new game has started on map %s", map);
 
@@ -196,10 +199,18 @@ namespace halo { namespace game {
 		scripting::events::OnPlayerSpawnEnd(*player, m_objectId);
 	}
 
+    // Called when an object is being destroyed
+    void __stdcall OnObjectDestroy(ident m_objid)
+    {
+        objects::OnObjectDestroy(m_objid);
+        server::lead::OnObjectDestroy(m_objid);
+    }
+
 	// Called when a weapon is created
 	void __stdcall OnObjectCreation(ident m_objectId)
 	{
-		scripting::events::OnObjectCreation(m_objectId);
+        server::lead::OnObjectCreation(m_objectId);
+		scripting::events::OnObjectCreation(m_objectId);        
 	}
 
 	bool __stdcall OnObjectCreationAttempt(s_player_structure* probably_not_a_player,

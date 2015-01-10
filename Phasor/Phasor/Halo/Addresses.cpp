@@ -145,7 +145,7 @@ unsigned long CC_INTERSECT_RET3 = 0x0053E07D;
 unsigned long CC_PROJMOVE = 0x004E2420;
 unsigned long CC_PROJMOVE_RET1 = 0x004E32C0;
 unsigned long CC_PROJMOVE_RET2 = 0x004E3363;
-
+unsigned long CC_ONTICKSLEEP = 0x4ef264;
 
 namespace Addresses
 {

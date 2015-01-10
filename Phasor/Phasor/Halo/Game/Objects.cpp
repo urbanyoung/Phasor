@@ -101,7 +101,7 @@ namespace halo { namespace objects {
 
 
 	// Called when an object is being destroyed
-	void __stdcall OnObjectDestroy(ident m_objid) {
+	void OnObjectDestroy(ident m_objid) {
         managed.remove(m_objid);
 	}
 

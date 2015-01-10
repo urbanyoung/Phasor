@@ -5,6 +5,8 @@
 namespace halo { namespace server {
 namespace lead 
 {
+    void __stdcall OnTick();
+
     void __stdcall OnProjectileMove(halo::ident obj);
     void __stdcall OnProjectileMoveRet();
 
@@ -12,4 +14,9 @@ namespace lead
                              halo::objects::s_intersection_output* output);
     void __stdcall OnRayCastRet();
 
+    void OnObjectDestroy(ident objid);
+    void OnObjectCreation(ident objid);
+
+    void OnGameEnd();
+    void OnGameStart();
 }}}
