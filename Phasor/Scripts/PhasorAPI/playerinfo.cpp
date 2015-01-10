@@ -74,17 +74,6 @@ int l_getteamsize(lua_State* L) {
     return phlua::callback::pushReturns(L, std::make_tuple(count));
 }
 
-int l_getplayerobject(lua_State* L) {
-    boost::optional<halo::s_player*> player;
-    std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
-
-    boost::optional<halo::objects::s_halo_object*> object;
-    if (player)
-        object = (halo::objects::s_halo_object*)halo::objects::GetObjectAddress((*player)->mem->object_id);
-
-    return phlua::callback::pushReturns(L, std::make_tuple(object));
-}
-
 int l_getplayerobjectid(lua_State* L) {
     boost::optional<halo::s_player*> player;
     std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
@@ -93,6 +82,108 @@ int l_getplayerobjectid(lua_State* L) {
         return phlua::callback::pushReturns(L, std::make_tuple((*player)->mem->object_id));
     else
         return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil()));
+}
+
+// Now returns both m_playerObj and playerObjId
+int l_getplayerobject(lua_State* L) {
+	boost::optional<halo::s_player*> player;
+	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
+
+	boost::optional<halo::ident> playerObjId;
+	boost::optional<halo::objects::s_halo_object*> m_playerObj;
+	if (player) {
+		playerObjId = (*player)->mem->object_id;
+		m_playerObj = (halo::objects::s_halo_object*)halo::objects::GetObjectAddress(*playerObjId);
+	}
+	if (m_playerObj && *m_playerObj != 0)
+		return phlua::callback::pushReturns(L, std::make_tuple(m_playerObj, playerObjId));
+	else
+		return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil(), playerObjId));
+}
+
+int l_getplayerweaponid(lua_State* L) {
+	boost::optional<halo::s_player*> player;
+	boost::optional<int> slot;
+	std::tie(player, slot) = phlua::callback::getArguments<decltype(player), int>(L, __FUNCTION__);
+
+	if (player && (*player)->mem->object_id.valid())	{
+		halo::objects::s_halo_object* m_playerObj = (halo::objects::s_halo_object*)halo::objects::GetObjectAddress((*player)->mem->object_id);
+		// use vehicle weapon if player is in a vehicle and ignore slot argument entirely (vehicles can only have one weapon)
+		if (m_playerObj->vehicleId.valid())
+			return phlua::callback::pushReturns(L, std::make_tuple(((halo::objects::s_halo_unit*)(halo::objects::GetObjectAddress(m_playerObj->vehicleId)))->weaponObjId[0]));
+		// if slot argument is valid use objId of weapon at specified slot
+		else if (slot && slot >= 0 && slot <= 4)
+			return phlua::callback::pushReturns(L, std::make_tuple(((halo::objects::s_halo_unit*)m_playerObj)->weaponObjId[*slot]));
+		// otherwise use the current weapon the player is holding
+		else
+			return phlua::callback::pushReturns(L, std::make_tuple(m_playerObj->player_curWeapon));
+	}
+}
+
+// Returns both m_weaponObj and weaponObjId
+int l_getplayerweapon(lua_State* L) {
+	boost::optional<halo::s_player*> player;
+	boost::optional<int> slot;
+	std::tie(player, slot) = phlua::callback::getArguments<decltype(player), decltype(slot)>(L, __FUNCTION__);
+
+	boost::optional<halo::ident> weaponObjId;
+	if (player && (*player)->mem->object_id.valid())	{
+		halo::objects::s_halo_object* m_playerObj = (halo::objects::s_halo_object*)halo::objects::GetObjectAddress((*player)->mem->object_id);
+		// use vehicle weapon if player is in a vehicle and ignore slot argument entirely (vehicles can only have one weapon)
+		if (m_playerObj->vehicleId.valid())
+			weaponObjId = ((halo::objects::s_halo_unit*)(halo::objects::GetObjectAddress(m_playerObj->vehicleId)))->weaponObjId[0];
+		// if slot argument is valid use objId of weapon at specified slot
+		else if (slot && slot >= 0 && slot <= 4)
+			weaponObjId = ((halo::objects::s_halo_unit*)m_playerObj)->weaponObjId[*slot];
+		// otherwise use the current weapon the player is holding
+		else
+			weaponObjId = m_playerObj->player_curWeapon;
+
+		if (weaponObjId && (*weaponObjId).valid()) {
+			halo::objects::s_halo_object* m_weaponObj = (halo::objects::s_halo_object*)halo::objects::GetObjectAddress(*weaponObjId);
+			if (m_weaponObj != 0)
+				return phlua::callback::pushReturns(L, std::make_tuple(m_weaponObj, *weaponObjId));
+			else
+				return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil(), *weaponObjId));
+		}
+		else if (weaponObjId)
+			return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil(), *weaponObjId));
+	}
+
+	// player/playerObjId isn't valid or somehow weaponObjId isn't valid
+	return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil(), lua::types::Nil()));
+
+}
+
+int l_getplayervehicleid(lua_State* L) {
+	boost::optional<halo::s_player*> player;
+	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
+
+	if (player && (*player)->mem->object_id.valid())
+		return phlua::callback::pushReturns(L, std::make_tuple(((halo::objects::s_halo_object*)halo::objects::GetObjectAddress((*player)->mem->object_id))->vehicleId));
+	else
+		return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil()));
+}
+
+// Returns both m_vehicleObj and vehicleObjId
+int l_getplayervehicle(lua_State* L) {
+	boost::optional<halo::s_player*> player;
+	std::tie(player) = phlua::callback::getArguments<decltype(player)>(L, __FUNCTION__);
+
+	boost::optional<halo::objects::s_halo_object*> object;
+	if (player)	{
+		object = (halo::objects::s_halo_object*)halo::objects::GetObjectAddress((*player)->mem->object_id);
+		if (object && (*object)->vehicleId.valid())	{
+			halo::objects::s_halo_object* m_vehicleObj = (halo::objects::s_halo_object*)halo::objects::GetObjectAddress((*object)->vehicleId);
+			if (m_vehicleObj != 0)
+				return phlua::callback::pushReturns(L, std::make_tuple(m_vehicleObj, (*object)->vehicleId));
+			else
+				return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil(), (*object)->vehicleId));
+		}
+		else if (object != 0)
+			return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil(), (*object)->vehicleId));
+	}
+	return phlua::callback::pushReturns(L, std::make_tuple(lua::types::Nil(), lua::types::Nil()));
 }
 
 int l_isadmin(lua_State* L) {

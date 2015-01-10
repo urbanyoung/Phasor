@@ -30,15 +30,15 @@ void writeData(lua_State* L, void* dest, const void* src, size_t nbytes) {
 }
 
 template <typename T>
-bool checkLimits(double value, T& out) {
+void setLimits(double& value, T& out) {
     static const T max_value = std::numeric_limits<T>::max();
     static const T min_value = std::numeric_limits<T>::lowest();
-    if (value <= max_value && value >= min_value) {
+	if (value > max_value)
+		out = static_cast<T>(max_value);
+	else if(value < min_value)
+		out = static_cast<T>(min_value);
+	else
         out = static_cast<T>(value);
-        return true;
-    } else {
-        return false;
-    }
 }
 
 size_t addBitOffset(size_t x, int& offset) {
@@ -145,11 +145,8 @@ int writeNumber(lua_State* L, const char* f) {
 
     if (offset) address += *offset;
 
-    T x;
-    if (!checkLimits<T>(value, x)) {
-        auto f = boost::format("invalid write: value (%.0f) outside of type's range") % value;
-        luaL_error(L, "%s", f.str().c_str());
-    }
+	T x;
+	setLimits<T>(value, x);
 
     writeData(L, (void*)address, &x, sizeof(T));
     return 0;

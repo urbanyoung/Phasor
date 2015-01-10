@@ -41,59 +41,6 @@ __declspec(naked) void oUpdateObject() {
 	}
 }
 
-__declspec(naked) void oCollisionStart() {
-	__asm {
-		PUSHAD
-		MOV EAX, DWORD PTR DS : [ESP + 0x2C]
-		CMP EAX, -1
-		JE SHORT retToFunc
-		MOV ECX, DWORD PTR DS : [ESP + 0x20]
-		//PUSH ECX
-		//PUSH EAX
-		//CALL dCollisionStart
-		JMP retToFunc
-	retToFunc:
-		POPAD
-		SUB ESP, 438
-		JMP FUNC_COLLISIONCHECK + 6
-	}
-}
-
-__declspec(naked) void oCollisionEnd() {
-	__asm {
-			ADD ESP, 438
-			PUSHAD
-			MOV EAX, DWORD PTR DS : [ESP + 0x2C]
-			CMP EAX, -1
-			JE SHORT retToFunc2
-			//PUSH EAX
-			//CALL dCollisionEnd
-			JMP retToFunc2
-		retToFunc2 :
-			POPAD
-			RET
-	}
-}
-
-unsigned long func1 = 0x478BC0;
-unsigned long land1 = 0x4786C0;
-
-__declspec(naked) void oBulletPhysics() {
-	__asm {
-		PUSHAD
-		//PUSH 0x1000E9
-		//PUSH ECX
-		//CALL dBulletPhysics
-		POPAD
-		CALL func1
-		PUSHAD
-		//PUSH ECX
-		//CALL dBulletMagnetism
-		POPAD
-		JMP land1
-	}
-}
-
 // Codecave for timers, safer than creating threads (hooking console checking routine)
 DWORD consoleProc_ret = 0;
 __declspec(naked) void OnConsoleProcessing_CC()
@@ -1311,12 +1258,6 @@ namespace halo
 
 		CreateCodeCave(CC_UPDATEALLOBJECTS, 8, oUpdateAllObjects);
 		CreateCodeCave(CC_UPDATEOBJECT, 7, oUpdateObject);
-
-		//CreateCodeCave(CC_COLLISIONCHECK, 6, oCollisionStart);
-		//CreateCodeCave(CC_COLLISIONEND, 6, oCollisionEnd);
-		//CreateCodeCave(CC_COLLISIONEND2, 6, oCollisionEnd);
-		//CreateCodeCave(CC_COLLISIONEND3, 6, oCollisionEnd);
-		//CreateCodeCave(CC_BULLETPHYSICS, 5, oBulletPhysics);
 
 		// Codecave for handling team changes
 		#ifdef PHASOR_PC

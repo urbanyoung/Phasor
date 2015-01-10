@@ -21,23 +21,31 @@ int l_getobjectcoords(lua_State* L) {
 }
 
 int l_objectaddrtoplayer(lua_State* L) {
-	halo::objects::s_halo_object* m_object;
-	std::tie(m_object) = phlua::callback::getArguments<halo::objects::s_halo_object*>(L, __FUNCTION__);
+	unsigned long addr;
+    std::tie(addr) = phlua::callback::getArguments<unsigned long>(L, __FUNCTION__);
 
-	boost::optional<int> playerId = m_object->ownerObject;
+    boost::optional<int> playerId;
+    for (int i = 0; i < 16; i++) {
+        halo::s_player* player = halo::game::getPlayer(i);
+        if (player && halo::objects::GetObjectAddress(player->mem->object_id) == (void*)addr) {
+            playerId = i;
+            break;
+        }
+    }
 
     return phlua::callback::pushReturns(L, std::make_tuple(playerId));
 }
 
 int l_objectidtoplayer(lua_State* L) {
-    halo::ident objId;
-    std::tie(objId) = phlua::callback::getArguments<decltype(objId)>(L, __FUNCTION__);
+	boost::optional<halo::ident> playerObjId;
+	std::tie(playerObjId) = phlua::callback::getArguments<decltype(playerObjId)>(L, __FUNCTION__);
 
-	halo::objects::s_halo_object* m_object = (halo::objects::s_halo_object*)halo::objects::GetObjectAddress(objId);
+	boost::optional<int> playerId;
+	if ((*playerObjId) && (*playerObjId).valid())	{
+		playerId = ((halo::objects::s_halo_object*)halo::objects::GetObjectAddress(*playerObjId))->ownerObject;
+	}
 
-    boost::optional<int> playerId = m_object->ownerObject;
-
-    return phlua::callback::pushReturns(L, std::make_tuple(playerId));
+	return phlua::callback::pushReturns(L, std::make_tuple(playerId));
 }
 
 int l_createobject(lua_State* L) {
