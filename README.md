@@ -4,6 +4,7 @@ Phasor (Wizard Mod)
 Welcome to my phasor mod. Stuff on here will be general fixes that oxide couldn't be bothered with.
 
 Fixes/Additions:
+  - Added getplayerobject, getplayerweaponid, getplayerweapon, getplayervehicleid, and getplayervehicle as Lua functions.
   - OnVehicleEject now called when exitvehicle() is called.
   - No longer says 'script already loaded' in scriptlogs.
   - OnObjectCreationAttempt now passes the player argument (instead of the parent player).
