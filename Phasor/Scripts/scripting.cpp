@@ -5,6 +5,7 @@
 #include "../Common/FileIO.h"
 #include "../Phasor/Globals.h"
 #include "../Common/Timers.h"
+#include "PhasorAPI/http.h"
 #include <array>
 
 namespace scripting {
@@ -13,6 +14,12 @@ static const std::string log_prefix = "   ";
 
 // only care about its memory address
 const char PhasorScript::thisKey = 0;
+
+void checkEvents()
+{
+    http_requests::checkRequests();
+}
+
 
 //
 // --------------------------------------------------------------
@@ -26,6 +33,16 @@ PhasorScript& PhasorScript::get(lua_State* L) {
     if (!pThis)
         luaL_error(L, "cannot find reference to this! (phasor bug)");
     return *pThis;
+}
+
+void PhasorScript::inactive() {
+    active = false;
+
+    // Remap any API funcs that should no longer be used 
+    for (auto itr = phasorapi::funcTable.cbegin(); itr != phasorapi::funcTable.cend(); ++itr) {
+        if (itr->access == phasorapi::AccessMode::kWhileLoaded)
+            state.registerFunction(itr->cfunc.name, phasorapi::l_func_inactive);
+    }
 }
 
 void PhasorScript::block(std::string f) {
@@ -95,6 +112,8 @@ bool ScriptHandler::loadScript(const std::string& name, bool persistent,
         lua::State& state = script->getState();
         checkCompatibility(state);
 
+        http_requests::setupScript(*script);
+
         if (state.hasFunction("OnScriptLoad")) {
             phlua::Caller<> c(state);
             c.call("OnScriptLoad",
@@ -151,6 +170,10 @@ void ScriptHandler::unloadScript(PhasorScript& script) {
 
     scripting::Caller<>::call_single(*this, script, "OnScriptUnload",
                                      std::make_tuple());
+
+    // The script should be considered unloaded, even if it is
+    // kept alive by outstanding http requests.
+    script.inactive();
 }
 
 bool ScriptHandler::unloadScript(const std::string& script) {
@@ -222,10 +245,10 @@ void ScriptHandler::handleError(PhasorScript& script, const std::string& func,
     errStream << L"Error in '" << script.getName() << L'\'' << endl;
     errStream << log_prefix << L"Error: " << what << endl;
 
-    script.block(func);
+    /*script.block(func);
 
     errStream << log_prefix << L"Action: Further calls to '" << func
-              << L"' will be ignored." << endl;
+              << L"' will be ignored." << endl;*/
 
     errStream << endl;
 }

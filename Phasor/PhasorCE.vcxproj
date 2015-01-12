@@ -34,30 +34,36 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Boost.props" />
+    <Import Project="Phasor-Common.props" />
+    <Import Project="Phasor-Debug.props" />
+    <Import Project="Phasor-CE.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Boost.props" />
+    <Import Project="Phasor-Common.props" />
+    <Import Project="Phasor-Release.props" />
+    <Import Project="Phasor-CE.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft Visual Studio 12.0\boost_1_57_0\boost_1_57_0;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio 12.0\boost_1_57_0\boost_1_57_0;$(IncludePath)</IncludePath>
+    <IncludePath>E:\dev\boost_1_56_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS; PHASOR_CE; BUILD_DEBUG</PreprocessorDefinitions>
       <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
@@ -72,7 +78,6 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS; PHASOR_CE;BUILD_RELEASE</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -114,6 +119,10 @@
     <ClCompile Include="Common\Streams.cpp" />
     <ClCompile Include="Common\Threads.cpp" />
     <ClCompile Include="Common\Timers.cpp" />
+    <ClCompile Include="cpp-netlib\libs\network\src\client.cpp" />
+    <ClCompile Include="cpp-netlib\libs\network\src\server_request_parsers_impl.cpp" />
+    <ClCompile Include="cpp-netlib\libs\network\src\uri\schemes.cpp" />
+    <ClCompile Include="cpp-netlib\libs\network\src\uri\uri.cpp" />
     <ClCompile Include="Libraries\Curl.cpp" />
     <ClCompile Include="Libraries\sqlitepp.cpp" />
     <ClCompile Include="main.cpp" />
@@ -170,7 +179,197 @@
     <ClInclude Include="Common\Threads.h" />
     <ClInclude Include="Common\Timers.h" />
     <ClInclude Include="Common\Types.h" />
-    <ClInclude Include="Common\vect.h" />
+    <ClInclude Include="Common\vect3d.h" />
+    <ClInclude Include="cpp-netlib\boost\mime.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\constants.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\detail\debug.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\detail\directive_base.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\detail\wrapper_base.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\include\http\client.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\include\http\server.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\include\message.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\directives.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\directives\detail\string_directive.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\directives\detail\string_value.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\directives\header.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\directives\remove_header.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\message_concept.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\add_header.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\body.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\clear_headers.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\destination.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\remove_header.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\modifiers\source.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\traits\body.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\traits\destination.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\traits\headers.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\traits\source.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\transformers.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\transformers\selectors.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\transformers\to_lower.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\transformers\to_upper.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers\body.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers\destination.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers\headers.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message\wrappers\source.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\message_fwd.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\algorithms\linearize.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\async_impl.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\async_base.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\async_normal.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\async_protocol_handler.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\connection_delegate.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\connection_delegate_factory.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\normal_delegate.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\ssl_delegate.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\sync_base.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\sync_normal.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\connection\sync_ssl.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\facade.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\macros.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\options.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\pimpl.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\client\sync_impl.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\errors.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\impl\request.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\async_message.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\major_version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\method.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\minor_version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\status.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\status_message.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\uri.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\directives\version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\header.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\header\name.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\header\value.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\header_concept.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\message_base.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\body.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\clear_headers.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\destination.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\headers.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\major_version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\method.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\minor_version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\source.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\status.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\status_message.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\uri.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\modifiers\version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\traits\status.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\traits\status_message.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\traits\version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\anchor.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\body.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\destination.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\headers.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\helper.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\host.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\major_version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\method.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\minor_version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\path.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\port.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\protocol.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\query.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\ready.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\source.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\status.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\status_message.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\uri.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\message\wrappers\version.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\parser.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\parser\incremental.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\async_connection.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\async_resolver.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\pooled_connection.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\simple_connection.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\policies\sync_resolver.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\request.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\request_concept.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\request_parser.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\response.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\response_concept.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\async_connection.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\async_server.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\options.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\request.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\request_parser.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\socket_options_base.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\storage_base.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\sync_connection.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\server\sync_server.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\client_or_server.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_client.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_http.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_keepalive.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_server.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\is_simple.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\support\sync_only.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\tags.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\connection_keepalive.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\connection_policy.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\delegate_factory.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\message_traits.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\parser_traits.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\resolver.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\resolver_policy.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\http\traits\vector.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\protocol\stream_handler.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_async.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_default_string.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_default_wstring.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_http.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_keepalive.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_pod.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_simple.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_sync.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_tcp.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\is_udp.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\pod_or_normal.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\support\sync_only.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\tags.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\traits\char.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\traits\headers_container.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\traits\istream.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\traits\istringstream.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\traits\ostream_iterator.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\traits\ostringstream.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\traits\string.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\traits\vector.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\accessors.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\builder.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\config.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\decode.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\detail\uri_parts.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\authority.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\fragment.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\host.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\path.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\port.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\query.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\scheme.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\directives\user_info.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\encode.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\schemes.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\uri.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\uri\uri_io.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\utils\base64\encode-io.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\utils\base64\encode.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\utils\thread_pool.hpp" />
+    <ClInclude Include="cpp-netlib\boost\network\version.hpp" />
     <ClInclude Include="Libraries\Curl.h" />
     <ClInclude Include="Libraries\sqlitepp.h" />
     <ClInclude Include="main.h" />
@@ -219,11 +418,6 @@
     <ClInclude Include="Scripts\PhasorAPI\string.h" />
     <ClInclude Include="Scripts\script-events.h" />
     <ClInclude Include="Scripts\scripting.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="phasor_includes.props">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

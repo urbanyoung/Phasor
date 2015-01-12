@@ -114,6 +114,7 @@ unsigned long CC_VEHICLEFORCEEJECT = 0x0056E6CD;
 unsigned long CC_VEHICLEUSEREJECT = 0x0056E107;
 unsigned long CC_HALOPRINT = 0x004BA3F0;
 unsigned long CC_HALOBANCHECK = 0x00518820;
+unsigned long CC_PINGREQUEST = 0x5130F4; // ce 4c99e4
 unsigned long CC_UPDATEOBJECT = FUNC_UPDATE_OBJECT + 0xF;
 unsigned long CC_UPDATEALLOBJECTS = FUNC_UPDATE_ALL_OBJECTS;
 
@@ -150,6 +151,14 @@ unsigned long CC_MACHINEDISCONNECT = 0x00515bd9;
 unsigned long CC_MACHINEINFOFIX = 0x00516e39;
 unsigned long FUNC_INTERSECT = 0x0053d8d0;
 unsigned long CC_OBJECTDESTROY = 0x52f1e0;
+
+unsigned long CC_INTERSECT_RET1 = 0x0053E00A;
+unsigned long CC_INTERSECT_RET2 = 0x0053E051;
+unsigned long CC_INTERSECT_RET3 = 0x0053E07D;
+unsigned long CC_PROJMOVE = 0x004E2420;
+unsigned long CC_PROJMOVE_RET1 = 0x004E32C0;
+unsigned long CC_PROJMOVE_RET2 = 0x004E3363;
+unsigned long CC_ONTICKSLEEP = 0x4ef264;
 
 namespace Addresses
 {
@@ -562,6 +571,9 @@ namespace Addresses
 
         BYTE sig95[] = {0x8B, 0xCA, 0x81, 0xE1, 0xFF, 0xFF, 0x00, 0x00, 0x56};
         CC_OBJECTDESTROY = FindAddress("CC_DESTROY", codeSection, codeSize, sig95, sizeof(sig95), 0, 0);
+
+        BYTE pingSig[] = {0x6A, 0x00, 0x6A, 0x35, 0x6A, 0x00};
+        CC_PINGREQUEST = FindAddress("CC_PINGREQUEST", codeSection, codeSize, pingSig, sizeof(pingSig), 0, 0x0F);
 
 		// patch the installation of other exception handlers
 		BYTE instSig[] = {0x68, 0x6C, 0x03, 0x5B, 0x00, 0x64, 0xA1, 0x00, 0x00, 0x00, 0x00, 0x50, 0x64, 0x89, 0x25, 0x00, 0x00, 0x00, 0x00};

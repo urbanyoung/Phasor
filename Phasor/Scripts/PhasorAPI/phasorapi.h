@@ -4,5 +4,16 @@
 #include <vector>
 
 namespace phasorapi {
-    extern std::vector<lua::callback::CFunc> funcTable;
+    enum class AccessMode {
+        kAlways, kWhileLoaded
+    };
+
+    struct Func {
+        lua::CFunc cfunc;
+        AccessMode access;
+    };
+
+    int l_func_inactive(lua_State* L);
+
+    extern std::vector<Func> funcTable;
 }

@@ -715,6 +715,19 @@ struct s_halo_object_table
 	s_table_header header;
 	s_halo_object_header entries[0x800];
 };
+
+struct s_intersection_output
+{
+    BYTE mode; // only seen 2 (hit obj) 3 (didn't)
+    UNKNOWN(0x0f);
+    BYTE hit; // 0 = no hit, else hit.. i think
+    UNKNOWN(7);
+    vect3d hit_pos;
+    UNKNOWN(0x14);
+    ident hit_obj;
+    UNKNOWN(0x28);
+};
+static_assert(sizeof(s_intersection_output) == 0x64, "bad s_intersection_test");
 #pragma pack(pop)
 
 struct view_vector {
@@ -758,7 +771,7 @@ int __stdcall VehicleRespawnCheck(ident m_objId, s_halo_vehicle* obj);
 bool __stdcall EquipmentDestroyCheck(int checkTicks, ident m_objId,
                                      s_halo_object* obj);
 
-// Called when an object is being destroyed
-void __stdcall OnObjectDestroy(ident m_objid);
+void OnObjectDestroy(ident m_objid);
+
 }
 }

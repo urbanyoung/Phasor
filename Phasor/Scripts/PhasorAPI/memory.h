@@ -342,4 +342,5 @@ int l_writestring(lua_State* L);
  */
 int l_writewidestring(lua_State* L);
 
+int l_findsig(lua_State* L);
 //! }@

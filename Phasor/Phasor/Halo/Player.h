@@ -97,6 +97,8 @@ namespace halo
 		s_presence_item client_stuff;			// yes oxide, this is confirmed...
 		WORD invis_time;						// 0x0068 Time until player is no longer camouflaged. (1 sec = 30 ticks)
 		UNKNOWN(2);								// 0x006A something to do with invis_time.
+        BYTE memoryId;
+		UNKNOWN(4);
 		float speed;							// 0x006C
 		UNKNOWN(4);								// 0x0070 (teleporter_flag_id) Index to a netgame flag in the scenario, or -1 (Always 0xFFFFFFFF?)
 		UNKNOWN(4);								// 0x0074 (objective_mode) (Hill = 0x22 = 34) (Juggernaut = It = 0x23 = 35) (Race = 0x16 = 22) (Ball = 0x29 = 41) (Others = -1)
@@ -115,7 +117,7 @@ namespace halo
 		WORD kills;								// 0x009C
 		UNKNOWN(6);								// 0x009E (Padding?)
 		WORD assists;							// 0x00A4
-		UNKNOWN(6);								// 0x00A6 (Padding?)
+		UNKNOWN(6); // A6
 		WORD betrayals;							// 0x00AC
 		WORD deaths;							// 0x00AE
 		WORD suicides;							// 0x00B0 Actually suicides + betrayals.

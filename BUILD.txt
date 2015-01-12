@@ -1,0 +1,30 @@
+This file is intended to help people inexperienced with C++
+and Visual Studio to build Phasor.
+
+What you need:
+
+	1. Visual Studio 2013 or later
+	2. Boost (any suitably recent version should do, but I use 1.56.0)
+		http://www.boost.org/
+		
+Extract Boost somewhere, I use E:\dev\boost_1_56_0.
+
+1. 	Launch Visual Studio and then select Launch Visual Studio Command Prompt
+	from the TOOLS menu.
+2. 	In the newly launched command prompt, change directory to where you 
+	extracted boost.
+3. 	Execute: .\bootstrap.bat
+4.	Execute: .\b2 --toolset=msvc-12.0 -j8 --build-type=complete --prefix=E:\dev\boost_1_56_0
+		Note: This will build ALL of boost and this can take awhile. Phasor only requires
+		a few boost libraries to be built, but I don't remember them off the top of my head. So
+		I just build everything. The -j8 option tells b2 to build using 8 CPU cores.
+5. 	While that's building, open Boost.props in a text editor. You'll find it in Phasor's
+	root directory.
+6.	Change the value of BOOST_PATH match your boost folder (e.g. E:\dev\boost_1_56_0)
+
+		<PropertyGroup Label="UserMacros">
+			<BOOST_PATH>E:\dev\boost_1_56_0</BOOST_PATH>
+		</PropertyGroup>
+		
+7. 	Once Boost has finished building (takes about 20 minutes on my i7-4770), Phasor
+	should build without issue.

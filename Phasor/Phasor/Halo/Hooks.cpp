@@ -519,7 +519,7 @@ __declspec(naked) void OnObjectDestroy_CC()
 		pushad
 
 		push edx
-		call objects::OnObjectDestroy
+		call game::OnObjectDestroy
 
 		popad
 
@@ -624,6 +624,7 @@ __declspec(naked) void OnChat_CC()
 		#endif
 		
 		push eax
+        push esi // machine entry
 		call game::OnChat
 
 		popad
@@ -1341,7 +1342,6 @@ namespace halo
 		//BYTE curCmp[] = {0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
 		//WriteBytes(0x00512479 , &curCmp, sizeof(curCmp));
 
-		
 		// I want to remove haloded's seh chain so that I can get extra exception
 		// information (passed to the unhandled exception filter)
 		#pragma pack(push, 1)

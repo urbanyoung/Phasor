@@ -80,7 +80,7 @@ namespace halo { namespace objects {
 
 
 	// Called when an object is being destroyed
-	void __stdcall OnObjectDestroy(ident m_objid) {
+	void OnObjectDestroy(ident m_objid) {
         managed.remove(m_objid);
 	}
 
@@ -325,19 +325,7 @@ ASSIGNMENT_FAILED:
 
 	bool FindIntersection(const view_vector& view, const halo::ident& ignore_obj,
 		vect3d& hit_pos, ident& hit_obj)
-	{
-		struct s_intersection_output
-		{
-			BYTE mode; // only seen 2 (hit obj) 3 (didn't)
-			UNKNOWN(0x0f);
-			BYTE hit; // 0 = no hit, else hit.. i think
-			UNKNOWN(7);
-			vect3d hit_pos;
-			UNKNOWN(0x14);
-			ident hit_obj;
-			UNKNOWN(0x28);
-		};
-
+	{	
 		const vect3d* dir = &view.dir, *pos = &view.pos;
 		s_intersection_output result;
 		bool hit;

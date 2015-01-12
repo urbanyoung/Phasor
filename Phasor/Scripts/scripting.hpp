@@ -10,17 +10,20 @@ namespace scripting {
 
     template <typename... ResultTypes> class Caller;
 
+    void checkEvents();
+
     class PhasorScript : public std::enable_shared_from_this<PhasorScript> {
     private:
         lua::State state;
         std::string file, name;
         bool persistent;
+        bool active; // false if OnScriptUnload has been called
         std::unordered_set<std::string> blockedFunctions;
 
         static const char thisKey;
         
         PhasorScript(bool persistent, std::string file, std::string name)
-            : file(std::move(file)), name(std::move(name)), persistent(persistent)
+            : file(std::move(file)), name(std::move(name)), persistent(persistent), active(true)
         {}
 
         template <class Itr>
@@ -30,7 +33,18 @@ namespace scripting {
             lua_pushlightuserdata(state, this); // value
             lua_settable(state, LUA_REGISTRYINDEX);
 
-            lua::callback::registerFunctions(state, itr, end);
+            for (; itr != end; ++itr)
+                state.registerFunction(itr->cfunc.name, itr->cfunc.func);
+           
+            // For better error logs
+            state.doString(R"(
+local __f_stacktrace = loadfile("lua\\StackTracePlus.lua")
+if __f_stacktrace then
+STP = __f_stacktrace()
+end
+                )");
+            // Print causes issues once the console has initialized
+            state.doString("print = hprintf");
             state.doFile(this->file);
         }
 
@@ -51,6 +65,8 @@ namespace scripting {
         inline const lua::State& getState() const { return state; }
         inline const std::string& getName() const { return name; }
         inline bool isPersistent() const { return persistent; }
+        inline bool isActive() const { return active;  }
+        void inactive();
 
         void block(std::string f);
         bool isBlocked(const std::string& f) const;

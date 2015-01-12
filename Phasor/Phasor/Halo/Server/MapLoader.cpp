@@ -137,6 +137,16 @@ namespace halo { namespace server { namespace maploader
 		return mapname.size() != 0;
 	}
 
+    void FreeMapList() {
+        for (auto x = 0; x < *curCount; x++) {
+            GlobalFree(mapTable[x].map);
+        }
+        GlobalFree(mapTable);
+        *curCount = 0;
+        *maxCount = 0;
+        modCount = 0;
+    }
+
 	// This function generates the map list
 	void BuildMapList(COutStream& out)
 	{
@@ -739,6 +749,15 @@ MAP_NOT_FOUND:
 		in_mapcycle = false;
 		return e_command_result::kGiveToHalo;
 	}
+
+   /* e_command_result sv_refresh_maps(void*, commands::CArgParser&, COutStream& out)
+    {
+    won't work for ce, also need to have opption to load all maps (by default I just do non-default ones)
+        BuildMapList(out);
+        DWORD table = server::maploader::GetMapTable();
+        WriteBytes(PATCH_MAPTABLE, &table, 4);
+        return e_command_result::kProcessed;
+    }*/
 
 	// --------------------------------------------------------------------
 	// Initialize the system

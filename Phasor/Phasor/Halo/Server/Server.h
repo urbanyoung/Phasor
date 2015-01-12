@@ -50,6 +50,14 @@ namespace server
 #endif
 	};
 
+    struct s_previous_ping
+    {
+        BYTE memoryId;
+        UNKNOWN(3); // padding
+        DWORD ping;
+    };
+    static_assert(sizeof(s_previous_ping) == 0x08, "incorrect s_previous_ping");
+
 	//! Server related items (name, gametype, players, machines)
 	struct s_server_info
 	{
@@ -63,13 +71,18 @@ namespace server
 #ifdef PHASOR_CE
 		BYTE unk_ce[0x40];
 #endif
-		BYTE max_players;//1e6 before this
-		WORD unk3;
-		BYTE cur_players;
-		BYTE unk4;
-		s_presence_item player_data[16];
-		BYTE unk5[14];
-		s_machine_info machine_table[16];
+		BYTE max_players;//1a5 pc, 1e5 ce
+		WORD unk3; // 1a6, 1e6
+		BYTE cur_players; // 1a8, 1e8
+		BYTE unk4; // 1a9, 1e9
+		s_presence_item player_data[16]; // 1aa, 1ea
+		BYTE unk5[14]; // 3aa, 3ea
+		s_machine_info machine_table[16]; // 3b8, 3f8
+        UNKNOWN(8); // 9b8, 12b8
+        DWORD last_ping_request; // timestamp 9c0, 12c0
+        UNKNOWN(0x5C); // 9c4, 12c4
+        s_previous_ping previous_pings[16]; // a20, 1320
+
 	};
 
 	struct s_command_input {

@@ -110,6 +110,31 @@ namespace lua {
         x = (x1 == 1);
     }
 
+    // Error handler that appends a stack trace to the error message
+    int build_stack_trace_error_func(lua_State* L) {
+        int top = lua_gettop(L);
+        if (!lua_isstring(L, top))  
+            return 1;
+
+        // get globals table (+1)
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+        lua_getfield(L, -1, "debug"); // (+2)
+        if (!lua_istable(L, -1)) {
+            lua_pop(L, 2);
+            return 1;
+        }
+
+        lua_getfield(L, -1, "traceback"); // (+3)
+        if (!lua_isfunction(L, -1)) {
+            lua_pop(L, 3);
+            return 1;
+        }
+        lua_pushvalue(L, top);  // original error message
+        lua_pushinteger(L, 2);  // don't include this call in the stacktrace
+        lua_call(L, 2, 1);  
+        return 1;
+    }
+
     //
     // ------------------------------------------------------------
     //
@@ -133,9 +158,22 @@ namespace lua {
         }
     }
 
-    void State::pcall(int nargs, int nresults) {
-        if (lua_pcall(L, nargs, nresults, 0)) {
+    void State::doString(const std::string& str) {
+       if (luaL_dostring(L, str.c_str())) {
             std::string error = lua_tostring(L, -1);
+            lua_pop(L, 1);
+            throw Exception(error);
+        }
+    }
+
+    void State::pcall(int nargs, int nresults) {
+        pcall(nargs, nresults, 0);
+    }
+
+    void State::pcall(int nargs, int nresults, int err_function) {
+        if (lua_pcall(L, nargs, nresults, err_function)) {
+            const char* err = lua_tostring(L, -1);
+            std::string error = err != nullptr ? err : "unknown script error";
             lua_pop(L, 1);
             throw Exception(error);
         }
@@ -146,5 +184,9 @@ namespace lua {
         bool success = lua_type(L, -1) == LUA_TFUNCTION;
         lua_pop(L, 1);
         return success;
+    }
+
+    void State::registerFunction(const char* name, lua_CFunction f) {
+        lua_register(L, name, f);
     }
 }

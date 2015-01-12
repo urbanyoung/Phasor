@@ -121,6 +121,7 @@ extern unsigned long CC_VEHICLEFORCEEJECT;
 extern unsigned long CC_VEHICLEUSEREJECT;
 extern unsigned long CC_HALOPRINT;
 extern unsigned long CC_HALOBANCHECK;
+extern unsigned long CC_PINGREQUEST;
 extern unsigned long CC_EQUIPMENTDESTROY;
 extern unsigned long CC_UPDATEALLOBJECTS;
 extern unsigned long CC_UPDATEOBJECT;
@@ -162,6 +163,14 @@ extern unsigned long CC_MACHINECONNECT;
 extern unsigned long CC_MACHINEDISCONNECT;
 extern unsigned long CC_MACHINEINFOFIX;
 extern unsigned long FUNC_INTERSECT;
+
+extern unsigned long CC_INTERSECT_RET1;
+extern unsigned long CC_INTERSECT_RET2;
+extern unsigned long CC_INTERSECT_RET3;
+extern unsigned long CC_PROJMOVE;
+extern unsigned long CC_PROJMOVE_RET1;
+extern unsigned long CC_PROJMOVE_RET2;
+extern unsigned long CC_ONTICKSLEEP;
 
 //unsigned long ADDR_BROADCASTVERSION = 0x005df840;
 //unsigned long ADDR_HASHLIST = 0x006A2AE4;

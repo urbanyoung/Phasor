@@ -55,6 +55,9 @@ namespace halo {
 	// Called after the server has been notified of a player spawn
 	void __stdcall OnPlayerSpawnEnd(DWORD playerId, ident m_objectId);
 
+    // Called when an object is being destroyed
+    void __stdcall OnObjectDestroy(ident m_objid);
+
 	// Called when a weapon is created
 	void __stdcall OnObjectCreation(ident m_objectId);
 
@@ -72,7 +75,7 @@ namespace halo {
 	void OnClientUpdate(s_player& player);
 
 	// Called when someone chats in the server
-	void __stdcall OnChat(server::chat::s_chat_data* chat);
+	void __stdcall OnChat(server::s_machine_info* machine, server::chat::s_chat_data* chat);
 
 	// Called when a player attempts to enter a vehicle
 	bool __stdcall OnVehicleEntry(DWORD playerId);
