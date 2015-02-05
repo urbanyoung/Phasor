@@ -19,7 +19,7 @@ int l_getrandomnumber(lua_State* L) {
 
     size_t result = max;
     if (min != max)  {
-        std::uniform_int_distribution<size_t> dist(min, max);
+        std::uniform_int_distribution<size_t> dist(min, max-1);
         result = dist(rng);
     }
 
