@@ -16,3 +16,24 @@ typedef void*			HANDLE;
 */
 #include <windows.h>
 #define NELEMS(x)  (sizeof(x) / sizeof(x[0]))
+
+struct real_rgb_color
+{
+	float red;
+	float green;
+	float blue;
+};
+
+struct real_argb_color
+{
+	float alpha;
+	float red;
+	float green;
+	float blue;
+};
+
+/*union*/ struct real_rectangle2d
+{
+	float x0, x1; // top, bottom
+	float y0, y1; // left, right
+};

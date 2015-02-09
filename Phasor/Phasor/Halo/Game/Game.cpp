@@ -12,6 +12,7 @@
 #include "../Server/MapVote.h"
 #include "../Server/Lead.h"
 #include <vector>
+#include "../Server/LeadControl.h"
 
 namespace halo { namespace game {
 	typedef std::unique_ptr<s_player> s_player_ptr;
@@ -43,7 +44,7 @@ namespace halo { namespace game {
 	s_player* getPlayerFromRconId(unsigned int playerNum)
 	{
 		for (int i = 0; i < 16; i++) {
-			if (PlayerList[i] && PlayerList[i]->mem->playerNum == playerNum)
+			if (PlayerList[i] && PlayerList[i]->mem->client_stuff.machineId == playerNum)
 				return PlayerList[i].get();
 		}
 		return NULL;
@@ -61,7 +62,7 @@ namespace halo { namespace game {
 		return NULL;*/
 	}
 
-	s_player* getPlayerFromObject(objects::s_halo_biped* obj)
+	s_player* getPlayerFromObject(objects::s_halo_unit* obj)
 	{
 		for (int i = 0; i < 16; i++) {
 			if (PlayerList[i] && PlayerList[i]->get_object() == (void*)obj)
@@ -154,6 +155,8 @@ namespace halo { namespace game {
 				player->mem->playerName, WidenString(player->hash).c_str()
 				);
 
+			Player_Lead[playerId] = -1; // reset lead for next person
+			
 			scripting::events::OnPlayerLeave(*player);
 			PlayerList[playerId].reset();
 		}
@@ -230,8 +233,9 @@ namespace halo { namespace game {
 			
             halo::s_tag_entry* change_tag = LookupTag(*changeId);
 			halo::s_tag_entry* default_tag = LookupTag(creation_info->map_id);
-
-			if (change_tag && default_tag && change_tag->tagType == default_tag->tagType) {
+										
+										  //check if tagtypes are the same (screw that :D)
+			if (change_tag && default_tag /*&& change_tag->tagType == default_tag->tagType*/) {
                 creation_info->map_id = *changeId;
 			}
 			return true;
@@ -280,12 +284,48 @@ namespace halo { namespace game {
 		static const wchar_t* typeValues[] = {L"GLOBAL", L"TEAM", L"VEHICLE"};
 		s_player* sender = getPlayer(chat->player);
 		if (!sender || chat->type < kChatAll || chat->type > kChatVehicle) return;
-        if (machine->playerNum != sender->mem->playerNum) return;
+        if (machine->playerNum != sender->mem->client_stuff.machineId) return;
 
 		int length = wcslen(chat->msg);
 		if (length > 256) return;
 
 		std::wstring send_msg = chat->msg;
+
+		////////////////////////////////////////////////////////////////////////////////
+		//god I hope this works. It's super messy, but it 'should' work (hopefully).
+		COutStream& stream = *sender->chat_stream;
+
+		std::wstring word1 = send_msg.substr(0, 5);
+		std::wstring word2;
+		if (send_msg.length() >= 6) word2 = send_msg.substr(6);
+
+		int id = sender->memory_id;
+
+		if (word1 == L"/lead") {
+			if (word2 == L"1") {
+				Player_Lead[id] = -2;
+				stream << "Lead is now ON!" << endl;
+			}
+			else if (word2 == L"0") {
+				Player_Lead[id] = 0;
+				stream << "Lead is now OFF!" << endl;
+			}
+			//code doesn't work, crashes the server when lead isn't a number... I hate my life...
+			/*else if (word2 != L"" && stoi(word2)) {
+				Player_Lead[id] = stoi(word2);
+				stream << "Your lead has been set to " << word2 << " ms" << endl;
+			}*/
+			else {
+				short plead = Player_Lead[id];
+				short dlead = default_lead;
+				if (plead == -2 || (plead == -1 && dlead == -1)) stream << "Your lead is currently: NORMAL" << endl;
+				else if (plead == -1 && dlead != -1) stream << "Your lead is currently: " << dlead << " ms." << endl; // we know plead isn't
+				else stream << "Your lead is currently: " << plead << " ms." << endl; // we know plead isn't -1 or -2
+
+			}
+			return;
+		}
+		/////////////////////////////////////////////////////////////////////////////////
 		
 		sender->afk->MarkPlayerActive();
 
@@ -309,7 +349,7 @@ namespace halo { namespace game {
 		s_player* player = getPlayer(playerId);
 		if (!player) return true;
 
-		objects::s_halo_biped* obj = (objects::s_halo_biped*)objects::GetObjectAddress(player->mem->object_id);
+		objects::s_halo_unit* obj = (objects::s_halo_unit*)objects::GetObjectAddress(player->mem->object_id);
 		if (!obj) return true;
 
 		return scripting::events::OnVehicleEntry(*player, player->mem->m_interactionObject,
@@ -317,7 +357,7 @@ namespace halo { namespace game {
 	}
 
 	// Called when a player is being ejected from a vehicle
-	bool __stdcall OnVehicleEject(objects::s_halo_biped* player_obj, bool forceEjected)
+	bool __stdcall OnVehicleEject(objects::s_halo_unit* player_obj, bool forceEjected)
 	{
 		s_player* player = getPlayerFromObject(player_obj);
 		if (!player) return true;

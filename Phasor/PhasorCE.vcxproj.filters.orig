@@ -149,6 +149,10 @@
     <ClCompile Include="Scripts\PhasorAPI\string.cpp">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="Phasor\Halo\Server\LeadControl.cpp">
+      <Filter>Phasor\Halo\Server</Filter>
+=======
     <ClCompile Include="cpp-netlib\libs\network\src\client.cpp">
       <Filter>Libraries\cpp-netlib\libs\network\src</Filter>
     </ClCompile>
@@ -160,9 +164,7 @@
     </ClCompile>
     <ClCompile Include="cpp-netlib\libs\network\src\uri\uri.cpp">
       <Filter>Libraries\cpp-netlib\libs\network\src\uri</Filter>
-    </ClCompile>
-    <ClCompile Include="Phasor\Halo\Server\LeadControl.cpp">
-      <Filter>Phasor\Halo\Server</Filter>
+>>>>>>> 700a8361c291b7e6eaf89e1492cf0bc222a90659
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -192,9 +194,6 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Common\Timers.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\vect3d.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Phasor\Admin.h">
@@ -335,6 +334,17 @@
     <ClInclude Include="Scripts\PhasorAPI\string.h">
       <Filter>Scripting\PhasorAPI</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="Phasor\Halo\Server\LeadControl.h">
+      <Filter>Phasor\Halo\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\vect.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="phasor_includes.props" />
+=======
     <ClInclude Include="cpp-netlib\boost\mime.hpp">
       <Filter>Libraries\cpp-netlib\boost</Filter>
     </ClInclude>
@@ -905,9 +915,7 @@
     <ClInclude Include="cpp-netlib\boost\network\version.hpp">
       <Filter>Libraries\cpp-netlib\boost</Filter>
     </ClInclude>
-    <ClInclude Include="Phasor\Halo\Server\LeadControl.h">
-      <Filter>Phasor\Halo\Server</Filter>
-    </ClInclude>
+>>>>>>> 700a8361c291b7e6eaf89e1492cf0bc222a90659
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

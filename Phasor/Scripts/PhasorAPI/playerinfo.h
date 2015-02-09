@@ -127,38 +127,106 @@ int l_gethash(lua_State* L);
  */
 int l_getteamsize(lua_State* L);
 
-/*! \brief Get the specified player's object address.
+/*! \brief Get the specified player's object id.
 *
 * \param player The player's memory id.
-* \return The player's object address or nil if they are dead.
-*
-* \remark
-* Equivalent to: getobject(getplayerobjectid(0)
+* \return The player's object id or nil if they are dead.
 *
 * Example usage:
 * \code
-*		local player_obj_id = getplayerobject(0) -- get player 0's object id
+*		local playerObjId = getplayerobjectid(0) -- get player 0's object id
 * \endcode
 *
 * \remark
 * If the player is currently dead, nil is returned.
 */
+int l_getplayerobjectid(lua_State* L);
+
+/*! \brief Get the specified player's object address.
+*
+* \param player The player's memory id.
+* \return The player's object address or nil if they are dead, and the player's object ID or 0xFFFFFFFF
+*
+* \remark
+* Equivalent to: getobject(getplayerobjectid(0)), getplayerobjectid(0)
+*
+* Example usage:
+* \code
+*		local m_playerObj, playerObjId = getplayerobject(0) -- get player 0's object address/object id
+* \endcode
+*
+* \remark
+* If the player is currently dead, then ( nil, 0xFFFFFFFF ) is returned. 
+*/
 int l_getplayerobject(lua_State* L);
 
 /*! \brief Get the specified player's object id.
- *
- * \param player The player's memory id.
- * \return The player's object id or nil if they are dead.
- *
- * Example usage:
- * \code
- *		local player_obj_id = getplayerobjectid(0) -- get player 0's object id
- * \endcode
- *
- * \remark
- * If the player is currently dead, nil is returned.
- */
-int l_getplayerobjectid(lua_State* L);
+*
+* \param player The player's memory id, and optionally the weapon slot (0 - 3)
+* \return The player's weapon's object id, nil if they are dead, or 0xFFFFFFFF if the weapon doesn't exist.
+*
+* Example usage:
+* \code
+*		local weaponObjId = getplayerweaponid(0) -- get player 0's active weapon object id
+*		local secondaryWeapObjId = getplayerweaponid(0, 1) -- get player 0's secondary weapon object id
+* \endcode
+*
+* \remark
+* If the player is currently dead, then nil is returned. If slot isn't specified, the weapon's object id of the weapon the player is currently holding will be returned.
+*/
+int l_getplayerweaponid(lua_State* L);
+
+/*! \brief Get the specified player's object address.
+*
+* \param player The player's memory id, and optionally the weapon slot (0 - 3)
+* \return The player's weapon's object address or nil if they are dead and/or the weapon doesn't exist \c and the weapon's object id, nil if they are dead, or 0xFFFFFFFF if the weapon doesn't exist.
+*
+* \remark
+* Equivalent to: getobject(getplayerweaponid(0)), getplayerweaponid(0)
+*
+* Example usage:
+* \code
+*		local m_weaponObj, weaponObjId = getplayerweapon(0) -- get player 0's active weapon object address and weapon object id
+*		local m_primaryWeapObjId, primaryWeapObjId = getplayerweaponid(0, 0) -- get player 0's primary weapon object address and weapon object id
+* \endcode
+*
+* \remark
+* If the player is currently dead, then ( nil, nil ) is returned. If slot isn't specified, the weapon object address and object id of the weapon the player is currently holding will be returned.
+*/
+int l_getplayerweapon(lua_State* L);
+
+/*! \brief Get the specified player's vehicle's object id.
+*
+* \param player The player's memory id.
+* \return The player vehicle's object id or 0xFFFFFFFF if they are dead and/or not in a vehicle
+*
+* Example usage:
+* \code
+*		local vehicleObjId = getplayervehicleid(0) -- get player 0's vehicle object id
+* \endcode
+*
+* \remark
+* If the player is currently dead, nil is returned BUT if they are alive and not in a vehicle, 0xFFFFFFFF is returned.
+*/
+int l_getplayervehicleid(lua_State* L);
+
+/*! \brief Get the specified player's vehicle's object address and object id.
+*
+* \param player The player's memory id.
+* \return The player vehicle's object address or nil if they are dead and/or not in a vehicle \c and the vehicle's object id or 0xFFFFFFFF if they are dead and/or not in a vehicle.
+*
+* \remark
+* Equivalent to: getobject(getplayervehicleid(0)), getplayervehicleid(0)
+*
+* Example usage:
+* \code
+*		local m_vehicleObj, vehicleObjId = getplayervehicle(0) -- get player 0's vehicle object address and vehicle object id
+* \endcode
+*
+* \remark
+* If the player is currently dead, then ( nil, nil ) is returned. BUT if they are alive and not in a vehicle, then ( nil, 0xFFFFFFFF ) is returned.
+*/
+int l_getplayervehicle(lua_State* L);
 
 /*! \brief Checks if the specified player is an admin.
  *
@@ -167,7 +235,7 @@ int l_getplayerobjectid(lua_State* L);
  *
  * Example usage:
  * \code
- *		local is_player_admin = isadmin(0)
+ *		local is_player_admin = isadmin(0) -- true if player 0 is admin, false if player 0 is not admin
  * \endcode
  */
 int l_isadmin(lua_State* L);

@@ -4,6 +4,7 @@
 #include "../../Phasor/Globals.h"
 #include "../../Phasor/Directory.h"
 #include "../../Phasor/Halo/Server/Server.h"
+#include "../../Phasor/Halo/Server/LeadControl.h"
 
 int l_changeteam(lua_State* L) {
     halo::s_player* player;
@@ -15,6 +16,21 @@ int l_changeteam(lua_State* L) {
     if (!team) team = !player->mem->team;
     player->ChangeTeam(*team, forcekill);
     return 0;
+}
+
+int l_setdefaultlead(lua_State* L) {
+	short lead;
+	std::tie(lead) = phlua::callback::getArguments<short>(L, __FUNCTION__);
+	default_lead = lead;
+	return 0;
+}
+
+int l_setlead(lua_State* L) {
+	halo::s_player* player;
+	short lead;
+	std::tie(player, lead) = phlua::callback::getArguments<decltype(player), short>(L, __FUNCTION__);
+	Player_Lead[(int)player] = lead;
+	return 0;
 }
 
 int l_kill(lua_State* L) {

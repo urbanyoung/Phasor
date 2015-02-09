@@ -114,9 +114,12 @@ unsigned long CC_VEHICLEFORCEEJECT = 0x0056E6CD;
 unsigned long CC_VEHICLEUSEREJECT = 0x0056E107;
 unsigned long CC_HALOPRINT = 0x004BA3F0;
 unsigned long CC_HALOBANCHECK = 0x00518820;
-unsigned long CC_PINGREQUEST = 0x5130F4; // ce 4c99e4
+<<<<<<< HEAD
 unsigned long CC_UPDATEOBJECT = FUNC_UPDATE_OBJECT + 0xF;
 unsigned long CC_UPDATEALLOBJECTS = FUNC_UPDATE_ALL_OBJECTS;
+=======
+unsigned long CC_PINGREQUEST = 0x5130F4; // ce 4c99e4
+>>>>>>> 700a8361c291b7e6eaf89e1492cf0bc222a90659
 
 // ------------------------------------------------------------------------
 //

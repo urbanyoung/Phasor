@@ -141,6 +141,7 @@
     <ClCompile Include="Phasor\Halo\Server\Chat.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Gametypes.cpp" />
     <ClCompile Include="Phasor\Halo\Server\Lead.cpp" />
+    <ClCompile Include="Phasor\Halo\Server\LeadControl.cpp" />
     <ClCompile Include="Phasor\Halo\Server\MapLoader.cpp" />
     <ClCompile Include="Phasor\Halo\Server\MapVote.cpp" />
     <ClCompile Include="Phasor\Halo\Server\misc_cmds.cpp" />
@@ -392,6 +393,7 @@
     <ClInclude Include="Phasor\Halo\Server\Chat.h" />
     <ClInclude Include="Phasor\Halo\Server\Gametypes.h" />
     <ClInclude Include="Phasor\Halo\Server\Lead.h" />
+    <ClInclude Include="Phasor\Halo\Server\LeadControl.h" />
     <ClInclude Include="Phasor\Halo\Server\MapLoader.h" />
     <ClInclude Include="Phasor\Halo\Server\MapVote.h" />
     <ClInclude Include="Phasor\Halo\Server\misc_cmds.h" />

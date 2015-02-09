@@ -84,7 +84,7 @@ namespace halo { namespace server
 	PhasorMachine* FindMachine(const s_player& player)
 	{
 		for (int i = 0; i < 16; i++) {
-			if (machine_list[i] && machine_list[i]->machine->playerNum == player.mem->playerNum)
+			if (machine_list[i] && machine_list[i]->machine->playerNum == player.mem->client_stuff.machineId)
 				return machine_list[i].get();
 		}
 		return NULL;
@@ -417,7 +417,7 @@ namespace halo { namespace server
 #elif  PHASOR_CE 
 		DWORD size = server::BuildPacket(buffer, 0, 0x38, 0, (LPBYTE)&d, 0,1,0);
 #endif
-		AddPacketToPlayerQueue(player.mem->playerNum, buffer, size, 1,1,0,1,3);
+		AddPacketToPlayerQueue(player.mem->client_stuff.machineId, buffer, size, 1,1,0,1,3);
 		
 		return true;
 	}
@@ -456,7 +456,7 @@ namespace halo { namespace server
 	void SetExecutingPlayer(halo::s_player* player)
 	{
 		if (!player) *(DWORD*)UlongToPtr(ADDR_RCONPLAYER) = -1;
-		else *(DWORD*)UlongToPtr(ADDR_RCONPLAYER) = player->mem->playerNum;
+		else *(DWORD*)UlongToPtr(ADDR_RCONPLAYER) = player->mem->client_stuff.machineId;
 	}
 
 	halo::s_player* GetPlayerExecutingCommand()

@@ -1,5 +1,5 @@
 #include "../Game/Objects.h"
-#include "../../../Common/vect3d.h"
+#include "../../../Common/vect.h"
 #include "../../../Common/Types.h"
 
 namespace halo { namespace server {

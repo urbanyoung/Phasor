@@ -1,4 +1,5 @@
 #pragma once
+#include "../../Common/Types.h"
 
 namespace halo
 {
@@ -54,7 +55,19 @@ namespace halo
 		UNKNOWN(4);
 		void* data;
 	};
-	static_assert(sizeof(s_table_header) == 0x38, "s_table_header size incorrect");
+
+	//! Represents an entry in Halo's connection player table
+	struct s_presence_item
+	{
+		wchar_t name[12];
+		WORD color;
+		WORD icon_index; // when I had this set to UNKNOWN it messed up ApplyDamage with its _unused_4 stuff
+		BYTE machineId;
+		BYTE status; // 1 = ok, 2 = invalid hash (or auth, or w/e)
+		BYTE team;
+		BYTE playerId;
+	};
+	static_assert(sizeof(s_presence_item) == 0x20, "sizeof(s_presence_item) == 0x20");
 
 #pragma pack(pop)
 }

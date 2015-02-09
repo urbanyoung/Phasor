@@ -622,6 +622,7 @@ BOOST_STATIC_ASSERT(sizeof(s_body_part) == 0x34);
 
 // Biped Struct. Definition is a two legged creature, but applies to ALL AI and all players.
 struct s_halo_biped {
+<<<<<<< HEAD
 	bool isAirbourne : 1;							// 0x4CC 0 (from jumping/falling, not when flying in vehicle)
 	UNKNOWN_BITFIELD(7);							// 0x4CC 1-7
 	UNKNOWN(3);										// 0x4CD 8-31
@@ -658,6 +659,62 @@ struct s_halo_biped {
 	s_body_part bodyPart[18];						// 0x550
 };
 BOOST_STATIC_ASSERT(sizeof(s_halo_biped) == 0x42C);
+=======
+    s_halo_object base;
+    UNKNOWN(0x10);  // 0x1f4
+    long invisible; // 0x204 (0x41 inactive, 0x51 active. probably bitfield but
+                    // never seen anything else referenced)
+
+    struct // 0x208
+        {
+        // these are action flags, basically client button presses
+        // these don't actually control whether or not an event occurs
+
+        bool crouching : 1; // 0
+        bool jumping : 1;   // 1
+        UNKNOWN_BITFIELD(2);
+        bool flashlight : 1; // 4
+        UNKNOWN_BITFIELD(1);
+        bool actionPress : 1; // 6 think this is just when they initially press
+                              // the action button
+        bool melee : 1;       // 7
+        UNKNOWN_BITFIELD(2);
+        bool reload : 1;               // 10
+        bool primaryWeaponFire : 1;    // 11 right mouse
+        bool secondaryWeaponFire : 1;  // 12 left mouse
+        bool secondaryWeaponFire1 : 1; // 13
+        bool actionHold : 1;           // 14 holding action button
+        UNKNOWN_BITFIELD(1);
+    } actionFlags;
+    UNKNOWN(0x26);     // 0x020A
+    vect3d cameraView; // 230
+    UNKNOWN(0x68);     // 0x23c
+    BYTE bodyState; // 0x2A4 (2 = standing, 3 = crouching, 0xff = invalid, like
+                    // in vehicle)
+    UNKNOWN(0x53);  // 0x2A5
+    ident primaryWeaponId;   // 0x2F8
+    ident secondaryWeaponId; // 0x2FC
+    ident tertiaryWeaponId;  // 0x300
+    ident quartaryWeaponId;  // 0x304
+    UNKNOWN(0x16);           // 0x308
+    BYTE frag_nade_count;    // 0x31e
+    BYTE plasma_nade_count; // 0x31f
+    BYTE zoomLevel;  // 0x320 (0xff - no zoom, 0 - 1 zoom, 1 - 2 zoom etc)
+    BYTE zoomLevel1; // 0x321
+    UNKNOWN(0x1AA);  // 0x322
+    BYTE
+    isAirbourne;   // 0x4CC (from jumping/falling, not when flying in vehicle)
+    UNKNOWN(0x33); // 0x4cd - 0x500
+    UNKNOWN(0x0c);
+    float crouch_percent;
+
+    // The rest of bipd is composed of other tags, such as
+    // mod2\characters\cyborg\cyborg
+    // with these tags its size is 0xDEC
+    UNKNOWN(0xDEC - 0x510);
+};
+static_assert(sizeof(s_halo_biped) == 0xDEC, "bad");
+>>>>>>> 700a8361c291b7e6eaf89e1492cf0bc222a90659
 
 struct s_halo_weapon {
     s_halo_object base;
@@ -681,8 +738,13 @@ struct s_halo_vehicle {
     UNKNOWN(0x010);
     // rest of vehi is composed of other tags, with these tags
     // its size is 0xE00
+    UNKNOWN(0xE00 - 0x5C0);
 };
+<<<<<<< HEAD
 BOOST_STATIC_ASSERT(sizeof(s_halo_vehicle) == 0x5c0);
+=======
+static_assert(sizeof(s_halo_vehicle) == 0xE00, "bad");
+>>>>>>> 700a8361c291b7e6eaf89e1492cf0bc222a90659
 
 struct s_object_creation_disposition {
     ident map_id;
@@ -694,6 +756,7 @@ struct s_object_creation_disposition {
     // rest unknown..
 };
 
+<<<<<<< HEAD
 // entry in the object table
 struct s_halo_object_header
 {
@@ -715,7 +778,7 @@ struct s_halo_object_table
 	s_table_header header;
 	s_halo_object_header entries[0x800];
 };
-
+=======
 struct s_intersection_output
 {
     BYTE mode; // only seen 2 (hit obj) 3 (didn't)
@@ -728,6 +791,7 @@ struct s_intersection_output
     UNKNOWN(0x28);
 };
 static_assert(sizeof(s_intersection_output) == 0x64, "bad s_intersection_test");
+>>>>>>> 700a8361c291b7e6eaf89e1492cf0bc222a90659
 #pragma pack(pop)
 
 struct view_vector {

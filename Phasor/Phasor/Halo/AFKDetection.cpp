@@ -46,9 +46,9 @@ namespace halo { namespace afk_detection
 	void CAFKDetection::CheckPlayerActivity()
 	{
 		// make sure the object is available
-		objects::s_halo_biped* object = player.get_object();
+		objects::s_halo_unit* object = player.get_object();
 		if (object)	{
-			vect3d new_camera = object->cameraView;
+			vect3d new_camera = object->desiredAim;
 
 			// check if the camera has moved
 			if (new_camera != camera) move_count++;

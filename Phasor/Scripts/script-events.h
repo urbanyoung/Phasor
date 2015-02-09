@@ -254,7 +254,7 @@ namespace scripting {
         *		function OnObjectCreationAttempt(mapid, parentid, player)
         *	\endcode
         */
-        boost::optional<halo::ident> OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
+		boost::optional<halo::ident> OnObjectCreationAttempt(const halo::objects::s_object_creation_disposition* info,
                                                              const halo::s_player* player,
                                                              bool& allow);
 

@@ -9,13 +9,8 @@
 #include "../../Scripts/script-events.h"
 #include <assert.h>
 
-namespace halo 
+namespace halo
 {
-	struct s_player_table
-	{
-		s_table_header header;
-		s_player_structure players[16];
-	};
 
 	s_player::s_player(int memory_id) : memory_id(memory_id), sv_killed(false),
         force_entered(false)
@@ -51,14 +46,14 @@ namespace halo
 		authenticating_hash = false;
 	}
 
-	objects::s_halo_biped* s_player::get_object() const
+	objects::s_halo_unit* s_player::get_object() const
 	{
-		return (objects::s_halo_biped*)objects::GetObjectAddress(mem->object_id);
+		return (objects::s_halo_unit*)objects::GetObjectAddress(mem->object_id);
 	}
 
 	void s_player::Kick() const
 	{
-		std::string cmd = m_sprintf("sv_kick %i", mem->playerNum + 1);
+		std::string cmd = m_sprintf("sv_kick %i", mem->client_stuff.machineId + 1);
 		server::ExecuteServerCommand(cmd, NULL);
 	}
 
@@ -74,7 +69,7 @@ namespace halo
 
 				// update teams in memory
 				mem->team = new_team;
-				mem->team_Again = new_team;
+				mem->client_stuff.team = new_team; // not necessary
 				player_entry->team = new_team;
 
 				if (forcekill) Kill();

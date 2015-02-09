@@ -80,6 +80,10 @@ extern unsigned long FUNC_NOTIFY_WEAPONPICKUP;
 extern unsigned long FUNC_ENTERVEHICLE;
 extern unsigned long FUNC_EJECTVEHICLE;
 extern unsigned long FUNC_HALOEXCEPTIONHANDLER;
+extern unsigned long FUNC_UPDATE_OBJECT;
+extern unsigned long FUNC_UPDATE_ALL_OBJECT;
+extern unsigned long FUNC_UPDATE_PHYSICS;
+extern unsigned long FUNC_COLLISIONCHECK;
 
 // ------------------------------------------------------------------------
 //
@@ -119,6 +123,13 @@ extern unsigned long CC_HALOPRINT;
 extern unsigned long CC_HALOBANCHECK;
 extern unsigned long CC_PINGREQUEST;
 extern unsigned long CC_EQUIPMENTDESTROY;
+extern unsigned long CC_UPDATEALLOBJECTS;
+extern unsigned long CC_UPDATEOBJECT;
+extern unsigned long CC_COLLISIONCHECK;
+extern unsigned long CC_COLLISIONEND;
+extern unsigned long CC_COLLISIONEND2;
+extern unsigned long CC_COLLISIONEND3;
+extern unsigned long CC_BULLETPHYSICS;
 
 // ------------------------------------------------------------------------
 //

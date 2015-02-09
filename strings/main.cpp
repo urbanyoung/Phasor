@@ -21,7 +21,7 @@ void __stdcall OnLoad()
 	{
 		// Load Phasor.dll
 		//HMODULE hModule = LoadLibrary("PhasorCE.dll");
-		HMODULE hModule = LoadLibrary("E:\\Development\\C++\\Phasor\\Debug\\Phasor.dll");
+		HMODULE hModule = LoadLibrary("C:\\Users\\Wizard\\Desktop\\Phasor-master\\Debug\\Phasor.dll");
 
 		// Check if Phasor loaded successfully
 		if (hModule)

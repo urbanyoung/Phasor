@@ -49,19 +49,6 @@ namespace server
 		char unk2[0x2c];
 #endif
 	};
-	static_assert(sizeof(s_machine_info) == MACHINE_ENTRY_SIZE, "incorrect s_machine_info");
-
-	//! Represents an entry in Halo's connection player table
-	struct s_presence_item
-	{
-		wchar_t name[12];
-		DWORD idk;
-		BYTE machineId;
-		BYTE status; // 1 = ok, 2 = invalid hash (or auth, or w/e)
-		BYTE team;
-		BYTE playerId;
-	};
-	static_assert(sizeof(s_presence_item) == 0x20, "incorrect s_presence_item");
 
     struct s_previous_ping
     {

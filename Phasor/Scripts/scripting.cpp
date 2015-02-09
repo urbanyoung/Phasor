@@ -141,7 +141,7 @@ bool ScriptHandler::loadScript(const std::string& name, bool persistent,
 
 bool ScriptHandler::loadScript(const std::string& name, bool persistent) {
     if (isLoaded(name)) {
-        errStream << name << " is already loaded." << endl;
+        //errStream << name << " is already loaded." << endl; completely unnecessary
         return false;
     }
     std::shared_ptr<PhasorScript> script;
